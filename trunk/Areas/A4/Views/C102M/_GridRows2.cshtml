@@ -1,0 +1,20 @@
+﻿@using EECOnline.Areas.A4.Models;
+@using EECOnline.Services;
+@model C102MForm2Model
+
+@if (Model.Form2Grid != null)
+{
+    for (int i = 0; i < Model.Form2Grid.Count; i++)
+    {
+        var item = Model.Form2Grid[i];
+
+        <tr>
+            <td align="left">@item.hospital_name</td>
+            <td align="center">@item.Other1_Text</td>
+            <td align="center">@item.Other2_Text</td>
+            <td align="center">@item.HisType_Text</td>
+            <td align="center">@item.SubSum_Text</td>
+            <td align="center">@item.ApplyNum</td>
+        </tr>
+    }
+}

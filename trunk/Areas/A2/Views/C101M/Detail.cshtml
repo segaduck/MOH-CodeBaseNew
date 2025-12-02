@@ -1,0 +1,66 @@
+﻿@using EECOnline.Areas.A2.Models;
+@using EECOnline.Models;
+@model C101MDetailModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+}
+
+<div class="col-sm-12 content">
+    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@sm.LastActionFunc.prgname</h1>
+    <div class="form-blue">
+        @using (Html.BeginForm("Detail", "C101M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+        {
+            var button = new Dictionary<string, string>();
+            button.Add("BACK", "doBack()");
+
+            @Html.HiddenFor(x => x.apply_no_sub)
+            @Html.HiddenFor(x => x.his_range1)
+            @Html.HiddenFor(x => x.his_range2)
+            @Html.HiddenFor(x => x.user_name)
+            @Html.HiddenFor(x => x.user_birthday)
+            @Html.HiddenFor(x => x.user_idno)
+
+            <div class="col-sm-12" style="padding-left: 0rem; padding-right: 0rem;">
+                <div class="form-data form-bg">
+                    <div class="row form-group">
+                        <label class="form-control col-md-2">申請人</label>
+                        <div class="col-md-2">@Model.user_name</div>
+                        <label class="form-control col-md-2">出生年月日</label>
+                        <div class="col-md-2">@Model.user_birthday</div>
+                        <label class="form-control col-md-2">身分證字號</label>
+                        <div class="col-md-2">@Model.user_idno</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12" style="padding-left: 0rem; padding-right: 0rem;">
+                <div class="table-responsive">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                        <thead>
+                            <tr>
+                                <th style="background-color: #6292be; color: #FFF;" width="20%">申請內容</th>
+                                <th style="background-color: #6292be; color: #FFF;" width="20%">申請區間</th>
+                                <th style="background-color: #6292be; color: #FFF;" width="40%">五類單張資訊(EEC)</th>
+                                <th style="background-color: #6292be; color: #FFF;" width="20%">狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rows">
+                            @Html.Partial("_GridRows_Price")
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            @Html.ButtonForTurbo(button)
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    // 返回
+    function doBack() {
+        history.back();
+    }
+
+</script>

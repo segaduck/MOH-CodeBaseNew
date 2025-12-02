@@ -1,0 +1,39 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    ViewBag.Title = "信用卡重新繳費結果";
+    ViewBag.Script = @"
+    ";
+    string applyId = ViewBag.Item["APP_ID"];
+    }
+<br />
+<table class="formTable1">
+    <caption>@ViewBag.Title</caption>
+    <tr>
+        <th style="width: 120px;">申請編號</th>
+        <td>@ViewBag.Item["APP_ID"]</td>
+    </tr>
+    <tr>
+        <th>申辦項目</th>
+        <td>@ViewBag.Item["SRV_NAME"]</td>
+    </tr>
+    <tr>
+        <th>申請日期</th>
+        <td>@ViewBag.Item["APP_TIME"]</td>
+    </tr>
+    <tr>
+        <th>申請時費用</th>
+        <td>@ViewBag.Item["PAY_A_FEE"]</td>
+    </tr>
+    <tr>
+        <th>交易結果代碼</th>
+        <td>@ViewBag.Item["PAY_TRANS_RET"]</td>
+    </tr>
+    <tr>
+        <th>交易結果說明</th>
+        <td>@ViewBag.Item["PAY_TRANS_MSG"]</td>
+    </tr>
+</table>
+<br />
+<div class="formButtomBar">
+    <input type="button" value="關閉" onclick="jConfirm('確定要關閉嗎？', function() {window.close();});" />
+</div>

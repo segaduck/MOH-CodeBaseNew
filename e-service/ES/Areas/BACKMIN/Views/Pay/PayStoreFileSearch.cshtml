@@ -1,0 +1,53 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>衛生福利部線上申辦維護系統</title>
+</head>
+<body bgcolor="#FFFFFF" leftmargin="00" topmargin="00">
+    <div>
+        <table width="100%"  border="0" cellpadding="3" cellspacing="5">
+  <tr>
+    <td align="center" bgcolor="#FFFFCC"><strong>超商繳費銷帳記錄查詢</strong></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <table>
+        <tr><td align="center">查詢條件</td></tr>
+        <tr><td>帳單號碼：@ViewBag.Text_PayNumber</td></tr>
+	<tr><td>交易日期：@ViewBag.Text_Trandate_S~@ViewBag.Text_Trandate_F</td></tr>
+	<tr><td>帳單號碼：@ViewBag.Text_Paydate_S~@ViewBag.Text_Paydate_F</td></tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" bgcolor="#FFFFFF">
+      <table width="90%" border="1" cellpadding="3" cellspacing="0" bordercolor="#CCCCCC">
+        <tr> 
+          <td nowrap>帳單號碼</td>
+          <td nowrap>交易日期</td>
+          <td nowrap>帳務日</td>
+          <td nowrap>金額</td>
+        </tr>
+        @{
+            foreach(ES.Areas.Admin.Models.Map map in ViewBag.List){
+                 <tr>
+	                <td>@map.GetString("APP_ID")</td>
+	                <td>@(map.GetDateTime("PAY_ACT_TIME").HasValue?map.GetDateTime("PAY_ACT_TIME").Value.ToString("yyyy/MM/dd"):"")</td>
+	                <td>@(map.GetDateTime("PAY_INC_TIME").HasValue ? map.GetDateTime("PAY_INC_TIME").Value.ToString("yyyy/MM/dd") : "")</td>
+	                <td align="right">@map.GetInt("PAY_MONEY")</td>
+	            </tr>
+            }
+        }
+      </table>
+    </td>
+  </tr>
+</table>
+    </div>
+</body>
+</html>

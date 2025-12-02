@@ -1,0 +1,161 @@
+﻿@using ES.Utils;
+@model ES.Areas.Admin.Models.FormatReportModel
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Sdate1').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#Fdate1').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#Sdate2').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#Fdate2').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#Sdate3').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#Fdate3').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+    });
+</script>
+
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "報表列印";
+    ViewBag.FunctionTitle = "報表列印";
+}
+<div class="bread">
+    <i class="fas fa-home"></i>首頁 / 帳務管理 / @ViewBag.Title
+</div>
+
+@using (Html.BeginForm("FormatReportPrintOK", "Pay", FormMethod.Post, new { ID = "ActionForm", target = "_Blank" }))
+{
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <h2 class="second-title">信用卡及超商繳費明細表</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">繳費日期</label>
+                <div class="col-sm-10">
+                    <input class="form-normal" type="text" id="Sdate1" name="Sdate" value="@this.Model.DefaultDay" />～
+                    <input class="form-normal" type="text" id="Fdate1" name="Fdate" value="@this.Model.DefaultDay" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">承辦單位</label>
+                <div class="col-sm-10">
+                    <select id="sel_UNIT" name="sel_UNIT" class="form-normal">
+                        <option value="">請選擇</option>
+                        @{
+                            foreach (ES.Areas.Admin.Models.Map map in WebUtils.GetUnitAll())
+                            {
+                                @Html.Raw("<option value='" + map.GetString("UNIT_CD") + "'>" + map.GetString("UNIT_NAME") + "</option>")
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">繳費狀態</label>
+                <div class="col-sm-10">
+                    <select id="sel_PAYSTATUS" name="sel_PAYSTATUS" class="form-normal">
+                        <option value="">請選擇</option>
+                        <option value="1">已繳費</option>
+                        <option value="2">已入帳</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">繳費方式</label>
+                <div class="col-sm-10">
+                    <input name="paymethod" type="checkbox" value="C" checked="checked" />信用卡
+                    <a href="https://epacc.cp.gov.tw/accounting/eGov.htm" target="_blank">電子付費管理:<span>https://epacc.cp.gov.tw/accounting/eGov.htm</span></a><br>
+                    <input name="paymethod" type="checkbox" value="S" checked="checked" />超商
+                    <select id="sel_SORT" name="sel_SORT" class="form-normal">
+                        <option value="">請選擇</option>
+                        <option value="1">依申請時間排序</option>
+                        <option value="2">依繳費日期排序</option>
+                        <option value="3">依預計入帳日期排序</option>
+                    </select>
+                </div>
+            </div>
+            <div class="btnbar">
+                <input type="submit" value="查詢列印" class="btn btn-print" />
+            </div>
+        </div>
+    </div>
+}
+<br />
+@using (Html.BeginForm("FormatReportPrintOK", "Pay", FormMethod.Post, new { ID = "ActionForm_2", target = "_Blank" }))
+{
+    <div class="col-sm-12 content">
+        <h2 class="second-title">其他繳費明細表</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">繳費日期</label>
+                <div class="col-sm-10">
+                    <input class="form-normal" type="text" id="Sdate2" name="Sdate" value="@this.Model.DefaultDay" />～
+                    <input class="form-normal" type="text" id="Fdate2" name="Fdate" value="@this.Model.DefaultDay" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">承辦單位</label>
+                <div class="col-sm-10">
+                    <select id="sel_UNIT2" name="sel_UNIT" class="form-normal">
+                        <option value="">請選擇</option>
+                        @{
+                            foreach (ES.Areas.Admin.Models.Map map in WebUtils.GetUnitAll())
+                            {
+                                @Html.Raw("<option value='" + map.GetString("UNIT_CD") + "'>" + map.GetString("UNIT_NAME") + "</option>")
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">繳費方式</label>
+                <div class="col-sm-10">
+                    <input name="paymethod" type="checkbox" value="D" checked="checked" />匯票
+                    <input name="paymethod" type="checkbox" value="T" checked="checked" />劃撥
+                    <input name="paymethod" type="checkbox" value="B" checked="checked" />臨櫃
+                </div>
+            </div>
+            <div class="btnbar">
+                <input type="submit" value="查詢列印" class="btn btn-print" />
+            </div>
+        </div>
+    </div>
+}
+<br />
+@using (Html.BeginForm("FormatReportPrintERR", "Pay", FormMethod.Post, new { ID = "ActionForm_3", target = "_Blank" }))
+{
+    <div class="col-sm-12 content">
+        <h2 class="second-title">未繳費報表</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">申辦日期</label>
+                <div class="col-sm-10">
+                    <input class="form-normal" type="text" id="Sdate3" name="Sdate" value="@this.Model.DefaultDay" />～
+                    <input class="form-normal" type="text" id="Fdate3" name="Fdate" value="@this.Model.DefaultDay" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">承辦單位</label>
+                <div class="col-sm-10">
+                    <select id="sel_UNIT3" name="sel_UNIT" class="form-normal">
+                        <option value="">請選擇</option>
+                        @{
+                            foreach (ES.Areas.Admin.Models.Map map in WebUtils.GetUnitAll())
+                            {
+                                @Html.Raw("<option value='" + map.GetString("UNIT_CD") + "'>" + map.GetString("UNIT_NAME") + "</option>")
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">繳費狀況</label>
+                <div class="col-sm-10">
+                    <input name="ispay" type="checkbox" value="0" checked="checked" />補繳
+                    <input name="ispay" type="checkbox" value="1" checked="checked" />退費
+                </div>
+            </div>
+            <div class="btnbar">
+                <input type="submit" value="查詢列印" class="btn btn-print" />
+            </div>
+        </div>
+    </div>
+}

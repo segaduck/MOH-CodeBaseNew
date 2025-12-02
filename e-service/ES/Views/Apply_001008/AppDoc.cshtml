@@ -1,0 +1,422 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@using ES.Commons;
+@model Apply_001008FormModel
+
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+
+    string fieldStr = Model.FieldStr;
+    bool blOpenApply = (fieldStr.IndexOf("ALL_") >= 0);
+}
+@using (Html.BeginForm("SaveAppDoc", "Apply_001008", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.APP_ID)
+    @Html.HiddenFor(m => m.CODE_CD)
+    @Html.HiddenFor(m => m.FieldStr)
+    @Html.HiddenFor(m => m.STATUS)
+    @Html.HiddenFor(m => m.IsNotice)@*是否允許開放補件*@
+
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">醫事人員或公共衛生師請領英文證明書</a></div>
+            <div class="clearfix"></div>
+            
+            @if (Model != null && Model.CODE_CD == "2")
+            {
+                @*通知補件*@
+                <div class="tab-content" id="myTabContent">
+                    <h1 class="form-title  title-bg-y">補件</h1>
+                    <div class="form-set">
+                        @Html.Raw(HelperUtil.ChgBreakLine(Model.MAILBODY))
+                    </div>
+                </div>
+            }
+            else if (Model != null && Model.CODE_CD == "9")
+            {
+                @*逾期未補件而予結案 or 核可(發文歸檔)*@
+                <div class="tab-content" id="myTabContent">
+                    <h1 class="form-title  title-bg-y">逾期未補件而予結案</h1>
+                    <div class="form-set">
+                        @Html.Raw(HelperUtil.ChgBreakLine(Model.MAILBODY))
+                    </div>
+                </div>
+            }
+            else if (Model != null && Model.CODE_CD == "12")
+            {
+                <div class="tab-content" id="myTabContent">
+                    <h1 class="form-title  title-bg-y">核可(發文歸檔)</h1>
+                    <div class="form-set">
+                        @Html.Raw(HelperUtil.ChgBreakLine(Model.MAILBODY))
+                    </div>
+                </div>
+            }
+
+            <div class="tab-content" id="myTabContent">
+                <!--ApplyForm-->
+                <div id="ApplyForm" class="tab-pane fade active in">
+                    @*@Html.FrontControlForTurbo(Model, Model.IsNew)*@
+
+                    <h1 class="form-title title-bg-y">申辦表件填寫</h1>
+                    <div class="form-set">
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦項目</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">醫事人員或公共衛生師請領英文證明書</p>
+                            </div>
+                            <label class="step-label col-sm-2" for="">承辦單位</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">衛生福利部醫事司</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦日期</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">@Model.APPLY_DATE_TW</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申請人中文姓名</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">@Model.NAME</p>
+                            </div>
+                            <label class="step-label col-sm-2" for="">身分證編號/居留證號</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">@Model.IDN</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人英文姓名</label>
+                            <div class="col-sm-3">
+                                <p class="form-control-static">@Html.TextBoxFor(x => x.ENAME, new { @class = "form-control", @placeholder = "請輸入申請人英文姓名", @readonly = "readonly" })</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申請人英文別名</label>
+                            <div class="col-sm-3">
+                                <p class="form-control-static">@Html.TextBoxFor(x => x.ENAME_ALIAS, new { @class = "form-control", @placeholder = "請輸入申請人英文別名", @readonly = "readonly" })</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">備註</label>
+                            <div class="col-sm-5">
+                                <p class="form-control-static">
+                                    @Html.TextAreaFor(m=>m.REMARK,new { @class = "form-control" ,rows="3",@disabled="disabled"})
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>計算金額</label>
+                            <div class="col-sm-2">
+                                <p class="form-control-static">@Html.TextBoxFor(m => m.TOTAL_MEM, new { @class = "form-control", style = "pointer-events:none;background:#EEEEEE" })</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>通訊地址</label>
+                            <div class="col-sm-10 form-inline">
+                                <p class="form-control-static">@Html.AddrForTurbo(m => m.ADDR_ZIP, m => m.ADDR_ZIP_ADDR,m => m.ADDR_ZIP_DETAIL, !blOpenApply, new { @class = "form-control",  }) </p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">@*<span style="color:red;">*</span>*@電話</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">
+                                    @Html.TelForTurbo(m => m.TEL, new { @class = "form-control" },!blOpenApply)
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>行動電話</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">@Html.TextBoxFor(m => m.MOBILE, new { @class = "form-control", @maxlength = "10", @readonly = "readonly" })</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>EMAIL</label>
+                            <div class="col-sm-10">
+                                @Html.EmailForTurbo(m=>m.EMAIL,null, !blOpenApply)
+                            </div>
+                        </div>
+                        @*醫事人員證書*@
+                        <div class="form-group">
+                            @Html.EditorFor(m => m.ME, "GoodsDynamicGrid001008Me")
+                        </div>
+                        @*專科證書*@
+                        <div class="form-group">
+                            @Html.EditorFor(m => m.PR, "GoodsDynamicGrid001008Pr")
+                        </div>
+                        @*國內寄送地址*@
+                        <div class="form-group">
+                            @Html.EditorFor(m => m.TRANS, "GoodsDynamicGrid001008Trans")
+                        </div>
+                        @*國外寄送地址*@
+                        <div class="form-group">
+                            @Html.EditorFor(m => m.TRANSF, "GoodsDynamicGrid001008TransF")
+                        </div>
+                        @**@
+
+                        <h2 class="second-title">佐證文件檔案上傳<span style="color:red">(總檔案大小5MB以下)</span></h2>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">
+                                <span style="color:red">*</span>佐證文件採合併檔案
+                            </label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline "><input type="radio" name="MERGEYN" value="Y" @(Model.MERGEYN == "Y" ? "checked" : "") onchange="" disabled>是</label>
+                                <label class="radio-inline "><input type="radio" name="MERGEYN" value="N" @(Model.MERGEYN != "Y" ? "checked" : "") onchange="" disabled>否</label>
+                                <br />
+                                (若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案選"是"，檔案分開上傳請選擇"否")
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="FILE_1">
+                            <label class="step-label col-sm-2" for="">繳費紀錄照片或pdf檔案</label>
+                            <div class="col-sm-10">
+                                @Html.HiddenFor(m => m.HAS_OFILE_PAYRECORD)
+                                @Html.FileDLForTurbo(m => m.FILE_PAYRECORD, Model.FILE_PAYRECORD_TEXT, "N")
+
+                                @if (Model.CODE_CD == "2" && Model.IsNotice == "Y")
+                                {
+                                    @Html.FileUploadForTurbo(m => m.FILE_PAYRECORD, !Model.IsUpdPayRecord, !Model.IsUpdPayRecord,null,"1","5", "(檔案大小5MB以下，可以接受副檔名：PDF、JPG、BMP、PNG、GIF、TIF)")
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="FILE_2">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>護照影本電子檔</label>
+                            <div class="col-sm-10">
+                                @Html.HiddenFor(m => m.HAS_OFILE_PAYPASSPORT)
+                                @Html.FileDLForTurbo(m => m.FILE_PASSPORT, Model.FILE_PASSPORT_TEXT, "N")
+
+                                @if (Model.CODE_CD == "2" && Model.IsNotice == "Y")
+                                {
+                                    @Html.FileUploadForTurbo(m => m.FILE_PASSPORT, !Model.IsUpdPassPort, !Model.IsUpdPassPort, null, "1", "5", "(檔案大小5MB以下，可以接受副檔名：PDF、JPG、BMP、PNG、GIF、TIF)")
+                                }
+                            </div>
+                        </div>
+
+                        @**@
+                        <h2 class="second-title">
+                            <span style="color:red">*</span>醫事人員或公共衛生師/專科中文證書電子檔
+                        </h2>
+                        @if (Model.ATHs != null)
+                        {
+                            for (int i = 0; i < Model.ATHs.Count(); i++)
+                            {
+                                <div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">電子檔@(i+1)</label>
+                                        <div class="col-sm-10">
+                                            @Html.HiddenFor(m => m.ATHs[i].HAS_OFILE)
+                                            @Html.HiddenFor(m => m.ATHs[i].SRL_NO)
+                                            @Html.FileDLForTurbo(m => m.ATHs[i].FILE_1, Model.ATHs[i].FILE_1_TEXT,"N")
+                                            @if (Model.CODE_CD == "2" && Model.IsNotice == "Y")
+                                            { 
+                                                @*apply.flow_cd--> 2:補件通知*@
+                                                @*@Html.TextBoxFor(m => m.ATHs[i].FILE_1, new { @class = "form-control", @type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+
+        @Html.HiddenFor(x => x.ATHs[i].FILE_1_FILENAME)*@   
+                                                @Html.FileUploadForTurbo(m => m.ATHs[i].FILE_1, !Model.IsUpdATH, !Model.IsUpdATH,null,"1","5", "(檔案大小5MB以下，可以接受副檔名：PDF、JPG、BMP、PNG、GIF、TIF)")  
+                                            }
+                                        </div>
+                                             
+                                    </div>
+
+                                </div>
+                            }
+                        }
+                    </div>
+                    </div>
+
+                    
+            </div>
+            <div class="btn-bar text-center">
+                @if (Model.CODE_CD == "2" && Model.IsNotice == "Y")
+                {
+                    @*apply.flow_cd--> 2:補件通知*@
+                    <button type="button" id="btnSave" class="btn btn-save" onclick="doSave()">存檔</button>
+                }
+                <button type="button" id="btnReturn" class="btn btn-clear">返回</button>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        var flow_cd = '@Model.CODE_CD';
+        @*返回*@
+        $('#btnReturn').click(function () {
+            location.href = '@Url.Content("~/History")';
+        });
+
+        $('input[type="file"]').each(function () {
+            $(this).attr("disabled", true);
+        });
+
+        $('form[id="main_form"]').find('.btn').each(function () {
+            $(this).attr("disabled", true);
+        })
+
+        // 取得補件欄位字串
+        var FieldStr = $('#FieldStr').val();
+        if (flow_cd == "2") {
+
+            if (FieldStr != "" || FieldStr != undefined) {
+                var FieldLst = FieldStr.split(',');
+
+                FieldLst.forEach(function (i) {
+                    if (i.substring(0, 4) == "FILE") {
+                        //附件補件
+                        var t = i.substring(i.lastIndexOf('_') + 1);
+                        switch (t) {
+                            case '0': //繳費紀錄照片或pdf檔案
+                                $('input[type="file"]').each(function () {
+                                    var id = $(this).attr("id");
+                                    if (id == "FILE_PAYRECORD") {
+                                        $(this).removeAttr("disabled");
+                                        return false;
+                                    }
+                                });
+                                break;
+                            case '1': //護照影本電子檔
+                                $('input[type="file"]').each(function () {
+                                    var id = $(this).attr("id");
+                                    if (id == "FILE_PASSPORT") {
+                                        $(this).removeAttr("disabled");
+                                        return false;
+                                    }
+                                });
+                                break;
+                            case '2': //醫事人員/專科中文證書電子檔grid
+                                $('input[type="file"][id^="ATHs_"]').each(function () {
+                                    $(this).removeAttr("disabled");
+                                });
+                                break;
+                        }
+                    }
+
+                    //其它項目補件(擺後面會變成開放附件的部份)
+                    if (i.substring(0, 3) == "ALL") {
+                        var t = i.substring(i.lastIndexOf('_'))
+                        $('form[id="main_form"]').find('input[readonly="readonly"]').each(function () {
+                            $(this).removeAttr("readonly")
+                        })
+                        $('form[id="main_form"]').find('input[disabled="disabled"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('div[disabled="disabled"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('input[type="radio"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('input[type="checkbox"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('select').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('div.date').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('.btn').each(function () {
+                            $(this).removeAttr("disabled");
+                        })
+                        $('form[id="main_form"]').find('textarea').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('span button').removeAttr('disabled');
+                    }
+                });
+            }
+        }
+
+        //重開啟儲存鈕
+        if (flow_cd == "2") {
+            $("#btnSave").removeAttr("disabled");
+        }
+        
+        //重開啟返回鈕
+        $("#btnReturn").removeAttr("disabled");
+    });
+
+    @*存檔*@
+    function doSave() {
+        var form = $('#main_form');
+        var data = new FormData($('#main_form')[0]);
+        var isPay = $("#IsPay").attr("checked");
+        debugger;
+        $("#IsPay").removeAttr("disabled");
+
+        $.ajax({
+            url: '@Url.Action("SaveAppDoc")',
+            type: 'POST',
+            cache: false,
+            data: data,
+            processData: false,
+            contentType: false
+        }).done(function (res) {
+            debugger;
+            blockUI();
+            if (res.status) {
+                @*var form = $("form[id=main_form]");
+                form.attr('action', '@Url.Action("Done")').submit();*@
+
+                $.ajax({
+                    url: '@Url.Action("Done")',
+                    type: 'POST',
+                    cache: false,
+                    data: data,
+                    processData: false,
+                    contentType: false
+                }).done(function (res2) {
+                    if (res2.status) {
+                        blockMessage(res2.msg, "提示訊息", function () {
+                            $("#STATUS").val("A");
+                            form.attr('action', '@Url.Action("DoneFinish")').submit();
+                        });
+                    } else {
+                        blockAlert(res2.msg, "提示訊息", function () {
+                            if (isPay) {
+                                $("#IsPay").attr("disabled", true);
+                            }
+                            unblockUI();
+                        });
+                    }
+                });
+            }
+            else
+            {
+                blockAlert(res.message, "提示訊息", function () {
+                    if (isPay) {
+                        $("#IsPay").attr("disabled", true);
+                    }
+
+                    unblockUI();
+                });
+            }
+        });
+
+    }
+
+    //檢核
+    function doChkCopies(copiesObj, colName) {
+        var copies = copiesObj.value;
+
+        if (copies.length > 0) {
+            if (CheckNumeric(copies)) {
+                if (copies <= 0) {
+                    blockAlert(colName + " 請輸入大於0的份數", "提示訊息", function () { copiesObj.value = ""; });
+                } else {
+                    doCountMoney();
+                }
+            } else {
+                //debugger;
+                blockAlert(colName + " 請輸入大於0的份數", "提示訊息", function () { copiesObj.value = ""; });
+            }
+        }
+    }
+</script>

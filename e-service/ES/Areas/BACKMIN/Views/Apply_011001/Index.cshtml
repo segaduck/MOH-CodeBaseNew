@@ -1,0 +1,289 @@
+﻿@using ES.Areas.Admin.Models;
+@model Apply_011001FormModel
+
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ES.Models.ShareCodeListModel sc = new ES.Models.ShareCodeListModel();
+    ViewBag.Title = "志願服務計畫核備";
+}
+
+@using (Html.BeginForm("Index", "Apply_011001", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.MERGEYN)
+    @Html.HiddenFor(m => m.APP_ID)
+    @Html.HiddenFor(m => m.ACC_NAM)
+    @Html.HiddenFor(m => m.ADM_MAIL)
+    @Html.HiddenFor(m => m.APP_TIME)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件分文及處理 / 案件處理 / @ViewBag.Title
+    </div>
+    <div class="col-sm-12 content">
+        <!-- H1 title -->
+        <h1 class="main-title"><i class="fas fa-edit"></i>案件審理作業</h1>
+
+        <div class="table-responsive">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th colspan="2">基本資料檔</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="20%"><div align="center">申辦項目：</div></td>
+                        <td width="80%"><div align="left">志願服務計畫核備</div></td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">申辦日期：</div></td>
+                        <td>@Model.APP_TIME</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">預計完成日：</div></td>
+                        <td>@Model.APP_EXT_DATE</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">本部案件承辦人姓名：</div></td>
+                        <td>@Model.PRO_NAM</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">來文文號：</div></td>
+                        <td>@Model.ACC_NUM</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">本部發文公文文號：</div></td>
+                        <td>@Model.MOHW_CASE_NO</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">案件編號：</div></td>
+                        <td>@Model.APP_ID</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">系統狀態：</div></td>
+                        <td>@Model.APP_STATUS</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        @Html.ControlForTurbo(Model, Model.IsNew)
+
+        <!--2-->
+        @Html.Partial("File")
+        <!--4-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#ReviewData' href='#ReviewData'>
+                    <a>案件進度歷程(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='ReviewData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件進度</label>
+                            <div class="col-sm-4">
+                                <input type="text" id="StatusDesc" class="form-control" readonly value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件狀態修改</label>
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(x => x.FLOW_CD, sc.GetStatuListForUnitCD8, new { @class = "form-control", onchange = "changechk()" })
+                            </div>
+                        </div>
+
+                        <div id="notice" style="display:none">
+                            <div id="notice_ITEM">
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">補件項目(附件)</label>
+                                    <div class="col-sm-10">
+                                        @{
+                                            var q = 1;
+                                        }
+                                        <p class="form-control-static">
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />志願服務運用計畫<br>
+                                            @{q++;}
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />運用單位組織章程<br>
+                                            @{q++;}
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />單位立案登記證書影本<br>
+                                            @{q++;}
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />志工基本資料清冊<br>
+                                            @{q++;}
+                                        </p>
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">補件項目(其他)</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static"><input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />其他<br></p>
+                                        @{q++;}
+                                    </div>
+                                </div>
+                            </div>
+                            @Html.HiddenFor(m => m.FileCheck)
+                            <div class="form-group" id="notice_content">
+                                <label id="remark" class="main-label col-sm-2" for="">補件內容</label>
+                                <div class="col-sm-4">
+                                    @Html.TextAreaFor(x => x.NOTE, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">公文文號</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.MOHW_CASE_NO, new { @id = "MOHW_CASE_NO", @class = "form-control", placeholder = "" })
+                            </div>
+                            <button type="button" id="btnCaseNo" class="btn btn-blue" onclick="GetMOHW_CASE_NO('8','011001')">取得公文文號</button>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件歷程記錄</label>
+                            <div class="col-sm-10">
+                                @Html.LogForTurbo(Model.APP_ID, "APPLY_011001")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="btn-bar text-center">
+            <button id="btnSave" type="button" class="btn btn-save" onclick="doSave()">存檔</button>
+            <button id="btnReturn" type="button" class="btn btn-gray" onclick="doback()">返回</button>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+
+    // 送出
+    function doSave() {
+
+        var ValStr = "";
+        if ($('#Form_FLOW_CD option:selected').val() == "") {
+            blockAlert("請選擇案件狀態 !", "提示訊息");
+        }
+        else {
+            $('input:checkbox:checked').each(function (i) {
+                if ((this.id).substring(0, 3) == "Chk") {
+                    var pname = $(this).parent().text()
+                    var pid = "#" + (this.id).substring(4) + "_Note";
+                    if ($(pid).val() == "") {
+                        ValStr += "請填寫" + pname.replace(/\r\n|\n/g, "").replace(/\s+/g, "") + "補件備註 ! \r\n";
+                    }
+                }
+            });
+
+            if (ValStr != "") { blockAlert(ValStr, "提示訊息"); }
+            else {
+                var data = getFormDataToObject($("form[id=main_form]"));
+
+                ajaxLoadMore('@Url.Action("Save")', data, function (retData) {
+                    if (retData.status) {
+                        blockMessage(retData.message, "提示訊息", function () {
+                            location.href = '@Url.Action("Index", "Case")'
+                        });
+                    }
+                    else {
+                        blockAlert(retData.message, "提示訊息");
+                    }
+                });
+
+            }
+        }
+    }
+
+    // 返回
+    function doback() {
+        location.href = '@Url.Action("Index", "Case")'
+    }
+
+    $(document).ready(function () {
+        var YN = $("#Form_MERGEYN").val();
+        $("input[name=MERGEYN][value='" + YN + "']").attr('checked', true);
+
+        $("#StatusDesc").val($('#FLOW_CD option:selected').text());
+
+        $('input[id^="Chk"]').each(function (item) {
+            $(this).css({ "display": "none" })
+            $(this).prop("checked", false);
+            $(this).attr("disabled", "disabled");
+        });
+
+        if ($('#FLOW_CD option:selected').val() == '2' || $('#FLOW_CD option:selected').val() == '0') {
+            $("#FLOW_CD").attr('disabled', 'disabled');
+            $('#btnSave').hide();
+            $('#btnCaseNo').hide();
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+        }
+
+        $("#FLOW_CD [value='1']").remove();
+        $("#FLOW_CD [value='3']").remove();
+    });
+
+    function checkfile() {
+        var ValArr = new Array();
+        $('input[type="checkbox"][id="chkfile"]:checked').each(function (i) {
+            ValArr[i] = this.value;
+        });
+        $('#FileCheck').val(ValArr.join());
+    }
+
+    //
+    function changechk() {
+        if ($('#FLOW_CD option:selected').val() == '0') {
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnCaseNo').attr('disabled', 'disabled');
+            $('#notice').hide();
+        }
+        else if ($('#FLOW_CD option:selected').val() == '4') {
+            $('#notice').show();
+            $('#notice_ITEM').show();
+            $('#notice_content').hide();
+        }
+        else if ($('#FLOW_CD option:selected').val() == '9') {
+            $('#notice').show();
+            $('#notice_ITEM').hide();
+            $('#remark').text('備註');
+        }
+        else {
+            if ($('#FLOW_CD option:selected').val() == '2') {
+                $('#notice').show(); $('#remark').text('補件內容'); $('#notice_ITEM').show();
+            }
+            else {
+                $('#notice').hide();
+            }
+
+            $('#MOHW_CASE_NO').removeAttr("readonly");
+            $('#btnCaseNo').removeAttr('disabled')
+        }
+    }
+
+    // 取公文號
+    function GetMOHW_CASE_NO(UNIT_CD, APP_ID) {
+        //var APP_ID = $('#Form_APP_ID').val();
+        var data = {
+            "UNIT_CD": UNIT_CD,
+            "APP_ID": APP_ID
+        }
+        ajaxLoadMore('/AJAX/GetMOHW_CASE_NO', data, function (retData) {
+                if (retData.status) {
+                    $('#MOHW_CASE_NO').val(retData.message)
+                }
+                else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+    }
+
+    // 取得ZIP
+    function GetZip(APP_ID) {
+        var data = {
+            "APP_ID": APP_ID
+        }
+        var url = '/GetZIP/GetZIP?' + $.param(data);
+        location.href = url;
+    }
+</script>

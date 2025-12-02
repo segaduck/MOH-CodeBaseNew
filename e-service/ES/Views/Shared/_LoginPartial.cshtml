@@ -1,0 +1,15 @@
+﻿@if (Request.IsAuthenticated && User.IsInRole("Member"))
+{
+    <div style="text-align: center; padding: 0px 6px 0px 5px;">
+        @Html.Action("MemberInfo", "Home")
+    </div>
+}
+else
+{
+    <div id="dLoginTab1B" style="text-align: center; padding: 0px 6px 0px 5px;">
+        @Html.Action("LoginM", "Home")
+    </div>
+    <div id="dLoginTab2B" style="text-align: center; padding: 0px 6px 0px 5px; display: none;">
+        @Html.Action("LoginC", "Home")
+    </div>
+}

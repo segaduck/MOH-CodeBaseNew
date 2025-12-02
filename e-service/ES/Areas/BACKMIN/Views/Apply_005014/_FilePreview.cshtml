@@ -1,0 +1,43 @@
+﻿@model ES.Areas.BACKMIN.Models.Apply_005014ViewModel
+
+@{
+    ViewBag.Title = "_FilePreview";
+    // 圖型檔案預覽
+}
+
+<div>
+    @if (Model.FileList != null && Model.FileList.Count > 0)
+    {
+        for (var i = 0; i < Model.FileList.Count; i++)
+        {
+            var item = Model.FileList[i];
+            if (IsImageFile(item.MIME))
+            {
+                <div class="col-sm-12" style="border: 2px solid lightgray; margin-bottom:10px">
+                    <img src="data:@(item.MIME);base64,@Html.Raw(item.Base64)" style="max-width:100%" />
+                </div>
+            }
+            else
+            {
+                @*<a href="@Url.Action("ApplyPost", "Apply_005014", new { id = "TempFile", fid = item.FILE_ID })">@item.FILE_NAME</a>*@
+                <div class="col-sm-12 alert-info" style="border: 2px solid lightgray; margin-bottom: 10px">
+                    <span class="glyphicon glyphicon-open-file"></span> @item.FILE_NAME
+                </div>
+            }
+        }
+    }
+</div>
+
+@functions {
+    bool IsImageFile(string mime)
+    {
+        bool result = false;
+
+        if (mime.Contains("image"))
+        {
+            result = true;
+        }
+
+        return result;
+    }
+}

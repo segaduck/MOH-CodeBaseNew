@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "表單申請暫存管理";
+    ViewBag.FunctionTitle = "表單申請暫存管理";
+
+    ViewBag.Script = @"
+        function doQuery(page) {
+            $('#ActionType').val('Query');
+            $('#NowPage').val(page);
+        }
+    ";
+}
+@using (Html.BeginForm("Index", "ApplyTemp", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.Hidden("NowPage", (int)ViewBag.NowPage);
+}
+<div>
+    @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+</div>
+<table class="gridTable1">
+    <tr>
+        <th>動作</th>
+        <th>ACC_NO</th>
+        <th>APP_TIME</th>
+        <th>SESSION_KEY</th>
+    </tr>
+    @foreach (Dictionary<string, object> item in ViewBag.List)
+    {
+        <tr>
+            <td><input type="button" value="詳細" onclick="document.location.href='@Url.Action("Show", "ApplyTemp", new { id = @item["APP_TIME"] })';" /></td>
+            <td>@item["ACC_NO"]</td>
+            <td>@item["APP_TIME"]</td>
+            <td>@item["SESSION_KEY"]</td>
+        </tr>
+    }
+</table>

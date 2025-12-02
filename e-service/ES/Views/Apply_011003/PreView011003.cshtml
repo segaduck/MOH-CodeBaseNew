@@ -1,0 +1,427 @@
+﻿@using ES.Models;
+@using ES.Services;
+@using ES.Models.ViewModels;
+@model Apply_011003FormModel
+@{
+    Layout = null;
+    ShareCodeListModel sc = new ShareCodeListModel();
+}
+
+@Html.HiddenFor(m => m.ADD_TIME)
+@Html.HiddenFor(m => m.APP_ID)
+
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申辦項目</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">社會工作實務經驗年資審查線上申辦</p>
+        </div>
+        <label class="step-label col-sm-2" for="">申辦日期</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.ADD_TIME</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請種類：依「專門職業及技術人員高等考試社會工作師考試規則」第六條申請部分科目免試</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">
+                @{
+                    switch (Model.ISMEET)
+                    {
+                        case "1":
+                            @Html.Raw("符合第一款(國內社會工作實務經驗五年以上，有中央主管機關審查合格之證明文件。)")
+                            break;
+                        case "2":
+                            @Html.Raw("符合第二款(外國社會工作師證書及國內社會工作實務經驗一年以上，有中央主管機關審查合格之證明文件。)")
+                            break;
+                        case "3":
+                            @Html.Raw("符合第三款(曾任公立或依法立案之私立專科以上學校講師三年以上、助理教授或副教授二年以上、教授一年以上，<br /> &nbsp;&nbsp;講授前條第一項所列學科至少二科，並有國內社會工作實務經驗一年以上，有中央主管機關審查合格之證明文件。)")
+                            break;
+                    }
+                }
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名</label>
+        <div class="col-sm-10">
+            <p class="form-control-static"> @Model.NAME</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出生年月日</label>
+        <div class="col-sm-10">
+            <p class="form-control-static"> @Model.BIRTHDAY</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>國民身分證統一編號</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.IDN</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>性別</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">
+                @{
+                    if (Model.SEX_CD == "M")
+                    {
+                        @Html.Raw("男")
+                    }
+                    else if (Model.SEX_CD == "F")
+                    {
+                        @Html.Raw("女")
+                    }
+                    else if (Model.SEX_CD == "O")
+                    {
+                        @Html.Raw("其他")
+                    }
+                }
+            </p>
+        </div>
+    </div>
+    <!--網站電話-->
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話(公)</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">
+                @Html.Raw(Model.TEL + Model.TEL_0 + (string.IsNullOrEmpty(Model.TEL_1) ? "" : "#" + Model.TEL_1))
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話(宅)</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">
+                @Html.Raw(Model.FAX + Model.FAX_0 + (string.IsNullOrEmpty(Model.FAX_1) ? "" : "#" + Model.TEL_1))
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>行動電話</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">
+                @Model.MOBILE
+            </p>
+        </div>
+    </div>
+    <!--網站地址-->
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>通訊地址(含郵遞區號，請填目前服務單位或可收掛號信件之地址)</label>
+        <div class="col-sm-10 form-inline">
+            <p class="form-control-static">
+                (@Model.ADDR_CODE) @Model.ADDR_TEXT@Model.ADDR_DETAIL
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">
+                @{
+                    switch (Model.MAIL_0)
+                    {
+                        case "1":
+                            @Html.Raw(Model.MAIL + "@gmail.com")
+                            break;
+                        case "2":
+                            @Html.Raw(Model.MAIL + "@yahoo.com.tw")
+                            break;
+                        case "3":
+                            @Html.Raw(Model.MAIL + "@outlook.com")
+                            break;
+                        case "0":
+                            @Html.Raw(Model.MAIL + "@" + Model.MAIL_1)
+                            break;
+                    }
+                }
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>學歷證明<br>(擇一勾選)</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">
+                @{
+                    switch (Model.EDUCATION)
+                    {
+                        case "1":
+                            @Html.Raw("中華民國一百零二年起，經考選部依「<a href='https://wwwc.moex.gov.tw/main/ExamLaws/wfrmExamLaws.aspx?kind=3&menu_id=320&laws_id=88' target='_blank'>專技人員社會工作師考試應考資格第五條審議通過並公告名單</a>」所列學校之畢業證書影本")
+                            break;
+                        case "2":
+                            @Html.Raw("非考選部公告之學校系所(學分證明) (如檢附成績單，請清楚標記15學科(如螢光筆劃記)，以利審查)")
+                            break;
+                        case "3":
+                            @Html.Raw("經教育部承認之國外專科以上社會工作相關科、系、組、所、學位學程畢業證書影本")
+                            break;
+
+                    }
+                }
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>學歷-學校名稱<br>(請填全銜)</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">
+                @Model.SCHOOL
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>學歷-系(組)所名稱</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">
+                @Model.OFFICE
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>學歷-畢業年月</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">
+                @Model.GRADUATION 年 @Model.GRADUATION_MONTH 月
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">考試通知書-通知年月</label>
+        <div class="col-sm-10">
+            @if (!string.IsNullOrEmpty(Model.NOTICEDAY_YEAR))
+            {
+                <p class="form-control-static">
+                    @Model.NOTICEDAY_YEAR 年 @Model.NOTICEDAY_MONTH 月
+                </p>
+            }
+        </div>
+    </div>
+    @{
+        if (Model.SRVLIST != null)
+        {
+            int index = 0;
+            <h2 class="second-title">服務經歷</h2>
+            foreach (var item in Model.SRVLIST)
+            {
+                <div id="RowTable">
+                    <div id="row1" data-group="Row">
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">序號</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">@(index + 1)</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>服務經歷-服務單位名稱<br />(請填全銜)</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">@item.SRV_NAM</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>服務經歷-職稱</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">@item.SRV_TITLE</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>服務經歷-服務年資</label>
+                            <div class="col-sm-10 form-inline">
+                                <p class="form-control-static">@item.SRV_SYEAR 至 @item.SRV_EYEAR</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red">*</span>服務證明正本彩色檔</label>
+                            <div class="col-sm-10">
+                                @Html.ImageHoverForTurbo(x => x.SRVLIST[index].FILE_PICRGB, item.FILE_PICRGB_TEXT, index)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">服務單位認可有案證明文件</label>
+                            <div class="col-sm-10">
+                                @Html.ImageHoverForTurbo(x => x.SRVLIST[index].FILE_SRVPROVE, item.FILE_SRVPROVE_TEXT, index)
+                            </div>
+                        </div>
+                        <div class="form-group" id="opt3-1">
+                            <label class="step-label col-sm-2" style="font-weight:bold" for="">勞工保險被保險人投保明細表影本<br />(服務證明為團體或私立機構開具者需附)</label>
+                            <div class="col-sm-10">
+                                @Html.ImageHoverForTurbo(x => x.SRVLIST[index].FILE_LABOR, item.FILE_LABOR_TEXT, index)
+                            </div>
+                        </div>
+                        <div class="form-group" id="opt3-2">
+                            <label class="step-label col-sm-2" style="font-weight:bold" for="">服務單位立案或法人登記證書影本<br />(服務證明為團體或私立機構開具者需附)</label>
+                            <div class="col-sm-10">
+                                <span>特殊需求:</span>
+                                @if (Model.SRVLIST[index].SRVLST_DEMAND_1)
+                                {
+                                    @Html.Raw("是")
+                                    <br />
+                                    @item.SRVLST_DEMAND_1_TEXT
+                                }
+                                else
+                                {
+                                    @Html.Raw("否")
+                                }
+                                @Html.ImageHoverForTurbo(x => x.SRVLIST[index].FILE_LEGAL, item.FILE_LEGAL_TEXT, index)
+                            </div>
+                        </div>
+                        <div class="form-group" id="opt3-3">
+                            <label class="step-label col-sm-2" style="font-weight:bold" for="">服務單位章程影本<br />(服務證明為團體或私立機構開具者需附)</label>
+                            <div class="col-sm-10">
+                                <span>特殊需求:</span>
+                                @if (Model.SRVLIST[index].SRVLST_DEMAND_2)
+                                {
+                                    @Html.Raw("是")
+                                    <br />
+                                    @item.SRVLST_DEMAND_2_TEXT
+                                }
+                                else
+                                {
+                                    @Html.Raw("否")
+                                }
+                                @Html.ImageHoverForTurbo(x => x.SRVLIST[index].FILE_CHARTER, item.FILE_CHARTER_TEXT, index)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                index++;
+            }
+        }
+    }
+
+    <h2 class="second-title">佐證文件檔案上傳<span style="color:red">(總檔案大小5MB以下)</span></h2>
+    <!--網站 佐證文件採合併檔案-->
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">
+                @if (Model.MERGEYN == "Y")
+                {@Html.Raw("是")}
+            else
+            {@Html.Raw("否")}
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">國民身分證正面影本</label>
+        <div class="col-sm-10">
+            @Html.ImageHoverForTurbo(x => x.FILE_FIDC, Model.FILE_FIDC_TEXT)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">國民身分證背面影本</label>
+        <div class="col-sm-10">
+            @Html.ImageHoverForTurbo(x => x.FILE_BIDC, Model.FILE_BIDC_TEXT)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">最近一年內半身脫帽照片一張</label>
+        <div class="col-sm-10">
+            @Html.ImageHoverForTurbo(x => x.FILE_PIC, Model.FILE_PIC_TEXT)
+        </div>
+    </div>
+    @if (Model.EDUCATION == "1")
+    {
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">中華民國一百零二年起，經考選部依「專技人員社會工作師考試應考資格第五條審議通過並公告名單」所列學校之畢業證書影本</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(x => x.FILE_GRAD, Model.FILE_GRAD_TEXT)
+            </div>
+        </div>
+    }
+    @if (Model.EDUCATION == "2")
+    {
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">非考選部公告之學校系所(報考專門職業及技術人員高等考試社會工作師考試之考試通知書影本)</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(x => x.FILE_NOTI, Model.FILE_NOTI_TEXT)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">非考選部公告之學校系所(畢業證書影本)</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(x => x.FILE_NOTI2, Model.FILE_NOTI2_TEXT)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">非考選部公告之學校系所(學分證明) (如檢附成績單，請清楚標記15學科(如螢光筆劃記)，以利審查)</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(x => x.FILE_NOTI3, Model.FILE_NOTI3_TEXT)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">非考選部公告之學校系所(實習證明)</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(x => x.FILE_NOTI4, Model.FILE_NOTI4_TEXT)
+            </div>
+        </div>
+    }
+    @if (Model.EDUCATION == "3")
+    {
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">經教育部承認之國外專科以上社會工作相關科、系、組、所、學位學程畢業證書影本</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(x => x.FILE_GRADOFF, Model.FILE_GRADOFF_TEXT)
+            </div>
+        </div>
+    }
+    @if (Model.ISMEET == "2")
+    {
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">國外社會工作師或相當資格證明文件</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(x => x.FILE_FONSRV, Model.FILE_FONSRV_TEXT)
+            </div>
+        </div>
+    }
+    @if (Model.ISMEET == "3")
+    {
+        <div class="form-group" id="opt3-4">
+            <label class="step-label col-sm-2" for="">公立或立案之私立專科以上學校教學之證明文件</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(x => x.FILE_SCHOOL, Model.FILE_SCHOOL_TEXT)
+            </div>
+        </div>
+    }
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">戶籍謄本或戶口名簿<br />(改過姓名者需附)</label>
+        <div class="col-sm-10">
+            @Html.ImageHoverForTurbo(x => x.FILE_DOMICILE, Model.FILE_DOMICILE_TEXT)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">其他附件(申請人自行列舉)</label>
+        <div class="col-sm-10">
+            @Html.ImageHoverForTurbo(x => x.FILE_OTHER, Model.FILE_OTHER_TEXT)
+        </div>
+    </div>
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="doSave()">確認送出</button>
+        <button type="button" class="btn btn-clear" onclick="doback()">返回修改</button>
+    </div>
+
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('[data-hover!=\"\"]').hover();
+    });
+
+    // 送出
+    function doSave() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+
+    // 返回
+    function doback() {
+        $('#form_tab').attr('class', 'active');
+        $('#form').attr('class', 'tab-pane fade active in');
+        $('#form_tab1').removeClass('active');
+        $('#form1').attr('class', 'tab-pane fade');
+    }
+
+
+</script>

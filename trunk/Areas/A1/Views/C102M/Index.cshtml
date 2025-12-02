@@ -1,0 +1,91 @@
+﻿@using EECOnline.Areas.A1.Models;
+@using EECOnline.Models;
+@model C102MFormModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+}
+
+<style>
+    .table > tbody > tr > td {
+        vertical-align: middle;
+    }
+
+    .table-typeA .btn {
+        padding: 6px 12px;
+        background-image: -webkit-gradient(linear, left bottom, left top, from(#65b5e5), to(#65b5e5));
+        background-image: -o-linear-gradient(bottom, #65b5e5, #65b5e5);
+        background-image: linear-gradient(to top, #65b5e5, #65b5e5);
+    }
+
+        .table-typeA .btn:hover {
+            background-image: -webkit-gradient(linear, left bottom, left top, from(#5bc0de), to(#5bc0de));
+            background-image: -o-linear-gradient(bottom, #5bc0de, #5bc0de);
+            background-image: linear-gradient(to top, #5bc0de, #5bc0de);
+        }
+
+    .table-typeA td span {
+        padding: 0px 0px;
+    }
+</style>
+
+@using (Html.BeginForm("Index", "C102M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+{
+    <div class="col-sm-12 content">
+        <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@sm.LastActionFunc.prgname</h1>
+        <div class="form-blue">
+            @Html.HiddenFor(x => x.DoClearKeyid)
+            @Html.ControlForTurbo(Model)
+        </div>
+        <div class="clearfix"></div>
+        <h2 class="second-title">查詢結果</h2>
+        <div class="table-responsive">
+            @if (Model.Grid != null)
+            {
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th width="25%">單張名稱</th>
+                            <th width="20%">費用設定/元</th>
+                            <th width="40%">開放申請期間</th>
+                            <th width="15%">功能</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rows">
+                        @Html.Partial("_GridRows")
+                    </tbody>
+                </table>
+            }
+        </div>
+        <div class="btnBar">
+            <button type="button" class="btn btn-apply" onclick="onSave()">儲存變更</button>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        document.getElementById("hospital_code").addEventListener("change", doSearch);
+    });
+
+    function doSearch() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Index")').submit();
+    }
+
+    function onSave() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+
+    function onCancel(theKey) {
+        blockUI();
+        $("#DoClearKeyid").val(theKey);
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Cancel")').submit();
+    }
+
+</script>

@@ -1,0 +1,188 @@
+﻿@using ES.Models;
+@using ES.Services;
+@using ES.Models.ViewModels;
+@model Apply_011009FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel sc = new ShareCodeListModel();
+    ViewBag.SRV_NAME = "社工師證書補發（遺失）";
+
+    string s_SEX_CD = "";
+    if (Model.SEX_CD == "M") { s_SEX_CD = "男"; }
+    if (Model.SEX_CD == "F") { s_SEX_CD = "女"; }
+    if (Model.SEX_CD == "O") { s_SEX_CD = "其他"; }
+    string s_MERGEYN = "否";
+    if (Model.MERGEYN == "Y") { s_MERGEYN = "是"; }
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <h1 class="form-title title-bg-y">申辦表件預覽</h1>
+        <div class="form-set">
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">申辦項目</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">@Html.Raw(ViewBag.SRV_NAME)</p>
+                </div>
+                <label class="step-label col-sm-2" for="">申辦日期</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">@Model.APPLY_DATE_TW</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.NAME</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出生年月日</label>
+                <div class="col-sm-2">
+                    <p class="form-control-static">@Model.BIRTHDAY_TW</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>國民身分證統一編號</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">@Model.IDN</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人性別</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Html.Raw(s_SEX_CD)</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.EMAIL</p>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">電話(公)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">(@Model.W_TEL_0)@Model.W_TEL_1@((string.IsNullOrWhiteSpace(Model.W_TEL_2) ? "" : "#" + Model.W_TEL_2))</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">電話(宅)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">(@Model.H_TEL_0)@Model.H_TEL_1@((string.IsNullOrWhiteSpace(Model.H_TEL_2) ? "" : "#" + Model.H_TEL_2))</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">行動電話</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.MOBILE</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">通訊地址(含郵遞區號)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.C_ZIPCODE @Model.C_ZIPCODE_TEXT@Model.C_ADDR</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">戶籍地址(含郵遞區號)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.H_ZIPCODE @Model.H_ZIPCODE_TEXT@Model.H_ADDR</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>考試年度</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.TEST_YEAR</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>考試名稱類科</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.TEST_CATEGORY</p>
+                </div>
+            </div>
+
+            <h2 class="second-title">佐證文件檔案上傳<span style="color:red">(總檔案大小5MB以下)</span></h2>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">
+                    佐證文件採合併檔案
+                </label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Html.Raw(s_MERGEYN)</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FILE_PASSCOPY)</label>
+                <div class="col-sm-10">
+                    @Html.ImageHoverForTurbo(m => m.FILE_PASSCOPY, Model.FILE_PASSCOPY_TEXT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FILE_IDNF)</label>
+                <div class="col-sm-10">
+                    @Html.ImageHoverForTurbo(m => m.FILE_IDNF, Model.FILE_IDNF_TEXT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FILE_IDNB)</label>
+                <div class="col-sm-10">
+                    @Html.ImageHoverForTurbo(m => m.FILE_IDNB, Model.FILE_IDNB_TEXT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FILE_PHOTO)</label>
+                <div class="col-sm-10">
+                    @Html.ImageHoverForTurbo(m => m.FILE_PHOTO, Model.FILE_PHOTO_TEXT)
+                </div>
+            </div>
+
+            <h2 class="second-title">提醒郵遞</h2>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">提醒須郵遞投回</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">郵局匯票500元1紙，戶名：衛生福利部。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--form-->
+<div class="form-set">
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="doSave()">確認送出</button>
+        <button type="button" class="btn btn-clear" onclick="doback()">返回修改</button>
+    </div>
+
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('[data-hover!=\"\"]').hover();
+    });
+
+    // 送出
+    function doSave() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+
+    // 返回
+    function doback() {
+        $('#form_tab').attr('class', 'active');
+        $('#form').attr('class', 'tab-pane fade active in');
+        $('#form_tab1').removeClass('active');
+        $('#form1').attr('class', 'tab-pane fade');
+    }
+</script>

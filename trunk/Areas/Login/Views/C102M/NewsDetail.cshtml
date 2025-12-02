@@ -1,0 +1,79 @@
+﻿@using EECOnline.Services;
+@using EECOnline.Areas.Login.Models;
+@model C102MNewsDetailModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout_NoHeader_NoBg.cshtml";
+}
+
+<div class="col-sm-12 content">
+    @using (Html.BeginForm("Index", "C102M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+    {
+        var button = new Dictionary<string, string>();
+        button.Add("close", "doClose()");
+
+        //@Html.ControlForTurbo(Model);
+        <div style="margin-top: 1rem;">
+            <div class="form-group">
+                <label class="main-label col-sm-2">公告類型</label>
+                <div class="col-sm-10">
+                    @Model.newstype_text
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2">主旨</label>
+                <div class="col-sm-10">
+                    @Model.subject
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2">公告內容</label>
+                <div class="col-sm-10">
+                    @Html.Raw(Model.body)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2">附檔</label>
+                <div class="col-sm-10">
+                    <table class="table">
+                        <tbody>
+                            @if (Model.Files.ToCount() > 0)
+                            {
+                                for (int i = 0; i < Model.Files.Count; i++)
+                                {
+                                    var item = Model.Files[i];
+                                    <tr>
+                                        <td width="20%">@(item.filename).@(item.extion)</td>
+                                        <td width="80%">
+                                            <a href="@(Url.Content(Model.Files[i].filepath+"/"+Model.Files[i].srcfilename+"."+Model.Files[i].extion))" download>
+                                                下載
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2" style="color: black;">- 無 -</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        @Html.ButtonForTurbo(button)
+    }
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+    })
+
+    // 關閉
+    function doClose() {
+        parent.closeWindow();
+    }
+
+</script>

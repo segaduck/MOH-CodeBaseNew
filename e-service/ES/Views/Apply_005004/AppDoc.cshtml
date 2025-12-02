@@ -1,0 +1,415 @@
+﻿@using ES.Models
+@model ES.Models.ViewModels.Apply_005004ViewModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+}
+@using (Html.BeginForm("DocSave", "Apply_005004", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">中藥GMP廠證明文件(中文)</a></div>
+            <div class="clearfix"></div>
+            <h3 class="note-title" style="color:red;">粉紅色欄位為通知補件欄位，請確認</h3>
+            <div class="tab-content" id="myTabContent">
+                <div id="form" class="tab-pane fade active in">
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                    <div class="form-set">
+                        <!--申辦表件填寫-->
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦項目</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">中藥GMP廠證明文件(中文)</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">受文者</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">衛生福利部</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申請日期</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">@Model.FormBack.APP_TIME_TW</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">文號</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">@Model.FormBack.MOHW_CASE_NO_SELF</p>
+                                @Html.HiddenFor(m => m.FormBack.APP_ID)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請類別</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">@Model.FormBack.APPLY_TYPE</p>
+                                @Html.HiddenFor(m => m.FormBack.CODE_CD)
+                            </div>
+                        </div>
+
+                        <!--申請基本資料-->
+                        <h2 class="second-title">申請基本資料</h2>
+                        <div class="form-group" id="checkNum">
+                            <label class="step-label col-sm-2" for="">
+                                製造廠許可編號
+                            </label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.FormBack.LIC_NUM, new { @class = "form-control", placeholder = "請輸入「(C)」+7位數字" })
+                                @Html.TextBoxFor(m => m.Detail.LIC_NUM, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠名稱</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.FormBack.NAME, new { @class = "form-control" })
+                                @Html.TextBoxFor(m => m.Detail.NAME, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥商許可執照字號</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.FormBack.PL_CD, new { @class = "form-control" })
+                            </div>
+                            <label class="step-label col-sm-1" for="" style="text-align: right">第</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.FormBack.PL_Num, new { @class = "form-control", placeholder = "請輸入數字", maxlength = "10" })
+                            </div>
+                            <label class="step-label col-sm-1" for="">號</label>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Detail.PL_CD, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">國別</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">中華民國</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span> 製造廠地址</label>
+                            <div class="col-sm-10 form-inline">
+                                @Html.TextBoxFor(m => m.FormBack.TAX_ORG_CITY_CODE, new { @id = "TAX_ORG_CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號" })
+                                <div class="input-group">
+                                    @Html.TextBoxFor(m => m.FormBack.TAX_ORG_CITY_TEXT, new { @id = "TAX_ORG_CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.FormBack.TAX_ORG_CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Detail.TAX_ORG_CITY_CODE, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span> 負責人姓名</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.FormBack.CHR_NAME, new { @class = "form-control" })
+                                @Html.TextBoxFor(m => m.Detail.CHR_NAME, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span> 負責人身分證字號</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.FormBack.IDN, new { @class = "form-control" })
+                                @Html.TextBoxFor(m => m.Detail.IDN, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;"> *</span> 監製藥師 </label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.FormBack.PP_NAME, new { @class = "form-control" })
+                                @Html.TextBoxFor(m => m.Detail.PP_NAME, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span> 工廠登記證字號 </label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.FormBack.FRC_NUM, new { @class = "form-control" })
+                                @Html.TextBoxFor(m => m.Detail.FRC_NUM, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span> 產品類別 </label>
+                            <div class="col-sm-10">
+                                <div id="divTraCon">
+                                    @Html.CheckBoxFor(m => m.FormBack.IS_TRA_CHECK, new { onclick = "traCheck(this)" })
+                                    @Html.HiddenFor(m => m.FormBack.TRA_CHECK)
+                                    <span>原料藥</span> &nbsp;&nbsp;
+                                    @Html.CheckBoxFor(m => m.FormBack.IS_CON_CHECK, new { onclick = "conCheck(this)" })
+                                    @Html.HiddenFor(m => m.FormBack.CON_CHECK)
+                                    <span>製劑</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Detail.TRA_CON_CHECK, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>最近一次GMP查廠日期(附證明文件影本)</label>
+                            <div class="col-sm-4">
+                                @Html.DatePickerTWFor(m => m.FormBack.ISSUE_DATE, new { size = "10" })
+                                @Html.TextBoxFor(m => m.Detail.ISSUE_DATE, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>公司名稱</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">@Model.FormBack.COMP_NAME</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">@Model.FormBack.CNT_NAME</p>
+                                @Html.HiddenFor(m => m.FormBack.CNT_NAME)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">@Model.FormBack.TEL</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">傳真</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">@Model.FormBack.FAX</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">@Model.FormBack.EMAIL</p>
+                                @Html.HiddenFor(m => m.FormBack.EMAIL)
+                            </div>
+                        </div>
+                        <!--佐證文件檔案上傳-->
+                        <h2 class="second-title">佐證文件檔案上傳</h2>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+                            <div class="col-sm-10">
+                                @Html.HiddenFor(m => m.FormBack.CHR_NAME)
+                                <label class="radio-inline "><input type="radio" name="optradio" value="Y" onchange="RadioChange()">是</label>
+                                <label class="radio-inline "><input type="radio" name="optradio" value="N" checked onchange="RadioChange()">否</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">藥品優良製造證明書申請表用印之掃描檔</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    @Html.FileDLForTurbo(m => m.FormBack.FILE2, Model.FormBack.FILE2_TEXT, "N")
+                                    <input type="file" class="form-control" name="FormBack.newFILE2" id="newFILE2" onchange="doGetFileNam(this)" />
+                                    @Html.TextBoxFor(m => m.Detail.FILE2, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">本部核發藥物製造或展延許可函影本</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    @Html.FileDLForTurbo(m => m.FormBack.FILE3, Model.FormBack.FILE3_TEXT, "N")
+                                    <input type="file" class="form-control" name="FormBack.newFILE3" id="newFILE3" onchange="doGetFileNam(this)" />
+                                    @Html.TextBoxFor(m => m.Detail.FILE3, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">製造業藥商許可執照影本</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    @Html.FileDLForTurbo(m => m.FormBack.FILE4, Model.FormBack.FILE4_TEXT, "N")
+                                    <input type="file" class="form-control" name="FormBack.newFILE4" id="newFILE4" onchange="doGetFileNam(this)" />
+                                    @Html.TextBoxFor(m => m.Detail.FILE4, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-bar text-center">
+                            <button type="button" class="btn btn-save" onclick="send()">送出</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+
+    $(document).ready(function () {
+        $('input[name^="Detail"]').each(function (item) {
+            //PL_CD 藥商許可執照字號，TAX_ORG_CITY_CODE 製造廠地址，TRA_CON_CHECK 產品類別
+            //3項欄位須個別判斷
+            var itemID = $(this).attr("id").replace("Detail_", "");
+            //藥商許可執照字號 下拉選單及字號
+            if (itemID == "PL_CD") {
+                if ($(this).val() != "") {
+                    $('#FormBack_PL_CD').css("background-color", "#FF9797");
+                    $('#FormBack_PL_Num').css("background-color", "#FF9797");
+                } else {
+                    $('#FormBack_PL_CD').attr("disabled", "disabled");
+                    $('#FormBack_PL_Num').attr("disabled", "disabled");
+                }
+            }
+            //產品類別 變更文字底色
+            if (itemID == "TRA_CON_CHECK") {
+                if ($(this).val() != "") {
+                    $("#divTraCon").css("background-color", "#FF9797");
+                } else {
+                    $('#FormBack_IS_TRA_CHECK').attr("disabled", "disabled");
+                    $('#FormBack_IS_CON_CHECK').attr("disabled", "disabled");
+                }
+            }
+            //製造廠地址
+            if (itemID == "TAX_ORG_CITY_CODE") {
+                if ($(this).val() != "") {
+                    $("#TAX_ORG_CITY_CODE").css("background-color", "#FF9797");
+                    $("#TAX_ORG_CITY_TEXT").css("background-color", "#FF9797");
+                    $("#FormBack_TAX_ORG_CITY_DETAIL").css("background-color", "#FF9797");
+                } else {
+                    $("#TAX_ORG_CITY_CODE").attr("readonly", "readonly");
+                    $("#TAX_ORG_CITY_TEXT").attr("readonly", "readonly");
+                    $("#FormBack_TAX_ORG_CITY_DETAIL").attr("readonly", "readonly");
+                    $("#TAX_ORG_CITY_CODE").css("background-color", "#EEEEEE");
+                    $("#TAX_ORG_CITY_TEXT").css("background-color", "#EEEEEE");
+                    $("#FormBack_TAX_ORG_CITY_DETAIL").css("background-color", "#EEEEEE");
+                }
+            }
+            if ($(this).val() != "") {
+                $('#FormBack_' + itemID).css("background-color", "#FF9797");
+                if (itemID == "ISSUE_DATE") {
+                    $('#FormBack_' + itemID + '_TW').css("background-color", "#FF9797");
+                }
+            } else {
+                $('#FormBack_' + itemID).attr("readonly", "readonly");
+                if (itemID == "ISSUE_DATE") {
+                    $('#FormBack_' + itemID + '_TW').attr("readonly", "readonly");
+                }
+
+                $(this).hide();
+            }
+        });
+
+        $("input[type='radio']").attr("disabled", "disabled");
+
+        if ($('#FormBack_RADIOYN').val() == "N") {
+            $($('input[type="radio"]')[1]).attr("checked", "checked");
+        } else {
+            $($('input[type="radio"]')[0]).attr("checked", "checked");
+        }
+
+        $('input[name^="Detail.FILE"]').each(function () {
+            var itemID = $(this).attr("id").replace("Detail_", "");
+            if ($(this).val() == "") {
+                $("#new" + itemID).attr("disabled", "disabled");
+            } else {
+                $("#new" + itemID).css("background-color", "#FF9797");
+            }
+        });
+    });
+
+    // 地址
+    function loadDialogTAX_ORG_CITYCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    // 地址
+    function doTAX_ORG_CITYSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#TAX_ORG_CITY_CODE').val(retData.Id);
+                    $('#TAX_ORG_CITY_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    // 地址
+    function doTAX_ORG_CITYNameGet() {
+        var code = $('#TAX_ORG_CITY_CODE');
+        console.log('TAX_ORG_CITY_CODE');
+        var data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#TAX_ORG_CITY_TEXT'),
+            'add': $('#TAX_ORG_CITY_CODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogTAX_ORG_CITYCodeMapName(data);
+        }
+    }
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".DOC",
+            ".DOCX",
+            ".ODT",
+            ".ODF",
+            ".ODS",
+            ".XLS",
+            ".XLSX",
+            ".PDF",
+            ".PPT",
+            ".PPTX",
+            ".JPG",
+            ".JPEG",
+            ".BMP",
+            ".PNG",
+            ".GIF",
+            ".TIF",
+            ".ZIP");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        } else {
+            $("#" + file.name + "_TEXT").val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+    // 送出
+    function send() {
+        var dataApply = getFormSubmitableFieldsWithCheckbox($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("DocSave")',
+            dataApply,
+            function (response) {
+                if (response.status) {
+                    blockUI();
+                    var form = $("form[id=main_form]");
+                    form.attr('action', '@Url.Action("DocFinish")').submit();
+                } else {
+                    blockAlert(response.message, "提示訊息");
+                }
+            });
+    }
+</script>

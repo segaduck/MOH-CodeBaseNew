@@ -1,0 +1,173 @@
+﻿@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "案件管理";
+    ViewBag.FunctionTitle = "案件管理";
+    ViewBag.Script = @"
+var categoryMenu = {
+async: {
+enable: true,
+url: """ + Url.Action("GetCategory", "Service") + @""",
+autoParam:[""id""],
+dataFilter: categoryFilter
+},
+callback: {
+onAsyncSuccess: categoryTreeOnAsyncSuccess
+}
+};
+
+function categoryFilter(treeId, parentNode, childNodes) {
+if (!childNodes) return null;
+for (var i=0, l=childNodes.length; i<l; i++) {
+childNodes[i].name = childNodes[i].name.replace(/\.n/g, '.');
+childNodes[i].click = 'doServiceList('+childNodes[i].id+')';
+}
+return childNodes;
+}
+
+var firstCategoryAsyncSuccessFlag = true;
+function categoryTreeOnAsyncSuccess(event, treeId, treeNode) {
+if(firstCategoryAsyncSuccessFlag) {
+try {
+    var zTree = $.fn.zTree.getZTreeObj(treeId);
+    var nodes = zTree.getNodes();
+    var id = " + ViewBag.ExpandId + @";
+    var listId = " + ViewBag.ListId + @";
+
+    if ( listId != 0 ) doServiceList(listId);
+
+    if ( id == 0 || !nodes) return null;
+
+    for(var i=0; i<nodes.length; i++) {
+        if(nodes[i].id == id) {
+            zTree.expandNode(nodes[i], true);
+            break;
+        }
+    }
+
+    firstAsyncSuccessFlag = false;
+} catch (ex) {}
+}
+}
+
+function doServiceList(id) {
+var url = '" + Url.Action("ServiceList", "Service") + @"/' + id + ' #detail1';
+$('#detail').empty().load(url);
+$('#list').empty();
+}
+
+function doCategoryAction(type, id) {
+var url = """";
+
+if(type == 'N') {
+url = '" + Url.Action("CategoryNew", "Service") + @"';
+
+if(typeof(id) != 'undefined') {
+    url += '/' + id;
+}
+} else if(type == 'E') {
+url = '" + Url.Action("CategoryEdit", "Service") + @"/' + id;
+} else if(type == 'D') {
+$.ajax({
+    cache: false,
+    type : 'post',
+    url : '" + Url.Action("CategoryDelete", "Service") + @"/' + id,
+    dataType : 'json',
+    success : doCategoryActionSuccess
+});
+return;
+}
+
+if(url != '') {
+$('#detail').empty().load(url, function() {
+    $('#ActionForm').removeData('validator');
+    $.validator.unobtrusive.parse('#ActionForm');
+});
+}
+}
+
+function doCategoryActionSuccess(res) {
+if(res.status) {
+jAlert(res.message, function() {
+    $.fn.zTree.init($(""#categoryTree""), categoryMenu);
+    $('#detail').empty();
+    $('#list').empty();
+});
+} else {
+jAlert(res.message);
+}
+}
+
+function doServiceActionSuccess(res) {
+if(res.status) {
+jAlert(res.message, function() {
+    doServiceList(res.id);
+});
+} else {
+jAlert(res.message);
+}
+}
+
+function doAction(type) {
+var message = '';
+
+if($(""input[name='ActionId']:checked"").length == 0) {
+jAlert('請至少選擇一個案件');
+return;
+}
+
+if(type == 'D') { // 案件刪除
+message += '確定要刪除下列案件？<br />';
+} else if(type == 'U') { // 案件上線
+message += '確定要將下列案件上線？<br />';
+} else if(type == 'L') { // 案件下線
+message += '確定要將下列案件下線？<br />';
+} else if(type == 'O') { // 案件上線
+message += '確定要將下列案件開放申辦？<br />';
+} else if(type == 'C') { // 案件下線
+message += '確定要將下列案件關閉申辦？<br />';
+}
+
+$(""input[name='ActionId']:checked"").each(function (){
+message += $(this).val().split(',')[1] + '<br />';
+});
+
+var fun = function () {
+$('#Type').val(type);
+$('#ServiceForm').submit();
+};
+
+jConfirm(message, fun);
+}
+
+function checkAll(obj, name) {
+
+$(""input[name='""+name+""']"").each(function (){
+$(this).prop('checked', obj.checked);
+});
+}
+
+$(function () {
+$.fn.zTree.init($(""#categoryTree""), categoryMenu);
+});
+";
+}
+<div class="bread">
+    <i class="fas fa-home"></i>首頁 / 案件設定 / @ViewBag.FunctionTitle
+</div>
+<div class="col-sm-12 content">
+    <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+    <div class="form-blue form-horizontal">
+        <div style="float: left; width:20%;">
+            @if (ViewBag.IsBaseNew)
+            {
+                <input type="button" value="新增主分類" class="btn btn-save" onclick="doCategoryAction('N');" />
+            }
+            <ul id="categoryTree" class="ztree"></ul>
+        </div>
+        <div style="float: left; width:80%;">
+            <div id="detail"></div>
+            <div id="list"></div>
+        </div>
+    </div>
+</div>

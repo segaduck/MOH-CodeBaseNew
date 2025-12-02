@@ -1,0 +1,50 @@
+﻿@using EECOnline.Areas.A6.Models;
+@model C104MDetailModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout_NoHeader_NoBg.cshtml";
+}
+
+<div class="col-sm-12 content">
+    @using (Html.BeginForm("Detail", "C104M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+    {
+        var button = new Dictionary<string, string>();
+        button.Add("save", "doSave()");
+        if (!Model.IsNew)
+        {
+            button.Add("delete", "doDelete()");
+        };
+        button.Add("close", "doClose()");
+
+        @Html.HiddenFor(x => x.keyid)
+
+        @Html.ControlForTurbo(Model, Model.IsNew);
+        @Html.ButtonForTurbo(button)
+    }
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+    });
+
+    // 儲存
+    function doSave() {
+        blockUI()
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+
+    // 刪除
+    function doDelete() {
+        blockConfirm("是否確認要刪除此項參數？", "確認", function () {
+            var form = $("form[id=main_form]");
+            form.attr('action', '@Url.Action("Delete")').submit();
+        }, null);
+    }
+
+    // 關閉
+    function doClose() {
+        parent.closeWindow();
+    }
+
+</script>

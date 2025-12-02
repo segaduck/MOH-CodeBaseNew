@@ -1,0 +1,54 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    
+    if(ViewBag.Item["SRV_ID"].StartsWith("007")) {
+        ViewBag.Title = "信用卡重新捐款";
+    } else {
+        ViewBag.Title = "信用卡重新繳費";
+    }
+    
+    ViewBag.Script = @"
+        function doSubmit() {
+            if($('#CardIDN').val().length != 10) {
+                jAlert('持卡人身分證號未填或格式錯誤');
+            } else {
+                $('#btnSubmit').prop('disabled', true);
+                $('#btnSubmit').val('請稍候...');
+                $('#ActionForm').submit();
+            }
+        }
+    ";
+    string applyId = ViewBag.Item["APP_ID"];
+}
+<br />
+@using (Html.BeginForm("CardPay", "Form", FormMethod.Post, new { id="ActionForm" }))
+{
+    <table class="formTable1">
+        <caption>@ViewBag.Title</caption>
+        <tr>
+            <th style="width: 120px;">申請編號</th>
+            <td>@ViewBag.Item["APP_ID"]</td>
+        </tr>
+        <tr>
+            <th>申辦項目</th>
+            <td>@ViewBag.Item["SRV_NAME"]</td>
+        </tr>
+        <tr>
+            <th>申請日期</th>
+            <td>@(((DateTime)ViewBag.Item["APP_TIME"]).ToString("yyyy/MM/dd"))</td>
+        </tr>
+        <tr>
+            <th>申請時費用</th>
+            <td>@ViewBag.Item["PAY_A_FEE"]</td>
+        </tr>
+        <tr>
+            <th>持卡人身分證號</th>
+            <td>@Html.TextBox("CardIDN", "", new { style = "width: 150px", maxlength = "10" })</td>
+        </tr>
+    </table>
+    <br />
+    <div class="formButtomBar">
+        @Html.Hidden("ApplyID", applyId)
+        <input type="button" id="btnSubmit" value="下一步" onclick="doSubmit();" />
+    </div>
+}

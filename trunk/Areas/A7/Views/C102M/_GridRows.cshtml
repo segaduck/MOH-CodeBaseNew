@@ -1,0 +1,28 @@
+﻿@using EECOnline.Areas.A7.Models;
+@model C102MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        @Html.HiddenFor(m =>m.Grid[i].elinks_id);
+        var item = Model.Grid[i];
+        <tr>
+            <td>
+                <div align="center">@item.row_id</div>
+            </td>
+            <td>
+                <div align="center">@item.title</div>
+            </td>
+            <td>
+                <div align="center">@item.url</div>
+            </td>
+            <td>
+                <div align="center"><img src="@(item.IMGFILEPATH)" style="width:150px;"/></div>
+            </td>
+            <td align="center">
+                <button type="button" class="btn btn-blue" onclick="doModify('@item.elinks_id')">編輯</button>
+            </td>
+        </tr>
+    }
+}

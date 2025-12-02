@@ -1,0 +1,31 @@
+﻿@using EECOnline.Areas.Login.Models;
+@model C101MForgetModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout_NoHeader_NoBg.cshtml";
+}
+
+<div class="col-sm-12 content">
+    @using (Html.BeginForm("Forget", "C101M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+    {
+        var button = new Dictionary<string, string>();
+        button.Add("e_send", "doSend()");
+        button.Add("close", "doClose()");
+
+        @Html.ControlForTurbo(Model);
+        @Html.ButtonForTurbo(button)
+    }
+</div>
+<a ></a>
+<script type="text/javascript">
+
+    // 送出
+    function doSend() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Send")').submit();
+    }
+    //關閉
+    function doClose() {
+        parent.closeWindow();
+    }
+</script>

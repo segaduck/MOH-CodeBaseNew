@@ -1,0 +1,786 @@
+﻿@using System.Web.Razor.Parser
+@using ES.Models
+@using ES.Areas.Admin.Models
+@model Apply_001034ViewModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "危險性醫療儀器進口申請作業";
+    ShareCodeListModel scList = new ShareCodeListModel();
+}
+
+@using (Html.BeginForm("Index", "Apply_001034", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件分文及處理 / 案件處理 / @ViewBag.Title
+    </div>
+    <div class="col-sm-12 content">
+        <!-- H1 title -->
+        <h1 class="main-title"><i class="fas fa-edit"></i>案件審理作業</h1>
+
+        <div class="table-responsive">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                   class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th colspan="2">基本資料檔</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="20%">
+                            <div align="center">申辦項目：</div>
+                        </td>
+                        <td width="80%">
+                            <div align="left">危險性醫療儀器進口申請作業</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center">申辦日期：</div>
+                        </td>
+                        <td>@Model.APPLY_DATE</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">預計完成日：</div></td>
+                        <td>@Model.APP_EXT_DATE</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">案件承辦人姓名：</div></td>
+                        <td>@Model.Admin.NAME</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center">案件編號：</div>
+                        </td>
+                        <td>@Model.APP_ID</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center">系統狀態：</div>
+                        </td>
+                        <td>@Model.APP_STATUS</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--1-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#basicData'
+                    href='#basicData'>
+                    <a>基本資料檔(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='basicData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">申辦項目</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" readonly value="危險性醫療儀器進口申請">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">申辦日期</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.APPLY_DATE, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件編號</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.APP_ID, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">系統狀態</label>
+                            <div class="col-sm-10">
+                                <div class="form-control-static">@Model.APP_STATUS</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">申請人姓名</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.Apply.NAME, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">申請人性別</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.GENDER, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">出生年月日</label>
+                            <div class="col-sm-4">
+                                <div class="input-group">
+                                    @Html.DatePickerTWFor(x => x.BIRTHDAY_AC, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">
+                                    國民身分證
+                                    <br>
+                                    統一編號
+                                </label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.Apply.IDN, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">戶籍地址</label>
+                                <div class="col-sm-10 form-inline">
+                                    @Html.TextBoxFor(m => m.CITY_CODE, new { @id = "CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = "readonly" })
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.CITY_TEXT, new { @id = "CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect()" disabled><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(m => m.CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = "readonly" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">連絡電話</label>
+                                <div class="col-sm-10">
+                                    <span></span>
+                                    @Html.TextBoxFor(x => x.TEL_SEC, new { @class = "form-10 form-normal", @readonly = "readonly" })
+                                    <span>-</span>
+                                    @Html.TextBoxFor(x => x.TEL_NO, new { @class = "form-normal", @readonly = "readonly" })
+                                    <span>#</span>
+                                    @Html.TextBoxFor(x => x.TEL_EXT, new { @class = "form-10 form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">行動電話</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.Apply.MOBILE, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--2-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#TaxData'
+                    href='#TaxData'>
+                    <a>納稅義務人資料(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='TaxData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.TAX_ORG_ID)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.TAX_ORG_ID, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.TAX_ORG_ID)
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.TAX_ORG_NAME)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.TAX_ORG_NAME, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.TAX_ORG_NAME)
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.TAX_ORG_ENAME)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.TAX_ORG_ENAME, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.TAX_ORG_ENAME)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.TAX_ORG_CITY_CODE)
+                                <div class="col-sm-10 form-inline">
+                                    @Html.TextBoxFor(m => m.TAX_ORG_CITY_CODE, new { @id = "TAX_ORG_CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = "readonly" })
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.TAX_ORG_CITY_TEXT, new { @id = "TAX_ORG_CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect()" disabled><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(m => m.TAX_ORG_CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = "readonly" })
+                                </div>
+                                @Html.NoteForTurbo(x => x.AuxView.TAX_ORG_CITY_CODE)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.TAX_ORG_EADDR)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.TAX_ORG_EADDR, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.TAX_ORG_EADDR)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--3-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#ApplyData'
+                    href='#ApplyData'>
+                    <a>申請資格(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='ApplyData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.TAX_ORG_MAN)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.TAX_ORG_MAN, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.TAX_ORG_MAN)
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.TEL_SEC)
+                                <div class="col-sm-10">
+                                    <span></span>
+                                    @Html.TextBoxFor(x => x.TEL_SEC, new { @class = "form-10 form-normal", @readonly = "readonly" })
+                                    <span>-</span>
+                                    @Html.TextBoxFor(x => x.TEL_NO, new { @class = "form-normal", @readonly = "readonly" })
+                                    <span>#</span>
+                                    @Html.TextBoxFor(x => x.TEL_EXT, new { @class = "form-10 form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.TEL_SEC)
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.TAX_ORG_EMAIL)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.TAX_ORG_EMAIL, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.TAX_ORG_EMAIL)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.FAX_SEC)
+                                <div class="col-sm-10">
+                                    <span></span>
+                                    @Html.TextBoxFor(x => x.FAX_SEC, new { @class = "form-10 form-normal", @readonly = "readonly" })
+                                    <span>-</span>
+                                    @Html.TextBoxFor(x => x.FAX_NO, new { @class = "form-normal", @readonly = "readonly" })
+                                    <span>#</span>
+                                    @Html.TextBoxFor(x => x.FAX_EXT, new { @class = "form-10 form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.FAX_SEC)
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">進出口別</label>
+                            <div class="col-sm-10 form-inline">
+                                <input type="radio" class="form-control" value="1" checked><span>進口</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.DATE_S_AC)
+                                <div class="input-group">
+                                    @Html.DatePickerTWFor(x => x.DATE_S_AC, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.DATE_S_AC)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.DATE_E_AC)
+                                <div class="input-group">
+                                    @Html.DatePickerTWFor(x => x.DATE_E_AC, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.DATE_E_AC)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.DEST_STATE_ID)
+                                <div class="col-sm-10">
+                                    @Html.DropDownListFor(x => x.DEST_STATE_ID, scList.CountryList, new { @class = "form-normal", @disabled = "disabled" })
+                                    <font style="color: red;">（貨品來源國家）</font>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.DEST_STATE_ID)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.SELL_STATE_ID)
+                                <div class="col-sm-10">
+                                    @Html.DropDownListFor(x => x.SELL_STATE_ID, scList.CountryList, new { @class = "form-normal", @disabled = "disabled" })
+                                    <font style="color: red;">（出口國）</font>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.SELL_STATE_ID)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.TRN_PORT_ID)
+                                <div class="col-sm-10">
+                                    @Html.DropDownListFor(x => x.TRN_PORT_ID, scList.PortList, new { @class = "form-normal form-inline", @disabled = "disabled" })
+                                    @Html.DropDownListFor(x => x.TRN_PORT_ID2, scList.HarborList, new { @class = "form-normal form-inline", @disabled = "disabled" })
+                                </div>
+                                @Html.HiddenFor(x => x.TRN_PORT)
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.TRN_PORT_ID)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.BEG_PORT_ID)
+                                <div class="col-sm-10">
+                                    @Html.DropDownListFor(x => x.BEG_PORT_ID, scList.PortList, new { @class = "form-normal form-inline", @disabled = "disabled" })
+                                    @Html.DropDownListFor(x => x.BEG_PORT_ID2, scList.HarborList, new { @class = "form-normal form-inline", @disabled = "disabled" })
+                                    @Html.HiddenFor(x => x.BEG_PORT)
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.BEG_PORT_ID)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.SELL_NAME)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.SELL_NAME, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.SELL_NAME)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.SELL_ADDR)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.SELL_ADDR, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.SELL_ADDR)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.APP_USE_ID)
+                                <div class="col-sm-10">
+                                    @Html.DropDownListFor(x => x.APP_USE_ID, scList.GetAPP_USEList, new { @class = "form-normal form-inline", @disabled = "disabled" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.APP_USE_ID)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.USE_MARK)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.USE_MARK, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.USE_MARK)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.CONF_TYPE_ID)
+                                <div class="col-sm-10">
+                                    @Html.DropDownListFor(x => x.CONF_TYPE_ID, scList.GetCONF_TYPEList, new { @class = "form-normal form-inline", @disabled = "disabled" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.AuxView.CONF_TYPE_ID)
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#GoodsData'
+                    href='#GoodsData'>
+                    <a>貨品資料(點擊展開)</a>
+                </h2>
+            </div>
+            @Html.Partial("Goods")
+        </div>
+        <!--3-->
+        <!--4-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#ReviewData' href='#ReviewData'>
+                    <a>案件進度歷程(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='ReviewData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件進度</label>
+                            <div class="col-sm-4">
+                                <input type="text" id="StatusDesc" class="form-control" readonly value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件狀態修改</label>
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(x => x.Apply.FLOW_CD, scList.GetStatuListForDEP, new { @class = "form-control", onchange = "changeAddDocCheck()" })
+                            </div>
+                        </div>
+
+                        <div id="notice" style="display:none">
+                            <div class="form-group">
+                                <label id="remark" class="main-label col-sm-2" for="">備註</label>
+                                <div class="col-sm-4">
+                                    @Html.TextAreaFor(x => x.Note, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="mail_record" style="display:none">
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">郵寄日期</label>
+                                <div class="col-sm-4">
+                                    @Html.DatePickerTWFor(x => x.MAIL_DATE_AC, new { size = "10" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">掛號條碼</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.MAIL_BARCODE, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        @*<div class="form-group">
+                                <label class="main-label col-sm-2" for="">公文文號</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.Apply.MOHW_CASE_NO, new { @id = "MOHW_CASE_NO", @class = "form-control", placeholder = "" })
+                                </div>
+                                <button type="button" id="btnCaseNo" class="btn btn-blue" onclick="GetMOHW_CASE_NO('4','@Model.APP_ID')">取得公文文號</button>
+                            </div>*@
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件歷程記錄</label>
+                            <div class="col-sm-10">
+                                @Html.LogForTurbo(Model.APP_ID, "APPLY_PAY")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="btn-bar text-center">
+            <button type="button" id="btnSave" class="btn btn-save" onclick="doSave()">存檔</button>
+            <button type="button" id="btnReturn" class="btn btn-gray" onclick="doback()">返回</button>
+        </div>
+    </div>
+
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#TAX_ORG_CITY_CODE').on('blur', doTAX_ORG_CITYNameGet);
+        doTAX_ORG_CITYNameGet();
+
+        $('#CITY_CODE').on('blur', doCITYNameGet);
+        doCITYNameGet();
+
+        $("#TRN_PORT_ID2 option").filter(function () {
+            return (this.text == $('#TRN_PORT').val());
+        }).attr('selected', true);
+
+        $("#BEG_PORT_ID2 option").filter(function () {
+            return (this.text == $('#BEG_PORT').val());
+        }).attr('selected', true);
+
+        $("#StatusDesc").val($('#Apply_FLOW_CD option:selected').text());
+
+        $('input[id^="Chk"]').each(function (item) {
+            $(this).css({ "display": "none" })
+            $(this).attr("disabled", "disabled");
+            $(this).prop("checked", false);
+        });
+        // 通知補件 補件收件
+        $("#Apply_FLOW_CD option[value='2'],#Apply_FLOW_CD option[value='3']").each(function () {
+            $(this).remove();
+        });
+        // 0:完成申請 9 逾期未補件而予結案 12 核可(發文歸檔) 15自請撤銷 8退件通知
+        if ($('#Apply_FLOW_CD option:selected').val() == '0'
+            || $('#Apply_FLOW_CD option:selected').val() == '9'
+            || $('#Apply_FLOW_CD option:selected').val() == '12'
+            || $('#Apply_FLOW_CD option:selected').val() == '15'
+            || $('#Apply_FLOW_CD option:selected').val() == '8') {
+            $('input[id^="Chk"]').each(function (item) {
+                $(this).css({ "display": "none" })
+                $(this).attr("disabled", "disabled");
+                $(this).prop("checked", false);
+            });
+
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnCaseNo').attr('disabled', 'disabled');
+            $("#Apply_FLOW_CD").attr('disabled', 'disabled');
+            $('#btnSave').hide();
+            $('#Note').attr('readonly', 'readonly');
+        }
+        if ($('#Apply_FLOW_CD option:selected').val() == '12') {
+            // 核可(發文歸檔)
+            $('#mail_record').show();
+            $('#notice').hide();
+            $('#note_content').hide();
+            $('#btnSave').hide();
+        }
+        else if ($('#Apply_FLOW_CD option:selected').val() == '9') {
+            // 逾期未補件而予結案
+            $('#notice').show();
+            $('#note_content').show();
+            $('#mail_record').hide();
+            $('#btnSave').hide();
+        }
+        else if ($('#Apply_FLOW_CD option:selected').val() == '15') {
+            // 自請撤銷
+            $('#notice').hide();
+            $('#note_content').hide();
+            $('#mail_record').hide();
+            $('#btnCaseNo').attr('disabled', 'disabled');
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $("#Apply_FLOW_CD").attr('disabled', 'disabled');
+            $('#btnSave').hide();
+        }
+        else if ($('#Apply_FLOW_CD option:selected').val() == '8') {
+            // 8:退件通知
+            $('#notice').hide();
+            $('#notice_item').hide();
+            $('#note_content').hide();
+            $('#remark').text('備註');
+            $('#Apply_FLOW_CD').attr('disabled', 'disabled');
+            $('#Note').attr('readonly', 'readonly');
+            $('#btnSave').hide();
+            $('#mail_record').hide();
+        }
+        else {
+            $('#mail_record').hide();
+            $('#notice').hide();
+            $('#note_content').hide();
+        }
+
+    });
+
+    function changeAddDocCheck() {
+        if ($('#Apply_FLOW_CD option:selected').val() == '0' || $('#Apply_FLOW_CD option:selected').val() == '9' ) {
+
+            $('input[id^="Chk"]').each(function (item) {
+                $(this).css({ "display": "none" })
+                $(this).attr("disabled", 'disabled');
+                $(this).prop("checked", false);
+            });
+
+            $('div[id^="DIV_"]').each(function (item) {
+                $(this).hide();
+            });
+
+            $('input[id$="_Note"]').each(function (item) {
+                $(this).val('');
+            });
+
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnCaseNo').attr('disabled', 'disabled');
+        }
+        else {
+            $('input[id^="Chk"]').each(function (item) {
+                $(this).css({ "display": "" });
+            });
+
+            $('#MOHW_CASE_NO').removeAttr("readonly");
+            $('#btnCaseNo').removeAttr('disabled');
+        }
+
+        if ($('#Apply_FLOW_CD option:selected').val() == '12') {
+            $('#mail_record').show();
+            $('#notice').hide();
+            $('#note_content').hide();
+
+        }
+        else if ($('#Apply_FLOW_CD option:selected').val() == '9') {
+            $('#notice').show();
+            $('#note_content').show();
+            $('#mail_record').hide();
+        }
+        else if ($('#Apply_FLOW_CD option:selected').val() == '15') {
+            $('#notice').hide();
+            $('#note_content').hide();
+            $('#mail_record').hide();
+        }
+        else {
+            $('#mail_record').hide();
+            $('#notice').hide();
+            $('#note_content').hide();
+        }
+
+        $("#StatusDesc").val($('#Apply_FLOW_CD option:selected').text());
+    }
+
+    // 聯絡地址
+    function loadDialogTAX_ORG_CITYCodeMapName(data) {
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) data.box.val('');
+            else {
+                if (resp.data != '') data.box.val(resp.data);
+                else { data.box.val(''); data.add.val(''); blockAlert(data.msg); }
+            }
+        });
+    };
+
+    function doTAX_ORG_CITYSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢'; popupWindow({ 'width': 900 }, url, title, null, function (retData, doc) {
+            if (retData != null) {
+                $('#TAX_ORG_CITY_CODE').val(retData.Id);
+                $('#TAX_ORG_CITY_TEXT').val(retData.Name);
+            }
+        });
+    }
+
+    function loadDialogCITYCodeMapName(data) {
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) data.box.val('');
+            else {
+                if (resp.data != '') data.box.val(resp.data);
+                else { data.box.val(''); data.add.val(''); blockAlert(data.msg); }
+            }
+        });
+    };
+
+    // 地址
+    function doTAX_ORG_CITYNameGet() {
+        var code = $('#TAX_ORG_CITY_CODE');
+        var data = { 'url': '/Ajax/GetCityTown', 'msg': '查無該郵遞區號!!', 'arg': { 'CODE': code.val().toUpperCase() }, 'box': $('#TAX_ORG_CITY_TEXT'), 'add': $('#TAX_ORG_CITY_CODE') };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogCITYCodeMapName(data);
+        }
+    };
+
+    function doCITYSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢'; popupWindow({ 'width': 900 }, url, title, null, function (retData, doc) {
+            if (retData != null) {
+                $('#TAX_ORG_CITY_CODE').val(retData.Id);
+                $('#TAX_ORG_CITY_TEXT').val(retData.Name);
+            }
+        });
+    }
+
+    function doCITYNameGet() {
+        var code = $('#TAX_ORG_CITY_CODE');
+        var data = { 'url': '/Ajax/GetCityTown', 'msg': '查無該郵遞區號!!', 'arg': { 'CODE': code.val().toUpperCase() }, 'box': $('#TAX_ORG_CITY_TEXT'), 'add': $('#TAX_ORG_CITY_CODE') };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogTAX_ORG_CITYCodeMapName(data);
+        }
+    };
+
+    // 返回
+    function doback() {
+        location.href = '@Url.Action("Index", "Case")';
+    }
+
+    // 送出
+    function doSave() {
+
+        var msg = "";
+
+        $('input:checkbox:checked').each(function (i) {
+            if ((this.id).substring(0, 3) == "Chk") {
+                var pname = $(this).parent().text()
+                var pid = "#" + (this.id).substring(4) + "_Note";
+                if ($(pid).val() == "") {
+                    msg += "請填寫" + pname.replace(/\r\n|\n/g, "").replace(/\s+/g, "") + "補件備註 ! \r\n";
+                }
+            }
+        });
+        // 核可(發文歸檔)
+        if ($('#Apply_FLOW_CD option:selected').val() == '12') {
+            if ($('#MAIL_DATE_AC_TW').val().trim() == '') {
+                msg += '請輸入郵寄日期!!<br>';
+            }
+            if ($('#MAIL_BARCODE').val().trim() == '') {
+                msg += '請輸入掛號條碼!!<br>';
+            }
+        }
+
+        if (msg != "") {
+            blockAlert(msg, "提示訊息");
+        }
+        else {
+
+            var data = getFormDataToObject($("form[id=main_form]"));
+            ajaxLoadMore('@Url.Action("Save")', data, function (retData) {
+                if (retData.status) {
+                    // 完成申請 逾期未補件而予結案 自請撤銷 退件通知 核可(發文歸檔)
+                    var flowStatus = $('#Apply_FLOW_CD option:selected').val();
+                    if (flowStatus == '0' || flowStatus == '9' || flowStatus == '15'
+                        || flowStatus == '8' || flowStatus == '12') {
+                        $('#Apply_FLOW_CD').attr('disabled', 'disabled');
+                        $('#btnSave').hide();
+                        $('#Note').attr('readonly', 'readonly');
+                    }
+
+                    blockMessage(retData.message, "提示訊息");
+                }
+                else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+
+        }
+
+    }
+
+    // 取公文號
+    function GetMOHW_CASE_NO(UNIT_CD, APP_ID) {
+
+        var data = {
+            "UNIT_CD": UNIT_CD,
+            "APP_ID": APP_ID
+        }
+
+        ajaxLoadMore('/AJAX/GetMOHW_CASE_NO', data, function (retData) {
+            if (retData.status) {
+                $('#MOHW_CASE_NO').val(retData.message)
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+
+    }
+
+</script>

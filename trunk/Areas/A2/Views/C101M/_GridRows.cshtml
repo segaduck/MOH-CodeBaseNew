@@ -1,0 +1,29 @@
+﻿@using EECOnline.Areas.A2.Models;
+@using EECOnline.Services;
+@model C101MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        <tr>
+            <td align="center">@item.apply_no_sub</td>
+            <td align="center">@item.user_name</td>
+            <td align="center">@item.hospital_name</td>
+            <td align="center">@Html.Raw(item.his_types_Text)</td>
+            <td align="center">@item.his_range1_Text ~ @item.his_range2_Text</td>
+            <td align="center">@item.createdatetime_Text</td>
+            <td align="center">
+                @if (item.provide_datetime_Text.TONotNullString() != "")
+                {
+                    <div>已回覆<br />@item.provide_datetime_Text</div>
+                }
+            </td>
+            <td align="center">@item.TheStatus</td>
+            <td align="center">
+                <button type="button" class="btn btn-blue" onclick="doModify('@item.apply_no_sub')">編輯</button>
+            </td>
+        </tr>
+    }
+}

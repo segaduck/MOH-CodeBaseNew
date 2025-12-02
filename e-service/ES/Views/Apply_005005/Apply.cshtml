@@ -1,0 +1,175 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_005005FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+}
+
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    <!--申辦表件填寫-->
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申辦項目</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">中藥GMP廠證明文件(英文)</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申請日期</label>
+        <div class="col-sm-10">
+            @Html.BLATYPForTurbo(m => m.APP_TIME_TW, Model.APP_TIME_TW)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申辦份數</label>
+        <div class="col-sm-4">
+            @Html.HiddenFor(m=>m.PAYCOUNT)
+            <select class="form-control" id="PAYCOUNTSELECT" onchange="CalculationVal()">
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+        </div>
+        <label class="step-label col-sm-2" for="">繳費金額</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m=>m.PAYAMOUNT, new { @class = "form-control" , @readonly= "readonly" })
+        </div>
+    </div>
+
+    <!--申請基本資料-->
+    <h2 class="second-title">申請基本資料(請以英文與數字，填寫以下欄位內容)</h2>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;"> *</span> 公司名稱 </label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.NAME, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span> 聯絡人 </label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.CNT_NAME, new { @class = "form-control", @placeholder = "請輸入中文" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span> 電話 </label>
+        <div class="col-sm-10">
+            @Html.TelForTurbo(m => m.TEL)
+            @*@Html.HiddenFor(m => m.TEL)
+        @Html.TextBoxFor(m => m.TEL_BEFORE, new {@class = "form-10 form-normal"})
+        <span>-</span>
+        @Html.TextBoxFor(m => m.TEL_AFTER, new {@class = "form-normal"})
+        <span>#</span>
+        @Html.TextBoxFor(m => m.TEL_Extension, new {@class = "form-10 form-normal"})*@
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">傳真</label>
+        <div class="col-sm-10">
+            @*@Html.TelForTurbo(m => m.FAX)*@
+            @Html.HiddenFor(m => m.FAX)
+            @Html.TextBoxFor(m => m.FAX_BEFORE, new { @class = "form-10 form-normal", placeholder = "區碼,ex:02" })
+            <span>-</span>
+            @Html.TextBoxFor(m => m.FAX_AFTER, new { @class = "form-normal", placeholder = "電話,ex:23125555" })
+            <span>#</span>
+            @Html.TextBoxFor(m => m.FAX_Extension, new { @class = "form-10 form-normal", placeholder = "分機,ex:22" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL </label>
+        <div class="col-sm-10">
+            @Html.EmailForTurbo(m => m.EMAIL)
+            @*@Html.TextBoxFor(m => m.EMAIL_BEFORE, new { @class = "form-normal" })
+            @@
+            @Html.DropDownListFor(m => m.EMAIL_ADDR, dropdown.GetMailDomainList, new { @class = "form-normal", onchange = "EmailChange()" })
+            @Html.TextBoxFor(m => m.EMAIL_CUSTOM, new { @class = "form-normal" })
+            @Html.HiddenFor(m => m.EMAIL_ADDR_TEXT)*@
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>外銷國家</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m=>m.IMP_COUNTRY, new { @class = "form-control", @placeholder = "可輸入多個外銷國，各國名之間以「,」隔開，最後請以「.」結尾" })
+        </div>
+        <div class="col-sm-2"></div>
+        <div class="col-sm-10">可輸入多個外銷國，各國名之間以「,」隔開，最後請以「.」結尾。</div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">
+            <span style="color:red;">*</span>
+            製造廠許可編號
+            <button type="button" class="btn btn-save" id="licNumSearch" onclick="search()">查詢</button>
+        </label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.LIC_NUM, new { @class = "form-control", placeholder = "請輸入「(C)」+7位數字" })
+        </div>
+        <div class="col-sm-2"></div>
+        <div class="col-sm-10">1.請依本部核發之藥物製造或展延許可函所載許可編號輸入。<br />2.同時搜尋帶入：最近一次GMP查廠日期、GMP有效日期。</div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠名稱</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.MF_CNT_NAME, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠地址</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m=>m.MF_ADDR, new { @class = "form-control" })
+        </div>
+        <div class="col-sm-2"></div>
+        <div class="col-sm-10">1.請依製造業藥商許可執照所載製造廠地址，以及郵遞區號、國名，英譯後輸入。<br />2.建議可至中華郵政官網使用中文地址英譯功能，翻譯製造廠地址。</div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span> 最近一次GMP查廠日期 </label>
+        <div class="col-sm-4">
+            @Html.DatePickerTWFor(m => m.ISSUE_DATE, new { size = "10" })
+        </div>
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span> GMP有效日期 </label>
+        <div class="col-sm-4">
+            @Html.DatePickerTWFor(m => m.EXPIR_DATE, new {size = "10"})
+        </div>
+        <label class="col-sm-2"></label>
+        <div class="col-sm-10">1.請依本部核發之藥物製造或展延許可函所載許可編號輸入。<br />2.可使用下拉式選單修改自動帶入之資料，欲重新帶入請重複輸入「製造廠許可編號」之步驟。</div>
+    </div>
+
+
+    <!--佐證文件檔案上傳-->
+    <h2 class="second-title">佐證文件檔案上傳</h2>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+        <div class="col-sm-10">
+            <label class="radio-inline "><input type="radio" name="optradio" value="Y" onchange="RadioChange()">是</label>
+            <label class="radio-inline "><input type="radio" name="optradio" value="N" checked onchange="RadioChange()">否</label>
+            @Html.HiddenFor(m => m.RadioYN)
+        </div>
+        <div class="col-sm-2"></div>
+        <div class="col-sm-10">若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"</div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">本部核發藥物製造或展延許可函影本</label>
+        <div class="col-sm-10">
+            <input type="file" class="form-control" name="File_1" id="File_1" onchange="fileChange(this)" />
+            @Html.HiddenFor(m => m.Name_File_1)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">製造業藥商許可執照影本</label>
+        <div class="col-sm-10">
+            <input type="file" class="form-control" name="File_2" id="File_2" onchange="fileChange(this)" />
+            @Html.HiddenFor(m => m.Name_File_2)
+        </div>
+    </div>
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="send_apply()">存檔並預覽</button>
+        <button type="reset" class="btn btn-clear">清除資料</button>
+    </div>
+</div>

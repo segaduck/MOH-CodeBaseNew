@@ -1,0 +1,32 @@
+﻿@using Turbo.ReportTK
+@model Report
+@{
+    Layout = null;
+
+    @*輸出報表-制式Footer*@
+}
+@* 根據 header 定義, 輸出 Report Header *@
+@if (Model.FooterNew != null)
+{
+    string value = Model.FooterNew.Content;
+    string style = string.Format("font-size:{0}pt; font-weight:{1}", Model.FooterNew.FontSize, 
+                            Model.FooterNew.FontBold ? "bold" : "normal"    
+                            );
+    if (Model.FooterNew.Result != null)
+    {
+        // Footer 有查詢結果, 置換變數 #KEY_NAME# 為查詢結果中的值
+        foreach (var key in Model.FooterNew.Result.Keys)
+        {
+            value = value.Replace("#" + key + "#", (string)Model.FooterNew.Result[key]);
+        }
+    }
+
+    /* Report Footer */
+    <table class="table">
+        <tr>
+            <td class="report-footer" style="@(style)">
+                @Html.Raw(value.Replace("\n", "<br/>"))
+            </td>
+        </tr>
+    </table>
+}

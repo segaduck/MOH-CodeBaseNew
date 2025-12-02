@@ -1,0 +1,608 @@
+﻿
+<script type="text/javascript">
+
+    var PagingLinks = {};
+
+    /*
+     * 取得頁面中的分頁元件 instance,
+     * 若頁面中只有一個分頁元件, 可以不用指定 PaginLinkId,
+     * 若頁面中有多個分頁元件, 則須明確傳入 PaginLinkId 以區分要抓的是那個
+     */
+    function GetPagingLink(PaginLinkId) {
+        if (PaginLinkId) {
+            return PagingLinks[PaginLinkId];
+        }
+        else {
+            return PagingLinks['PagingLink'];
+        }
+    }
+
+    /*
+    預設的分頁 callback 處理 function
+    將置換 tbody#rows 的 innerHtml 為新的分頁內容
+    */
+    function setPageContentDefault(pageHtml) {
+        var container = $("tbody#rows");
+        if (container != "undefined" && container.is("tbody")) {
+            var doc = $("div .table-result");
+            if (doc) {
+                var h1 = doc.height();
+                container.html(pageHtml);
+                var h2 = doc.height();
+                resizeContentGroundHeight(h2 - h1);
+            }
+            else {
+                container.html(pageHtml);
+            }
+        }
+        else {
+            blockAlert("分頁表格 TBODY#rows Not Exists");
+        }
+    }
+
+    //調整畫面右方分頁內容區域白底高度
+    function resizeContentGroundHeight(offset) {
+        var elm = $("div .wrap");
+        var h = elm.height() + parseFloat(offset);
+        elm.height(h);
+    }
+
+    /* 分頁 javascript Object 建構子 */
+    function PagingLink(rid, paginId, mainFormId, callback, dataFormId) {
+
+        this.MsgFormNotExists = "PagingLink: Unable find qryParms form, PaginLinkId=" + paginId + ", rid=" + this.rid;
+
+        this.rid = rid;
+        this.paginId = paginId;
+        this.mainFormId = mainFormId;
+        this.dataFormId = dataFormId;
+        this.pForm = {};
+        this.isFormExists = false;
+        this.isMainFormPaging = true; // 是否跟頁面主表單連動
+        this.elmPageSize = {};
+        this.callback = callback;
+        this.PagingState = undefined;
+
+        /* 起始 */
+        this.initiate = function () {
+            debugTrace("PagingLink: rid=" + rid + ", paginId=" + paginId + ", mainFormId=" + mainFormId + ", dataFormId=" + dataFormId);
+
+            //保存這個 object instance
+            PagingLinks[paginId] = this;
+
+            var ridForm = $("form[name=qryParms][id=" + this.paginId + "]");
+            if (ridForm.length == 0) {
+                // 20180907 查詢一直跑出檢核視窗
+                //blockAlert(this.MsgFormNotExists);
+                // 若form在main-form裡，會直接遺失，故遺失則抓取下面form的div為依據
+                ridForm = $("div[name=qryParms][id=" + this.paginId + "]");
+                this.pForm = ridForm;
+                this.isFormExists = true;
+            }
+            else {
+                this.pForm = ridForm;
+                this.isFormExists = true;
+            }
+
+            if (this.mainFormId == undefined || this.mainFormId == "") {
+                this.isMainFormPaging = false;
+            }
+
+            this.total = this.pForm.attr("data-total");
+            this.totalPages = this.pForm.attr("data-totalPages");
+            this.curPageIdx = this.pForm.attr("data-pageIdx");
+
+            this.elmPageSize = this.pForm.find("select#PagingInfo_PageSize");
+
+            if (typeof this.callback != "function") {
+                this.callback = setPageContentDefault;
+            }
+
+            if (this.dataFormId) {
+                // 有設定分頁資料表單ID, 支援分頁勾選暫存
+                this.PagingState = new PagingCheckState(this.dataFormId, this.total);
+
+                if (this.PagingState.dataForm == undefined) {
+                    this.PagingState = undefined;
+                }
+            }
+        }
+
+        /* 綁定分頁連結各個按鈕事件 */
+        this.hookPaginFormEvent = function () {
+
+            var pagingLink = this;
+
+            this.elmPageSize.on("change", function () {
+                debugTrace("PageLink(rid=" + rid + ") PageSize Changed: " + this.value);
+                pagingLink.changePageSize();
+            });
+
+            this.pForm.find("#firstPage").on("click", function () {
+                pagingLink.firstPage();
+            });
+            this.pForm.find("#prePage").on("click", function () {
+                pagingLink.prePage();
+            });
+            this.pForm.find("#nextPage").on("click", function () {
+                pagingLink.nextPage();
+            });
+            this.pForm.find("#lastPage").on("click", function () {
+                pagingLink.lastPage();
+            });
+        }
+
+
+        /* 20180508 加入在提交主要表單時也能傳送分頁資訊欄位 */
+        this.addPagingFieldsToMainForm = function () {
+
+            var totData = this.pForm.attr("data-total");
+            var pageSize = this.pForm.attr("data-pageSize");
+
+            var mainForm = $("form#" + this.mainFormId);
+            if (mainForm.length == 0) mainForm = $("div#" + this.mainFormId);
+            if (mainForm.length > 0) {
+                mainForm.append($(["<input type=\"hidden\" name=\"PagingInfo.Total\" value=\"", totData, "\">"].join("")));
+                mainForm.append($("<input type=\"hidden\" name=\"PagingInfo.PageIdx\" value=\"1\">"));
+                mainForm.append($("<input type=\"hidden\" name=\"PagingInfo.TotalPages\" value=\"1\">"));
+                mainForm.append($(["<input type=\"hidden\" name=\"PagingInfo.PageSize\" value=\"", pageSize, "\">"].join("")));
+            }
+            else {
+                debugTrace("PaginLink(" + this.paginId + "):addPagingFieldsToMainForm: 找不到主要查詢表單 '" + this.mainFormId + "'");
+            }
+        }
+
+        /* 綁定主表單的 submit() 事件, 以動態注入當前分頁資訊 */
+        this.hookMainFormSubmitEvent = function () {
+            if (!this.isFormExists) {
+                debugTrace(this.MsgFormNotExists);
+                return;
+            }
+            var mForm = $("form#" + this.mainFormId);
+            if (mForm.length == 0) mForm = $("div#" + this.mainFormId);
+            if (mForm.length > 0) mForm.on("submit",
+            function () {
+                try {
+                    var total = this.pForm.attr("data-total");
+                    var totalPages = this.pForm.attr("data-totalPages");
+                    var pageIdx = this.pForm.attr("data-pageIdx");
+                    var pageSize = this.pForm.find("select#PagingInfo_PageSize").find(":selected").val();
+
+                    mForm.find("input[name=\"PagingInfo.Total\"]").val(total);
+                    mForm.find("input[name=\"PagingInfo.TotalPages\"]").val(totalPages);
+                    mForm.find("input[name=\"PagingInfo.PageIdx\"]").val(pageIdx);
+                    mForm.find("input[name=\"PagingInfo.PageSize\"]").val(pageSize);
+                }
+                catch (ex) {
+                    debugTrace("PagingLink(" + this.paginId + "):MainForm_Submit: " + ex.message);
+                    debugTrace(ex);
+                }
+            });
+        }
+
+        /* 更新 PageInfo */
+        this.refreshCurPageInfo = function () {
+            if (this.pForm.length > 0) {
+
+                this.pForm.find("span#curPage").html(this.curPageIdx);
+                if (this.curPageIdx <= 1) {
+                    this.pForm.find("div.pageLink a#firstPage").addClass("disabled");
+                    this.pForm.find("div.pageLink a#prePage").addClass("disabled");
+                }
+                else {
+                    this.pForm.find("div.pageLink a#firstPage").removeClass("disabled");
+                    this.pForm.find("div.pageLink a#prePage").removeClass("disabled");
+                }
+                if (this.curPageIdx >= this.totalPages) {
+                    this.pForm.find("div.pageLink a#nextPage").addClass("disabled");
+                    this.pForm.find("div.pageLink a#lastPage").addClass("disabled");
+                }
+                else {
+                    this.pForm.find("div.pageLink a#nextPage").removeClass("disabled");
+                    this.pForm.find("div.pageLink a#lastPage").removeClass("disabled");
+                }
+            }
+            else {
+                debugTrace(this.MsgFormNotExists);
+            }
+        }
+
+        /*重新計算目前總頁數*/
+        this.computeCurrentTotalPages = function () {
+            try {
+                var pSize = parseInt(this.pForm.find("select#PagingInfo_PageSize").val(), 10);
+
+                if (pSize <= 0) {
+                    this.totalPages = 1;
+                }
+                else {
+                    this.totalPages = Math.floor(this.total / pSize);
+                    if (pSize * this.totalPages < this.total) {
+                        this.totalPages++;
+                    }
+                }
+
+                if (this.curPageIdx < 1) this.curPageIdx = 1;
+                if (this.curPageIdx > this.totalPages) this.curPageIdx = this.totalPages;
+
+                this.pForm.attr("data-pageSize", pSize);
+                this.pForm.attr("data-totalPages", this.totalPages);
+                this.pForm.attr("data-pageIdx", this.curPageIdx);
+
+                this.pForm.find("span#curPage").text(this.curPageIdx);
+                this.pForm.find("span#totalpageS").text(this.totalPages);
+
+                /* 分頁連結 Ajax 載入後, 將分頁資訊欄位寫入主要查詢表單中 */
+                if (this.isMainFormPaging) {
+                    var mainForm = $("form#" + this.mainFormId);
+                    if (mainForm.length == 0) mainForm = $("div#" + this.mainFormId);
+                    if (mainForm.length > 0) {
+                        var elm = mainForm.find("input[name=\"PagingInfo.PageIdx\"]");
+                        if (elm.length > 0) {
+                            mainForm.find("input[name=\"PagingInfo.PageSize\"]").val(pSize);
+                            mainForm.find("input[name=\"PagingInfo.Total\"]").val(this.total);
+                            mainForm.find("input[name=\"PagingInfo.TotalPages\"]").val(this.totalPages);
+                            elm.val(this.curPageIdx);
+                        }
+                    }
+                }
+            }
+            catch (ex) {
+                debugTrace("PagingLink(" + this.paginId + "):computeCurrentTotalPages: " + ex.message);
+                debugTrace(ex);
+            }
+        }
+
+        this.firstPage = function () {
+            if (this.curPageIdx > 1) {
+                this.curPageIdx = 1;
+                this.loadPage();
+            }
+        }
+
+        this.prePage = function () {
+            if (this.curPageIdx > 1) {
+                this.curPageIdx--;
+                this.loadPage();
+            }
+        }
+
+        this.nextPage = function () {
+            if (this.curPageIdx < this.totalPages) {
+                this.curPageIdx++;
+                this.loadPage();
+            }
+        }
+
+        this.lastPage = function () {
+            if (this.curPageIdx < this.totalPages) {
+                this.curPageIdx = this.totalPages;
+                this.loadPage();
+            }
+        }
+
+        this.changePageSize = function () {
+            this.curPageIdx = 1;
+            this.loadPage();
+        }
+
+        this.loadPage = function () {
+            
+           
+            var url = this.pForm.attr("action");
+            if (url == '') {
+                url = window.location.href;
+            }
+            var p = this.curPageIdx;
+            var parms = {};
+            parms.rid = this.rid;
+            parms.psize = this.pForm.find("select#PagingInfo_PageSize").val();
+            parms.p = p + "-" + parms.psize + "-" + this.total;
+      
+            // 現行頁數筆數
+            var nowPageObj = this.pForm.find("span#nowPage");
+            if (this.curPageIdx == this.totalPages) {
+                nowPageObj.text(this.total - ((this.curPageIdx - 1) * parms.psize));
+            }
+            else {
+                nowPageObj.text(parms.psize);
+            }
+
+            // 處理 array 參數
+            var arrParms = {};
+            this.pForm.find("input[data-role=array]").each(function () {
+                var parm = parms[$(this).attr("name")];
+                if (!parm) {
+                    parm = new Array();
+                }
+                parm.push($(this).val());
+                parms[$(this).attr("name")] = parm;
+            });
+            // 一般參數
+            this.pForm.find("input").each(function () {
+                var parm = parms[$(this).attr("name")];
+                if (parm && Array === parm.constructor) {
+                    // is an array parms, skip it.
+                    return;
+                }
+                parms[$(this).attr("name")] = $(this).val();
+            });
+
+            debugTrace("PakingLink(" + this.paginId + "):loadPage: " + url + ", parms: {rid=" + parms.rid + ", p=" + parms.p + ", pSize=" + parms.psize + "}");
+            //alert("PakingLink(" + this.paginId + "):loadPage: " + url + ", parms: {rid=" + parms.rid + ", p=" + parms.p + ", pSize=" + parms.psize + "}")
+            var pagingLink = this;
+            ajaxLoadMore(url, parms, function (data) {
+                /* Ajax 分頁載入後的 handler */
+                if (typeof pagingLink.callback == 'function') {
+                    //debugTrace("loadPage callback: " + pagingLink.callback);
+                    pagingLink.callback(data);
+
+                    if (pagingLink.PagingState) {
+                        // 綁定分頁勾選 checkbox 事件,
+                        // 同時更新分頁勾選狀態
+                        pagingLink.PagingState.hookSelectCheckbox();
+                    }
+                }
+                else {
+                    debugTrace("PagingLink(" + this.paginId + "): loadPage callback Not defined.");
+                }
+
+                //直接統一重新計算總頁數（否則要必須逐一修正每個查詢畫面的 Controller 程式）
+                pagingLink.computeCurrentTotalPages();
+                pagingLink.refreshCurPageInfo();
+                //_td_th_fit();
+            }, true);
+        }
+
+        /* PagingLink Initialization */
+        this.initiate()
+
+        /* MainForm Paging Initialization */
+        if (this.isMainFormPaging) {
+            this.addPagingFieldsToMainForm();
+            this.hookMainFormSubmitEvent();
+        }
+
+        /* Paging Link Initialization */
+        this.hookPaginFormEvent();
+        this.computeCurrentTotalPages();
+        this.refreshCurPageInfo();
+    }
+    /* PagingLink End */
+
+
+    /* 分頁載入支援跨分頁checkbox勾選暫存 */
+    function PagingCheckState(dataFormId, totalRecords) {
+
+        this.dataFormId = dataFormId;
+        this.totalRecords = totalRecords;
+
+        this.dataForm;
+
+        // 勾選 checkbox 的 jQuery selector
+        // checkbox 必須定義 data-role="select"
+        // 並且不能是 disabled 狀態才會被選取
+        this.checkboxSelector = "input[type=checkbox][data-role=select]:not(:disabled)";
+
+        // 勾選 checkbox 必須定義資料索引屬性 data-idx
+        this.attrIdx = "data-idx";
+
+        // 用來記錄是否點選了 "全選"
+        this.SelectAll = false;
+
+        // 用來記錄跨分頁的勾選項目 idx 值
+        this._checkedIdx = {};
+
+        // 用來記錄是否點選了 "反選"
+        this.SelectReverse = false;
+
+        // 用來記錄跨分頁的反選後排除項目 idx 值
+        this._excludeIdx = {};
+
+        // 用來將{已勾選}及{排除}項目的 Idx 值, 逐一加到 POST Form 中
+        // 參數:
+        //    1.formId: 要加入欄位的目標表單ID, 若省略則會以 PagingLink 綁定的 dataForm 為目標
+        //    2.selectFieldName: {已勾選項目}的欄位名稱(預設為 'Form.SelectCheckedIdx', 後端 model 要以同名的 string[] 屬性來接收)
+        //    3.excludeFieldName: {排除項目}的欄位名稱(預設為 'Form.SelectExcludeIdx', 後端 model 要以同名的 string[] 屬性來接收)
+        this.InjectCheckedIdxsToForm = function (formId, selectFieldName, excludeFieldName) {
+            var postForm = this.dataForm;
+            if (formId) {
+                var form = $("form#" + formId);
+                if (form.attr("id") == formId) {
+                    postForm = form;
+                }
+            }
+            if (postForm == undefined) {
+                debugTrace("InjectCheckedIdxsToForm: No POST Form");
+                return;
+            }
+
+            if (!selectFieldName) {
+                selectFieldName = "SelectCheckedIdx";
+            }
+            if (!excludeFieldName) {
+                excludeFieldName = "SelectExcludeIdx";
+            }
+
+            // 移除前次注入的資料
+            postForm.find("input[name='" + selectFieldName + "']").remove();
+            postForm.find("input[name='" + excludeFieldName + "']").remove();
+
+            var keys = Object.keys(this._checkedIdx);
+            for (i = 0; i < keys.length; i++) {
+                var idx = this._checkedIdx[keys[i]];
+                postForm.append(jQuery('<input>', {
+                    'name': selectFieldName,
+                    'value': idx,
+                    'type': 'hidden'
+                }));
+            }
+
+            keys = Object.keys(this._excludeIdx);
+            for (i = 0; i < keys.length; i++) {
+                var idx = this._excludeIdx[keys[i]];
+                postForm.append(jQuery('<input>', {
+                    'name': excludeFieldName,
+                    'value': idx,
+                    'type': 'hidden'
+                }));
+            }
+        }
+
+        // 計算/取得 已勾選項目的數量
+        this.GetSelectCount = function () {
+            var count = 0;
+            if (this.SelectAll) {
+                count = this.totalRecords - Object.keys(this._excludeIdx).length;
+            }
+            else {
+                count = 0;
+                var keys = Object.keys(this._checkedIdx);
+                for (i = 0; i < keys.length; i++) {
+                    var idx = this._checkedIdx[keys[i]];
+                    if (!this._excludeIdx[keys[i]]) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        // 綁定頁面中勾選 checkbox change 事件
+        // 頁面載入及分頁載入都要呼叫
+        this.hookSelectCheckbox = function () {
+            if (this.dataForm == undefined) {
+                return;
+            }
+
+            var pagingState = this;
+            var checkboxs = this.dataForm.find(this.checkboxSelector);
+
+            // 判斷 CheckedIdx 已勾選項目, 更新 checkbox 狀態
+            this.refreshCheckbox();
+
+            // 綁定 change 事件
+            $(checkboxs).change(function () {
+                if (this.checked) {
+                    // 將勾選項目 data-idx 加到 CheckedIdx
+                    var idx = $(this).attr(pagingState.attrIdx);
+                    pagingState._checkedIdx[idx] = idx;
+
+                    // 將勾選項目 data-idx 從 _excludeIdx 移除
+                    delete pagingState._excludeIdx[idx];
+                }
+                else {
+                    // 將取消勾選項目 data-idx 從 CheckedIdx 移除
+                    var idx = $(this).attr(pagingState.attrIdx);
+                    delete pagingState._checkedIdx[idx];
+
+                    if (pagingState.SelectAll) {
+                        // 全選狀態下取消勾選, 將 data-idx 加到 _excludeIdx
+                        pagingState._excludeIdx[idx] = idx;
+                    }
+                }
+            });
+        }
+        // hookSelectCheckbox end
+
+        //全選
+        this.selectAll = function () {
+            if (this.dataForm == undefined) {
+                return;
+            }
+            this.SelectAll = true;
+            this._checkedIdx = {};
+            this._excludeIdx = {};
+            this.dataForm.find(this.checkboxSelector).prop('checked', true);
+        }
+        //全不選
+        this.deSelectAll = function () {
+            if (this.dataForm == undefined) {
+                return;
+            }
+            this.SelectAll = false;
+            this._checkedIdx = {};
+            this._excludeIdx = {};
+            this.dataForm.find(this.checkboxSelector).prop('checked', false);
+        }
+        //反選
+        this.selectReverse = function () {
+            if (this.dataForm == undefined) {
+                return;
+            }
+            // 先取消所有勾選
+            this.dataForm.find(this.checkboxSelector).prop('checked', false);
+
+            if (this.SelectAll) {
+                this.SelectAll = false;
+            }
+            else {
+                this.SelectAll = true;
+            }
+
+            // 將 this._checkedIdx 跟 this._excludeIdx 交換
+            var tmp = this._excludeIdx;
+            this._excludeIdx = this._checkedIdx;
+            this._checkedIdx = tmp;
+
+            // 更新勾選狀態
+            this.refreshCheckbox();
+        }
+
+        // 判斷 CheckedIdx 已勾選項目, 更新 checkbox 狀態
+        this.refreshCheckbox = function () {
+            pagingState = this;
+            this.dataForm
+                .find(this.checkboxSelector)
+                .each(function () {
+                    if ((pagingState.SelectAll
+                        || pagingState._checkedIdx[$(this).attr(pagingState.attrIdx)])
+                        && !pagingState._excludeIdx[$(this).attr(pagingState.attrIdx)]
+                        ) {
+                        $(this).prop('checked', true);
+                    }
+                    else {
+                        $(this).prop('checked', false);
+                    }
+                });
+        }
+
+        this.hookSelectButton = function () {
+            var pagingState = this;
+
+            // 綁定 "全選" (data-role=selectAll) 按鈕 click
+            this.dataForm.find("button[data-role=selectAll]")
+                .on("click", function () {
+                    pagingState.selectAll();
+                });
+
+            // 綁定 "全不選" (data-role=deSelectAll) 按鈕 click
+            this.dataForm.find("button[data-role=deSelectAll]")
+                .on("click", function () {
+                    pagingState.deSelectAll();
+                });
+
+            // 綁定 "反選" (data-role=selectReverse) 按鈕 click
+            this.dataForm.find("button[data-role=selectReverse]")
+                .on("click", function () {
+                    pagingState.selectReverse();
+                });
+        }
+        // hookSelectButton end
+
+        // === init ===
+
+        this.dataForm = $("form#" + this.dataFormId);
+
+        if (this.dataForm.prop("id") != this.dataFormId) {
+            debugTrace("PagingCheckState: 找不到分頁 DataForm '" + this.dataFormId + "'");
+            this.dataForm = undefined;
+            return;
+        }
+
+        this.hookSelectButton();
+        this.hookSelectCheckbox();
+    }
+    /* PagingCheckState End */
+
+</script>

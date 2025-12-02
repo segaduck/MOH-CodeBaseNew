@@ -1,0 +1,36 @@
+﻿@using EECOnline.Areas.A8.Models;
+@model C103MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        <tr>
+            <td align="center">
+                <div>@(item.status)</div>
+            </td>
+            <td align="center">
+                <div>@(HelperUtil.TransTwLongToDateTime(item.send_time))</div>
+            </td>
+            <td align="center">
+                <div>@(item.moduser)</div>
+            </td>
+            <td align="center">
+                <div>@(item.modusername)</div>
+            </td>
+            <td align="center" style="word-break:break-all">
+                <div>@(item.mail)</div>
+            </td>
+            <td align="center">
+                <div>@((Mail_type_Enum)Enum.Parse(typeof(Mail_type_Enum), item.mail_type.ToString(), false))</div>
+            </td>
+            <td align="left">
+                <div>@Html.Raw(item.subject)</div>
+            </td>
+            <td align="left">
+                <div>@Html.Raw(item.body)</div>
+            </td>
+        </tr>
+    }
+}

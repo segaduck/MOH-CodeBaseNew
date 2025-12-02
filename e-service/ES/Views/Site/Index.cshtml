@@ -1,0 +1,51 @@
+﻿@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "友善連結"; //"相關連結";
+
+    /*SessionModel sm = SessionModel.Get();*/
+}
+
+@*<br />
+    @Html.Raw(ViewBag.Title)
+    <hr />
+    <table class="gridTable1">
+        <tr>
+            <th>網站名稱</th>
+        </tr>
+        @foreach (ES.Models.SiteModel item in ViewBag.List)
+        {
+            <tr>
+                <td><a href="@Html.Raw(@item.Url)" target="_blank">@item.Name</a></td>
+            </tr>
+        }
+    </table>*@
+<script>
+    $('#lihead_Site').addClass("navMark-orange");
+</script>
+<div class="container-fluid">
+    <!--bread -->
+    <div class="col-sm-12">
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> > <a href="@(Url.Action("Index", "Site"))">@Html.Raw(ViewBag.Title)</a></div>
+    </div>
+    <!--news -->
+    <div class="col-sm-12">
+        <div class="index-note">
+            <h3 class="note-title note-titlebar-blue">@Html.Raw(ViewBag.Title)</h3>
+            <div class="service-main">
+
+                <div class="tab-content">
+                    <ul class="shareLink">
+                        @foreach (ES.Models.SiteModel item in ViewBag.List)
+                        {
+                            <li><a href="@Html.Raw(@item.Url)" target="_blank">@item.Name</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+</div>
+

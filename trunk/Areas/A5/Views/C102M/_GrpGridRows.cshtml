@@ -1,0 +1,19 @@
+﻿@using EUSERVICE.Areas.A5.Models;
+@model C102MGrpModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        <tr>
+            <td align="center">
+                @Html.HiddenFor(m => m.Grid[i].grp_id)
+                @Html.HiddenFor(m => m.Grid[i].grpname)
+                @Html.CheckBoxFor(m => m.Grid[i].Is_Check)
+            </td>
+            @*<td>@item.grp_id</td>*@
+            <td>@item.grpname</td>
+        </tr>
+    }
+}

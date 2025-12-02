@@ -1,0 +1,28 @@
+﻿@using EECOnline.Areas.A3.Models;
+@using EECOnline.Services;
+@model C104MForm2Model
+
+@if (Model.Form2Grid != null)
+{
+    for (int i = 0; i < Model.Form2Grid.Count; i++)
+    {
+        var item = Model.Form2Grid[i];
+        var commonTypes = new EECOnline.DataLayers.FrontDAO().Get_EEC_CommonTypeAll();
+        var Idx = 0;
+
+        <tr>
+            <td align="left">@item.hospital_name</td>
+            @foreach (var row in commonTypes)
+            {
+                if (row["type_price"].TONotNullString() == "0") { continue; }
+                <td align="center">@item.GetPiValue("EEC_CommonType_" + Idx.ToString() + "_Text")</td>
+                Idx++;
+            }
+            @*<td align="center">@item.Other1_Text</td>*@
+            @*<td align="center">@item.Other2_Text</td>*@
+            <td align="center">@item.HisType_Text</td>
+            <td align="center">@item.SubSum_Text</td>
+            <td align="center">@item.ApplyNum</td>
+        </tr>
+    }
+}

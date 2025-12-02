@@ -1,0 +1,73 @@
+﻿@using EECOnline.Areas.A6.Models;
+@using EECOnline.Models;
+@model C102MFormModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+}
+
+<div class="col-sm-12 content">
+    <!-- H1 title -->
+    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@sm.LastActionFunc.prgname</h1>
+
+    <div class="form-blue">
+        @using (Html.BeginForm("Index", "C102M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+        {
+            var button = new Dictionary<string, string>();
+            button.Add("search", "doSearch()");
+            button.Add("reset_fuc", "doReset_fuc()");
+
+            @Html.ControlForTurbo(Model);
+            @Html.ButtonForTurbo(button)
+        }
+    </div>
+    <div class="clearfix"></div>
+    <h2 class="second-title">查詢結果</h2>
+    <div class="table-pager">
+        @Html.Partial("_PagingLink", Model)
+    </div>
+    <div class="table-responsive">
+        @if (Model.Grid != null)
+        {
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th>群組名稱</th>
+                        <th>功能</th>
+                        <th>操作功能</th>
+                        <th>功能名稱</th>
+                        <th>功能路徑</th>
+                        <th>使用者帳號</th>
+                        <th>使用者姓名</th>
+                        <th>操作時間</th>
+                    </tr>
+                </thead>
+                <tbody id="rows">
+                    @Html.Partial("_GridRows")
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    /// 查詢
+    function doSearch() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Index")').submit();
+    }
+
+    /// 重填
+    function doReset_fuc() {
+        $('#apy_time_st_ad').val('');
+        $('#apy_time_st_ad_TW').val('');
+        $('#apy_time_ed_ad').val('');
+        $('#apy_time_ed_ad_TW').val('');
+        $('#username').val('');
+        $('#usernameText').val('');
+        $('#use_type').val('');
+        $('#urlwhere').val('');
+    }
+</script>

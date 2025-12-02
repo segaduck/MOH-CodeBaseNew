@@ -1,0 +1,379 @@
+﻿@using ES.Utils;
+@using ES.Models.Entities
+@using ES.Models
+
+@model ES.Areas.Admin.Models.CaseModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "案件處理";
+    ViewBag.FunctionTitle = "案件處理";
+    ShareCodeListModel srcList = new ShareCodeListModel();
+}
+@using (Html.BeginForm("Index", "Case", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件分文及處理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal" id="searchForm">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.APP_ID_BEGIN)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.APP_ID_BEGIN, new { @class = "form-normal" }) ～
+                    @Html.TextBoxFor(m => m.APP_ID_END, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.APP_TIME_BEGIN_AD)</label>
+                <div class="col-sm-4">
+                    @Html.DatePickerTWFor(x => x.APP_TIME_BEGIN_AD, new { @class = "form-normal" })
+                </div>
+                <div class="col-sm-4">
+                    @Html.DatePickerTWFor(x => x.APP_TIME_END_AD, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FLOW_CD)</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(m => m.UNIT_CD, ViewBag.UnitList as List<SelectListItem>, new { @class = "form-normal" })
+                    @Html.DropDownListFor(m => m.FLOW_CD, new List<SelectListItem>(), new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.AP_NAME)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.AP_NAME, new { @class = "form-control" })
+                </div>
+            </div>
+            @if (ViewBag.ShowAdv5)
+            {
+                @* 中醫藥司(起) *@
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.MOHW_CASE_NO)</label>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.MOHW_CASE_NO, new { @class = "form-control" })
+                    </div>
+                    <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.LIC_CD)</label>
+                    <div class="col-sm-4">
+                        @Html.DropDownListFor(m => m.LIC_CD, (List<SelectListItem>)ViewBag.LIC_CDList, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.LIC_NUM)</label>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.LIC_NUM, new { @class = "form-control" })
+                    </div>
+                    <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.MF_CD)</label>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.MF_CD, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.MF_NAME)</label>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.MF_NAME, new { @class = "form-control" })
+                    </div>
+                    <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.DRUG_NAME)</label>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.DRUG_NAME, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.INGR_NAME)</label>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.INGR_NAME, new { @class = "form-control" })
+                    </div>
+                    <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.EFFICACY)</label>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.EFFICACY, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.DOSAGE_FORM)</label>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.DOSAGE_FORM, new { @class = "form-control" })
+                    </div>
+                    <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.PRO_ACC)</label>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.PRO_ACC, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.INDIOCATION)</label>
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(m => m.INDIOCATION, new { @class = "form-control" })
+                    </div>
+                </div>
+                @* 中醫藥司(終) *@
+            }
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Apply_Item)</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.Apply_Item)
+                    <select id="sel_Apply_Item" onchange="$('#Apply_Item').val(this.value)" class="form-control">
+                        <option value="">請選擇</option>
+                        @{
+                            foreach (ES.Areas.Admin.Models.Map map in ViewBag.Apply_Item)
+                            {
+                                @Html.Raw("<option value='" + map.GetString("SRV_ID") + "'>" + map.GetString("NAME") + "</option>")
+                            }
+                        }
+                    </select>
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.IDN)</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.IDN, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.OderByCol)</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.OderByCol)
+                    <select id="sel_OderByCol" onchange="$('#OderByCol').val(this.value)" class="form-control">
+                        <option value="APP_ID">申辦編號</option>
+                        <option value="SRV_ID">申辦項目</option>
+                        <option value="APP_TIME">申辦日期</option>
+                    </select>
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.SortAZ)</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.SortAZ)
+                    <select id="sel_SortAZ" onchange="$('#SortAZ').val(this.value)" class="form-control">
+                        <option value="ASC">由小到大</option>
+                        <option value="DESC">由大到小</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CLOSE_MK)</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.CLOSE_MK)
+                    <select id="sel_CLOSE_MK" onchange="$('#CLOSE_MK').val(this.value)" class="form-control">
+                        <option value="Y">已結案</option>
+                        <option value="N">未結案</option>
+                    </select>
+                </div>
+            </div>
+            <div class="btnbar">
+                <input type="submit" class="btn btn-blue" value="查詢" />
+                <input type="reset" class="btn btn-gray" value="重填" />
+                <a href="javascript:void(0);" class="btn btn-blue" onclick="doGetZipFiles()">檔案下載</a>
+                @*<input type="button" class="btn btn-print" value="匯出" onclick="doExport()" disabled="disabled" />*@
+            </div>
+        </div>
+        <div class="table-pager">
+            @Html.HiddenFor(m => m.NowPage)
+            @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+        </div>
+        @if (ViewBag.List != null)
+        {
+            <div class="clearfix"></div>
+            <h2 class="second-title">查詢結果</h2>
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th>勾選</th>
+                            <th>編輯</th>
+                            <th>申請編號</th>
+                            <th>申辦項目</th>
+                            <th>申請人姓名</th>
+                            <th>承辦人姓名</th>
+                            <th>處理進度</th>
+                            <th>申辦日期</th>
+                            <th>預計完成日</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.List.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="9" style="text-align: center;">查無資料</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (var i = 0; i < ViewBag.List.Count; i++)
+                            {
+                                ES.Areas.Admin.Models.CaseQueryModel a = ViewBag.List[i];
+                                <tr>
+                                    <td align="center"><input type="checkbox" class="ZipCheckbox" value="@(a.APP_ID)" /></td>
+                                    <td align="center">
+                                        <a href="#" onclick="doModify('@(a.APP_ID)','@(a.SRV_ID)')" class="btn btn-save">編輯</a><br />
+
+                                        @*<a href="@Url.Action("Edit1", "Case", new { id = @Html.Raw(a.APP_ID) })" class="btn btn-save">內容修改</a><br />
+                                            <a href="@Url.Action("Edit2", "Case", new { id = @Html.Raw(a.APP_ID) })" class="btn btn-save">進度修改</a>*@
+                                    </td>
+                                    <td align="center">
+                                        @Html.Raw(a.APP_ID)
+                                    </td>
+                                    <td align="center">
+                                        @Html.Raw(a.SRV_NAME)
+                                    </td>
+                                    <td align="center">
+                                        @Html.Raw(a.NAME)
+                                    </td>
+                                    <td align="center">
+                                        @Html.Raw(a.ACC_NAME)
+                                        <br />
+                                        @if (Model.CLOSE_MK == "N" && a.SRV_ID.Contains("0110") == false && a.SRV_ID.Contains("0400")==false && a.SRV_ID.Contains("0410")==false && a.SRV_ID.Contains("0060")==false )
+                                        {
+                                            <a onclick="doBackAssign('@(a.APP_ID)','@(a.SRV_ID)')" class="btn btn-save">退回分文</a>
+                                        }
+                                    </td>
+                                    <td align="center">
+                                        @*@Html.Raw(WebUtils.GetFLOWCDName(a.APP_ID,a.FLOW_CD))*@
+                                        @a.CASE_STATUS
+                                    </td>
+                                    <td align="center">
+                                        @Html.Raw(a.APP_TIME.HasValue ? a.APP_TIME.Value.ToString("yyyy/MM/dd") : "")
+                                    </td>
+                                    <td align="center">
+                                        @Html.Raw(a.APP_EXT_DATE.HasValue ? a.APP_EXT_DATE.Value.ToString("yyyy/MM/dd") : "")
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        @Html.HiddenFor(x => x.Apply_Item)
+
+    </div>
+    @Html.HiddenFor(x => x.FLOW_CD_ITEM)
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#sel_CLOSE_MK').val('@this.Model.CLOSE_MK');
+        $('#sel_SortAZ').val('@this.Model.SortAZ');
+        $('#sel_OderByCol').val('@this.Model.OderByCol');
+        $('#sel_FLOW_CD').val('@this.Model.FLOW_CD');
+        $('#sel_Apply_Item').val('@this.Model.Apply_Item');
+        //setTimeout("setTable();", 1000);
+
+        GetFlowCDList($('#FLOW_CD_ITEM').val());
+
+        $('#UNIT_CD').change(function () {
+            $('#FLOW_CD_ITEM').val('');
+            GetFlowCDList($('#FLOW_CD_ITEM').val(''));
+        });
+
+        $('#FLOW_CD').change(function () {
+            $('#FLOW_CD_ITEM').val($(this).val());
+        });
+
+        //$('#FLOW_CD').val($('#FLOW_CD_ITEM').val());
+
+    });
+
+    function setTable() {
+        $("#gridTable").find("tr").find("a").each(function () {
+            //alert(window.getComputedStyle($(this).get(), null).getPropertyValue("color"));
+        });
+    }
+
+    // 匯出
+    function doExport() {
+        $('#ActionForm').prop("action", "@Url.Action("ExportExcel", "Case")");
+        $('#ActionForm').submit();
+    }
+
+    function doCreate() {
+        $('#ActionForm').prop("action", "@Url.Action("GenerateData", "Case")");
+        $('#ActionForm').submit();
+    }
+
+    // 查詢
+    function doQuery(page) {
+        $('#NowPage').val(page);
+    }
+
+    // 案件內容
+    function doModify(app_id, srv_id) {
+        var url = "@Url.Action("Detail", "Case")?appid=" + app_id + "&srvid=" + srv_id;
+        location.href = url;
+    }
+
+    // 退回分文
+    function doBackAssign(app_id, srv_id) {
+         var url = "@Url.Action("BackAssign", "Case")?appid=" + app_id + "&srvid=" + srv_id;
+        location.href = url;
+    }
+
+    // 檔案下載
+    function doGetZipFiles() {
+        var checkedValue = null;
+        var inputElements = $('.ZipCheckbox');
+        for (var i = 0; inputElements[i]; ++i) {
+            if (inputElements[i].checked) {
+                checkedValue = inputElements[i].value;
+                console.log(checkedValue);
+                // 取得ZIP
+                var data = {
+                    "APP_ID": checkedValue,
+                    "CASENAME": "檔案下載"
+                }
+                var url = '/GetZIP/GetZIP?' + $.param(data);
+                window.open(url);
+            }
+        }
+    }
+
+    // 查詢進度選單
+    function GetFlowCDList(flow_cd) {
+        var unit_cd = $('#UNIT_CD');
+
+        var data = {
+            'url': '/Ajax/GetFlowCDListByUnit', 'msg': '查無處理進度!!', 'arg': { 'unit_cd': unit_cd.val() }, 'result': $('#UNIT_CD')
+        };
+
+        if ($.trim(data.arg.unit_cd) == '') {
+            $('#FLOW_CD').empty();
+            data.result.val('');
+        }
+        else {
+            unit_cd.val(data.arg.unit_cd);
+            loadFlowCDList(data, 'FLOW_CD', flow_cd);
+        }
+    };
+
+    function loadFlowCDList(data, objectId, flow_cd) {
+        $('#' + objectId).empty();
+
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) {
+                data.result.val('');
+            }
+            else {
+                if (resp.data != '') {
+                    if (flow_cd == '') {
+                        $('#' + objectId).append('<option value="" selected>請選擇</option>');
+                    }
+                    else
+                    {
+                        $('#' + objectId).append('<option value="" >請選擇</option>');
+                    }
+                    $.each(resp.data, function (i, item) {
+                        if (item.CODE == flow_cd) {
+                            $('#' + objectId).append('<option value=' + item.CODE + ' selected >' + item.TEXT + '</option>');
+                        }
+                        else {
+                            $('#' + objectId).append('<option value=' + item.CODE + '>' + item.TEXT + '</option>');
+                        }
+                    });
+                }
+                else {
+                    data.result.val('');
+                    blockAlert(data.msg);
+                }
+            }
+        });
+    };
+
+</script>

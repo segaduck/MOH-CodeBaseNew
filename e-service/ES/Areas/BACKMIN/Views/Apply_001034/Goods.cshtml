@@ -1,0 +1,1399 @@
+﻿@using System.Web.Razor.Parser
+@using ES.Models
+@using ES.Areas.Admin.Models
+@model Apply_001034ViewModel
+@{
+    ShareCodeListModel scList = new ShareCodeListModel();
+}
+
+@{
+    int i = 0;
+
+    <div id='GoodsData' class='panel-collapse collapse'>
+        <div class='panel-body'>
+                @foreach (var item in Model.Goods)
+                {
+                    <div class="form-blue">
+                        <div class="form-group" style="background:#FF9797">
+                            <label class="main-label col-sm-2">序</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.Goods[i].SRL_NO, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].GOODS_TYPE_ID, index: i)
+                                <div class="col-sm-10">
+                                    @Html.DropDownListFor(x => Model.Goods[i].GOODS_TYPE_ID, new SelectList(scList.GetGOODS_TYPEList, "Value", "Text", Model.Goods[i].GOODS_TYPE_ID), new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.GOODS_TYPE_ID, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].GOODS_NAME, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].GOODS_NAME, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.GOODS_NAME, index: i)
+                        </div>  
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].APPLY_CNT, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].APPLY_CNT, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.APPLY_CNT, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].GOODS_UNIT_ID, index: i)
+                                <div class="col-sm-10">
+                                    @Html.DropDownListFor(x => Model.Goods[i].GOODS_UNIT_ID, new SelectList(scList.GetGOODS_UNIT_IDList, "Value", "Text", Model.Goods[i].GOODS_UNIT_ID), new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.GOODS_UNIT_ID, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].GOODS_MODEL, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].GOODS_MODEL, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.GOODS_MODEL, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].GOODS_SPEC_1, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].GOODS_SPEC_1, new { @class = "form-normal form-inline", @readonly = "readonly" })
+                                    @Html.TextBoxFor(x => x.Goods[i].GOODS_SPEC_2, new { @class = "form-normal form-inline", @readonly = "readonly" })
+                                    <font color="red">（第二格非必填）</font>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.GOODS_SPEC_1, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].GOODS_BRAND, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].GOODS_BRAND, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.GOODS_BRAND, index: i)
+                        </div>  
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].GOODS_DESC, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].GOODS_DESC, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.GOODS_DESC, index: i)
+                        </div> 
+
+                        <h2 class="second-title">檢附文件</h2>
+
+                        <div class="form-group">
+                            <!--檢附文件類型 ˇ的勾選框 會與貨品類別(規格下拉連動 其他除外)-->
+                            <label class="main-label col-sm-2">檢附文件類型一</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_01 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }醫院開業執照影本
+                                </label>
+                            </div>
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_01, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_01, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_01, index: i)
+                        </div>  
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_01, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_01, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_01, index: i)
+                        </div>  
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型二</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_02 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }型錄（圖樣及說明書）一份
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_02, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_02, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_02,index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_02,index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_02, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_02, index: i)
+                        </div>  
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型三</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_03 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }原廠報價單一份
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_03, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_03, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_03, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_03, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_03, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_03, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型四</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_04 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }醫療器材許可證明文件影本一份
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_04, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_04, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_04, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_04, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_04, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_04, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型五</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_05 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }管理醫師：執業執照影本
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_05, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_05, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_05, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_05, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_05, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_05, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型六</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_06 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }
+                                    
+                                    管理醫師：核子醫學科專科醫師證書影本<font style="color: red;">
+                                        （必選或自行勾選時，請填寫下述二欄位）
+                                    </font>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_06, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_06, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_06, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_06, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_06, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_06, index: i)
+                        </div> 
+
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型七</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_07 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }
+                                           管理醫師：放射線（腫瘤）專科醫師證書影本
+                                    <font style="color: red;">（必選或自行勾選時，請填寫下述二欄位）</font>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_07, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_07, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_07, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_07, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_07, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_07, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型八</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_08 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }
+                                    專任輻射防護人員：認可證書影本
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_08, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_08, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_08, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_08, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_08, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_08, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型九</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_09 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }
+                                    專任輻射防護人員：在職證明影本
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_09, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_09, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_09, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_09, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_09, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_09, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型十</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_10 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }
+                                    專任醫學物理專業人員：醫學物理訓練證明影本
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_10, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_10, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_10, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_10, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_10, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_10, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型十一</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_11 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }
+                                    專任醫學物理專業人員：在職證明影本
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_11, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_11, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_11, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_11, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_11, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_11, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型十二</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_12 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }
+                                    專任運轉人員：運轉人員資格證明文件影本
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_12, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_12, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_12, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_12, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_12, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_12, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型十三</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_13 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }
+                                    專任運轉人員：在職證明影本
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_13, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_13, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_13, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_13, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_13, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_13, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型十四</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_14 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }                                    
+                                    專任正子放射製藥專業人員：<br>
+                                    具正子放射藥物製備一年以上工作經驗，或曾在國內外醫療機構接受正子放射藥物製備訓練三個月以上之證明文件
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_14, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_14, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_14, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_14, i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_14, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_14, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型十五</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_15 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }                                    
+                                    常駐工程師相關證明文件：<br>
+                                    本國常駐工程師應有維修訓練三個月以上經驗，並取得證明文件。原廠常駐工程師應提出國外相同機組之維修訓練證明文件。
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_15, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_15, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_15, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_15, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_15, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_15, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型十六</label>（必選或自行勾選時，請填寫下述二欄位）
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_16 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }
+                                    醫事放射師或醫事放射士：證書影本
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_16, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_16, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_16, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_16, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_16, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_16, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型十七</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_17 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }
+                                    醫事放射師或醫事放射士：執業執照影本</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_17, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_17, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_17, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_17, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_17, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_17, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型十八</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    @if (item.DOC_TYP_18 == "")
+                                    {
+                                        <input type="checkbox" disabled>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" checked disabled>
+                                    }
+                                    醫事放射師或醫事放射士：<br>
+                                    應有一人以上具操作單光子斷層掃描設備一年以上之經驗，或曾在國內外
+                                    醫療機構接受正子斷層掃描設備操作訓練三個月以上之證明文件
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_18, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_18, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_18, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_18, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_18, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_18, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2">檢附文件類型十九</label>
+                            <div class="col-sm-10">
+                                <label>
+                                    <input type="checkbox" checked disabled>醫院評鑑結果證明文件
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_COD_19, index:i)
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_19, new { @class = "form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_COD_19, index : i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TXT_19, index: i)
+                                <div class="col-sm-10">
+                                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_19, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TXT_19, index: i)
+                        </div>
+
+                       @* <h2 class="second-title">檢附文件檔案</h2>
+
+                        <div class="form-group">
+                            <!--檢附文件類型 ˇ的勾選框 會與貨品類別(規格下拉連動 其他除外)-->
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_01_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_01 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }醫院開業執照影本
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().FirstOrDefault().FILENAME + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().FirstOrDefault().APP_ID + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().FirstOrDefault().FILE_NO + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_01_FILE_NAME, index: i)
+                        </div>  
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_02_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_02 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }型錄（圖樣及說明書）一份
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().FirstOrDefault().FILENAME + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().FirstOrDefault().APP_ID + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().FirstOrDefault().FILE_NO + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_02_FILE_NAME, index: i)
+                        </div>  
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_03_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_03 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }原廠報價單一份
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().FirstOrDefault().FILENAME + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().FirstOrDefault().APP_ID + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().FirstOrDefault().FILE_NO + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_03_FILE_NAME, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_04_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_04 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }醫療器材許可證明文件影本一份
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().FirstOrDefault().FILENAME + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().FirstOrDefault().APP_ID + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().FirstOrDefault().FILE_NO + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_04_FILE_NAME, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_05_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_05 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }管理醫師：執業執照影本
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().FirstOrDefault().FILENAME + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().FirstOrDefault().APP_ID + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().FirstOrDefault().FILE_NO + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_05_FILE_NAME, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_06_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_06 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled> 
+                                        }
+                                        管理醫師：核子醫學科專科醫師證書影本 
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_06_FILE_NAME, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_07_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_07 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        管理醫師：放射線（腫瘤）專科醫師證書影本
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().FirstOrDefault().FILENAME + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().FirstOrDefault().APP_ID + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().FirstOrDefault().FILE_NO + "," +
+                                               Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_07_FILE_NAME, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_08_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_08 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        專任輻射防護人員：認可證書影本
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_08_FILE_NAME, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_09_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_09 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        專任輻射防護人員：在職證明影本
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_09_FILE_NAME, index: i)
+                        </div> 
+ 
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_10_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_10 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        專任醫學物理專業人員：醫學物理訓練證明影本
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_10_FILE_NAME, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_11_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_11 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        專任醫學物理專業人員：在職證明影本
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_11_FILE_NAME, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_12_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_12 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        專任運轉人員：運轉人員資格證明文件影本
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_12_FILE_NAME, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_13_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_13 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        專任運轉人員：在職證明影本
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_13_FILE_NAME, index: i)
+                        </div>  
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_14_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_14 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        專任正子放射製藥專業人員：<br>
+                                        具正子放射藥物製備一年以上工作經驗，或曾在國內外醫療機構接受正子放射藥物製備訓練三個月以上之證明文件
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_14_FILE_NAME, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_15_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_15 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        常駐工程師相關證明文件：<br>
+                                        本國常駐工程師應有維修訓練三個月以上經驗，並取得證明文件。原廠常駐工程師應提出國外相同機組之維修訓練證明文件。
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_15_FILE_NAME, index: i)
+                        </div>                         
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_16_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_16 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        醫事放射師或醫事放射士：證書影本
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_16_FILE_NAME, index: i)
+                        </div> 
+  
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_17_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_17 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        醫事放射師或醫事放射士：執業執照影本
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_17_FILE_NAME, index: i)
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_18_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        @if (item.DOC_TYP_18 == "")
+                                        {
+                                            <input type="checkbox" disabled>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" checked disabled>
+                                        }
+                                        醫事放射師或醫事放射士：<br>
+                                        應有一人以上具操作單光子斷層掃描設備一年以上之經驗，或曾在國內外
+                                        醫療機構接受正子斷層掃描設備操作訓練三個月以上之證明文件
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_18_FILE_NAME, index: i)
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @Html.NoteLabelForTurbo(x => x.Goods[i].DOC_TYP_19_FILE_NAME, index: i)
+                                <div class="col-sm-10">
+                                    <label>
+                                        <input type="checkbox" checked disabled>醫院評鑑結果證明文件
+                                        醫事放射師或醫事放射士：<br>
+                                        應有一人以上具操作單光子斷層掃描設備一年以上之經驗，或曾在國內外
+                                        醫療機構接受正子斷層掃描設備操作訓練三個月以上之證明文件
+                                        @{
+                                            if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().Count > 0)
+                                            {
+                                                <br /> @Html.FileDLForTurbo(x => x.APP_ID,
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().FirstOrDefault().FILENAME + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().FirstOrDefault().APP_ID + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().FirstOrDefault().FILE_NO + "," +
+                                                      Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </label>
+                                </div>
+                            </div>
+                            @Html.NoteForTurbo(x => x.Goods[i].GoodsAuxView.DOC_TYP_19_FILE_NAME, index: i)
+                        </div> *@
+
+                    </div>
+                    i++;
+                }
+        </div>
+
+        @*<div class="btnbar">
+            <button type="button" onclick="GetZip('@Model.APP_ID')" class="btn btn-blue">檔案打包下載</button>
+        </div>*@
+
+    </div>
+
+}
+<script type="text/javascript">
+
+    // 取得ZIP
+    function GetZip(APP_ID) {
+        var data = {
+            "APP_ID": APP_ID,
+            "CASENAME": "危險性醫療儀器進口"
+        }
+        var url = '/GetZIP/GetZIP?' + $.param(data);
+        location.href = url;
+    }
+
+</script>

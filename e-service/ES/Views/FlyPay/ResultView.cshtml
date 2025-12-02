@@ -1,0 +1,80 @@
+﻿@using CTCB.Crypto;
+@model ES.Models.FlyPayModel
+@{
+    /**/
+    ViewBag.Title = "防疫旅館繳費";
+    Layout = "~/Views/Shared/_FlyPayLayout.cshtml";
+}
+
+<!-- Tab panes -->
+<div class="col-md-12">
+    <div class="form-section">
+        <div class="spr-form-heading">
+            <h2>集中檢疫所線上刷卡 Collective Quarantine Facilities Online Payment</h2>
+        </div>
+        @if (string.IsNullOrEmpty(Model.ErrMsg))
+        {
+            <div class="txt-cnt">
+                <div class="h-g">
+                    <h3>PayDate:
+                        <font class="remark remark-bt--primary ml-3 mr-3">@Model.succDate</font>
+                    </h3>
+                </div>
+                <div class="form-remark remark-success">
+                    <div class="in-bk-mid form-remark-img">
+                        <div class="remind-people-v2"></div>
+                    </div>
+                    <div class="in-bk-mid form-remark-txt">
+                        <p>
+                            <font class="re-mark">
+                                恭喜您 集中檢疫所付款成功!
+                            </font>
+                        </p>
+                        <p>
+                            <font class="re-mark">
+                                Payment succeeded.
+                            </font>
+                        </p>
+                        <p>
+                            <font class="re-mark">
+                                您的繳費成功識別碼為<strong style="font-size:1.5rem">「@Model.Guid」</strong>，請將此識別碼紀錄，或將此頁面截圖，以利入住作業。
+                            </font>
+                        </p>
+                        <p>
+                            <font class="re-mark">
+                                Your Identification Code Query is <strong style="font-size:1.5rem">"@(Model.Guid)"</strong> . Please save the code or take a screenshot for later use.
+                            </font>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="txt-cnt">
+                <div class="form-remark remark-danger">
+                    <div class="in-bk-mid form-remark-img">
+                        <div class="remind-people-v3"></div>
+                    </div>
+                    <div class="in-bk-mid form-remark-txt">
+                        <p>
+                            <font class="re-mark">
+                                @Html.Raw( Model.ErrMsg)
+                            </font>
+                        </p>
+                    </div>
+                </div>
+                <div class="para-g">
+                    <p>很抱歉，此筆交易未成功.請聯繫您的信用卡發卡銀行，或是再試一次並確認已輸入正確資訊。</p>
+                    <p>Sorry, this transaction was unsuccessful. Please contact your credit card issuing bank or try again and confirm that the correct information has been entered.</p>
+                </div>
+            </div>
+        }
+        <div class="form-group mb-0">
+            <button type="button" class="n--btn btn--3d--dark btn--md v-close-btn btn--icon btn--icon--lg" onclick="window.open('about:blank','_self').close();">
+                <i class="tu-f-cross"></i>
+                <font>關閉視窗 CLOSE</font>
+            </button>
+        </div>
+    </div>
+</div>

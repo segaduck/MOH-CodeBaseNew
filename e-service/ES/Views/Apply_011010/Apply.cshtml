@@ -1,0 +1,515 @@
+﻿@using ES.Models;
+@using ES.Commons;
+@using ES.Models.ViewModels;
+@model Apply_011010FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel sc = new ShareCodeListModel();
+    ViewBag.SRV_NAME = "全國社會工作專業人員選拔推薦";
+}
+
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申辦項目</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">@Html.Raw(ViewBag.SRV_NAME)</p>
+        </div>
+        <label class="step-label col-sm-2" for="">申辦日期</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.APPLY_DATE_TW</p>@Html.HiddenFor(m => m.APPLY_DATE_TW)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_TYPE)</label>
+        <div class="col-sm-10">
+            <label class="radio-inline "><input type="radio" name="RadioUnitType" value="1" onchange="RadioChange()">1.	公部門〔直轄市、縣（市）政府（含社會局處、勞工局處、教育局處及衛生局等相關單位）及所屬之社會福利機構、本部等其他中央部會及其所屬社會福利機構、公立大專校院等〕</label>
+            <label class="radio-inline "><input type="radio" name="RadioUnitType" value="2" onchange="RadioChange()">2.	私部門〔各私立社會福利機構、長期照顧服務機構、團體、大專校院〕</label>
+            <br />
+            @Html.DropDownListFor(m => m.UNIT_SUBTYPE, sc.GetUnitSubTypeList, new { @class = "form-normal" })
+            <br />
+            <label class="radio-inline "><input type="radio" name="RadioUnitType" value="3" onchange="RadioChange()">3.	公私立醫事機構</label>
+        </div>
+        @Html.HiddenFor(m => m.UNIT_TYPE)
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_NAME)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.UNIT_NAME, new { @class = "form-normal" })
+        </div>
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_DEPART)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.UNIT_DEPART, new { @class = "form-normal" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_TITLE)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.UNIT_TITLE, new { @class = "form-normal" })
+        </div>
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_CNAME)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.UNIT_CNAME, new { @class = "form-normal" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_TEL)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.UNIT_TEL, new { @class = "form-normal" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.EMAIL)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.EMAIL_0, new { @class = "form-normal" })
+            @@
+            @Html.DropDownListFor(m => m.EMAIL_1, sc.GetMailDomainList, new { @class = "form-normal", onchange = "doEmailChange()" })
+            @Html.TextBoxFor(m => m.EMAIL_2, new { @class = "form-normal" })
+            @Html.HiddenFor(m => m.EMAIL_3)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>單位社工人員總數</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.CNT_D, new { @class = "form-normal" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <p>
+                1.依「全國社會工作專業人員選拔及表揚要點」第五點第一款規定之推薦單位社工人員總數（含總會、分會、分事務所人數）。<br />
+                2.推薦單位如有所屬分會、分事務所等，請統一由總會推薦；直轄市、縣(市)政府由社會局(處)統一推薦。
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>各獎項推薦人數</label>
+        <div class="col-sm-5">
+            @Html.DisplayNameFor(m => m.CNT_E)
+            @Html.TextBoxFor(m => m.CNT_E, new { @class = "form-normal" })
+            <br />
+            @Html.DisplayNameFor(m => m.CNT_F)
+            @Html.TextBoxFor(m => m.CNT_F, new { @class = "form-normal" })
+        </div>
+        <div class="col-sm-5">
+            @Html.DisplayNameFor(m => m.CNT_G)
+            @Html.TextBoxFor(m => m.CNT_G, new { @class = "form-normal" })
+            <br />
+            @Html.DisplayNameFor(m => m.CNT_H)
+            @Html.TextBoxFor(m => m.CNT_H, new { @class = "form-normal" })
+        </div>
+    </div>
+    @*佐證文件上傳請加註提醒(檔案大小5MB以下，".ODF", ".ODS", ".XLS", ".XLSX", ".PDF", ".ZIP")，另外目前沒有檢核檔案大小5MB以下*@
+    <h2 class="second-title">佐證文件檔案上傳<span style="color:red">(總檔案大小5MB以下)</span></h2>
+    <!--網站 佐證文件採合併檔案-->
+    <div class="form-group">
+        @Html.HiddenFor(m => m.MERGEYN)
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>彙整表(EXCEL檔)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE_EXCEL, new { @id = "FILE_EXCEL", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+            @Html.HiddenFor(m => m.FILE_EXCEL_TEXT)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>檢核表(PDF檔)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE_PDF, new { @id = "FILE_PDF", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam_PDF(this)" })
+            @Html.HiddenFor(m => m.FILE_PDF_TEXT)
+        </div>
+    </div>
+    <h2 class="second-title">
+        <span style="color:red;">*</span>推薦表(PDF檔) &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" onclick="doAdd()" class="btn btn-save">新增</a>
+        <p>
+            <span style="color:red;">1.	受薦人排序應與彙整表相同。</span><br />
+            <span style="color:red;">2.	每位推薦人限上傳兩份檔案(5MB以下)，其餘檔案恕不接收。</span>
+        </p>
+    </h2>
+    <div id="RowTable">
+        <div id="row1" data-group="Row">
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><button type="button" id="btnDelte_1" class="btn btn-clear" onclick="deleteRow($(this))">刪除</button>&nbsp;&nbsp;&nbsp;&nbsp;序號</label>
+                <div class="col-sm-1">
+                    <p id="SEQ_NO" class="form-control-static">1</p>
+                    @Html.HiddenFor(m => m.SRVLIST[0].SEQ_NO)
+                </div>
+                <div class="col-sm-9">
+                    @Html.TextBoxFor(m => m.SRVLIST[0].FILE_3, new { @id = "FILE_3", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam_PDF(this)" })
+                    @Html.HiddenFor(m => m.SRVLIST[0].FILE_3_TEXT)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="doPreView()">存檔並預覽</button>
+        <button type="reset" class="btn btn-clear" onclick="doReset()">清除資料</button>
+    </div>
+
+    <input type="hidden" id="rowCount" value="1" />
+    <input type="hidden" id="emptyRow" value="" />
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#emptyRow').val($('#row1').html());
+        $('#row1 input[name="SRVLIST[0].SEQ_NO"').val('1');
+    });
+
+    // MAIL 選自訂
+    function doEmailChange() {
+        var ADM_MAIL = $('#EMAIL_1').val();
+        if (ADM_MAIL == 0) $('#EMAIL_2').removeAttr("readonly");
+        else {
+            if (ADM_MAIL == 1) $('#EMAIL_3').val('gmail.com');
+            if (ADM_MAIL == 2) $('#EMAIL_3').val('yahoo.com.tw');
+            if (ADM_MAIL == 3) $('#EMAIL_3').val('outlook.com');
+            $('#EMAIL_2').attr("readonly", "readonly");
+            $('#EMAIL_2').val('');
+        }
+    }
+
+    function RadioChange() {
+        // 是否合併檔案
+        $("#MERGEYN").val('N');
+        // 單位類型
+        $("#UNIT_TYPE").val($('input[name="RadioUnitType"]:checked').val());
+    }
+
+    // 單位社工人員總數類型切換
+    //function DropDownListChange() {
+        //var type_num = $("#CNT_TYPE").val();
+        //var CNT_A = document.getElementById("CNT_A");
+        //var CNT_B = document.getElementById("CNT_B");
+        //var CNT_D = document.getElementById("CNT_D");
+
+        //CNT_A.disabled = false;
+        //CNT_B.disabled = false;
+        //CNT_D.disabled = false;
+
+        //if (type_num == "1") {
+        //    $("#CNT_D").val("");
+        //    CNT_D.disabled = true;
+        //} else if (type_num == "2") {
+        //    $("#CNT_A").val("");
+        //    $("#CNT_B").val("");
+        //    CNT_A.disabled = true;
+        //    CNT_B.disabled = true;
+        //}
+   // }
+
+    //檢核 有誤為 false 正常為true
+    function validfile() {
+        var err_msg1 = "";
+        //if (!validfile()) { return; }
+        // 是否合併檔案
+        RadioChange();
+
+        // 確認上傳檔案
+        var MERGE ="N";
+        var EMAIL_0 = $('#EMAIL_0').val();
+        var EMAIL_1 = $('#EMAIL_1').val();
+        var EMAIL_2 = $('#EMAIL_2').val();
+
+        var flag_EMAILNG = false;
+        if (EMAIL_0 == "") { flag_EMAILNG = true; }
+        if (EMAIL_1 == "" && EMAIL_2 == "") { flag_EMAILNG = true; }
+        if (EMAIL_1 == "0" && EMAIL_2 == "") { flag_EMAILNG = true; }
+        if (flag_EMAILNG) {
+            err_msg1 += "E-MAIL 為必填欄位 !\n";
+        }
+
+        //* 單位類型
+        var UNIT_TYPE = $('input[name="RadioUnitType"]:checked').val();
+        //var CNT_TYPE = $('#CNT_TYPE').val();
+        if (UNIT_TYPE != '1' && UNIT_TYPE != '2' && UNIT_TYPE != '3') { err_msg1 += "單位類型 為必填欄位 \n"; }
+        else if (UNIT_TYPE == '2' && $('#UNIT_SUBTYPE').val() == "") { err_msg1 += "單位類型-私部門 為必填欄位 \n"; };
+        //* 單位名稱
+        if ($('#UNIT_NAME').val() == "") { err_msg1 += "單位名稱 為必填欄位 \n"; };
+        //* 單位連絡人局處部門
+        if ($('#UNIT_DEPART').val() == "") { err_msg1 += "單位連絡人局處部門 為必填欄位 \n"; };
+        //* 單位連絡人職稱
+        if ($('#UNIT_TITLE').val() == "") { err_msg1 += "單位連絡人職稱 為必填欄位 \n"; };
+        //* 單位連絡人姓名
+        if ($('#UNIT_CNAME').val() == "") { err_msg1 += "單位連絡人姓名 為必填欄位 \n"; };
+        //* 連絡電話
+        if ($('#UNIT_TEL').val() == "") { err_msg1 += "連絡電話 為必填欄位 \n"; };
+        //* 單位社工人員總數
+        if ($('#CNT_D').val() == "") { err_msg1 += "單位社工人員總數 為必填項目 \n"; };
+        //*推薦人數
+        //if (CNT_TYPE == "1" && ($('#CNT_A').val() == "") || $('#CNT_B').val() == "") {
+        //    err_msg1 += "單位社工人員總數：「由總會(事務所)統一推薦」，請填寫總會人數及分會人數 \n";
+        //}
+        //if (CNT_TYPE == "2" && $('#CNT_D').val() == "") {
+        //    err_msg1 += "單位社工人員總數：「單位類型非協會(事務所)」，請填寫人數 \n";
+        //}
+        //* 績優社工獎
+        if ($('#CNT_E').val() == "") { err_msg1 += "績優社工獎推薦人數 為必填項目 \n"; };
+        //* 績優社工督導獎
+        if ($('#CNT_F').val() == "") { err_msg1 += "績優社工督導獎推薦人數 為必填項目 \n"; };
+        //* 資深敬業獎
+        if ($('#CNT_G').val() == "") { err_msg1 += "資深敬業獎推薦人數 為必填項目 \n"; };
+        //* 特殊貢獻獎
+        if ($('#CNT_H').val() == "") { err_msg1 += "特殊貢獻獎推薦人數 為必填項目 \n"; };
+
+        var FILE_EXCEL = $('#FILE_EXCEL').val();
+        var FILE_PDF = $('#FILE_PDF').val();
+        var FILE_3 = $('#FILE_3').val();
+
+        var bool_file_all_NG = false;
+        if (FILE_EXCEL == "" && FILE_PDF == "" && FILE_3 == "") {
+            bool_file_all_NG = true;
+        };
+        if (MERGE == 'Y' && bool_file_all_NG) {
+            //blockAlert("請至少上傳一個檔案 !", "提示訊息");
+            err_msg1 += "請至少上傳一個檔案 !\n";
+        }
+        if (MERGE == 'N') {
+            if (FILE_EXCEL == "") {
+                err_msg1 += "請上傳彙整表(EXCEL檔) !\n";
+            }
+            if (FILE_PDF == "") {
+                err_msg1 += "請上傳檢核表(PDF檔) !\n";
+            }
+        }
+        //var sum_ab = (parseInt($('#CNT_A').val(), 10) + parseInt($('#CNT_B').val(), 10));
+        var sum_ef = (parseInt($('#CNT_E').val(), 10) + parseInt($('#CNT_F').val(), 10));
+        var sum_d = parseInt($('#CNT_D').val(), 10);
+        // 單位類型= 公部門或私部門
+        if (UNIT_TYPE == "1" || UNIT_TYPE == "2") {
+            // 單位社工人員總數
+            if ( sum_d <= 30) {
+                if (sum_ef > 1) {
+                    err_msg1 += "績優社工獎推薦人數、績優社工督導獎推薦人數 加總不得超過1 \n";
+                }
+            } else if (sum_d > 30 && sum_d < 900) {
+                if (sum_d % 30 == 0) {
+                    if (sum_ef > (sum_d / 30)) {
+                        err_msg1 += "績優社工獎推薦人數、績優社工督導獎推薦人數 加總不得超過單位社工人員總數/30【無條件進位】 \n";
+                    }
+                } else {
+                    if (sum_ef > (sum_d / 30) + 1) {
+                        err_msg1 += "績優社工獎推薦人數、績優社工督導獎推薦人數 加總不得超過單位社工人員總數/30【無條件進位】 \n";
+                    }
+                }
+            } else if (sum_d >= 900) {
+                if (sum_ef > 30) {
+                    err_msg1 += "績優社工獎推薦人數、績優社工督導獎推薦人數 加總不得超過30 \n";
+                }
+            }
+        } else if (UNIT_TYPE == "3") {
+            // 單位類型=醫事機構
+            // 單位社工人員總數
+            if (sum_d <= 15) {
+                if (sum_ef > 1) {
+                    err_msg1 += "績優社工獎推薦人數、績優社工督導獎推薦人數 加總不得超過1 \n";
+                }
+            } else if ( sum_d > 15) {
+                if (sum_ef > 2) {
+                    err_msg1 += "績優社工獎推薦人數、績優社工督導獎推薦人數 加總不得超過2 \n";
+                }
+            }
+        }
+
+        if (err_msg1 != "") {
+            blockAlert(err_msg1, "提示訊息");
+            return false;
+        }
+        return true;
+    }
+
+    // 轉至瀏覽
+    function doPreView() {
+        if (!validfile()) { return; }
+        var data = getFormSubmitableFields($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("Apply")', data, function (retData) {
+            if (retData.status) {
+                ajaxLoadMore('@Url.Action("PreView")', data, function (getHtml) {
+                    $('#form_tab').removeClass('active');
+                    $('#form').attr('class', 'tab-pane fade');
+                    $('#form_tab1').attr('class', 'active');
+                    $('#form1').attr('class', 'tab-pane fade active in');
+                    $("#form1").html(getHtml);
+                    $('input[type="file"]').each(function () {
+                    });
+                });
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+    }
+
+     // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".XLS", ".XLSX");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+        var fileSize = (file.files.item(0).size / 1024 / 1024);
+
+        console.log(file.files.item(0).name);
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        } else if (fileSize > 5) {
+            blockAlert("檔案大小不可超過5MB");
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        } else {
+            $('input[type="hidden"][name="' + file.name + '_TEXT"]').val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+    // 取檔名
+    function doGetFileNam_PDF(file) {
+        var validExts = new Array(".PDF");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+        var fileSize = (file.files.item(0).size / 1024 / 1024);
+
+        console.log(file.files.item(0).name);
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        } else if (fileSize > 5) {
+            blockAlert("檔案大小不可超過5MB");
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        } else {
+            $('input[type="hidden"][name="' + file.name + '_TEXT"]').val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+    // 推薦表 新增
+    function doAdd() {
+        var rowCount = parseInt($('#rowCount').val(), 10) + 1;
+        $('#RowTable').append('<div id=\"row' + rowCount + '\" data-group=\"Row\">' + $('#emptyRow').val().replace(/btnDelte_1/gi, 'btnDelte_' + rowCount).replace(/SRVLIST_0/gi, 'SRVLIST_' + parseInt($('#rowCount').val(), 10)).replace(/SRVLIST\[0\]/gi, 'SRVLIST[' + parseInt($('#rowCount').val(), 10) + ']') + '</div>');
+        $('#row' + rowCount + ' #SEQ_NO').text(rowCount);
+        $('#row' + rowCount + ' #SEQ_NO').val(rowCount);
+        $('#row' + rowCount + ' input[name="SRVLIST[' + (rowCount - 1) + '].SEQ_NO"]').val(rowCount);
+        $('#rowCount').val(rowCount);
+
+        // 跑一次排序，確保序號、索引都正確
+        reOrderRows();
+    }
+
+    // ✅ 公用排序函式
+    function reOrderRows() {
+        $('#RowTable div[id^="row"]').each(function (i, row) {
+            var newIndex = i;
+            var newRowId = "row" + (i + 1);
+            $(row).attr("id", newRowId);
+
+            // 更新序號 (顯示 & 隱藏值)
+            $(row).find("#SEQ_NO").text(i + 1);
+            $(row).find("#SEQ_NO").val(i + 1);
+
+            // 更新 input name
+            $(row).find("input").each(function () {
+                if ($(this).attr("name")) {
+                    $(this).attr("name", $(this).attr("name")
+                        .replace(/SRVLIST\[\d+\]/gi, 'SRVLIST[' + newIndex + ']'));
+                }
+            });
+
+            // 更新刪除按鈕 ID（避免重複）
+            $(row).find("button[id^='btnDelte_']").attr("id", "btnDelte_" + (i + 1));
+        });
+
+        // 更新目前筆數
+        $('#rowCount').val($('#RowTable div[id^="row"]').length);
+    }
+
+    // 清除資料
+    function doReset() {
+        $('#RowTable div[id^="row"]').remove();
+        $('#rowCount').val(0);
+        addGoodRow();
+    }
+
+    // 刪除檔案
+    function deleteRow(obj) {
+            var rowId = $(obj).closest("div[id^='row']").attr("id");
+            var cntrow = $('#RowTable div[id^="row"]').length;
+
+            if (cntrow > 1) {
+                $('#' + rowId).remove();
+                reOrderRows();
+            } else {
+                blockAlert('推薦表(PDF檔)不得少於一筆!');
+            }
+
+        //var rowId = $('#' + $(obj).attr('id')).parent().parent().parent().attr('id');
+        //var cntrow = 0;
+        //$('div[id^="row"]').each(function () {
+        //    cntrow++;
+        //})
+        //if (cntrow > 1) {
+        //    $('#RowTable #' + rowId).remove();
+        //    var fileSet = $('#RowTable div[id^="row"] input[type="file"]');
+        //    if ($('#RowTable').data('group', 'Row') == null || $('#RowTable').data('group', 'Row') == undefined) {
+        //        $('#rowCount').val(0);
+        //    }
+        //    else {
+        //        var count = 1;
+        //        for (i = 0; i < $('#RowTable div[id^="row"]').length; i++) {
+        //            $($('#RowTable div[id^="row"]')[i]).attr('id', 'row' + count);
+        //            $('#' + $($('#RowTable div[id^="row"]')[i]).attr('id') + ' #SEQ_NO').text(count);
+        //            $($('#RowTable div[id^="row"]')[i]).find('input[type="text"]').each(function () {
+        //                $(this).attr('name', $(this).attr('name').replace(/SRVLIST_[0-9]/gi, 'SRVLIST_' + i).replace(/SRVLIST\[[0-9]\]/gi, 'SRVLIST[' + i + ']'));
+        //            })
+        //            $($('#RowTable div[id^="row"]')[i]).find('input[type="hidden"]').each(function () {
+        //                $(this).attr('name', $(this).attr('name').replace(/SRVLIST_[0-9]/gi, 'SRVLIST_' + i).replace(/SRVLIST\[[0-9]\]/gi, 'SRVLIST[' + i + ']'));
+        //            })
+        //            count++;
+        //        }
+
+        //        $('#rowCount').val((count - 1));
+
+        //        count = 0
+        //        var rowCount = 1
+        //        var cnt = 0;
+        //        $(fileSet).each(function () {
+        //            var newcnt = parseInt(cnt / 5)
+        //            var pnam = ($(this)[0].name).replace(/SRVLIST\[[0-9]\]/gi, 'SRVLIST[' + newcnt + ']');
+        //            var tagName = pnam;
+        //            var tagId = pnam.replace(/SRVLIST\[[0-9]\]./gi, '');
+        //            $($((fileSet)[cnt])[0]).attr('id', tagId)
+        //            $($((fileSet)[cnt])[0]).attr('name', tagName)
+        //            cnt++;
+        //        })
+
+        //        count = 1;
+        //        var rowCount = 0;
+        //        for (i = 0; i < $('#RowTable div[id^="row"]').length; i++) {
+        //            var destObjId = $($('#RowTable div[id^="row"]')[i]).attr('id')
+        //            $('#' + $($('#RowTable div[id^="row"]')[i]).attr('id') + ' input[name^="SRVLIST[' + i + '].SRL_NO"]').val(count);
+        //            for (j = 0; j < $('#' + destObjId + ' input[type="file"]').length; j++) {
+        //                var newObj = $(fileSet)[rowCount];
+        //                $($($($('#' + destObjId + ' input[type="file"]')[j]))[0]).replaceWith($(newObj)[0]);
+        //                setHiddenFileName($($('#' + destObjId + ' input[type="file"]')[j]).attr('name'));
+        //                rowCount++
+        //            }
+        //            count++;
+        //        }
+        //    }
+        //}
+        //else {
+        //    blockAlert('推薦表(PDF檔)不得少於一筆!');
+        //}
+    }
+
+    function setHiddenFileName(objName) {
+        $($('input[name="' + objName + '"]').siblings()[0]).val($('input[name="' + objName + '"]').val().replace(/C:\\fakepath\\/i, ''));
+    }
+</script>

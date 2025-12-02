@@ -1,0 +1,76 @@
+﻿@using EECOnline.Services;
+@using EECOnline.Models;
+@model NewsDetailModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<section class="main-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="board board-white">
+                    <a class="accesskey" href="#aC" id="aC" accesskey="C" title="主要內容區">:::</a>
+                    <ul class="breadcrumb" style="background-color: unset;">
+                        <li><i class="fa fa-home"></i><a href="~/Home/Index">首頁</a></li>
+                        <li><a href="~/Home/News">最新消息</a></li>
+                    </ul>
+                    <h1 class="board-title titleBg-linear main-title"><i class="far fa-newspaper"></i>最新消息</h1>
+                    <div class="news-content">
+                        <div class="table-responsive">
+                            <h2 class="news-title">
+                                <a href="#">
+                                    [@Model.newstype_Text] @Model.subject
+                                    <span class="news-data">@Model.showdates_Text</span>
+                                </a>
+                            </h2>
+                            <hr class="text-secondary">
+                            <p>
+                                @Html.Raw(Model.body)
+                            </p>
+                            <hr class="text-secondary">
+                            <h2 class="news-title"><a href="#">附檔</a></h2>
+                            <table class="table">
+                                <tbody>
+                                    @if (Model.Files.ToCount() > 0)
+                                    {
+                                        for (int i = 0; i < Model.Files.Count; i++)
+                                        {
+                                            var item = Model.Files[i];
+                                            <tr>
+                                                <td width="20%">@(item.filename).@(item.extion)</td>
+                                                <td width="80%">
+                                                    <a href="@(Url.Content(Model.Files[i].filepath+"/"+Model.Files[i].srcfilename+"."+Model.Files[i].extion))" download>
+                                                        下載
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="2" style="color: black;">- 無 -</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <hr class="text-secondary">
+                            <div class="btnBar text-center">
+                                <button type="button" class="btn btn-cancel" onclick="OnGoBack()">回列表</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+
+    function OnGoBack() {
+        history.back();
+    }
+
+</script>

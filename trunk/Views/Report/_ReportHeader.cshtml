@@ -1,0 +1,72 @@
+﻿@using Turbo.ReportTK
+@model Report
+@{
+    Layout = null;
+
+    @*輸出報表-制式表頭*@
+}
+@* 根據 header 定義, 輸出 Report Header *@
+@foreach (Header header in Model.Headers)
+{
+    <tr>
+        @if (!string.IsNullOrEmpty(header.View))
+        {
+            // 如果有定義客制 header view 則以 Partial 引用, 並傳入 header 作為 model
+            <td class="report-title" colspan="@(Model.Layout.Columns.Count)" style="padding:0px;">
+                @Html.Partial(header.View, header)
+            </td>
+        }
+        else
+        {
+            string style = string.Format("font-size:{0}pt;font-weight:{1};",
+                    header.FontSize, (header.FontBold ? "bold" : "normal"));
+            if (header.Height > 0)
+            {
+                style += "height:" + header.Height + "px;";
+            }
+
+            if (header.ColumnMode)
+            {
+                // 欄位模式輸出 (個別 Column 獨立輸出, 可控制 COLSPAN 及邊框粗細)
+                foreach (var col in header.Columns)
+                {
+                    string colStyle = style + string.Format("text-align:{0};", col.Align);
+                    if(header.BoarderWidth > 0)
+                    {
+                        colStyle += string.Format("border-style:solid;border-width:{0}px", header.BoarderWidth);
+                    }
+                    string colSpan = "";
+                    if (col.ColSpan > 1)
+                    {
+                        colSpan = string.Format("colspan=\"{0}\"", col.ColSpan);
+                    }
+                    <td class="report-title" style="@(style)" @(colSpan)>
+                        @if(col.Type == "label")
+                        {
+                            @col.Name
+                        }
+                        else
+                        {
+                            @header.Result[col.Id]
+                        }
+                    </td>
+                }
+            }
+            else
+            {
+                // 列模式(每個 header 輸出一列, 不分欄位)
+                style += string.Format("text-align:{0};", header.Align);
+                List<string> headLines = header.HeaderLines.Get(Model.CurrentPageGroup);
+                string headerContent = "&nbsp;";
+                if (headLines.Count > 0)
+                {
+                    headerContent = string.Join("<br/>", headLines.ToArray());
+                }
+                <td class="report-title" colspan="@(Model.Layout.Columns.Count)" style="@(style)">
+                    @Html.Raw(headerContent)
+                </td>
+            }
+        }
+    </tr>
+}
+

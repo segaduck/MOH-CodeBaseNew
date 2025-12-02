@@ -1,0 +1,170 @@
+﻿@using CTCB.Crypto;
+@model ES.Models.FlyPayModel
+@{
+    /**/
+    ViewBag.Title = "防疫旅館繳費";
+    Layout = "~/Views/Shared/_FlyPaySearchLayout.cshtml";
+}
+
+<!-- Tab panes -->
+<div class="col-md-12">
+    <div class="form-section">
+        <div class="spr-form-heading--v2">
+            <h2 class="ch">
+                「2022年春節專案」系統開放時間:
+            </h2>
+            <h2 class="en">
+                The MOHW’s Chinese New Year Special Reservation System will be online:
+            </h2>
+        </div>
+        <div class="spr-form-sub-heading">
+            <h3 class="ch">
+                (一)2021年11月17日10AM開放2021年12月14日至12月31日止入境訂房。
+            </h3>
+            <h3 class="en">
+                1.Booking for check-in time since December 14, 2021 to December 31, 2021, starting from 10:00 on November 17, 2021.
+            </h3>
+            <h3 class="ch">
+                (二)2021年11月23日10AM開放2021年12月14日至2022年2月5日止入境訂房。
+            </h3>
+            <h3 class="en">
+                2.Booking for check-in time since December 14, 2021 to February 5, 2022, starting from 10:00 on November 23, 2021.
+            </h3>
+        </div>
+
+        <div class="spr-form-sub-heading--v2">
+            <h3 class="ch">入住集檢所之條件</h3>
+        </div>
+        @using (Html.BeginForm("CheckIndexApply", "FlyPay", FormMethod.Post, new { ID = "ActionForm" }))
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group form-group-lg">
+                        <label>
+                            <strong class="text--dark-lightgrey mono">1.</strong>
+                            我已完成2劑疫苗接種，且滿14天【疫苗品牌:WHO EUL疫苗，包括輝瑞BNT、阿斯特捷利康（AZ）、莫德納（Moderna）、嬌生、國藥、科興、Covishield、Covaxin或TFDA EUA疫苗(高端)】。
+                        </label>
+                        <div class="form-group">
+                            <div class="radio_wrap_v2">
+                                <input type="radio" id="Q1y" name="Q1" class="check_input" value="Y">
+                                <label for="Q1y" class="check_wrap-label">
+                                    <i class="check_mark"></i>
+                                    <font class="txt">是 / Yes</font>
+                                </label>
+                                <input type="radio" id="Q1n" name="Q1" class="check_input" value="N">
+                                <label for="Q1n" class="check_wrap-label">
+                                    <i class="check_mark"></i>
+                                    <font class="txt">否 / No</font>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-lg">
+                        <label>
+                            <strong class="text--dark-lightgrey mono">2.</strong>
+                            於集中檢疫所完成7天集中檢疫後可返家，接續在家檢疫7天。在家檢疫7天符合1人1戶或1人1室(在台同住者須完成接種疫苗且滿14天)。
+                        </label>
+                        <div class="form-group">
+                            <div class="radio_wrap_v2">
+                                <input type="radio" id="Q2y" name="Q2" class="check_input" value="Y">
+                                <label for="Q2y" class="check_wrap-label">
+                                    <i class="check_mark"></i>
+                                    <font class="txt">是 / Yes</font>
+                                </label>
+                                <input type="radio" id="Q2n" name="Q2" class="check_input" value="N">
+                                <label for="Q2n" class="check_wrap-label">
+                                    <i class="check_mark"></i>
+                                    <font class="txt">否 / No</font>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-lg">
+                        <label>
+                            <strong class="text--dark-lightgrey mono">3.</strong>
+                            本人將於入住集中檢疫所時，主動出示完成2劑疫苗接種且滿14天之證明文件，若無法出示相關證明文件，願意依法接受罰鍰及處置。
+                        </label>
+                        <div class="form-group">
+                            <div class="radio_wrap_v2">
+                                <input type="radio" id="Q3y" name="Q3" class="check_input" value="Y">
+                                <label for="Q3y" class="check_wrap-label">
+                                    <i class="check_mark"></i>
+                                    <font class="txt">是 / Yes</font>
+                                </label>
+                                <input type="radio" id="Q3n" name="Q3" class="check_input" value="N">
+                                <label for="Q3n" class="check_wrap-label">
+                                    <i class="check_mark"></i>
+                                    <font class="txt">否 / No</font>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-lg">
+                        <label>
+                            <strong class="text--dark-lightgrey mono">4.</strong>
+                            集中檢疫所訂房說明：
+                            <ul class="ckeck-list">
+                                <li>
+                                    <font class="text--dark-lightgrey mono">(1)</font>
+                                    集中檢疫所僅能提供7天檢疫，無法續住。
+                                </li>
+                                <li>
+                                    <font class="text--dark-lightgrey mono">(2)</font>
+                                    集中檢疫所設置旨在提供基本單人設備環境，作為檢疫使用，僅能一人一室，無法與家人同住。
+                                </li>
+                                <li>
+                                    <font class="text--dark-lightgrey mono">(3)</font>
+                                    集中檢疫所之收費為每人每日新臺幣1,500元整。訂房經刷卡付費完成後，無法更換入住日期、房間或退款。
+                                </li>
+                                <li>
+                                    <font class="text--dark-lightgrey mono">(4)</font>
+                                    前往集中檢疫所及完成7天檢疫之返家交通，均需自行安排防疫計程車，並自行負擔所有交通費用。
+                                </li>
+                            </ul>
+                            本人已瞭解<font class="remark remark-wave">集中檢疫所之訂房規定</font>，並同意訂房：
+                        </label>
+                        <div class="form-group">
+                            <div class="radio_wrap_v2">
+                                <input type="radio" id="Q4y" name="Q4" class="check_input" value="Y">
+                                <label for="Q4y" class="check_wrap-label">
+                                    <i class="check_mark"></i>
+                                    <font class="txt">是 / Yes</font>
+                                </label>
+                                <input type="radio" id="Q4n" name="Q4" class="check_input" value="N">
+                                <label for="Q4n" class="check_wrap-label">
+                                    <i class="check_mark"></i>
+                                    <font class="txt">否 / No</font>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-0">
+                        <button type="button" class="n--btn btn--3d--dark btn--block btn--md mt-1" onclick="GoNext()" id="CheckOutC">
+                            <font>前往訂房</font>
+                            @*<i class="tu-arrow-right"></i>*@
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<script type="text/javascript">
+    function GoNext() {
+        var q1 = $('input[type=radio][name=Q1]:checked').val();
+        var q2 = $('input[type=radio][name=Q2]:checked').val();
+        var q3 = $('input[type=radio][name=Q3]:checked').val();
+        var q4 = $('input[type=radio][name=Q4]:checked').val();
+        console.log(q1);
+        console.log(q2);
+        console.log(q3);
+        console.log(q4);
+        if (q1 == "Y" && q2 == "Y" && q3 == "Y" && q4 == "Y") {
+            $('#ActionForm').submit();
+        } else if (q1 == undefined || q2 == undefined || q3 == undefined || q4 == undefined) {
+            blockAlert("尚有問題未作答，請確認。");
+        } else {
+            blockAlert("很抱歉，您不符合可預約訂房之資格。");
+        }
+    }
+</script>

@@ -1,0 +1,60 @@
+﻿@model ES.Areas.Admin.Models.ServiceNormEditModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "相關規範管理（修改）";
+    ViewBag.FunctionTitle = "相關規範管理 - 修改";
+}
+
+@using (Html.BeginForm("Edit", "ServiceNorm", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件設定 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <h2 class="second-title">@Html.DisplayFor(m => m.ServiceName)</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ServiceName)</label>
+                <div class="col-sm-4">
+                    @Html.DisplayFor(m => m.ServiceName, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FileName)</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.FileName, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(m => m.FileName)
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Seq)</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.Seq, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Seq)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">檔案</label>
+                <div class="col-sm-10">
+                    <input type="file" name="UpdateFile" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Title)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Title, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Title)
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.ServiceId)
+                @Html.HiddenFor(m => m.FileId)
+                <input type="submit" value="存檔" class="btn btn-save" />
+                <input type="reset" value="重填" class="btn btn-gray" />
+                <input type="button" value="返回" class="btn btn-gray" onclick="document.location.href='@Url.Action("List", new { id = @Model.ServiceId })';" />
+            </div>
+        </div>
+    </div>
+}

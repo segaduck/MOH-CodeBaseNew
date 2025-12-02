@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="A2"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<resultMaps>
+	</resultMaps>
+	<cacheModel id="WDASE-cache" implementation="MEMORY">
+		<flushInterval hours="1" />
+		<property name="Type" value="WEAK" />
+	</cacheModel>
+	<statements>
+
+		<select id="queryC101M" resultClass="EECOnline.Areas.A2.Models.C101MGridModel" parameterClass="EECOnline.Areas.A2.Models.C101MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+	a.keyid,
+	a.apply_no, a.apply_no_sub, a.user_idno, a.hospital_code, a.hospital_name,
+	a.his_range1, a.his_range2, a.his_types, a.pay_deadline, a.payed, a.payed_datetime,
+	b.createdatetime,
+	c.user_name, b.user_birthday,
+	(
+		SELECT TOP 1 tmp.provide_datetime
+		FROM EEC_ApplyDetailPrice tmp
+		WHERE tmp.apply_no_sub=a.apply_no_sub
+		ORDER BY tmp.provide_datetime DESC
+	) AS provide_datetime
+FROM EEC_ApplyDetail a
+LEFT JOIN EEC_Apply b ON a.apply_no=b.apply_no
+LEFT JOIN EEC_User c ON a.user_idno=c.user_idno
+WHERE 1=1
+/*AND a.payed='Y'*/
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="apply_no_sub"><![CDATA[ AND a.apply_no_sub LIKE '%' + #apply_no_sub# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="user_name"><![CDATA[ AND c.user_name LIKE '%' + #user_name# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="his_range1"><![CDATA[ AND a.his_range1 >= #his_range1# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="his_range2"><![CDATA[ AND a.his_range2 <= #his_range2# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="HospCode"><![CDATA[ AND a.hospital_code = #HospCode# ]]></isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+ORDER BY a.apply_no_sub
+			]]>
+		</select>
+
+		<select id="detailC101M" resultClass="EECOnline.Areas.A2.Models.C101MDetailModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+	a.apply_no_sub, a.his_range1, a.his_range2,
+	b.user_name, b.user_birthday, b.user_idno, b.user_birthday
+FROM EEC_ApplyDetail a
+LEFT JOIN EEC_Apply b ON a.apply_no=b.apply_no
+WHERE 1=1
+  AND a.apply_no_sub=#apply_no_sub#
+			]]>
+		</select>
+
+		<select id="detailC101MGrid" resultClass="EECOnline.Areas.A2.Models.C101MDetailGridModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+	a.keyid,
+	a.apply_no, a.apply_no_sub, a.user_idno, a.hospital_code, a.hospital_name,
+	a.his_type, a.his_type_name, a.price, a.pay_deadline, a.payed, a.payed_datetime,
+	a.isprovide, a.provide_datetime, ISNULL(a.provide_status,'0') AS provide_status,
+	a.ec_date, a.ec_dateText, a.ec_note, a.ec_dept, a.ec_doctor, a.ec_docType, a.ec_system, a.ec_fileName,
+	IIF(ISNULL(b.Report_HTML,'')='','0','1') AS IsGetReport,
+	a.download_count
+FROM EEC_ApplyDetailPrice a
+LEFT JOIN EEC_ApplyDetailPrice_ApiData b ON a.keyid=b.master_keyid
+WHERE 1=1
+  AND ISNULL(a.his_type, '')<>''
+  AND a.apply_no_sub=#apply_no_sub#
+ORDER BY a.keyid
+			]]>
+		</select>
+
+		<select id="queryC102M_Grid" resultClass="EECOnline.Areas.A2.Models.C102MGridModel" parameterClass="EECOnline.Areas.A2.Models.C102MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT 
+	a.apply_no_sub, a.hospital_name, a.his_type, a.his_type_name,
+	b.his_range1, b.his_range2,
+	c.user_name, c.createdatetime,
+	a.ec_date, a.ec_dateText, a.ec_note, a.ec_dept, a.ec_doctor, a.ec_docType, a.ec_system, a.ec_fileName
+FROM EEC_ApplyDetailPrice a
+LEFT JOIN EEC_ApplyDetail b ON b.apply_no_sub=a.apply_no_sub
+LEFT JOIN EEC_Apply c ON c.apply_no=a.apply_no
+WHERE 1=1
+  AND a.payed='Y'
+  /*AND a.isprovide='N'*/
+  AND a.provide_status='2'
+  AND ISNULL(a.provide_datetime,'')=''
+  AND ISNULL(a.provide_bin,'')=''
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="HospCode"><![CDATA[ AND a.hospital_code = #HospCode# ]]></isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+ORDER BY a.keyid
+			]]>
+		</select>
+
+		<select id="queryC102M_LogGrid" resultClass="EECOnline.Areas.A2.Models.C102MLogGridModel" parameterClass="EECOnline.Areas.A2.Models.C102MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT 
+	a.keyid,
+	a.apply_no, a.apply_no_sub, 
+	a.user_idno, a.user_name,
+	a.hospital_code, a.hospital_name,
+	a.his_type, a.his_type_name,
+	a.his_range1, a.his_range2, a.createdatetime,
+	a.provide_datetime, a.provide_bin, a.provide_ext, a.provide_user_no, a.provide_user_name
+FROM EEC_ApplyDetailUploadLog a
+WHERE 1=1
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="HospCode"><![CDATA[ AND a.hospital_code = #HospCode# ]]></isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+ORDER BY a.keyid DESC
+			]]>
+		</select>
+
+	</statements>
+</sqlMap>

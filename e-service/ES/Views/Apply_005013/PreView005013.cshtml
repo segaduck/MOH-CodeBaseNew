@@ -1,0 +1,319 @@
+﻿@using ES.Models.ViewModels;
+@model Apply_005013FormModel
+
+@{
+    Layout = null;
+}
+
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">申辦項目</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">民眾少量自用中藥貨品進口</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">申請須知</label>
+            <div class="col-sm-10">
+                <p>一、依據入境旅客攜帶行李物品報驗稅放辦法及藥物樣品贈品管理辦法等規定。</p>
+                <p>
+                    二、中藥材及中藥製劑：<br />
+                    1.中藥材每種至多一公斤，合計不得超過十二種。<br />
+                    2.中藥製劑(藥品)每種至多十二瓶(盒)，合計以不超過三十六瓶(盒)為限。<br />
+                    3.攜帶入境超過前述限量之中藥材及中藥製劑(藥品)，應檢附醫療證明之文件(如醫師診斷證明)，且不逾3個月用量為限。<br />
+                    4.非處方藥品於6個月內不得重複申請。
+                </p>
+                <p>
+                    三、說明：<br />
+                    1.旅客或隨交通工具服務人員攜帶入境或郵寄入境之自用藥品，不得供非自用之用途。<br />
+                    2.本表鎖定之產品種類：瓶(盒、罐、條、支、包、袋)等均以「原包裝」為限。<br />
+                    3.藥品成分含保育類物種者，應先取得主管機關(農業部)同意始可攜帶入境。<br />
+                    4.自中國大陸輸入中藥製劑(藥品)需另取得經濟部國際貿易署輸入許可文件。
+                <p />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>案件類型</label>
+            <div class="col-sm-4">
+                @if (Model.CSEE_TYPE == "Y")
+                {
+                    <label class="radio-inline "><input type="radio" name="optradio3" value="Y" disabled checked>事前申請</label>
+                    <label class="radio-inline "><input type="radio" name="optradio3" value="N" disabled>補辦案件</label>
+                }
+                else
+                {
+                    <label class="radio-inline "><input type="radio" name="optradio3" value="Y" disabled>事前申請</label>
+                    <label class="radio-inline "><input type="radio" name="optradio3" value="N" disabled checked>補辦案件</label>
+                }
+
+            </div>
+            <label class="step-label col-sm-2" for="">申辦日期</label>
+            <div class="col-sm-4">
+                @Html.BLATYPForTurbo(m => m.APP_TIME_TW, Model.APP_TIME_TW)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">@Model.NAME</p>
+            </div>
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證字號ID QUMDRE</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">@Model.IDN</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>地址Address</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.TAX_ORG_CITY_CODE  @Model.ADDR</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話Tel. No.</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.TEL</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>行動電話</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">@Model.MOBILE</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.EMAIL</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>生產國別Country of origin</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">@Model.ProductionCountry_TEXT</p>
+            </div>
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>賣方國家Country of seller</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">@Model.SellerCountry_TEXT</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>起運國家Shipping port</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">@Model.ShippingPort_TEXT</p>
+            </div>
+        </div>
+        <h2 class="second-title">民眾輸入自用中藥切結書(使用方法)</h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>個人用途</label>
+            <div class="col-sm-10">
+                @if (Model.RADIOUSAGE == "1")
+                {
+                    <label class="radio-inline "><input type="radio" value="Y" disabled checked>1.疾病:請檢附醫療機構開立之診斷書，處方箋等醫療證明文件之影本。</label>
+                }
+                else
+                {
+                    <label class="radio-inline "><input type="radio" value="Y" disabled>1.疾病:請檢附醫療機構開立之診斷書，處方箋等醫療證明文件之影本。</label>
+                }
+                <br />
+                @if (Model.RADIOUSAGE == "2")
+                {
+                    <label class="radio-inline "><input type="radio" value="Y" disabled checked>2.保健養生:@Model.RADIOUSAGE_TEXT</label>
+                }
+                else
+                {
+                    <label class="radio-inline "><input type="radio" value="Y" disabled>2.保健養生:</label>
+                }
+                <br />
+                @if (Model.RADIOUSAGE == "3")
+                {
+                    <label class="radio-inline "><input type="radio" value="Y" disabled checked>3.其他:@Model.RADIOUSAGE_TEXT</label>
+                }
+                else
+                {
+                    <label class="radio-inline "><input type="radio" value="Y" disabled>3.其他:</label>
+                }
+            </div>
+        </div>
+        <h2 class="second-title">申請項目</h2>
+        @if (Model.newApplyItem != null)
+        {
+            foreach (var item in Model.newApplyItem)
+            {
+                var item2 = Model.ApplyItem2[Convert.ToInt32(item.ItemNum) - 1];
+                <div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">項次Item</label>
+                        <div class="col-sm-4">
+                            <p class="form-control-static">@item.ItemNum</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>產品類別ProductType</label>
+                        <div class="col-sm-10">
+                            @if (item.PorcType == "0")
+                            {
+                                @:中藥材
+                            }
+                            else if (item.PorcType == "1")
+                            {
+                                @:中藥製劑
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>貨名Commodities</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">@item.Commodities</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">備註Memo</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">@item.CommodMemo</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">@item.CommodType_TEXT</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量Q'ty</label>
+                        <div class="col-sm-4">
+                            <p class="form-control-static">@item.Qty</p>
+                        </div>
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量單位Unit</label>
+                        <div class="col-sm-4">
+                            <p class="form-control-static">@item.Unit_TEXT</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量Q'ty</label>
+                        <div class="col-sm-4">
+                            <p class="form-control-static">@item.SpecQty</p>
+                        </div>
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量單位Unit</label>
+                        <div class="col-sm-4">
+                            <p class="form-control-static">@item.SpecUnit_TEXT</p>
+                        </div>
+                    </div>
+                    <h2 class="second-title">民眾輸入自用中藥切結書(使用方法)</h2>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥品名稱</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">@item2.ItemName</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>用法</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">@item2.Usage</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>總數量</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">共@(item2.ItemQty)@(item2.ItemQtyUnit)，每@(item2.ItemQtyUnit2)@(item2.ItemSpecQty)@(item2.ItemSpecQtyUnit)</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <p style="height:10px;background-color:burlywood;"></p>
+                    </div>
+                </div>
+            }
+        }
+
+        <h2 class="second-title">佐證文件檔案上傳</h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+            <div class="col-sm-10">
+                @if (Model.RADIOYN == "Y")
+                {
+                    <label class="radio-inline "><input type="radio" value="Y" disabled checked>是</label>
+                    <label class="radio-inline "><input type="radio" value="N" disabled>否</label>
+                }
+                else
+                {
+                    <label class="radio-inline "><input type="radio" value="Y" disabled>是</label>
+                    <label class="radio-inline "><input type="radio" value="N" disabled checked>否</label>
+                }
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">國際包裹招領單或海關補辦驗關通關手續通知書(事先提出申請無須檢附)之正面影本</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(m => m.File_1, Model.File_1_Name)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">國際包裹招領單或海關補辦驗關通關手續通知書(事先提出申請無須檢附)之反面影本</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(m => m.File_2, Model.File_2_Name)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">醫療用途、其他用途或藥品數量超過限量表規定時需檢附國內外醫療機構出具之醫療證明文件</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(m => m.File_3, Model.File_3_Name)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">產品外盒、仿單、說明書</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(m => m.File_4, Model.File_4_Name)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">身分證影本(正面)</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(m => m.File_5, Model.File_5_Name)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">身分證影本(反面)</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(m => m.File_6, Model.File_6_Name)
+            </div>
+        </div>
+        @if (Model.ApplyFile != null)
+        {
+            for (var i = 0; i < Model.ApplyFile.Count; i++)
+            {
+                <div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">其他檔案或證明文件</label>
+                        <div class="col-sm-10">
+                            @Html.ImageHoverForTurbo(m => m.ApplyFile[i].File, Model.ApplyFile[i].FileName, i)
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">其他檔案或證明文件</label>
+                    <div class="col-sm-10">
+
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="send_preview()">確認送出</button>
+            <button type="button" class="btn btn-clear" onclick="back_preview()">返回修改</button>
+            @*<button type="button" class="btn btn-save" onclick="print2()">預覽申請書</button>
+            <button type="button" class="btn btn-save" onclick="print1()">預覽切結書</button>*@
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('[data-hover!=\"\"]').hover();
+    });
+</script>

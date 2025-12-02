@@ -1,0 +1,24 @@
+﻿@using EECOnline.Areas.A6.Models;
+@model C104MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        @Html.HiddenFor(x => x.Grid[i].keyid)
+        @Html.HiddenFor(x => x.Grid[i].type_name)
+        @Html.HiddenFor(x => x.Grid[i].type_price)
+        @Html.HiddenFor(x => x.Grid[i].type_date1)
+        @Html.HiddenFor(x => x.Grid[i].type_date2)
+        <tr>
+            <td align="center">
+                <button type="button" class="btn btn-login" onclick="doModify('@item.keyid')">編輯</button>
+            </td>
+            <td align="center">@item.type_name</td>
+            <td align="center">@item.type_price</td>
+            <td align="center">@item.type_date1_Text</td>
+            <td align="center">@item.type_date2_Text</td>
+        </tr>
+    }
+}

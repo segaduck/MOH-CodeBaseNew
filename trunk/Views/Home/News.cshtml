@@ -1,0 +1,39 @@
+﻿@using EECOnline.Services;
+@using EECOnline.Models;
+@model NewsModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<section class="main-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="board board-white">
+                    <a class="accesskey" href="#aC" id="aC" accesskey="C" title="主要內容區">:::</a>
+                    <ul class="breadcrumb" style="background-color: unset;">
+                        <li><i class="fa fa-home"></i><a href="~/Home/Index">首頁</a></li>
+                        <li><a href="~/Home/News">最新消息</a></li>
+                    </ul>
+                    <h1 class="board-title titleBg-linear main-title"><i class="far fa-newspaper"></i>最新消息</h1>
+                    <div class="news-content">
+                        <div class="table-responsive">
+                            <div style="text-align: center">
+                                @Html.Partial("_PagingLink", Model)
+                            </div>
+                            <table class=" table-news">
+                                <tbody id="rows">
+                                    @Html.Partial("_GridRows_News", Model)
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+
+</script>

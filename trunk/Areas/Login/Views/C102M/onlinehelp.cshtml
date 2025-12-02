@@ -1,0 +1,22 @@
+﻿@using EECOnline.Models;
+@using EECOnline.Services;
+@using EECOnline.Areas.Login.Models;
+@model C102MGetFileViewModel
+@{
+    Layout = null;
+}
+
+@if (Model.file_id == "1")
+{
+    <iframe style="width:100%;height:100%" src="~/Template/OperationManual/109年衛生福利部「民眾線上申請電子病歷服務平台管理系統」_系統管理手冊.pdf"></iframe>
+
+}
+else
+{
+    <iframe style="width:100%;height:100%" src="~/Template/OperationManual/線上預約系統_簡易使用說明_20210719.pdf"></iframe>
+
+}
+
+<script type="text/javascript">
+
+</script>

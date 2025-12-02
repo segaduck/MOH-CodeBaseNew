@@ -1,0 +1,305 @@
+﻿@using ES.Models
+@{
+    string account = "";
+
+    if (Request.IsAuthenticated)
+    {
+        System.Web.Security.FormsIdentity id = (System.Web.Security.FormsIdentity)System.Web.HttpContext.Current.User.Identity;
+        System.Web.Security.FormsAuthenticationTicket ticket = id.Ticket;
+        Dictionary<string, string> userData = ES.Utils.DataUtils.JsonStringToDictionary(ticket.UserData);
+
+        if (userData.ContainsKey("AdminAccount"))
+        {
+            account = userData["AdminAccount"];
+        }
+    }
+
+    int zTreeExpandNodeId = 0;
+    if (ViewBag.zTreeExpandNodeId != null)
+    {
+        zTreeExpandNodeId = ViewBag.zTreeExpandNodeId;
+    }
+
+    int timeout = 20;
+    DateTime now = DateTime.Now;
+    string twyr = (now.Year - 1911).ToString();
+    string mon = now.Month.ToString("d2");
+    string day = now.Day.ToString("d2");
+    SessionModel sm = SessionModel.Get();
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>衛生福利部｜人民申請案件線上申辦系統</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=8,9,edge,chrome=1" />
+    <meta charset="utf-8" />
+    <meta name="google-site-verification" content="xO1rl3yyV9pA8bYEEbsrQHV6bsvYiN-OmygfyITWAyQ" />
+    <meta name="description" content="衛生福利部｜人民申請案件線上申辦系統" />
+    <meta name="keywords" content="" />
+    <meta name="author" content="" />
+    <meta name="copyright" content="Taiwan Power Company. All Rights Reserved." />
+    <meta name="robots" content="all" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+
+    <!-- Latest compiled and minified CSS -->
+    <!-- 警告：Respond.js 無法在 file:// 協定下運作 -->
+    <!--[if lt IE 9]>
+         <script src="js/html5shiv.js" type="text/javascript"></script>
+    <script src="js/respond.min.js" type="text/javascript"></script>
+       <![endif]-->
+    <!--[if IE]><script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <!--[if gte IE 9]
+    <style type="text/css">
+    .gradient {
+    filter: none;
+    }
+    </style>
+    <![endif]-->
+    <!-- Resource style -->
+
+    @*<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">*@
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/timepicker")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/Scripts/jquery-confirm.min.js")
+    @Scripts.Render("~/Scripts/jquery.fileDownload.js")
+    @Scripts.Render("~/Scripts/vue.js")
+
+    @Styles.Render("~/Content/fontawesome/css")
+    @Styles.Render("~/Content/base/css")
+    @Styles.Render("~/Content/themes/redmond/css")
+    @Styles.Render("~/Content/themes/timepicker")
+    @Styles.Render("~/Content/zTreeStyle/css")
+    @Styles.Render("~/Content/jquery-confirm.min.css")
+
+    <!--Menu-->
+    @Styles.Render("~/Content/zTreeStyle/css")
+    @Scripts.Render("~/bundles/ztreecore")
+    @Scripts.Render("~/bundles/ztreecheck")
+
+    <script src="@Url.Action("Index", "Home", new { Area="" })Scripts/public.js" type="text/javascript"></script>
+
+    <script language="javascript" type="text/javascript">
+
+        function showMessage() {
+            var message = "@Html.Raw(@ViewBag.tempMessage)";
+
+            if (message != "") {
+                jAlert(message);
+            }
+        }
+
+        var leftMemu = {
+            async: {
+                enable: true,
+                url: "@Url.Action("Menu", "Main")",
+                autoParam:["id"],
+                dataFilter: treeFilter
+            },
+            callback: {
+                onAsyncSuccess: zTreeOnAsyncSuccess
+            }
+
+        };
+
+        var firstAsyncSuccessFlag = true;
+
+        function zTreeOnAsyncSuccess(event, treeId, treeNode) {
+            if(firstAsyncSuccessFlag) {
+                try {
+                    var zTree = $.fn.zTree.getZTreeObj(treeId);
+                    var nodes = zTree.getNodes();
+
+                    if (!nodes) return null;
+
+                    for(var i=0; i<nodes.length; i++) {
+                        if(nodes[i].id == @(zTreeExpandNodeId)) zTree.expandNode(nodes[i], true);
+                    }
+                    firstAsyncSuccessFlag= false;
+                }
+                catch(ex){
+                }
+            }
+        }
+
+        function treeFilter(treeId, parentNode, childNodes) {
+            if (!childNodes) return null;
+            for (var i=0, l=childNodes.length; i<l; i++) {
+                childNodes[i].name = childNodes[i].name.replace(/\.n/g, '.');
+                if(!childNodes[i].isParent) {
+                    childNodes[i].url = "@Url.Action("Index", "Main")/" + childNodes[i].url;
+                }
+            }
+            return childNodes;
+        }
+
+        $(function () {
+            $.fn.zTree.init($("#treeMenu"), leftMemu);
+        });
+
+        @Html.Raw(@ViewBag.Script)
+
+        // 全域下載
+        function doDownLoadFILE(FILENAME,APP_ID, FILE_NO,SRC_NO) {
+            var downLoadUrl = '@Url.Action("DownLoadsFILE","Ajax",new { area = ""})';
+            var parms = {
+                "FILENAME": FILENAME,
+                "APP_ID": APP_ID,
+                "FILE_NO": FILE_NO,
+                "SRC_NO": SRC_NO
+            };
+
+            ajaxDownloadFile(downLoadUrl, parms, true,FILENAME);
+        }
+
+        function doFrontDownLoadFILE(FILENAME) {
+            var downLoadUrl = '@Url.Action("DownLoadsFrontFILE", "Ajax",new { area = ""})';
+            var parms = {
+                "FILENAME": FILENAME
+            };
+
+            ajaxDownloadFile(downLoadUrl, parms, true,FILENAME);
+        }
+    </script>
+
+</head>
+<body onload="showMessage();">
+    @*@Html.Partial("_DatePickerTW")*@
+    <!-- header -->
+    <div class="mainbg">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="main-header">
+                    <div class="col-sm-7 col-md-8 logo">
+                        <a href="#"><img src="/images/logo.png" title="衛生福利部｜人民申請案件線上申辦系統" alt="衛生福利部｜人民申請案件線上申辦系統" class="img-responsive"></a>
+                    </div>
+                    <div class="col-sm-5 col-md-4">
+                        <ul class="header-helper">
+                            <li>
+                                <img src="~/Images/icon-timer.svg"> 倒數&nbsp;
+                                <span class="data-cal-number-small">@(twyr)</span>
+                                <span style="font-size:9pt;">年</span>
+                                <span class="data-cal-number-small">@(mon)</span>
+                                <span style="font-size:9pt;">月</span>
+                                <span class="data-cal-number-small">@(day)</span>
+                                <span style="font-size:9pt;">日</span><span class="data-timer-number"></span>
+                            </li>
+                            <li><i class="fas fa-user-circle icon"></i>@sm.UserInfo.Admin.NAME，您好</li>
+
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <!-- menu -->
+                <div class="col-sm-2">
+                    <div class="leftnav leftnav-blue" id="leftNavs">
+                        <ul id="treeMenu" class="ztree"></ul>
+                    </div>
+                </div>
+
+                <!-- main content start-->
+                <div class="col-sm-10">
+                    <div class="main-content">
+                        <!--麵包屑-->
+                        @*<div class="bread">
+                            <i class="fas fa-home"></i><a href="index.html">首頁</a> / <a href="index.html">申辦案件管理</a> / <a href="index.html">案件審理作業</a>
+                        </div>*@
+                        <!--主頁-->
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- footer -->
+    <div class="col-sm-12">
+        <div class="footer">
+            Copyright &copy;
+            <script type="text/javascript">
+                function ShowNowYear() {
+                    var now = new Date();
+                    var year = now.getFullYear();
+                    document.write(year);
+                }
+            </script>
+            <script type="text/javascript">ShowNowYear();</script>
+            衛生福利部版權所有 Ministry of Health and Welfare, Exective Yuan R.O.C. (Taiwan) All rights reserved.123
+        </div>
+        <div id="dFooterMenu" style="float: right;">｜@Html.ActionLink("隱私權政策及安全宣告", "Privacy", "Home", new { Area = "" }, null)｜@Html.ActionLink("網站著作權聲明", "", new { Area = "" }, null)｜</div>
+    </div>
+
+    <script language="javascript" type="text/javascript">
+
+            var __ssTimeout = {
+        //timeout   系統登入逾時時間，單位：秒
+        //counter   倒數計時計數器。
+        //hint      登入即將過期提醒訊息的彈出時間點。單位：秒
+        //hintFired 是否顯示過登入即將過期訊息。
+        "timerId": undefined,
+        "redirectUrl": "@Url.Content("~/BACKMIN/Logout/Index")",
+        "board": $("span.data-timer-number"),
+        "timeout": parseInt("@(timeout * 60)", 10),
+        "counter": parseInt("@(timeout * 60)", 10),
+        "hint": 300,
+        "hintFired": 0,
+        refreshBoard: function () {
+            if (this.counter > 0) {
+                //20171214 修正 IE11 不支援 Math.trunc 方法問題
+                var m = (Math.trunc) ? Math.trunc(this.counter / 60) : Math.floor(this.counter / 60);
+                var s = this.counter % 60;
+                m = ((m < 10) ? "0" : "") + m;
+                s = ((s < 10) ? "0" : "") + s;
+                this.board.text([m, ":", s].join(""));
+            }
+            else {
+                this.board.text("00:00");
+            }
+        },
+        resetCount: function () {
+            this.counter = this.timeout;
+            this.hintFired = 0;
+            this.refreshBoard();
+        },
+        countDown: function () {
+            var self = this;
+            if (this.counter <= 0) {
+                blockAlert("您的登入已經過期，請重新登入系統！", "登入逾時", function () {
+                    window.location.href = self.redirectUrl;
+                });
+                return;
+            }
+
+            this.timerId = setTimeout(function () { self.countDown(); }, 1000);
+            if (this.counter > 0) this.counter--;
+            this.refreshBoard();
+
+            if (this.counter <= this.hint && this.hintFired == 0) {
+                this.hintFired = 1;
+                blockConfirm("您的登入即將過期，要延長時間嗎？", "", function () { self.resetCount(); }, null, "延長", "不延長");
+            }
+        }
+    }
+
+    function logout() {
+        blockConfirm("您確定要登出系統？", null, function () {
+            //window.location.href = "@(Url.Action("Index", "Logout", new { area = "" }))";
+            window.location.href = "@Url.Content("~/BACKMIN/Logout/Index")";
+        });
+        }
+
+        $(document).ready(function () {
+            __ssTimeout.countDown();
+        });
+
+    </script>
+
+</body>
+</html>

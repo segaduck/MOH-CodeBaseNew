@@ -1,0 +1,184 @@
+﻿@using ES.Utils;
+@model ES.Areas.Admin.Models.CaseQueryModel
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            $('#sel_SRV_ID').val('@this.Model.SRV_ID');
+        });
+        function showAPPLYDATA(applyId) {
+            window.open('@Url.Action("Index", "Home", new { area = "" })' + "Form/Preview/" + applyId , '', 'width=800,height=600,menubar=yes,scrollbars=yes,resizable=yes');
+        }
+
+        function showDocumentData(srvId,applyId)
+        {
+            window.open('@Url.Action("DocumentView", "Case")' + '?applyId=' + applyId + '&srvId=' + srvId, '', 'width=800,height=600,menubar=yes,scrollbars=yes,resizable=yes');
+        }
+</script>
+
+@{
+    ViewBag.Title = "案件處理";
+    ViewBag.FunctionTitle = "案件處理";
+}
+@using (Html.BeginForm("Edit1", "Case", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    @Html.HiddenFor(m => m.ActionType)
+    @Html.HiddenFor(m => m.APP_TIME)
+    @Html.HiddenFor(m => m.UNIT_CD)
+
+    <table class="formTable1">
+        <caption>
+            申辦案件內容
+        </caption>
+        <tr>
+            <th style="width: 140px;">
+                申辦編號
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.APP_ID)
+                @Html.DisplayFor(m => m.APP_ID)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                申辦項目
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.SRV_NAME)
+                @Html.Raw(this.Model.SRV_NAME)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                申請人姓名
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.NAME)
+                @Html.DisplayFor(m => m.NAME)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                申請人身分證號/統編
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.IDN)
+                @Html.DisplayFor(m => m.IDN)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                處理起算日
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.APP_STR_DATE)
+                @Html.Raw(this.Model.APP_STR_DATE.HasValue ? this.Model.APP_STR_DATE.Value.ToString("yyyy/MM/dd") : "")
+            </td>
+        </tr>
+        <tr>
+            <th>
+                繳費時機
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.PAY_POINT)
+                @Html.HiddenFor(m => m.PAY_A_FEE)
+                @Html.HiddenFor(m => m.PAY_C_FEE)
+                @Html.HiddenFor(m => m.PAY_A_PAID)
+                @{
+                    switch (this.Model.PAY_POINT)
+                    {
+                        case "A":
+                            @Html.Raw("不需繳費")
+                            break;
+                        case "B":
+                            @Html.Raw("申請時繳費：金額<font color=red>" + this.Model.PAY_A_FEE + "</font>元整")
+                            break;
+                        case "C":
+                            @Html.Raw("申請時繳費：金額<font color=red>" + this.Model.PAY_C_FEE + "</font>元整")
+                            break;
+                        case "D":
+                            @Html.Raw("申請時繳費：金額<font color=red>" + this.Model.PAY_A_FEE + "</font>元整<br />")
+                            @Html.Raw("審核後繳費：金額<font color=red>" + this.Model.PAY_C_FEE + "</font>元整")
+                            break;
+                    }
+                }
+            </td>
+        </tr>
+        <tr>
+            <th>
+                繳費方式
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.PAY_METHOD)
+                @Html.Raw(WebUtils.GetPay_Method(this.Model.PAY_METHOD))
+            </td>
+        </tr>
+        @*
+            <tr style="display: none;">
+                <th>
+                    以案案號
+                </th>
+                <td>
+                    @Html.HiddenFor(m => m.MOHW_CASE_NO)
+                    @Html.Raw(this.Model.MOHW_CASE_NO)
+                </td>
+            </tr>
+        *@
+        <tr>
+            <th>
+                承辦人員
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.ACC_NAME)
+                @Html.Raw(this.Model.ACC_NAME)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                案件進度
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.FLOW_CD)
+                @*@Html.Raw(WebUtils.GetFLOWCDName(this.Model.UNIT_CD.Value, this.Model.FLOW_CD))*@
+                @Model.CASE_STATUS
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table class="formTable1">
+        <caption>
+            案件內容修改
+        </caption>
+        <tr style="display: none;">
+            <th style="width: 140px;">
+                案件類別
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.SRV_ID)
+                <select id="sel_SRV_ID" onchange="$('#SRV_ID').val(this.value)">
+                    @{
+                        foreach (ES.Areas.Admin.Models.Map map in WebUtils.GetSERVICEName(this.Model.UNIT_CD.Value))
+                        {
+                            @Html.Raw("<option value='" + map.GetString("SRV_ID") + "'>" + map.GetString("NAME") + "</option>");
+                        }
+                    }
+                </select>
+                <input type="submit" value="繳費金額計算" onclick="$('#ActionType').val('COUNT')" />
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 140px;">公文文號</th>
+            <td>@Html.TextBoxFor(m => m.MOHW_CASE_NO)</td>
+        </tr>
+    </table>
+    <br />
+    <div class="formButtomBar">
+        <input type="submit" value="存檔" onclick="$('#ActionType').val('SAVE')" />
+        <input type="submit" value="退回重新分文" onclick="$('#ActionType').val('DISPATCH')" />
+        <input type="button" value="案件內容" onclick="showAPPLYDATA('@this.Model.APP_ID')" />
+        @if (Model.SRV_ID == "005001" || Model.SRV_ID == "005002" || Model.SRV_ID == "005003" || Model.SRV_ID == "005004" || Model.SRV_ID == "005005")
+        {
+            <input type="button" value="公文內容" onclick="showDocumentData('@this.Model.SRV_ID','@this.Model.APP_ID')" />
+        }
+        <input type="button" value="返回" onclick="document.location.href='@Url.Action("Index", "Case")';" />
+    </div>
+}

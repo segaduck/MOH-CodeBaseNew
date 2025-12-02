@@ -1,0 +1,194 @@
+﻿@using ES.Models;
+@using ES.Services;
+@using ES.Models.ViewModels;
+@model Apply_010002FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel sc = new ShareCodeListModel();
+    ViewBag.SRV_NAME = "低收入戶及中低收入戶之體外受精(俗稱試管嬰兒)補助方案";
+
+    string s_MYDATA_GET1 = "";
+    if (Model.MYDATA_GET1 != null && Model.MYDATA_GET1.Equals("Y")) { s_MYDATA_GET1 = @"國民身分證及中低收入戶或低收入戶證明文件-同意自「個人化資料自主運用(MyData)平臺」取得資料(需使用自然人憑證驗證身分)"; }
+    //string s_MYDATA_GET2 = "";
+    //if (Model.MYDATA_GET2 != null && Model.MYDATA_GET2.Equals("Y")) { s_MYDATA_GET2 = @"中低收入戶或低收入戶證明文件-同意自Mydata平台取得資料"; }
+    string s_H_EQUAL = "";
+    if (Model.H_EQUAL != null && Model.H_EQUAL.Equals("Y")) { s_H_EQUAL = @"同戶籍地址"; }
+    string s_MERGEYN = "否";
+    if (Model.MERGEYN != null && Model.MERGEYN == "Y") { s_MERGEYN = "是"; }
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <h1 class="form-title title-bg-y">申辦表件預覽</h1>
+        <div class="form-set">
+
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">申辦項目</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Html.Raw(ViewBag.SRV_NAME)</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">承辦單位</label>
+                <div class="col-sm-10">@(Model.ORG_NAME)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">申辦日期</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static"> @Model.APPLY_DATE_TW</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人</label>
+                <div class="col-sm-10">@(Model.APNAME)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人身份證統一編號/外籍統一證號或護照號碼</label>
+                <div class="col-sm-4">@(Model.IDN)</div>
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出生年月日</label>
+                <div class="col-sm-4">@(Model.BIRTHDAY_TW)</div>
+                @*<div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        @(s_MYDATA_GET)
+                    </div>*@
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人電話</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">(@Model.TEL_0)@Model.TEL_1@((string.IsNullOrWhiteSpace(Model.TEL_2) ? "" : "#" + Model.TEL_2))</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人手機</label>
+                <div class="col-sm-10">@(Model.MOBILE)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">申請人E-MAIL</label>
+                <div class="col-sm-10">@(Model.EMAIL)</div>
+            </div>
+            <div class="form-group">
+                <label class='step-label col-sm-2'><span style="color:red;">*</span>配偶姓名</label>
+                <div class="col-sm-10">@(Model.SPNAME)</div>
+            </div>
+            <div class="form-group">
+                <label class='step-label col-sm-2'><span style="color:red;">*</span>配偶身份證統一編號/外籍統一證號或護照號碼</label>
+                <div class="col-sm-4">@(Model.SPIDN)</div>
+                <label class='step-label col-sm-2'><span style="color:red;">*</span>配偶出生年月日</label>
+                <div class='col-sm-4'>@(Model.SPBIRTHDAY_TW)</div>
+            </div>
+            <div class='form-group'>
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>配偶電話</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">(@Model.SPTEL_0)@Model.SPTEL_1@((string.IsNullOrWhiteSpace(Model.SPTEL_2) ? "" : "#" + Model.SPTEL_2))</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>配偶手機</label>
+                <div class="col-sm-10">@(Model.SPMOBILE)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">配偶E-MAIL</label>
+                <div class="col-sm-10">@(Model.SPEMAIL)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>戶籍地址</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.H_ZIPCODE @Model.H_ZIPCODE_TEXT@Model.H_ADDR</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>現居地</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.C_ZIPCODE @Model.C_ZIPCODE_TEXT@Model.C_ADDR</p>
+                </div>
+            </div>
+            <h2 class="second-title">佐證文件檔案上傳<span style="color:red">(總檔案大小5MB以下)</span></h2>
+            <!--網站 佐證文件採合併檔案-->
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Html.Raw(s_MERGEYN)</p>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(s_MYDATA_GET1))
+            {
+                <div class="form-group">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <label style="color:#00AA00;font-weight:bold;margin-top:5px;margin-bottom:8px;">@(s_MYDATA_GET1)</label>
+                        <p style="color:#AA0000;font-weight: bold;">在您點選「確認送出」後，頁面將導向「MyData 數位服務個人化網站」進行身分認證及資料同意確認。</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FILE_IDCNF)</label>
+                    <div class="col-sm-10">
+                        @Html.ImageHoverForTurbo(m => m.FILE_IDCNF, Model.FILE_IDCNF_TEXT)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FILE_IDCNB)</label>
+                    <div class="col-sm-10">
+                        @Html.ImageHoverForTurbo(m => m.FILE_IDCNB, Model.FILE_IDCNB_TEXT)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FILE_LOWREC)</label>
+                    <div class="col-sm-10">
+                        @Html.ImageHoverForTurbo(m => m.FILE_LOWREC, Model.FILE_LOWREC_TEXT)
+                    </div>
+                </div>            
+            }
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FILE_DISEASE)</label>
+                <div class="col-sm-10">
+                    @Html.ImageHoverForTurbo(m => m.FILE_DISEASE, Model.FILE_DISEASE_TEXT)
+                </div>
+            </div>
+
+            @*<h2 class="second-title">提醒郵遞</h2>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">提醒須郵遞投回</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">(1)郵寄人工生殖機構開立之不孕正診斷證明正本。(2)中低收入戶或(前台)低收入證明文件正本(無介接MyData平台)，需上傳電子檔 </p>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+</div>
+
+<!--form-->
+<div class="form-set">
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="doSave()">確認送出</button>
+        <button type="button" class="btn btn-clear" onclick="doback()">返回修改</button>
+    </div>
+
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('[data-hover!=\"\"]').hover();
+    });
+
+    // 送出-doSave-確認送出
+    function doSave() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+
+    // 返回
+    function doback() {
+        $('#form_tab').attr('class', 'active');
+        $('#form').attr('class', 'tab-pane fade active in');
+        $('#form_tab1').removeClass('active');
+        $('#form1').attr('class', 'tab-pane fade');
+    }
+</script>

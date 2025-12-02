@@ -1,0 +1,592 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_005013FormModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+}
+
+@using (Html.BeginForm("Apply", "Apply_005013", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink">
+                <i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">民眾少量自用中藥貨品進口</a>
+            </div>
+            <div class="clearfix"></div>
+            <div class="step_map">
+                <ul>
+                    <li id="apply" class="active">填寫申報表件並上傳檔案</li>
+                    <li id="preview">預覽申辦表件</li>
+                    <li id="save">完成申報</li>
+                </ul>
+            </div>
+            <div class="tab-content" id="myTabContent">
+                <div id="form" class="tab-pane fade active in">
+                    @Html.Partial("Apply")
+                </div>
+                <div id="form1" class="tab-pane fade">
+                    @Html.Partial("PreView005013")
+                </div>
+                <div id="form2" class="tab-pane fade">
+                    @Html.Partial("Save")
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        itemNumReBuild();
+        $('#ShippingPort').change(function () {
+            GetHarborList('ShippingPort', 'ShippingPort1');
+            $('#ShippingPort1').val($('#ShippingPort option:selected').text());
+        });
+
+        $('#TAX_ORG_CITY_CODE').on('blur', doTAX_ORG_CITYNameGet);
+        doTAX_ORG_CITYNameGet();
+
+        radioChane();
+        radioChane1();
+        radioChane2();
+
+        $("#labRADIOUSAGE").hide();
+    });
+
+    //申請頁面送出
+    function send_apply() {
+        var ErrMsg = "";
+        //合併檔案檢查
+        if ($('input[name="optradio2"]:checked').val() == "Y") {
+            var fileExist = 0;
+            for (var i = 1; i <= 2; i++) {
+                if ($("#File_" + i).val() != "") {
+                    fileExist++;
+                }
+            }
+            if (fileExist == 0) {
+                ErrMsg += "請至少上傳一筆檔案!\r\n";
+            }
+        }
+
+        var chk = document.getElementById('chkDeclare');
+        var chk2 = document.getElementById('chkDeclare2');
+        var chk3 = document.getElementById('chkDeclare3');
+        if (chk.checked) {
+        } else {
+            ErrMsg += "請勾選聲明第一點!\r\n";
+        }
+        if (chk2.checked) {
+        } else {
+            ErrMsg += "請勾選聲明第二點!\r\n";
+        }
+        if (chk3.checked) {
+        } else {
+            ErrMsg += "請勾選聲明第三點!\r\n";
+        }
+
+        if (ErrMsg == "") {
+            var dataApply = getFormSubmitableFieldsWithCheckbox($("form[id=main_form]"));
+            ajaxLoadMore('@Url.Action("Apply")',
+                dataApply,
+                function (retData) {
+                    if (retData.status) {
+                        var data = getFormDataToObject($("form[id=main_form]"));
+                        ajaxLoadMore('@Url.Action("PreView")',
+                            data,
+                            function(getHtml) {
+                                $('#apply').removeClass('active');
+                                $('#preview').attr('class', 'active');
+                                $('#form').attr('class', 'tab-pane fade');
+                                $('#form1').attr('class', 'tab-pane fade active in');
+                                $("#form1").html(getHtml);
+                            });
+                    } else {
+                        blockAlert(retData.message, "提示訊息");
+                    }
+                });
+        } else {
+            blockAlert(ErrMsg, "提示訊息");
+        }
+    }
+
+    //預覽頁面返回
+    function back_preview() {
+        $('#preview').removeClass('active');
+        $('#apply').attr('class', 'active');
+        $('#form1').attr('class', 'tab-pane fade');
+        $('#form').attr('class', 'tab-pane fade active in');
+    }
+
+    //預覽頁面送出
+    function send_preview() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+
+    function RadioChange() {
+        $("#CSEE_TYPE").val($('input[name="optradio"]:checked').val());
+    }
+
+    function fileChange(sender) {
+        // 可接受的附檔名
+        var validExts = new Array(".DOC",
+            ".DOCX",
+            ".ODT",
+            ".ODF",
+            ".ODS",
+            ".XLS",
+            ".XLSX",
+            ".PDF",
+            ".PPT",
+            ".PPTX",
+            ".JPG",
+            ".JPEG",
+            ".BMP",
+            ".PNG",
+            ".GIF",
+            ".TIF",
+            ".ZIP");
+
+        var fileExt = sender.value;
+        fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            sender.value = null;
+            return false;
+        } else {
+            if (sender.name.substr(0, 9) == "ApplyFile") {
+                $("input[name='" + sender.name + "Name']").val(sender.files.item(0).name);
+            } else {
+                $("#" + sender.name + "_Name").val(sender.files.item(0).name);
+            }
+            return true;
+        }
+    }
+
+    //港口連動
+    function GetHarborList(TRN_PORT_ID, TRN_PORT_ID2) {
+        var port = $('#' + TRN_PORT_ID);
+
+        var data = {
+            'url': '/Ajax/GetHarborList',
+            'msg': '查無該港口!!',
+            'arg': { 'port': port.val() },
+            'result': $('#' + TRN_PORT_ID)
+        };
+
+        if ($.trim(data.arg.port) == '')
+            data.result.val('');
+        else {
+            port.val(data.arg.port);
+            loadHarborList(data, TRN_PORT_ID2);
+        }
+    };
+
+    //港口連動
+    function loadHarborList(data, objectId) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function(resp) {
+                if (resp === undefined) {
+                    data.result.val('');
+                } else {
+                    if (resp.data != '') {
+                        $('#' + objectId).empty();
+                        $.each(resp.data,
+                            function(i, item) {
+                                $('#' + objectId).append('<option value=' + item.CODE + '>' + item.TEXT + '</option>');
+                            });
+                    } else {
+                        data.result.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    //動態新增欄位(申請項目)
+    $(".add").on("click",
+        function() {
+            var addItem = $("#Sample_ApplyItem").clone();
+            var maxItem = $("[id^='FItem_']").length;
+            addItem.removeAttr("hidden");
+            addItem.attr("id", "FItem_" + (maxItem + 1));
+            $("#FItem_" + maxItem).after(addItem);
+            $("#FItem_" + (maxItem + 1) + " button").attr("onClick", "del('FItem_" + (maxItem + 1) + "')");
+            $("[name^='newApplyItem[9999]']").each(function () {
+                if ($(this).parent().parent().parent().attr("id") == "FItem_" + (maxItem + 1)) {
+                    var itemName = $(this).attr("name").split('.')[1];
+                    $(this).attr("name", "newApplyItem[" + (maxItem) + "]." + itemName);
+                    $(this).attr("id", "newApplyItem_" + (maxItem) + "__" + itemName);
+                }
+            });
+            $("[name^='ApplyItem2[9999]']").each(function () {
+                if ($(this).parent().parent().parent().attr("id") == "FItem_" + (maxItem + 1)) {
+                    var itemName = $(this).attr("name").split('.')[1];
+                    $(this).attr("name", "ApplyItem2[" + (maxItem) + "]." + itemName);
+                    $(this).attr("id", "ApplyItem2_" + (maxItem) + "__" + itemName);
+                }
+            });
+            itemNumReBuild();
+        });
+
+    //動態刪除欄位(申請項目)
+    function del(item) {
+        //刪除
+        $("#" + item).remove();
+        //重新編號 divItem重新編碼
+        var itemNum = 1;
+        $('div').each(function() {
+            if ($(this).attr("id") != undefined) {
+                if ($(this).attr("id").substr(0, 6) == "FItem_") {
+                    $(this).attr("id", "FItem_" + itemNum);
+                    itemNum++;
+                }
+            }
+        });
+        //內部欄位變更編碼
+        $("[id^='newApplyItem']").each(function () {
+            if ($(this).parent().parent().parent().attr("id").split("_")[0] == "FItem") {
+                var itemNum = $(this).parent().parent().parent().attr("id").split("_")[1] - 1;
+                var itemName = $(this).attr("name").split('.')[1];
+                $(this).attr("name", "newApplyItem[" + itemNum + "]." + itemName);
+                $(this).attr("id", "newApplyItem_" + itemNum + "__" + itemName);
+            }
+        });
+        //button傳遞參數變動
+        $('button').each(function() {
+            if ($(this).text() == "刪除") {
+                var itemName = $(this).parent().parent().parent().attr("id").split("_")[0];
+                var itemNum = $(this).parent().parent().parent().attr("id").split("_")[1];
+                if (itemName == "FItem") {
+                    $(this).removeAttr("onClick");
+                    $(this).attr("onClick", "del('FItem_" + itemNum + "')");
+                }
+            }
+        });
+
+        itemNumReBuild();
+    }
+
+    //Item編碼(申請項目)
+    function itemNumReBuild() {
+        $("[name^='newApplyItem']").each(function () {
+            var selectName = $(this).attr("name").split('[')[0];
+            if (selectName == "newApplyItem") {
+                console.log("newApplyItem.newApplyItem");
+                var itemName = $(this).attr("name").split('.')[1];
+                if (itemName == "ItemNum") {
+                    var Name = $(this).parent().parent().parent().attr("id").split("_")[0];
+                    var Num = parseInt($(this).parent().parent().parent().attr("id").split("_")[1]);
+                    if (Name == "FItem") {
+                        $(this).val(Num);
+                        console.log("Fitem." + Num);
+                    }
+                    console.log(Name);
+                }
+            }
+            //else if (selectName == "ApplyItem2") {
+            //    console.log("newApplyItem.ApplyItem2");
+            //    var itemName = $(this).attr("name").split('.')[1];
+            //    if (itemName == "ItemNum") {
+            //        var Name = $(this).parent().parent().parent().attr("id").split("_")[0];
+            //        var Num = parseInt($(this).parent().parent().parent().attr("id").split("_")[1]);
+            //        if (Name == "FItem") {
+            //            $(this).val(Num);
+            //            console.log("Fitem." + Num);
+            //        }
+            //        console.log(Name);
+            //    }
+            //}
+        });
+
+        $("[name^='ApplyItem2']").each(function () {
+            var selectName = $(this).attr("name").split('[')[0];
+            if (selectName == "ApplyItem2") {
+                console.log("ApplyItem2.ApplyItem2");
+                var itemName = $(this).attr("name").split('.')[1];
+                if (itemName == "ItemNum") {
+                    var Name = $(this).parent().parent().parent().attr("id").split("_")[0];
+                    var Num = parseInt($(this).parent().parent().parent().attr("id").split("_")[1]);
+                    if (Name == "FItem") {
+                        $(this).val(Num);
+                        console.log("Sitem." + Num);
+                    }
+                    console.log(Name);
+                }
+            }
+        });
+    }
+
+    //動態新增欄位(民眾輸入自用中藥切結書申請項目)
+    function addItem2() {
+        var addItem = $("#Sample_SItem").clone();
+        var maxItem = $("[id^='SItem_']").length;
+        addItem.removeAttr("hidden");
+        addItem.attr("id", "SItem_" + (maxItem + 1));
+        $("#SItem_" + maxItem).after(addItem);
+        $("#SItem_" + (maxItem + 1) + " button").attr("onClick", "delItem2('SItem_" + (maxItem + 1) + "')");
+        $("[name^='ApplyItem2[9999]']").each(function () {
+            console.log($(this).parent().parent().parent().attr("id"));
+            if ($(this).parent().parent().parent().attr("id") == "SItem_" + (maxItem + 1)) {
+                var itemName = $(this).attr("name").split('.')[1];
+                console.log(maxItem);
+                $(this).attr("name", "ApplyItem2[" + (maxItem) + "]." + itemName);
+                $(this).attr("id", "ApplyItem2_" + (maxItem) + "__" + itemName);
+            }
+        });
+
+        itemNumReBuild();
+    }
+
+    //動態刪除欄位(民眾輸入自用中藥切結書申請項目)
+    function delItem2(item) {
+        //刪除
+        $("#" + item).remove();
+        //重新編號 divItem重新編碼
+        var itemNum = 1;
+        $('div').each(function () {
+            var temp = $(this).attr("id");
+            if ($(this).attr("id") != undefined) {
+                if ($(this).attr("id").substr(0, 6) == "SItem_") {
+                    $(this).attr("id", "SItem_" + itemNum);
+                    itemNum++;
+                }
+            }
+        });
+        //內部欄位變更編碼
+        $("[id^='ApplyItem2_']").each(function () {
+            if ($(this).parent().parent().parent().attr("id").split("_")[0] == "SItem") {
+                var itemNum = $(this).parent().parent().parent().attr("id").split("_")[1] - 1;
+                var itemName = $(this).attr("name").split('.')[1];
+                $(this).attr("name", "ApplyItem2[" + itemNum + "]." + itemName);
+                $(this).attr("id", "ApplyItem2_" + itemNum + "__" + itemName);
+            }
+        });
+        //button傳遞參數變動
+        $('button').each(function () {
+            if ($(this).text() == "刪除") {
+                var itemName = $(this).parent().parent().parent().attr("id").split("_")[0];
+                var itemNum = $(this).parent().parent().parent().attr("id").split("_")[1];
+                if (itemName == "SItem") {
+                    $(this).removeAttr("onClick");
+                    $(this).attr("onClick", "delItem2('SItem_" + itemNum + "')");
+                }
+            }
+        });
+
+        itemNumReBuild();
+    }
+
+    //動態新增檔案
+    function addFile() {
+        var addItem = $("#Sample_ApplyFile").clone();
+        var maxItem = $("[id^='OItem_']").length;
+        addItem.removeAttr("hidden");
+        addItem.attr("id", "OItem_" + (maxItem + 1));
+        $("#OItem_" + maxItem).after(addItem);
+        $("#OItem_" + (maxItem + 1) + " button").attr("onClick", "delFile('SItem_" + (maxItem + 1) + "')");
+        $("[name^='ApplyFile[9999]']").each(function () {
+            console.log($(this).parent().parent().parent().attr("id"));
+            if ($(this).parent().parent().parent().attr("id") == "OItem_" + (maxItem + 1)) {
+                var itemName = $(this).attr("name").split('.')[1];
+                console.log(maxItem);
+                $(this).attr("name", "ApplyFile[" + (maxItem) + "]." + itemName);
+                $(this).attr("id", "ApplyFile_" + (maxItem) + "__" + itemName);
+            }
+        });
+    }
+
+    //動態刪除檔案
+    function delFile(item) {
+        //刪除
+        $("#" + item).remove();
+        //重新編號 divItem重新編碼
+        var itemNum = 1;
+        $('div').each(function () {
+            if ($(this).attr("id") != undefined) {
+                if ($(this).attr("id").substr(0, 6) == "OItem_") {
+                    $(this).attr("id", "OItem_" + itemNum);
+                    itemNum++;
+                }
+            }
+        });
+        //內部欄位變更編碼
+        $("[id^='ApplyFile_']").each(function () {
+            if ($(this).parent().parent().parent().attr("id").split("_")[0] == "OItem") {
+                var itemNum = $(this).parent().parent().parent().attr("id").split("_")[1] - 1;
+                var itemName = $(this).attr("name").split('.')[1];
+                $(this).attr("name", "ApplyFile[" + itemNum + "]." + itemName);
+                $(this).attr("id", "ApplyFile_" + itemNum + "__" + itemName);
+            }
+        });
+        //button傳遞參數變動
+        $('button').each(function () {
+            if ($(this).text() == "刪除") {
+                var itemName = $(this).parent().parent().parent().attr("id").split("_")[0];
+                var itemNum = $(this).parent().parent().parent().attr("id").split("_")[1];
+                if (itemName == "OItem") {
+                    $(this).removeAttr("onClick");
+                    $(this).attr("onClick", "delFile('OItem_" + itemNum + "')");
+                }
+            }
+        });
+    }
+
+    function radioChane() {//optradio
+        //CSEE_TYPE
+        $('#CSEE_TYPE').val($('input[name="optradio"]:checked').val());
+    }
+
+    function radioChane1() {
+        $('#RADIOUSAGE').val($('input[name="optradio1"]:checked').val());
+        if ($('#RADIOUSAGE').val() == "3") {
+            $("#RADIOUSAGE_TEXT").val("");
+            $("#labRADIOUSAGE").show();
+        } else {
+            $("#labRADIOUSAGE").hide();
+            $("#RADIOUSAGE_TEXT").val("");
+        }
+    }
+
+    function radioChane2() {//optradio2
+        //RADIOYN
+        $('#RADIOYN').val($('input[name="optradio2"]:checked').val());
+    }
+
+    function ProductionCountryChange() {
+        $("#ProductionCountry_TEXT").val($("#ProductionCountry :selected").text());
+    }
+
+    function SellerCountryChange() {
+        $("#SellerCountry_TEXT").val($("#SellerCountry :selected").text());
+    }
+
+    function ShippingPortChange() {
+        $("#ShippingPort_TEXT").val($("#ShippingPort :selected").text());
+    }
+
+    function CommodTypeChange(select) {
+        var itemNum = select.name.split('[')[1].split(']')[0];
+        $("#newApplyItem_" + itemNum + "__CommodType_TEXT").val(select[select.selectedIndex].text);
+    }
+
+    function ApplyItemUnitChange(select) {
+        var itemNum = select.name.split('[')[1].split(']')[0];
+        $("#newApplyItem_" + itemNum + "__Unit_TEXT").val(select[select.selectedIndex].text);
+        $("#ApplyItem2_" + itemNum + "__ItemQtyUnit").val(select[select.selectedIndex].text);
+        $("#ApplyItem2_" + itemNum + "__ItemQtyUnit2").val(select[select.selectedIndex].text);
+    }
+    function ApplyItemSpecUnitChange(select) {
+        var itemNum = select.name.split('[')[1].split(']')[0];
+        $("#newApplyItem_" + itemNum + "__SpecUnit_TEXT").val(select[select.selectedIndex].text);
+        $("#ApplyItem2_" + itemNum + "__ItemSpecQtyUnit").val(select[select.selectedIndex].text);
+    }
+
+    function CommoditiesChange(item) {
+        var itemNum = item.name.split('[')[1].split(']')[0];
+        var itemVal = $("#newApplyItem_" + itemNum + "__Commodities").val();
+        $("#ApplyItem2_" + itemNum + "__ItemName").val(itemVal);
+    }
+
+    function ItemQtyChange(item) {
+        var msg = "";
+        var itemNum = item.name.split('[')[1].split(']')[0];
+        var itemVal = $("#newApplyItem_" + itemNum + "__Qty").val();
+        if (!(itemVal).match(/^\d{1,12}(\.\d{1,5})?$/)) {
+            msg += '申請數量輸入格式小數點至多五位數<br/>';
+        }
+        $("#ApplyItem2_" + itemNum + "__ItemQty").val(itemVal);
+        if (msg != '') {
+            blockAlert(msg, '訊息');
+            return false;
+        }
+    }
+
+    function ItemSpecQtyChange(item) {
+        var msg = "";
+        var itemNum = item.name.split('[')[1].split(']')[0];
+        var itemVal = $("#newApplyItem_" + itemNum + "__SpecQty").val();
+        if (!(itemVal).match(/^\d{1,12}(\.\d{1,5})?$/)) {
+            msg += '申請數量輸入格式小數點至多五位數<br/>';
+        }
+        $("#ApplyItem2_" + itemNum + "__ItemSpecQty").val(itemVal);
+        if (msg != '') {
+            blockAlert(msg, '訊息');
+            return false;
+        }
+    }
+    // 地址
+    function loadDialogTAX_ORG_CITYCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doTAX_ORG_CITYSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#TAX_ORG_CITY_CODE').val(retData.Id);
+                    $('#TAX_ORG_CITY_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doTAX_ORG_CITYNameGet() {
+        var code = $('#TAX_ORG_CITY_CODE');
+        console.log('TAX_ORG_CITY_CODE');
+        var data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#TAX_ORG_CITY_TEXT'),
+            'add': $('#TAX_ORG_CITY_CODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogTAX_ORG_CITYCodeMapName(data);
+        }
+    }
+
+    function print1() {
+        var data = getFormDataToObject($("form[id=main_form]"));
+        $.fileDownload('@Url.Action("PreviewApplyForm_1")', {
+            httpMethod: 'post',
+            data: data,
+            prepareCallback: function (url) {
+            }
+        });
+    }
+
+    function print2() {
+        var data = getFormDataToObject($("form[id=main_form]"));
+        $.fileDownload('@Url.Action("PreviewApplyForm_2")', {
+            httpMethod: 'post',
+            data: data,
+            prepareCallback: function (url) {
+            }
+        });
+    }
+</script>

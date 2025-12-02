@@ -1,0 +1,36 @@
+﻿@using ES.Utils
+<div class="banner-zone">
+    <div class="container-fluid">
+        @*<ul class="banner-list">
+            <li><a href="#" target="_blank"><img src="~/Images/banner-1.jpg" class="img-responsive" alt="衛生福利部"></a></li>
+            <li><a href="#" target="_blank"><img src="~/Images/banner-2.jpg" class="img-responsive" alt="衛生福利部中央健康保險署"></a></li>
+            <li><a href="#" target="_blank"><img src="~/Images/banner-3.jpg" class="img-responsive" alt="財團法人器官捐贈移植登錄中心"></a></li>
+            <li><a href="#" target="_blank"><img src="~/Images/banner-4.jpg" class="img-responsive" alt="中華民國器官捐贈協會"></a></li>
+            <li><a href="#" target="_blank"><img src="~/Images/banner-5.jpg" class="img-responsive" alt="台灣安寧照顧協會"></a></li>
+        </ul>*@
+        <!--go  top -->
+        <div class="clearfix"></div>
+        <div class="gotop"><a href="#gotop"><i class="fas fa-chevron-circle-up"></i></a></div>
+    </div>
+</div>
+<!--footer zone -->
+<div class="footer">
+    <div class="container">
+        <div class="col-sm-12">
+            <div class="footer-data">
+                <span>衛生福利部郵遞區號：115204</span> <span>衛生福利部地址：台北市南港區忠孝東路6段488號</span> <span id="contactInfo1">@Html.Raw(DataUtils.GetConfig("CONTACTINFO"))</span><span id="contactInfo2">@Html.Raw(DataUtils.GetConfig("CONTACTINFO2"))</span>
+            </div>
+            <div class="footer-data">
+            <span id="contactInfo3">@Html.Raw(DataUtils.GetConfig("CONTACTINFO3"))</span>  
+            @*<span id="contactInfo4">@Html.Raw("服務信箱：")<a href="@(Url.Action("OpenMail", "Login"))" target="_blank">eservice</a></span>*@ 
+            <span id="contactInfo5">@Html.Raw(DataUtils.GetConfig("CONTACTINFO5"))</span>
+            <br /><div><span style="font-size:larger">防疫補助線上申請、申請條件資格、紓困相關問 題煩請撥打1957或1988專線詢問</span></div>
+            <br /><a href="@Url.Action("Privacy","Home")">資訊安全與隱私權政策</a>@*｜<a href="#">無障礙宣告</a>*@｜<a href="@Url.Action("PublicPrivacy","Home")">政府網站資料開放宣告</a>｜建議最佳解析度為1024*768或以上</div>
+            <!--Copyright &copy; <script type="text/javascript">ShowNowYear();</script> Hospitsl Information Sharing and Analysis Center, Ministry of Health and Welfare<br>
+            衛生福利部資安資訊分享及分析中心版權所有 ｜ 最佳瀏覽解析度 1280x1024-->
+            <div>
+                <a target="_blank" href="https://www.gov.tw/Default.aspx"><img src="~/Images/e_logo.png" /></a>
+            </div>
+        </div>
+    </div>
+</div>

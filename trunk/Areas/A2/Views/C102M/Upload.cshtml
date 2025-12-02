@@ -1,0 +1,73 @@
+﻿@using EECOnline.Areas.A2.Models;
+@model C102MUploadModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout_NoHeader_NoBg.cshtml";
+}
+
+<style>
+    .col-sm-12 {
+        margin: 0rem;
+        padding: 0rem;
+    }
+</style>
+
+<div class="col-sm-12 content" style="text-align: center;">
+    <div class="form-blue">
+        @using (Html.BeginForm("Upload", "C102M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal", @enctype = "multipart/form-data" }))
+        {
+            var button = new Dictionary<string, string>();
+            button.Add("save", "doSave()");
+            button.Add("close", "doClose()");
+
+            @Html.HiddenFor(x => x.apply_no_sub)
+            @Html.HiddenFor(x => x.his_type)
+
+            <div class="col-sm-12" style="padding-left: 0rem; padding-right: 0rem;">
+                <div class="form-data form-bg">
+                    <div class="row form-group">
+                        <label class="form-control col-md-2">病歷上傳</label>
+                        <div class="col-sm-9 mb-3" style="width: auto;">
+                            @Html.TextBoxFor(x => x.UploadFILE, new { type = "file", @class = "form-control", placeholder = "請選擇病歷檔案", accept = ".PDF,.JPG,.BMP,.PNG,.GIF,.TIF" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @Html.ButtonForTurbo(button)
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    // 儲存
+    function doSave() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("SaveUpload")').submit();
+    }
+
+    // 關閉
+    function doClose() {
+        parent.closeWindow();
+    }
+
+    $("#UploadFILE").on("change", function () { CheckFileTypeByComp("UploadFILE"); });
+    function CheckFileTypeByComp(ID_Name) {
+        let fileType = "." + document.getElementById(ID_Name).value.replace(/^.*[\\\/]/, '').split('.').pop().toLowerCase();
+        let acceptType = document.getElementById(ID_Name).accept.toLowerCase();
+        //console.log(fileType);
+        //console.log(acceptType);
+        //console.log(acceptType.indexOf(fileType));
+        //console.log(document.getElementById(ID_Name).files[0].size);
+        if (acceptType.indexOf(fileType) === -1) {
+            blockAlert("請選擇正確的檔案格式！ (" + acceptType + ")");
+            document.getElementById(ID_Name).value = null;
+        }
+        if (document.getElementById(ID_Name).files[0].size > (20 * 1024 * 1024)) {
+            blockAlert("檔案大小以 20MB 為限！");
+            document.getElementById(ID_Name).value = null;
+        }
+    }
+
+</script>

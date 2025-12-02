@@ -1,0 +1,53 @@
+﻿@model ES.Areas.Admin.Models.ServiceFormEditModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "申請表單設定";
+    ViewBag.FunctionTitle = "申請表單設定";
+}
+
+@using (Html.BeginForm("Edit", "ServiceForm"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件設定 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <h2 class="second-title">@Html.DisplayFor(m => m.ServiceName)</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ServiceName)</label>
+                <div class="col-sm-10">
+                    @Html.DisplayFor(m => m.ServiceName)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ServiceField)</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(m => m.ServiceField, new { @class = "form-control", rows = "20" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ServiceScript)</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(m => m.ServiceScript, new { @class = "form-control", rows = "20" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.PreviewScript)</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(m => m.PreviewScript, new { @class = "form-control", rows = "20" })
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.ServiceId)
+                @Html.HiddenFor(m => m.CategoryId)
+                <input type="submit" value="存檔" class="btn btn-save" />
+                <input type="reset" value="重填" class="btn btn-gray" />
+                <input type="button" value="返回" class="btn btn-gray" onclick="document.location.href='@Url.Action("Index", new { id = Model.CategoryId })';" />
+            </div>
+        </div>
+    </div>
+}

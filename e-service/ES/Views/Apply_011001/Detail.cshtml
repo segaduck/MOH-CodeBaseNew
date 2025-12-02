@@ -1,0 +1,26 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_011001DetailModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+}
+@using (Html.BeginForm("Apply", "Apply_011001", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">志願服務計畫核備</a></div>
+            <div class="clearfix"></div>
+            <div class="tab-content" id="myTabContent">
+                <div id="form" class="tab-pane fade active in">
+                    @Html.Partial("AppDoc")
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+
+    </div>
+}

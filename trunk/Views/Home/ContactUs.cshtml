@@ -1,0 +1,96 @@
+﻿@using EECOnline.Services;
+@using EECOnline.Models;
+@model ContactUsModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<section class="main-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="board board-white">
+                    <a class="accesskey" href="#aC" id="aC" accesskey="C" title="主要內容區">:::</a>
+                    <ul class="breadcrumb" style="background-color: unset;">
+                        <li><i class="fa fa-home"></i><a href="~/Home/Index">首頁</a></li>
+                        <li><a href="~/Home/ContactUs">聯絡我們</a></li>
+                    </ul>
+                    <h1 class="board-title titleBg-linear main-title"><i class="fas fa-envelope"></i>聯絡我們</h1>
+                    <div class="news-content">
+                        @using (Html.BeginForm("ContactUs", "Home", FormMethod.Post, htmlAttributes: new { id = "mainform", @class = "board-form" }))
+                        {
+                            <style>
+                                .form-inline {
+                                    margin-left: 12rem;
+                                    margin-bottom: 1rem;
+                                }
+
+                                .form-label {
+                                    margin-right: 1rem;
+                                    width: 8rem;
+                                }
+                            </style>
+                            <div class="form-inline">
+                                <label for="" class="form-label">聯絡電話</label>
+                                @Html.TextBoxFor(x => x.Tel, new { @class = "form-control", @placeholder = "請輸入聯絡電話", size = "70" })
+                            </div>
+                            <div class="form-inline">
+                                <label for="" class="form-label">聯絡信箱</label>
+                                @Html.TextBoxFor(x => x.Email, new { @class = "form-control", @placeholder = "請輸入聯絡信箱", size = "70" })
+                            </div>
+                            <div class="form-inline">
+                                <label for="" class="form-label">分類</label>
+                                @Html.DropDownListFor(x => x.Type, Model.Type_list, new { @class = "form-control", style = "width: 37.5rem;" })
+                            </div>
+                            <div class="form-inline">
+                                <label for="" class="form-label">反應內容</label>
+                                @Html.TextAreaFor(x => x.Text, new { @class = "form-control", @placeholder = "請輸入反應內容", style = "width: 37.5rem; height: 10rem;" })
+                            </div>
+                            <div class="form-inline">
+                                <label for="" class="form-label">驗證碼</label>
+                                @Html.TextBoxFor(x => x.ValidateCode, new { @class = "form-control", @placeholder = "請輸入驗證碼", maxlength = "10" })
+                                <img id="vCode" src="@Url.Action("ContactUs_GetValidateCode", "Home")" alt="驗證碼" class="login-code" data-toggle="tooltip" data-placement="top" title="產生新驗證碼" style="margin-left: 1rem;" />
+                                <div class="help-link">
+                                    <a href="@Url.Action("ContactUs_VCodeAudio", "Home")" target="frmPlayer" title="語音撥放驗證碼">
+                                        <img id="playCode" alt="撥放" src="~/images/speaker.svg" height="40" class="pull-right" />
+                                    </a>
+                                    <a href="javascript: void(0)" onclick="reloadValidCode()">
+                                        <img src="~/images/revision.svg" height="40" alt="重新產生驗證碼" title="重新產生驗證碼" />
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="btnBar" style="margin-top: 3.5rem;">
+                                <a href="javascript: void(0)" class="btn btn-apply" onclick="doSubmit()">確認寄出</a>
+                                <a href="~/Home/Index" class="btn btn-cancel">取消</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+
+    $('#vCode').on("load", function () {
+        unblockUI();
+    });
+    function reloadValidCode() {
+        blockUI();
+        $('#vCode').attr("src", '@Url.Action("ContactUs_GetValidateCode")' + "?rand=" + new Date().getMilliseconds());
+    }
+    $(function () {
+        $('#vCode').on("click", function (e) {
+            reloadValidCode();
+        });
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+
+    function doSubmit() {
+        blockUI();
+        var form = $("form[id=mainform]");
+        form.attr('action', '@Url.Action("ContactUs_Save")').submit();
+    }
+
+</script>

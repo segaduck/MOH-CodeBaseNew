@@ -1,0 +1,59 @@
+﻿@using ES.Models;
+@model RePayCreditFormModel
+
+@{
+    Layout = "~/Views/Shared/_LayoutForShare.cshtml";
+}
+
+@using (Html.BeginForm("RePayCreditSave", "RePayCredit", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-inline" }))
+{
+    @Html.HiddenFor(m => m.APP_ID)
+    @Html.HiddenFor(m => m.SRV_ID)
+    @Html.HiddenFor(m => m.STATUS)
+    @Html.HiddenFor(m => m.SessionTransactionKey)
+    <div class="container-fluid">
+        <div class="col-sm-12">
+            <div class="index-note">
+                <div class="form-group">
+                    <label class="step-label col-sm-5" for="">持卡人身份證字號</label>
+                    <div class="col-sm-7">
+                        @Html.TextBoxFor(x => x.CARD_IDN, new { @class = "form-control", @placeholder = "請輸入持卡人身分證字號" })
+                        @Html.HiddenFor(x => x.CARD_IDN)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btn-bar text-center">
+            <button type="submit" class="btn btn-save">存檔</button>
+            <button type="button" class="btn btn-gray" onclick="doClose()">關閉</button>
+            <p><font style="color:red">@Html.Raw(((Model.STATUS != "Y" && !string.IsNullOrEmpty(Model.ERRMSG)) ? "錯誤訊息：" + Model.ERRMSG : ""))</font></p>
+        </div>
+    </div>
+
+}
+
+<script type="text/javascript">
+    window.onload = function () {
+        if ($('#STATUS').val() == "Y") {
+            doSelect();
+        }
+    };
+
+    function doClose() {
+
+        parent.closeWindow();
+    }
+
+    /// 選
+    function doSelect() {
+        var sess = $('#SessionTransactionKey').val();
+        var status = $('#STATUS').val();
+        console.log(status + ':' + sess);
+        var data = {
+            "Trans": status,
+            "SessionTransactionKey": sess
+        }
+        parent.closeWindow(data);
+    }
+
+</script>

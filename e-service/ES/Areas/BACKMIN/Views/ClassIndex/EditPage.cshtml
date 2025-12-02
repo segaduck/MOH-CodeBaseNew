@@ -1,0 +1,75 @@
+﻿@model ES.Areas.Admin.Models.ClassEditModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "分類檢索維護";
+    ViewBag.FunctionTitle = "分類檢索維護";
+    ViewBag.Script = @"
+";
+}
+
+<script type="text/javascript">
+    function classpage(type, target) {
+        window.open('@Url.Action("Query","ClassIndex")' + '?type=' + type + '&target=' + target, 'quickdata', 'width=640,height=500,left=100,top=100,toolbar=no,menubar=no,resizable=yes,status=no,scrollbars=yes');
+        //            temp = window.open('/Admin/ClassIndex/Query?tar=' + t, 'quickdata', 'width=640,height=500,left=100,top=100,toolbar=no,menubar=no,resizable=yes,status=no,scrollbars=yes');
+        //            temp.focus();
+    }
+</script>
+
+@using (Html.BeginForm("EditPageSave", "ClassIndex", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 後台管理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">分類編號</label>
+                <div class="col-sm-10">
+                    @Html.DisplayFor(m => m.SRL_NO, new { @class = "form-normal" })
+                    @Html.HiddenFor(m => m.SRL_NO)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">分類名稱</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.TITLE, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">主題分類代碼</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.CLS_SUB_CD, new { @class = "form-control" })
+                    <input type="button" class="btn btn-input" value="..." onclick="Javascript:classpage(0,'CLS_SUB_CD');" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">施政分類代碼</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.CLS_ADM_CD, new { @class = "form-control" })
+                    <input type="button" class="btn btn-input" value="..." onclick="Javascript:classpage(1,'CLS_ADM_CD');" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">服務分類代碼</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.CLS_SRV_CD, new { @class = "form-control" })
+                    <input type="button" class="btn btn-input" value="..." onclick="Javascript:classpage(2,'CLS_SRV_CD');" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">關鍵字</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.KEYWORD, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="btnbar">
+                <input type="hidden" value="" id="Pkey" />
+                <input type="submit" value="確認" class="btn btn-save" />
+                <input type="button" value="返回" class="btn btn-gray" onclick="document.location.href='@Url.Action("Edit", "ClassIndex")';" />
+            </div>
+        </div>
+    </div>
+}

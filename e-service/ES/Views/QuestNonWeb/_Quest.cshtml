@@ -1,0 +1,90 @@
+﻿@using ES.Models
+@model QuestNonWebModel
+@{
+    Layout = null;
+}
+
+<div class="form-group">
+    <div class="col-sm-12">
+        敬啟者您好：<br />
+        為提升醫事人員或公共衛生師證書線上申辦服務作業品質，請您對本次申辦過程的滿意程度，撥冗填寫於「醫事人員或公共衛生師證書線上申辦滿意度調查意見表」，本部將定期統計分析，並進行檢討改進。<br /><br />
+        <span style="float: right;">衛生福利部 敬上</span>
+    </div>
+</div>
+<!-- second-title -->
+<div class="form-group">
+    <div class="col-sm-12">
+        <h2 class="second-title">案件處理情形</h2>
+    </div>
+</div>
+<div class="form-group">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-survey table">
+        <thead>
+            <tr>
+                <th />
+                <th>非常滿意</th>
+                <th>還算滿意</th>
+                <th>不太滿意</th>
+                <th>非常不滿意</th>
+                <th>無意見(無從判斷)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1. 承辦人服務態度親切<div>@Html.ValidationMessageFor(m => m.Q1)</div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q1, "5", new { @id = "Q1_5" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q1, "4", new { @id = "Q1_4" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q1, "2", new { @id = "Q1_2" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q1, "1", new { @id = "Q1_1" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q1, "3", new { @id = "Q1_3" })</label></div></td>
+            </tr>
+            <tr>
+                <td>2. 承辦人了解業務，且能詳細說明<div>@Html.ValidationMessageFor(m => m.Q2)</div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q2, "5", new { @id = "Q2_5" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q2, "4", new { @id = "Q2_4" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q2, "2", new { @id = "Q2_2" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q2, "1", new { @id = "Q2_1" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q2, "3", new { @id = "Q2_3" })</label></div></td>
+            </tr>
+            <tr>
+                <td>3. 承辦機關處理時間尚屬合理，沒有拖延<div>@Html.ValidationMessageFor(m => m.Q3)</div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q3, "5", new { @id = "Q3_5" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q3, "4", new { @id = "Q3_4" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q3, "2", new { @id = "Q3_2" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q3, "1", new { @id = "Q3_1" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q3, "3", new { @id = "Q3_3" })</label></div></td>
+            </tr>
+            <tr>
+                <td>4. 承辦機關處理作業流程規劃合宜，沒有過於繁複<div>@Html.ValidationMessageFor(m => m.Q4)</div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q4, "5", new { @id = "Q4_5" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q4, "4", new { @id = "Q4_4" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q4, "2", new { @id = "Q4_2" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q4, "1", new { @id = "Q4_1" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q4, "3", new { @id = "Q4_3" })</label></div></td>
+            </tr>
+            <tr>
+                <td>5. 若有資料不足情形，承辦機關能一次告知補正<div>@Html.ValidationMessageFor(m => m.Q5)</div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q5, "5", new { @id = "Q5_5" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q5, "4", new { @id = "Q5_4" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q5, "2", new { @id = "Q5_2" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q5, "1", new { @id = "Q5_1" })</label></div></td>
+                <td><div class="radio"><label>@Html.RadioButtonFor(m => m.Q5, "3", new { @id = "Q5_3" })</label></div></td>
+            </tr>
+            <tr>
+                <td colspan="6"> 若本次申辦經驗您有滿意或不滿意的地方，請告訴我們，讓我們有改進的機會。您的具體建議（限300個中文字）：<br /></td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    @Html.TextAreaFor(m => m.Recommend, new { rows = "8", cols = "110" })
+                    <div>@Html.ValidationMessageFor(m => m.Recommend)</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="btn-bar text-center">
+    @*<button type="button" class="btn btn-save" onclick="return doSave1(this);">送出問卷</button>*@
+    <button type="button" data-role="SUBMIT" class="btn btn-save">送出問卷</button>
+    <button type="reset" class="btn btn-clear">清除重填</button>
+</div>

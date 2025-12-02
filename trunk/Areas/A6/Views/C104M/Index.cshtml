@@ -1,0 +1,77 @@
+﻿@using EECOnline.Areas.A6.Models;
+@using EECOnline.Models;
+@model C104MFormModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+}
+
+@using (Html.BeginForm("Index", "C104M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+{
+    var button = new Dictionary<string, string>();
+    button.Add("search", "doSearch()");
+    //button.Add("new", "doNew()");
+
+    <div class="col-sm-12 content">
+        <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@sm.LastActionFunc.prgname</h1>
+        <div class="form-blue">
+            @Html.ButtonForTurbo(button)
+        </div>
+        <div class="clearfix"></div>
+        <h2 class="second-title">查詢結果</h2>
+        <div class="table-responsive">
+            @if (Model.Grid != null)
+            {
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th width="10%"></th>
+                            <th width="45%">收費名稱</th>
+                            <th width="15%">收費金額</th>
+                            <th width="15%">啟用日起</th>
+                            <th width="15%">啟用日迄</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rows">
+                        @Html.Partial("_GridRows")
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+    });
+
+    // 查詢
+    function doSearch() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Index")').submit();
+    }
+
+    // 新增
+    function doNew() {
+        var url = '@(Url.Action("New", "C104M", new { area = "A6" }))';
+        var title = '建立參數資料';
+        popupWindow({ 'width': -1 }, url, title, null, function (retData, doc) {
+            if (retData != null) { if (retData.redirectUrl != "") { RedirectAfterPopup(retData.redirectUrl) } }
+        })
+    }
+
+    // 修改
+    function doModify(keyid) {
+        var data = {
+            "keyid": keyid,
+        }
+        var url = '@Url.Action("Modify", "C104M")?' + $.param(data);
+        var title = '編輯參數資料';
+        popupWindow({ 'width': -1 }, url, title, null, function (retData, doc) {
+            if (retData != null) { if (retData.redirectUrl != "") { RedirectAfterPopup(retData.redirectUrl) } }
+        })
+    }
+
+</script>

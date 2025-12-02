@@ -1,0 +1,174 @@
+﻿@using ES.Utils;
+@model ES.Areas.Admin.Models.MailLogModel
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#TIME_S').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#TIME_F').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $("#tx_catid").find("option").each(
+            function () {
+                var a = $(this).val();
+                if (a == '@this.Model.SRV_ID') {
+                    $(this).prop("selected", true);
+                }
+            }
+        );
+        $("#tx_resultmk").find("option").each(
+        function () {
+            var a = $(this).val();
+            if (a == '@this.Model.RESULT_MK') {
+                $(this).prop("selected", true);
+            }
+        }
+    );
+        $("#sel_order_field").find("option").each(
+        function () {
+            var a = $(this).val();
+            if (a == '@this.Model.ORDER_FIELD') {
+                $(this).prop("selected", true);
+            }
+        }
+    );
+        $("#sel_order_by").find("option").each(
+        function () {
+            var a = $(this).val();
+            if (a == '@this.Model.ORDER_BY') {
+                $(this).prop("selected", true);
+            }
+        }
+    );
+    });
+
+    function doQuery(page) {
+        $("#NowPage").val(page);
+    }
+</script>
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "信件紀錄查詢";
+    ViewBag.FunctionTitle = "信件紀錄查詢";
+}
+@using (Html.BeginForm("MailLog", "Record", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 紀錄查詢 / @ViewBag.Title
+    </div>
+    <div class="col-sm-12 content">
+        @*<div class="bread">
+                <i class="fas fa-home"></i><a href="#">首頁</a> / <a href="#">@ViewBag.FunctionTitle</a>
+            </div>*@
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">寄發時間日期</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.TIME_S, new { @class = "form-normal" })～
+                    @Html.TextBoxFor(m => m.TIME_F, new { @class = "form-normal" })
+                </div>
+                <label class="main-label col-sm-2" for="">申辦項目</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.SRV_ID)
+                    <select id="tx_catid" name="tx_catid" onchange="$('#SRV_ID').val(this.value)" class="form-control">
+                        <option value="">請選擇</option>
+                        @{
+                            foreach (ES.Areas.Admin.Models.Map map in WebUtils.GetServiceAll())
+                            {
+                                <option value="@map.GetString("SRV_ID")">@map.GetString("NAME")</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">收件人</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.MAIL, new { @class = "form-control" })
+                </div>
+                <label class="main-label col-sm-2" for="">寄送結果</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.RESULT_MK)
+                    <select id="tx_resultmk" name="tx_resultmk" onchange="$('#RESULT_MK').val(this.value)" class="form-control">
+                        <option value="">請選擇</option>
+                        <option value="Y">成功</option>
+                        <option value="N">失敗</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">排序欄位</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.ORDER_FIELD)
+                    <select id="sel_order_field" name="sel_order_field" onchange="$('#ORDER_FIELD').val(this.value)" class="form-control">
+                        <option value="send_time">寄發時間區間</option>
+                        <option value="mail">收件人</option>
+                    </select>
+                </div>
+                <label class="main-label col-sm-2" for="">排序方法</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.ORDER_BY)
+                    <select id="sel_order_by" name="sel_order_by" onchange="$('#ORDER_BY').val(this.value)" class="form-control">
+                        <option value="asc">由小到大</option>
+                        <option value="desc">由大到小</option>
+                    </select>
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.NowPage)
+                <input type="submit" value="查詢" onclick="$('#NowPage').val(1);" class="btn btn-blue" />
+            </div>
+        </div>
+
+        @{
+            if (ViewBag.List != null)
+            {
+                <div class="table-pager">
+                    @Html.HiddenFor(m => m.NowPage)
+                    @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+                </div>
+                <div class="clearfix"></div>
+                <h2 class="second-title">查詢結果</h2>
+                <div class="table-responsive">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                        <thead>
+                            <tr>
+                                <th>寄發時間</th>
+                                <th>收件人</th>
+                                <th>主旨</th>
+                                <th>申辦項目</th>
+                                <th>內文</th>
+                                <th>寄送結果</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                foreach (ES.Areas.Admin.Models.Map map in ViewBag.List)
+                                {
+                                    <tr>
+                                        <td style="max-width:75px;">
+                                            @map.GetString("SEND_TIME")
+                                        </td>
+                                        <td style="word-wrap:break-word;max-width:100px;">
+                                            @map.GetString("MAIL")
+                                        </td>
+                                        <td style="word-wrap:break-word;max-width:100px;">
+                                            @map.GetString("SUBJECT")
+                                        </td>
+                                        <td style="word-wrap:break-word;max-width:100px;">
+                                            @map.GetString("APPNAME")
+                                        </td>
+                                        <td style="word-wrap:break-word;max-width:200px;">
+                                            @map.GetString("BODY")
+                                        </td>
+                                        <td style="max-width:50px;">
+                                            @map.GetString("RESULT_MK")
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+    </div>
+}

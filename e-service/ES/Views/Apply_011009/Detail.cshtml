@@ -1,0 +1,437 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_011009DetailModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+    ViewBag.SRV_NAME = "社工師證書補發（遺失）";
+}
+
+@using (Html.BeginForm("Apply", "Apply_011009", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.APP_ID)
+    @Html.HiddenFor(m => m.MERGEYN)
+    @Html.HiddenFor(m => m.FieldStr)
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@Html.Raw(ViewBag.SRV_NAME)</a></div>
+            <div class="clearfix"></div>
+            <h3 class="note-title" style="color:red;">粉紅色欄位為通知補件欄位，請確認</h3>
+            <div class="tab-content" id="myTabContent">
+                <div id="form" class="tab-pane fade active in">
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                    <div class="form-set">
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦項目</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">@Html.Raw(ViewBag.SRV_NAME)</p>
+                            </div>
+                            <label class="step-label col-sm-2" for="">申辦日期</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">@Model.APP_TIME_TW</p>
+                            </div>
+                        </div>
+                         
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.NAME, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出生年月日</label>
+                            <div class="col-sm-2">
+                                @Html.DatePickerTWFor(m => m.BIRTHDAY_AD, new { size = "10", @readonly = "readonly", @disabled = "disabled" }, true)
+                                @Html.HiddenFor(m => m.BIRTHDAY_AD)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>國民身分證統一編號</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.IDN, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>性別</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline "><input type="radio" id="SEX_CD_RD" name="RGENDER" value="M" onchange="RadioChange()" disabled="disabled">男</label>
+                                <label class="radio-inline "><input type="radio" id="SEX_CD_RD" name="RGENDER" value="F" onchange="RadioChange()" disabled="disabled">女</label>
+                                <label class="radio-inline "><input type="radio" id="SEX_CD_RD" name="RGENDER" value="O" onchange="RadioChange()" disabled="disabled">其他</label>
+                                @Html.HiddenFor(m => m.SEX_CD)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.EMAIL_0, new { @class = "form-normal", @readonly = "readonly" })
+                                @@
+                                @Html.DropDownListFor(m => m.EMAIL_1, sc.GetMailDomainList, new { @class = "form-normal", onchange = "doEmailChange()", disabled = "disabled" })
+                                @Html.TextBoxFor(m => m.EMAIL_2, new { @class = "form-normal", @readonly = "readonly" })
+                                @Html.HiddenFor(m => m.EMAIL_3)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">電話(公)</label>
+                            <div class="col-sm-10">
+                                <span>(</span>
+                                @Html.TextBoxFor(m => m.W_TEL_0, new { @class = "form-normal", @readonly = "readonly" })
+                                <span>)</span>
+                                @Html.TextBoxFor(m => m.W_TEL_1, new { @class = "form-normal", @readonly = "readonly" })
+                                <span>#</span>
+                                @Html.TextBoxFor(m => m.W_TEL_2, new { @class = "form-normal", @readonly = "readonly" })
+                                <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">電話(宅)</label>
+                            <div class="col-sm-10">
+                                <span>(</span>
+                                @Html.TextBoxFor(m => m.H_TEL_0, new { @class = "form-normal", @readonly = "readonly" })
+                                <span>)</span>
+                                @Html.TextBoxFor(m => m.H_TEL_1, new { @class = "form-normal", @readonly = "readonly" })
+                                <span>#</span>
+                                @Html.TextBoxFor(m => m.H_TEL_2, new { @class = "form-normal", @readonly = "readonly" })
+                                <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">行動電話</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.MOBILE, new { @class = "form-normal", MaxLength = 10, @readonly = "readonly" })
+                                <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>通訊地址(含郵遞區號)</label>
+                            <div class="col-sm-10 form-inline">
+                                @Html.TextBoxFor(m => m.C_ZIPCODE, new { @id = "C_ZIPCODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = "readonly" })
+                                <div class="input-group">
+                                    @Html.TextBoxFor(m => m.C_ZIPCODE_TEXT, new { @id = "C_ZIPCODE_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button type="button" id="btn_CZIP" class="btn btn-info" onclick="doACC_ADDRSelect()" disabled><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.C_ADDR, new { @class = "form-normal form-50", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = "readonly" })
+                            </div>
+                        </div>
+
+                        <div class="form-group form-inline">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>戶籍地址(含郵遞區號)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.H_ZIPCODE, new { @id = "H_ZIPCODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = "readonly" })
+                                <div class="input-group">
+                                    @Html.TextBoxFor(m => m.H_ZIPCODE_TEXT, new { @id = "H_ZIPCODE_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button type="button" id="btn_HZIP" class="btn btn-info" onclick="doACC_ADDRSelect1()" disabled><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.H_ADDR, new { @class = "form-normal form-50", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = "readonly" })
+                                <br />
+                                <div class="checkbox">
+                                    <label><input type="checkbox" id="H_EQUAL" name="H_EQUAL" value="Y" @(Model.H_EQUAL == "Y" ? "checked" : "") disabled>同通訊地址</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @*考試年度*@
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.TEST_YEAR)</label>
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(m => m.TEST_YEAR, Model.TEST_YEAR_LIST, new { @class = "form-normal", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @*考試名稱類科*@
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.TEST_CATEGORY)</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.TEST_CATEGORY, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+
+                        <h2 class="second-title">佐證文件檔案上傳<span style="color:red">(總檔案大小5MB以下)</span></h2>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">
+                                佐證文件採合併檔案
+                            </label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline "><input type="radio" name="MERGEYN" value="Y" @(Model.MERGEYN == "Y" ? "checked" : "") onchange="RadioChange()" disabled>是</label>
+                                <label class="radio-inline "><input type="radio" name="MERGEYN" value="N" @(Model.MERGEYN != "Y" ? "checked" : "") onchange="RadioChange()" disabled>否</label>
+                                <br />
+                                若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>考試院考試及格證書影本或電子證書</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FILE_PASSCOPY, Model.FILE_PASSCOPY_TEXT)
+                                @Html.TextBoxFor(m => m.FILE_PASSCOPY, new { @id = "FILE_PASSCOPY", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)", disabled = "disabled" })
+                                @Html.HiddenFor(m => m.FILE_PASSCOPY_TEXT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證正面影本</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FILE_IDNF, Model.FILE_IDNF_TEXT)
+                                @Html.TextBoxFor(m => m.FILE_IDNF, new { @id = "FILE_IDNF", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)", disabled = "disabled" })
+                                @Html.HiddenFor(m => m.FILE_IDNF_TEXT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證反面影本</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FILE_IDNB, Model.FILE_IDNB_TEXT)
+                                @Html.TextBoxFor(m => m.FILE_IDNB, new { @id = "FILE_IDNB", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)", disabled = "disabled" })
+                                @Html.HiddenFor(m => m.FILE_IDNB_TEXT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">照片(規格應同護照照片)</label>
+                            <div class="col-sm-10">
+                                <div class="form-group">
+                                    @Html.FileDLForTurbo(m => m.FILE_PHOTO, Model.FILE_PHOTO_TEXT)
+                                    @Html.TextBoxFor(m => m.FILE_PHOTO, new { @id = "FILE_PHOTO", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)", disabled = "disabled" })
+                                    @Html.HiddenFor(m => m.FILE_PHOTO_TEXT)
+                                </div>
+                            </div>
+                        </div>
+                       
+
+                        <div class="btn-bar text-center">
+                            <button type="button" class="btn btn-clear" onclick="doBack()">返回</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+
+    </div>
+}
+<script>
+
+    $(document).ready(function () {
+        //性別
+        $("input[name=RGENDER][value='" + $("#SEX_CD").val() + "']").attr('checked', true);
+        // 地址
+        $('#C_ZIPCODE').on('blur', doACC_ADDRNameGet); doACC_ADDRNameGet();
+        $('#H_ZIPCODE').on('blur', doACC_ADDRNameGet1); doACC_ADDRNameGet1();
+        $("#BIRTHDAY_AD_TW").removeClass("form-control").addClass("form-normal");
+        $("input[name='APPLY_TYPE']").on('blur', function () {
+            if ($("input[name='APPLY_TYPE']:checked").val() == "3") {
+                $("#opt4").show();
+            } else {
+                $("#opt4").hide();
+            }
+        })
+        $("input[name='APPLY_TYPE']").on('change', function () {
+            if ($("input[name='APPLY_TYPE']:checked").val() == "3") {
+                $("#opt4").show();
+            } else {
+                $("#opt4").hide();
+            }
+        })
+
+        $('#H_EQUAL').on('change', function () {
+            if ($("#" + this.id).prop("checked")) {
+                $('#H_ZIPCODE').val($('#C_ZIPCODE').val());
+                doACC_ADDRNameGet1();
+                $('#H_ADDR').val($('#C_ADDR').val());
+            } else {
+                $('#H_ZIPCODE').val('');
+                $("#H_ZIPCODE_TEXT").val('');
+                $('#H_ADDR').val('');
+            }
+        })
+
+        // 取得補件欄位字串
+        var FieldStr = $('#FieldStr').val();
+        if (FieldStr.length == 0) { $(".btn-save").hide(); }
+        var FieldLst = FieldStr.split(',');
+        FieldLst.forEach(function (i) {
+            if ($('input[id="' + i + '"][type="file"]').length > 0) {
+                $('#' + i).removeAttr("disabled");
+                $('#' + i).css("background-color", "#FF9797");
+            }
+            else {
+                $('#' + i).removeAttr("readonly");
+                $('#' + i).css("background-color", "#FF9797");
+            }
+        });
+
+        // 欄位開放
+        if ($("#EMAIL_0").attr("readonly") == undefined) {
+            $("#EMAIL_1").removeAttr("disabled");
+            $("#EMAIL_2").removeAttr("readonly");
+            $('#EMAIL_1').css("background-color", "#FF9797");
+            $('#EMAIL_2').css("background-color", "#FF9797");
+        }
+
+        if ($("#C_ZIPCODE").attr("readonly") == undefined) {
+            $("#btn_CZIP").prop("disabled", false);
+            $("#C_ADDR").removeAttr("readonly");
+            $('#C_ADDR').css("background-color", "#FF9797");
+        }
+
+        if ($("#H_ZIPCODE").attr("readonly") == undefined) {
+            $("#btn_HZIP").prop("disabled", false);
+            $("#H_ADDR").removeAttr("readonly");
+            $('#H_ADDR').css("background-color", "#FF9797");
+            $("H_EQUAL").prop("disabled", false);
+        }
+
+        // 信箱
+        var ADM_MAIL = $('#EMAIL_1').val();
+        if (ADM_MAIL == 0) $('#EMAIL_2').removeAttr("readonly");
+        else {
+            if (ADM_MAIL == 1) $('#EMAIL_3').val('gmail.com');
+            if (ADM_MAIL == 2) $('#EMAIL_3').val('yahoo.com.tw');
+            if (ADM_MAIL == 3) $('#EMAIL_3').val('outlook.com');
+            $('#EMAIL_2').attr("readonly", "readonly");
+            $('#EMAIL_2').val('')
+        }
+        if ($('#EMAIL_0').prop("readonly")) { $('#EMAIL_2').prop("readonly", true) }
+        // 是否合併檔案
+        $("input[name=RMERGEYN]").val($("#MERGEYN").val()).attr('checked', true);;
+
+    });
+
+    // 地址
+    function loadDialogACC_ADDRCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doACC_ADDRSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#C_ZIPCODE').val(retData.Id);
+                    $('#C_ZIPCODE_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doACC_ADDRSelect1() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                console.log(retData);
+                if (retData != null) {
+                    $('#H_ZIPCODE').val(retData.Id);
+                    $('#H_ZIPCODE_TEXT').val(retData.Name);
+                }
+            });
+    }
+    function doACC_ADDRNameGet() {
+        var code = $('#C_ZIPCODE');
+        var code_text = $('#C_ZIPCODE_TEXT');
+        var data = null;
+        data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#C_ZIPCODE_TEXT'),
+            'add': $('#C_ZIPCODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            loadDialogACC_ADDRCodeMapName(data);
+        }
+    }
+
+    function doACC_ADDRNameGet1() {
+        var code = $('#H_ZIPCODE');
+        var code_text = $('#H_ZIPCODE_TEXT');
+        var data = null;
+        data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#H_ZIPCODE_TEXT'),
+            'add': $('#H_ZIPCODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            ajaxLoadMore(data.url,
+                data.arg,
+                function (resp) {
+                    if (resp === undefined) data.box.val('');
+                    else {
+                        console.log(data);
+                        console.log(resp);
+                        if (resp.data != '') $('#H_ZIPCODE_TEXT').val(resp.data);
+                        else {
+                            data.box.val('');
+                            data.add.val('');
+                            blockAlert(data.msg);
+                        }
+                    }
+                });
+        }
+    }
+
+    // MAIL 選自訂
+    function doEmailChange() {
+        var ADM_MAIL = $('#EMAIL_1').val();
+        if (ADM_MAIL == 0) $('#EMAIL_2').removeAttr("readonly");
+        else {
+            if (ADM_MAIL == 1) $('#EMAIL_3').val('gmail.com');
+            if (ADM_MAIL == 2) $('#EMAIL_3').val('yahoo.com.tw');
+            if (ADM_MAIL == 3) $('#EMAIL_3').val('outlook.com');
+            $('#EMAIL_2').attr("readonly", "readonly");
+            $('#EMAIL_2').val('')
+        }
+    }
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".DOC", ".DOCX", ".ODT", ".ODF", ".ODS", ".XLS", ".XLSX", ".PDF", ".PPT", ".PPTX", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF", ".ZIP");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        }
+        else {
+            $("#" + file.name + "_TEXT").val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index","History")';
+    }
+
+</script>

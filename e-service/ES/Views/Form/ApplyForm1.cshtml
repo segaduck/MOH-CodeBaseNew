@@ -1,0 +1,86 @@
+﻿@using ES.Extensions
+@{
+    Layout = null;
+    string applyId = ViewBag.ApplyId;
+}
+
+@Html.BuildFormTable()
+<br />
+
+<script language="javascript" type="text/javascript">
+    $(function () {
+        @foreach (Dictionary<string, string> dict in ViewBag.List)
+        {
+            foreach (Dictionary<string, string> fields in ViewBag.DictList[dict["TABLE_ID"]])
+            {
+                if (dict["TABLE_TYPE"].Equals("01") || dict["TABLE_TYPE"].Equals("02") || dict["TABLE_TYPE"].Equals("03"))
+                {
+                    if (fields["FORM_FIELD_CD"].Equals("11"))
+                    {
+                        @Html.Raw("$('#" + @fields["FIELD_NAME"] + "').datepicker();");
+                    }
+                    else if (fields["FORM_FIELD_CD"].Equals("22"))
+                    {
+                        @Html.Raw("$('#" + @fields["FIELD_NAME"] + "').change(function() { changeDDL(this.value, '" + @fields["REL_1"] + "', '" + @fields["CODE_CD"] + "'); });");
+                        @Html.Raw("changeDDL($('#" + @fields["FIELD_NAME"] + "').val(), '" + @fields["REL_1"] + "', '" + @fields["CODE_CD"] + "');");
+                    }
+                    else if (fields["FORM_FIELD_CD"].Equals("103"))
+                    {
+                        @Html.Raw("$(\"input[name='" + @fields["REL_1"] + "']\").click(function() { changeBox(this, '" + @fields["FIELD_NAME"] + "', '" + @fields["REL_2"] + "'); });");
+                        @Html.Raw("$(\"input[name='" + @fields["REL_1"] + "']:checked\").each(function () {");
+                        @Html.Raw("changeBox(this, '" + @fields["FIELD_NAME"] + "', '" + @fields["REL_2"] + "');");
+                        @Html.Raw("});");
+                    }
+                }
+            }
+            if (dict["TABLE_TYPE"].Equals("11"))
+            {
+                @Html.Raw("insertRow('tbody_" + ES.Utils.CheckUtils.GetFormId(dict["TABLE_ID"]) + "');")
+            }
+        }
+    });
+
+    function setDatepicker(id, i) {
+        @foreach (Dictionary<string, string> dict in ViewBag.List)
+        {
+            if (dict["TABLE_TYPE"].Equals("11"))
+            {
+                @Html.Raw("if(id == 'tbody_" + dict["TABLE_ID"] + "') { ")
+            }
+            foreach (Dictionary<string, string> fields in ViewBag.DictList[dict["TABLE_ID"]])
+            {
+                if (dict["TABLE_TYPE"].Equals("11") && (fields["FORM_FIELD_CD"].Equals("11") || fields["FORM_FIELD_CD"].Equals("12")))
+                {
+                    @Html.Raw("$('#' + id + ' tr:eq(' + i + ')').find('#" + fields["FIELD_NAME"] + "_' + (i-1)).datepicker(\"destroy\");")
+                    @Html.Raw("$('#' + id + ' tr:eq(' + i + ')').find('#" + fields["FIELD_NAME"] + "_' + (i-1)).datepicker();")
+                }
+            }
+            if (dict["TABLE_TYPE"].Equals("11"))
+            {
+                @Html.Raw(" }")
+            }
+        }
+    }
+
+    function setDatepicker2(id, i) {
+        @foreach (Dictionary<string, string> dict in ViewBag.List)
+        {
+            if (dict["TABLE_TYPE"].Equals("11"))
+            {
+                @Html.Raw("if(id == 'tbody_" + dict["TABLE_ID"] + "') { ")
+            }
+            foreach (Dictionary<string, string> fields in ViewBag.DictList[dict["TABLE_ID"]])
+            {
+                if (dict["TABLE_TYPE"].Equals("11") && (fields["FORM_FIELD_CD"].Equals("11") || fields["FORM_FIELD_CD"].Equals("12")))
+                {
+                    @Html.Raw("$('#' + id + ' tr:eq(' + i + ')').find('#" + fields["FIELD_NAME"] + "_' + ((i-1)/2)).datepicker(\"destroy\");")
+                    @Html.Raw("$('#' + id + ' tr:eq(' + i + ')').find('#" + fields["FIELD_NAME"] + "_' + ((i-1)/2)).datepicker();")
+                }
+            }
+            if (dict["TABLE_TYPE"].Equals("11"))
+            {
+                @Html.Raw(" }")
+            }
+        }
+    }
+</script>

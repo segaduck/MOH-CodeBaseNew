@@ -1,0 +1,760 @@
+﻿@using ES.Models
+@using ES.Areas.Admin.Models
+@model Apply_001010ViewModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "醫事人員或公共衛生師證書影本申請書";
+    ShareCodeListModel srcList = new ShareCodeListModel();
+}
+
+@using (Html.BeginForm("Index", "Apply_001010", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件分文及處理 / 案件處理 / @ViewBag.Title
+    </div>
+    <div class="col-sm-12 content">
+
+        <!-- H1 title -->
+        <h1 class="main-title"><i class="fas fa-edit"></i>案件審理作業</h1>
+
+        <div class="table-responsive">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                   class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th colspan="2">基本資料檔</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="20%">
+                            <div align="center">申辦項目：</div>
+                        </td>
+                        <td width="80%">
+                            <div align="left">醫事人員或公共衛生師證書影本申請書</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center">申辦日期：</div>
+                        </td>
+                        <td>@Model.APPLY_DATE</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">預計完成日：</div></td>
+                        <td>@Model.APP_EXT_DATE</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">案件承辦人姓名：</div></td>
+                        <td>@Model.Admin.NAME</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center">案件編號：</div>
+                        </td>
+                        <td>@Model.APP_ID</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center">系統狀態：</div>
+                        </td>
+                        <td>@Model.APP_STATUS</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!--1-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#basicData'
+                    href='#basicData'>
+                    <a>基本資料檔(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='basicData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">申請人姓名</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.Apply.NAME, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">出生年月日</label>
+                            <div class="col-sm-4">
+                                @Html.DatePickerTWFor(x => x.BIRTHDAY_AC, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">
+                                    身分證編號
+                                    <br>
+                                    /居留證號
+                                </label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.Apply.IDN, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">戶籍地址</label>
+                                <div class="col-sm-10 form-inline">
+                                    @Html.TextBoxFor(x => x.CITY_CODE, new { @id = "CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = "readonly" })
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(x => x.CITY_TEXT, new { @id = "CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect()" disabled><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(x => x.CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">連絡電話</label>
+                                <div class="col-sm-10">
+                                    <span></span>
+                                    @Html.TextBoxFor(x => x.TEL_SEC, new { @class = "form-10 form-normal", @readonly = "readonly" })
+                                    <span>-</span>
+                                    @Html.TextBoxFor(x => x.TEL_NO, new { @class = "form-normal", @readonly = "readonly" })
+                                    <span>#</span>
+                                    @Html.TextBoxFor(x => x.TEL_EXT, new { @class = "form-10 form-normal", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">行動電話</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.Apply.MOBILE, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">E-MAIL</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.EMAIL, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class='form-group'>
+                                <label class="main-label col-sm-2" for="">核發單位</label>
+                                <div class="col-sm-4">
+                                    @Html.DropDownListFor(x => x.ISSUE_DEPT, srcList.GetLicIssueDeptList, new { @class = "form-control", @disabled = "disabled" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">核發日期</label>
+                                <div class="col-sm-4">
+                                    @Html.DatePickerTWFor(x => x.ISSUE_DATE_AC, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class='main-label col-sm-2'>證書類別</label>
+                                <div class="col-sm-4">
+                                    @Html.DropDownListFor(x => x.DIVISION, srcList.GetLicNumCertMDList, new { @class = "form-control", @disabled = "disabled" })
+                                </div>
+                            </div>
+                            <div class='form-group'>
+                                <label class='main-label col-sm-2' for=''>證書字號</label>
+                                <div class="col-sm-10 form-inline">
+                                    <!--option內容與科別連動-->
+                                    @Html.DropDownListFor(x => x.LIC_CD, new List<SelectListItem>(), new { @class = "form-control", @disabled = "disabled" })
+                                    專醫字第 @Html.TextBoxFor(x => x.LIC_NUM, new { @class = "form-normal", @readonly = "readonly" })號
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">申請數量</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.COPIES, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">費用(應繳金額)</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.TOTAL_MEM, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--2-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#ApplyData' href='#ApplyData'>
+                    <a>套印申請書(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='ApplyData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <label class="main-label col-sm-2" for="">套印申請書</label>
+                        <div class="col-sm-12">
+                            <div class="btnbar">
+                                <button type="button" class="btn btn-blue" onclick="Print('@Model.APP_ID')">套印申請書</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--3-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#PayData'
+                    href='#PayData'>
+                    <a>繳費情形(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='PayData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">繳費方式</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.PAY_METHOD_NAME, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">申辦日期</label>
+                            <div class="col-sm-4">
+                                @Html.DatePickerTWFor(x => x.PAY_ACT_TIME_AC, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">繳費金額</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.Apply.PAY_A_FEE, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">交易日期</label>
+                            <div class="col-sm-4">
+                                @if (Model.IsPay)
+                                {
+                                    @Html.DatePickerTWFor(x => x.PAY_EXT_TIME_AC, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.DatePickerTWFor(x => x.PAY_EXT_TIME_AC, new { size = "10", @dateTimePickerShowCallback = "dateTimePickerShowCallback" })
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">交易金額</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.PAY_MONEY, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.CheckBoxFor(x => x.IsPay)已繳費
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--4-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#ReviewData' href='#ReviewData'>
+                    <a>案件進度歷程(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='ReviewData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件進度</label>
+                            <div class="col-sm-4">
+                                <input type="text" id="StatusDesc" class="form-control" readonly value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件狀態修改</label>
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(x => x.Apply.FLOW_CD, srcList.GetStatuListForDEP, new { @class = "form-control", onchange = "changeAddDocCheck()" })
+                            </div>
+                        </div>
+
+                        <div id="notice" style="display:none">
+                            <div class="form-group" id="notice_item">
+                                <label class="main-label col-sm-2" for="">補件項目</label>
+                                <div class="col-sm-4">
+                                    <input type="checkbox" id="checkAll" value="9" />其他
+                                    @Html.HiddenFor(x => x.Apply.ISMODIFY)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label id="remark" class="main-label col-sm-2" for="">補件內容</label>
+                                <div class="col-sm-4">
+                                    @Html.TextAreaFor(x => x.Note, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="mail_record" style="display:none">
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">郵寄日期</label>
+                                <div class="col-sm-4">
+                                    @Html.DatePickerTWFor(x => x.MAIL_DATE_AC, new { size = "10" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">掛號條碼</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.MAIL_BARCODE, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="display:none">
+                            <label class="main-label col-sm-2" for="">公文文號</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.Apply.MOHW_CASE_NO, new { @id = "MOHW_CASE_NO", @class = "form-control", placeholder = "" })
+                            </div>
+                            <button type="button" id="btnCaseNo" class="btn btn-blue" onclick="GetMOHW_CASE_NO('4','@Model.APP_ID')">取得公文文號</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件歷程記錄</label>
+                            <div class="col-sm-10">
+                                @Html.LogForTurbo(Model.APP_ID, "APPLY_PAY")
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-bar text-center">
+            <button type="button" id="btnSave" class="btn btn-save" onclick="doSave()">存檔</button>
+            <button type="button" id="btnReturn" class="btn btn-gray" onclick="doBack()">返回</button>
+        </div>
+        @Html.HiddenFor(x => x.IsNotice)
+        @Html.HiddenFor(m => Model.APP_ID) @*20210107 fix 修改執行儲存後案件狀態都未變更的問題*@
+    </div>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#IsPay').on('change', clearPAYEXTTIME);
+        $('#CITY_CODE').on('blur', doCITYNameGet);
+        doCITYNameGet();
+
+        if ($('#ACTION_TYPE').val() == '1') {
+            $('#ACTION_TYPE1').attr('checked', 'checked');
+        }
+        else {
+            $('#ACTION_TYPE2').attr('checked', 'checked');
+        }
+
+        $("#StatusDesc").val($('#Apply_FLOW_CD option:selected').text());
+
+        if ($('#IsPay').is(':checked')) {
+            $('#IsPay').attr('disabled', 'disabled');
+            $('#PAY_MONEY').attr('readonly', 'readonly');
+        }
+        // 0:完成申請 9 逾期未補件而予結案 12 核可(發文歸檔) 15自請撤銷 8退件通知
+        if ($('#Apply_FLOW_CD option:selected').val() == '0'
+            || $('#Apply_FLOW_CD option:selected').val() == '9'
+            || $('#Apply_FLOW_CD option:selected').val() == '12'
+            || $('#Apply_FLOW_CD option:selected').val() == '15'
+            || $('#Apply_FLOW_CD option:selected').val() == '8') {
+            $('#Apply_FLOW_CD').attr('disabled', 'disabled');
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnCaseNo').attr('disabled', 'disabled');
+            $('#PAY_MONEY').attr("readonly", "readonly");
+            $('#Apply_PAY_A_FEE').attr("readonly", "readonly");
+            $('#PAY_ACT_TIME_AC_TW').attr("readonly", "readonly");
+            $('#div[tagid="PAY_ACT_TIME_AC_TW"]').attr('disabled', 'disabled');
+            $('#PAY_EXT_TIME_AC_TW').attr("readonly", "readonly");
+            $('div[tagid="PAY_EXT_TIME_AC_TW"]').attr('disabled', 'disabled');
+            $('#IsPay').attr('disabled', 'disabled');
+            $('#btnSave').hide();
+        }
+        // 2:通知補件
+        if ($('#Apply_FLOW_CD option:selected').val() == '2') {
+            $('#notice').show();
+            $('#notice_item').show();
+            $('#note_content').show();
+            $('#remark').text('補件內容');
+
+            if ($('#Apply_ISMODIFY').val() == 'Y') {
+                $('#checkOne').attr('checked', false);
+                $('#checkAll').attr('checked', true);
+            } else {
+                $('#checkOne').attr('checked', true);
+                $('#checkAll').attr('checked', false);
+            }
+
+            $('#checkOne').attr('disabled', 'disabled');
+            $('#checkAll').attr('disabled', 'disabled');
+            $('#Note').attr('disabled', 'disabled');
+            $('#mail_record').hide();
+        }
+        else if ($('#Apply_FLOW_CD option:selected').val() == '9') {
+            // 9:逾期未補件而予結案
+            $('#notice').show();
+            $('#notice_item').hide();
+            $('#note_content').show();
+            $('#remark').text('備註');
+            $('#Apply_FLOW_CD').attr('disabled', 'disabled');
+            $('#Note').attr('readonly', 'readonly');
+            $('#btnSave').hide();
+            $('#mail_record').hide();
+        }
+        else if ($('#Apply_FLOW_CD option:selected').val() == '12') {
+            // 12:核可(發文歸檔)
+            $('#mail_record').show();
+            $('#notice').hide();
+            $('#notice_item').hide();
+            $('#note_content').hide();
+            $('#remark').text('補件內容');
+            $('#Apply_FLOW_CD').attr('disabled', 'disabled');
+            $('#Note').attr('readonly', 'readonly');
+            $('#btnSave').hide();
+        }
+        else if ($('#Apply_FLOW_CD option:selected').val() == '15') {
+            // 15:自請撤銷
+            $('#notice').show();
+            $('#notice_item').hide();
+            $('#note_content').show();
+            $('#remark').text('備註');
+            $('#Apply_FLOW_CD').attr('disabled', 'disabled');
+            $('#Note').attr('readonly', 'readonly');
+            $('#btnSave').hide();
+            $('#mail_record').hide();
+        }
+        else if ($('#Apply_FLOW_CD option:selected').val() == '8') {
+            // 8:退件通知
+            $('#notice').show();
+            $('#notice_item').hide();
+            $('#note_content').show();
+            $('#remark').text('備註');
+            $('#Apply_FLOW_CD').attr('disabled', 'disabled');
+            $('#Note').attr('readonly', 'readonly');
+            $('#btnSave').hide();
+            $('#mail_record').hide();
+        }
+        else {
+            $('#notice').hide();
+            $('#notice_item').hide();
+            $('#note_content').hide();
+            $('#remark').text('補件內容');
+            $('#mail_record').hide();
+        }
+
+        GetLicNumList();
+
+    });
+
+    function dateTimePickerShowCallback() {
+        $('#PAY_MONEY').val($('#Apply_PAY_A_FEE').val());
+    }
+    function clearPAYEXTTIME() {
+        if ($('#IsPay').is(':checked') == false) {
+            // 未勾選已繳費，繳費金額清空
+            $('#PAY_MONEY').val('');
+            $('#PAY_EXT_TIME_AC').val('');
+            $('#PAY_EXT_TIME_AC_TW').val('');
+        }
+    }
+    // 下拉選單變更
+    function changeAddDocCheck() {
+        // 完成申請
+        if ($('#Apply_FLOW_CD option:selected').val() == '0') {
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnCaseNo').attr('disabled', 'disabled');
+            $('#Apply_PAY_A_FEE').attr("readonly", "readonly");
+            $('#PAY_MONEY').attr("readonly", "readonly");
+            $('#PAY_ACT_TIME_AC_TW').attr("readonly", "readonly");
+            $('div[tagid="PAY_ACT_TIME_AC_TW"]').attr('disabled', 'disabled');
+            $('#PAY_EXT_TIME_AC_TW').attr("readonly", "readonly");
+            $('div[tagid="PAY_EXT_TIME_AC_TW"]').attr('disabled', 'disabled');
+            $('#IsPay').attr('disabled', 'disabled');
+
+            $('#notice').hide();
+            $('#notice_item').hide();
+            $('#note_content').hide();
+            $('#remark').text('補件內容');
+            $('#mail_record').hide();
+        }
+        else {
+
+            $('#MOHW_CASE_NO').removeAttr("readonly");
+            $('#btnCaseNo').removeAttr('disabled');
+            $('#PAY_EXT_TIME_AC_TW').removeAttr("readonly");
+            $('div[tagid="PAY_EXT_TIME_AC_TW"]').removeAttr('disabled');
+            $('#IsPay').removeAttr('disabled');
+            // 通知補件
+            if ($('#Apply_FLOW_CD option:selected').val() == '2') {
+                $('#notice').show();
+                $('#notice_item').show();
+                $('#note_content').show();
+                $('#remark').text('補件內容');
+                $('#mail_record').hide();
+
+                $('#checkOne').removeAttr('disabled');
+                $('#checkAll').removeAttr('disabled');
+                $('#Note').removeAttr('disabled');
+            }
+            else if ($('#Apply_FLOW_CD option:selected').val() == '9') {
+                // 逾期未補件而予結案
+                $('#notice').show();
+                $('#notice_item').hide();
+                $('#note_content').show();
+                $('#Note').val('');
+                $('#Note').removeAttr('disabled');
+                $('#remark').text('備註');
+                $('#mail_record').hide();
+            }
+            else if ($('#Apply_FLOW_CD option:selected').val() == '12') {
+                //核可(發文歸檔)
+                $('#mail_record').show();
+                $('#notice').hide();
+                $('#notice_item').hide();
+                $('#note_content').hide();
+                $('#remark').text('補件內容');
+            }
+            else if ($('#Apply_FLOW_CD option:selected').val() == '15') {
+                //自請撤銷
+                $('#notice').show();
+                $('#notice_item').hide();
+                $('#note_content').show();
+                $('#Note').val('');
+                $('#Note').removeAttr('disabled');
+                $('#remark').text('備註');
+                $('#mail_record').hide();
+            }
+            else if ($('#Apply_FLOW_CD option:selected').val() == '8') {
+                //退件通知
+                $('#notice').show();
+                $('#notice_item').hide();
+                $('#note_content').show();
+                $('#Note').val('');
+                $('#Note').removeAttr('disabled');
+                $('#remark').text('備註');
+                $('#mail_record').hide();
+            }
+            else {
+                $('#notice').hide();
+                $('#notice_item').hide();
+                $('#note_content').hide();
+                $('#remark').text('補件內容');
+                $('#mail_record').hide();
+            }
+
+            $('#MOHW_CASE_NO').removeAttr("readonly");
+            $('#btnCaseNo').removeAttr('disabled');
+        }
+        $("#StatusDesc").val($('#Apply_FLOW_CD option:selected').text());
+    }
+
+    // 地址
+    function loadDialogCITYCodeMapName(data) {
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) data.box.val('');
+            else {
+                if (resp.data != '') data.box.val(resp.data);
+                else { data.box.val(''); data.add.val(''); blockAlert(data.msg); }
+            }
+        });
+    };
+
+    function doCITYSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢'; popupWindow({ 'width': 900 }, url, title, null, function (retData, doc) {
+            if (retData != null) {
+                $('#CITY_CODE').val(retData.Id);
+                $('#CITY_TEXT').val(retData.Name);
+            }
+        });
+    }
+
+    function doCITYNameGet() {
+        var code = $('#CITY_CODE');
+        var data = { 'url': '/Ajax/GetCityTown', 'msg': '查無該郵遞區號!!', 'arg': { 'CODE': code.val().toUpperCase() }, 'box': $('#CITY_TEXT'), 'add': $('#CITY_CODE') };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogCITYCodeMapName(data);
+        }
+    }
+
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index", "Case")';
+    }
+
+    // 送出
+    function doSave() {
+
+        var msg = "";
+        $('#Apply_ISMODIFY').val('A');
+        // 通知補件
+        if ($('#Apply_FLOW_CD option:selected').val() == '2') {
+            if ($('#checkOne').is(':checked')) {
+                $('#Apply_ISMODIFY').val('N');
+            }
+
+            if ($('#checkAll').is(':checked')) {
+                $('#Apply_ISMODIFY').val('Y');
+            }
+
+            if ($('#checkOne').is(':checked') && $('#checkAll').is(':checked')) {
+                $('#Apply_ISMODIFY').val('Z');
+            }
+
+            if (!$('#checkOne').is(':checked') && !$('#checkAll').is(':checked')) {
+                msg += '請勾選補件項目!!<br>';
+            }
+
+            if ($('#Note').val().trim() == '') {
+                msg += '請輸入補件內容!!<br>';
+            }
+        }
+        // 逾期補件而予結案
+        if ($('#Apply_FLOW_CD option:selected').val() == '9') {
+            if ($('#Note').val().trim() == '') {
+                msg += '請輸入備註!!</br>';
+            }
+        }
+
+        if ($('#IsPay').is(':checked') && $('#PAY_EXT_TIME_AC').val().trim() == '') {
+            msg += '請輸入交易日期!!<br>';
+        }
+
+        if ($('#IsPay').is(':checked') && $('#PAY_MONEY').val().trim() == '') {
+            msg += '請輸入交易金額!!<br>';
+        }
+        // 核可(發文歸檔)
+        if ($('#Apply_FLOW_CD option:selected').val() == '12') {
+            if ($('#MAIL_DATE_AC_TW').val().trim() == '') {
+                msg += '請輸入郵寄日期!!<br>';
+            }
+            if ($('#MAIL_BARCODE').val().trim() == '') {
+                msg += '請輸入掛號條碼!!<br>';
+            }
+        }
+        if ($('#Apply_FLOW_CD option:selected').val() == '15') {
+            //自請撤銷
+        }
+
+        if (msg != "") {
+            blockAlert(msg, "提示訊息");
+        }
+        else {
+            var appID = '@Model.APP_ID';
+            var data = getFormDataToObject($("form[id=main_form]"));
+            ajaxLoadMore('@Url.Action("Save")', data, function (retData) {
+                if (retData.status) {
+                    // 完成申請 逾期未補件而予結案 自請撤銷 退件通知 核可(發文歸檔)
+                    var flowStatus = $('#Apply_FLOW_CD option:selected').val();
+                    if (flowStatus == '0' || flowStatus == '9' || flowStatus == '15'
+                        || flowStatus == '8' || flowStatus == '12') {
+                        $('#btnSave').hide();
+                        $('#Apply_FLOW_CD').attr('disabled', 'disabled');
+                        $('#MOHW_CASE_NO').attr("readonly", "readonly");
+                        $('#btnCaseNo').attr('disabled', 'disabled');
+
+                        // 通知補件
+                        /*if ($('#Apply_FLOW_CD option:selected').val() == '2') {
+                            $('#checkOne').attr('disabled', 'disabled');
+                            $('#checkAll').attr('disabled', 'disabled');
+                        }*/
+                        $('#Note').attr('readonly', 'readonly');
+                    }
+                    if ($('#IsPay').is(':checked')) {
+                        $('#IsPay').attr('disabled', 'disabled');
+                        $('#PAY_MONEY').attr('readonly', 'readonly');
+                        $('#PAY_EXT_TIME_AC_TW').attr("readonly", "readonly");
+                        $('div[tagid="PAY_EXT_TIME_AC_TW"]').attr('disabled', 'disabled');
+                    }
+                    blockMessage(retData.message, "提示訊息", function () {
+                        blockUI();
+                        location.href = '@Url.Action("Index", "Apply_001010")?appid=' + appID;
+                    });
+                }
+                else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+
+        }
+
+    }
+
+    // 取公文號
+    function GetMOHW_CASE_NO(UNIT_CD, APP_ID) {
+
+        var data = {
+            "UNIT_CD": UNIT_CD,
+            "APP_ID": APP_ID
+        }
+
+        ajaxLoadMore('/AJAX/GetMOHW_CASE_NO', data, function (retData) {
+            if (retData.status) {
+                $('#MOHW_CASE_NO').val(retData.message)
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+
+    }
+
+    // 取得ZIP
+    function GetZip(APP_ID) {
+        var data = {
+            "APP_ID": APP_ID,
+            "CASENAME": "醫事人員或公共衛生師證書影本申請書"
+        }
+        var url = '/GetZIP/GetZIP?' + $.param(data);
+        location.href = url;
+    }
+
+    function GetLicNumList() {
+        var code_pcd = $('#DIVISION');
+
+        var data = {
+            'url': '/Ajax/GetLicNumCertMDList', 'msg': '查無該證書字號!!', 'arg': { 'code_pcd': code_pcd.val() }, 'result': $('#DIVISION')
+        };
+
+        if ($.trim(data.arg.code_pcd) == '')
+            data.result.val('');
+        else {
+            code_pcd.val(data.arg.code_pcd);
+            loadLicNumList(data, 'LIC_CD');
+        }
+    };
+
+    function loadLicNumList(data, objectId) {
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) {
+                data.result.val('');
+            }
+            else {
+                if (resp.data != '') {
+                    $('#' + objectId).empty();
+                    $.each(resp.data, function (i, item) {
+                        $('#' + objectId).append('<option value=' + item.CODE + ' selected>' + item.TEXT + '</option>');
+                    });
+                }
+                else {
+                    data.result.val('');
+                    blockAlert(data.msg);
+                }
+            }
+        });
+    };
+
+    //套印申請書
+    function Print(appid) {
+        var data = getFormDataToObject($("form[id=main_form]"));
+        $.fileDownload('@Url.Action("Print")?APP_ID=' + appid , {
+            httpMethod: 'post',
+            data: data,
+            prepareCallback: function (url) {
+
+            }
+        });
+    }
+</script>

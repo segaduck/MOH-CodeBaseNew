@@ -1,0 +1,146 @@
+﻿@model ES.Areas.Admin.Models.AccountQueryModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "帳號管理";
+    ViewBag.FunctionTitle = "帳號管理";
+
+    ViewBag.Script = @"
+function doQuery(page) {
+$('#ActionType').val('Query');
+$('#NowPage').val(page);
+}
+
+function doDelete(id) {
+if(confirm('確定要停用['+id+']帳號嗎？')) {
+$('#ActionType').val('Delete');
+$('#ActionId').val(id);
+$('#ActionForm').submit();
+}
+}
+
+function doReset() {
+$('#UnitCode').prop('selectedIndex', 0);
+$('#Account').val('');
+$('#Name').val('');
+$('#Stops').val('');
+}
+";
+}
+<script type="text/javascript">
+    function doReport(Report_type) {
+        if (Report_type == 'xls') {
+            $('#Report_type').val('xls')
+        }
+        else if (Report_type == 'ods') {
+            $('#Report_type').val('ods')
+        }
+
+        $('form')[0].action = '/Account/downloadReport';
+        $('form')[0].submit();
+        $('form')[0].action = '/BACKMIN/Account';
+    }
+</script>
+
+
+@using (Html.BeginForm("Index", "Account", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 帳號管理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <!-- H1 title -->
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.UnitCode)</label>
+                <div class="col-sm-4">
+                    @Html.DropDownListFor(m => m.UnitCode, (List<SelectListItem>)@ViewBag.UnitList, new { @class = "form-control" })
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Account)</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.Account, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Permission)</label>
+                <div class="col-sm-4">
+                    <select name="Permission" class="form-control">
+                        <option value="all">全部</option>
+                        <option value="1">所有單位(管理者)</option>
+                        <option value="0">所屬單位</option>
+                        <option value="2">隸屬單位</option>
+                    </select>
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Name)</label>
+                <div class="col-sm-4">@Html.TextBoxFor(m => m.Name, new { @class = "form-control" })</div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.NowPage)
+                @Html.HiddenFor(m => m.ActionType)
+                @Html.HiddenFor(m => m.ActionId)
+                @Html.Hidden("Report_type")
+                <button type="submit" class="btn btn-blue" onclick="doQuery(@ViewBag.NowPage)"><i class="fas fa-search space-right"></i>查詢</button>
+                <a class="btn btn-save" href="#" onclick="document.location.href='@Url.Action("New", "Account")';">新增</a>
+                <a class="btn btn-save" href="#" onclick="doReport('xls')"><i class="fas fa-print space-right"></i>匯出Excel</a>
+                <a class="btn btn-save" href="#" onclick="doReport('ods')"><i class="fas fa-print space-right"></i>匯出ODF</a>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+        <h2 class="second-title">查詢結果</h2>
+        <div class="table-responsive">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th width="5%">編輯</th>
+                        <th width="5%">項次</th>
+                        <th width="15%">帳號</th>
+                        <th width="15%">姓名</th>
+                        <th width="15%">單位</th>
+                        <th width="5%">停用</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.List.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="6" style="text-align: center;">查無資料</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        for (var i = 0; i < ViewBag.List.Count; i++)
+                        {
+                            ES.Areas.Admin.Models.AccountModel item = ViewBag.List[i];
+                            var pageItem = (((int)ViewBag.NowPage - 1) * 20) + (i + 1);
+                            <tr>
+                                <td width="5%">
+                                    <div align="center">
+                                        <input type="button" class="btn btn-blue" value="編輯" onclick="$('#ActionType').val('Edit');$('#ActionId').val('@item.Account');$('#ActionForm').submit();" />
+                                    </div>
+                                </td>
+                                <td width="5%"><div align="center">@(pageItem)</div></td>
+                                <td width="15%"><div align="center">@item.Account</div></td>
+                                <td width="15%"><div align="center">@item.Name</div></td>
+                                <td width="15%"><div align="center">@item.UnitName</div></td>
+                                <td width="5%">
+                                    <div align="center">
+                                        <div  hidden="hidden"><span>@item.Stops</span></div>
+                                        <input type="button" class="btn btn-warning" value="停用" onclick="doDelete('@item.Account');" />
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            <div class="table-pager">
+                @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+            </div>
+        </div>
+        <!-- form -->
+    </div>
+}

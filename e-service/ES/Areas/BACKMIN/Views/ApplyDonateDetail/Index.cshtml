@@ -1,0 +1,142 @@
+﻿@using ES.Utils;
+@using ES.Commons;
+@model ES.Areas.Admin.Models.ApplyDonateDetailViewModel
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+    function doQuery(page) {
+        $('#ActionType').val('Query');
+        $('#NowPage').val(page);
+    }
+    function doReport() {
+        @*$('#ActionForm').prop("action", "@Url.Action("ExportCSV", "ApplyDonateDetail")");
+        $('#ActionForm').submit();*@
+        var url = "@Url.Action("ExportCSV", "ApplyDonateDetail")";
+        window.open(url);
+    }
+
+    function doModify(app_id) {
+        $('#ActionForm').prop("action", "@Url.Action("Edit", "ApplyDonateDetail")?app_id=" + app_id);
+        $('#ActionForm').submit();
+    }
+    function doOpenChange(srv_id_donate, isopen, isdraft) {
+        var data = getFormDataToObject($("form[id=ActionForm]"));
+        data.srv_id_donate = srv_id_donate;
+        data.isopen = isopen;
+        data.isdraft = isdraft;
+        ajaxLoadMore('@Url.Action("OpenChange")', data, function (retData) {
+            if (retData.status) {
+                blockMessage(retData.message, "提示訊息", function () {
+                    location.href = '@Url.Action("Index", "ApplyDonate")'
+                });
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+    }
+</script>
+@{
+    ViewBag.Title = "線上捐款明細查詢";
+    ViewBag.FunctionTitle = "線上捐款明細查詢";
+}
+
+@using (Html.BeginForm("Index", "ApplyDonateDetail", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 線上捐款管理 / @ViewBag.FunctionTitle
+    </div>
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Form.NAME)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Form.NAME, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Form.SRV_ID_DONATE)</label>
+                <div class="col-sm-4">
+                    @Html.DropDownListFor(m => m.Form.SRV_ID_DONATE, (List<SelectListItem>)Model.Form.APPLYDONATE_List, new { @class = "form-control" })
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Form.PAYWAY)</label>
+                <div class="col-sm-4">
+                    @Html.DropDownListFor(m => m.Form.PAYWAY, (List<SelectListItem>)Model.Form.DONATE_PAYWAY_List, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Form.ISPAY)</label>
+                <div class="col-sm-4">
+                    @Html.DropDownListFor(m => m.Form.ISPAY, (List<SelectListItem>)Model.Form.ISPAY_List, new { @class = "form-control" })
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Form.ISAGREE)</label>
+                <div class="col-sm-4">
+                    @Html.DropDownListFor(m => m.Form.ISAGREE, (List<SelectListItem>)Model.Form.ISAGREE_List, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Form.CSV_YEAR)</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.Form.CSV_YEAR, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.NowPage)
+                <button type="submit" class="btn btn-blue" onclick="doQuery(@Model.NowPage)"><i class="fas fa-search space-right"></i>查詢</button>
+                <a class="btn btn-save" href="javascript:void(0)" onclick="doReport('csv')"><i class="fas fa-print space-right"></i>匯出CSV</a>
+            </div>
+        </div>
+        <div class="table-pager">
+            @Html.HiddenFor(m => m.NowPage)
+            @Html.ShowGridPage(Model.NowPage, Model.TotalPage, Model.TotalCount)
+        </div>
+
+        @if (Model != null)
+        {
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th>編輯</th>
+                            <th>捐款專案</th>
+                            <th>捐款人姓名</th>
+                            <th>捐款方式</th>
+                            <th>捐款金額</th>
+                            <th>是否已捐款</th>
+                            <th>是否同意上傳國稅局</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Grid != null && Model.Grid.Count > 0)
+                        {
+                            for (var i = 0; i < Model.Grid.Count; i++)
+                            {
+                                var a = Model.Grid[i];
+                                <tr>
+                                    <td><a href="#" onclick="doModify('@(a.APP_ID)')" class="btn btn-save">編輯</a></td>
+                                    <td>@Html.Raw(a.NAME_CH)</td>
+                                    <td>@Html.Raw(a.NAME)</td>
+                                    <td>@Html.Raw(a.PAY_METHOD_NAME)</td>
+                                    <td>@Html.Raw(a.PAY_A_FEE)</td>
+                                    <td>@Html.Raw(a.PAY_STATUS_MK)</td>
+                                    <td>@Html.Raw(a.ISDONOR)<br />@Html.Raw(a.DONOR_IDN)</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" style="text-align: center;">查無資料</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}

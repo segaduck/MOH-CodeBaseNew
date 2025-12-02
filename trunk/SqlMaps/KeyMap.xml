@@ -1,0 +1,613 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="KeyMap"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <resultMaps>
+  </resultMaps>
+
+  <cacheModel id="EECOnline-cache" implementation="MEMORY">
+    <flushInterval hours="1" />
+    <property name="Type" value="WEAK" />
+  </cacheModel>
+
+  <!--
+    這個檔案專門用來定義 代碼DDL清單內容，資料來源可以是 DB 代碼表格,
+    也可以是用 Union 直接定義在這裡, 而不要寫在程式中.
+    SQL 返回結果欄位, 一律 Alias 成「CODE」與「TEXT」
+    -->
+  <statements>
+
+    <!-- 筆數條件(共用區塊) -->
+    <sql id="SQLROWNUM">
+      <![CDATA[
+        AND ROWNUM <= 1001
+      ]]>
+    </sql>
+
+    <!-- 筆數條件(共用區塊) -->
+    <sql id="SQLROWNUM2">
+      <![CDATA[
+        AND ROWNUM <= 2001
+      ]]>
+    </sql>
+
+    <!-- 取得前台申辦案件縣市別清單 -->
+    <select id="getE_SRV_CITY" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT convert(nvarchar,es.srv_id) AS CODE ,cd.code_name AS TEXT
+        FROM   eservice es
+        join   code cd on es.srv_city = cd.code_cd AND cd.code_type = 'CITY'
+        WHERE  1 = 1
+        AND cd.status = '1'
+        ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="srv_cd">
+            <![CDATA[
+	            AND es.srv_cd = #srv_cd#
+             ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[
+         ORDER BY convert(int,code_seq) 
+       ]]>
+    </select>
+
+    <!-- 取得系統功能清單 -->
+    <select id="getSYSID" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="TBKC-cache">
+      <![CDATA[
+        SELECT sysid CODE,prgname TEXT 
+        FROM   amfuncm 
+        WHERE  modules = ''
+        ORDER BY prgorder
+      ]]>
+    </select>
+
+    <!-- 取得模組功能清單 -->
+    <select id="getMODULES" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="TBKC-cache">
+      <![CDATA[
+        SELECT prgid CODE,prgname TEXT 
+        FROM   amfuncm 
+        WHERE  1 = 1
+        AND    modules <> '' 
+        AND    submodules = ''
+       ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="sysid">
+            <![CDATA[
+	            AND sysid = #sysid#
+             ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[
+      ORDER BY prgorder
+      ]]>
+    </select>
+
+    <!-- 取得單位清單 -->
+    <select id="getUNIT" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="TBKC-cache">
+      <![CDATA[
+        SELECT unit_cd CODE,unit_nm TEXT 
+        FROM   UNIT 
+        WHERE  1 = 1
+        AND status = '1'
+        ORDER BY unit_cd
+      ]]>
+    </select>
+
+    <!-- 取得單位清單1 -->
+    <select id="getUNIT1" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="TBKC-cache">
+      <![CDATA[
+        SELECT unit_cd CODE,unit_nm TEXT 
+        FROM   UNIT 
+        WHERE  1 = 1
+        AND status = '1'
+       ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="unit_cd">
+            <![CDATA[
+	            AND unit_cd = #unit_cd#
+             ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[
+        ORDER BY unit_cd
+      ]]>
+    </select>
+
+
+    <!-- 取得功能群組 -->
+    <select id="getAMGRP"
+           resultClass="Turbo.DataLayer.KeyMapModel"
+           parameterClass="Hashtable"
+           cacheModel="TBKC-cache">
+      <![CDATA[
+        SELECT convert(nvarchar,grp_id) CODE,grpname TEXT 
+        FROM   AMGRP 
+        WHERE  1 = 1
+        ORDER BY grp_id
+      ]]>
+    </select>
+
+    <!-- 取得申辦項目 -->
+    <select id="getApply" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="TBKC-cache">
+      <![CDATA[
+        SELECT code_cd CODE,code_name TEXT 
+        FROM   CODE 
+        WHERE  1 = 1
+        AND    code_type = 'APPLY'
+        AND    status = '1'
+	      AND    substring(code_cd,1,3) = substring(#srv_cd#,1,3)
+        ORDER BY code_cd
+       ]]>
+    </select>
+
+    <!-- 取得申辦案件縣市別清單 -->
+    <select id="getSrv_City" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT cd.code_cd AS CODE ,cd.code_name AS TEXT
+        FROM   code cd
+        WHERE  1 = 1 
+        AND    cd.code_type = 'CITY'
+        ORDER BY cd.code_desc
+       ]]>
+    </select>
+
+    <!-- 取得申辦案件縣市別清單_單位權限 -->
+    <select id="getSrv_City_Unit" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT cd.code_cd AS CODE ,cd.code_name AS TEXT
+        FROM   code cd
+        WHERE  1 = 1 
+        AND    cd.code_type = 'CITY'
+        ]]>
+        <dynamic>
+          <isParameterPresent>
+            <isNotEmpty prepend="" property="unit_cd">
+              <![CDATA[
+	              AND cd.code_cd = (SELECT unit_city FROM unit WHERE unit_cd = #unit_cd#)
+               ]]>
+            </isNotEmpty>
+          </isParameterPresent>
+        </dynamic>
+        <![CDATA[     
+        ORDER BY cd.code_desc
+       ]]>
+    </select>
+
+    <!-- 取得申辦案件縣市別清單 -->
+    <select id="getSrv_City_Parm" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT convert(nvarchar,es.srv_id) AS CODE ,cd.code_name AS TEXT
+        FROM   ESERVICE es
+        LEFT JOIN CODE cd ON cd.code_type = 'CITY' AND es.srv_city = cd.code_cd
+        WHERE  1 = 1 
+        AND es.srv_online ='1'
+         ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="srv_cd">
+            <![CDATA[
+	            AND es.srv_cd = #srv_cd#
+             ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[      
+         ORDER BY convert(int,code_seq) 
+       ]]>
+    </select>
+
+    <!-- 取得狀態所屬種類 -->
+    <select id="getApplyhardtype" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT cd.code_cd AS CODE ,cd.code_name AS TEXT
+        FROM   code cd
+        WHERE  1 = 1 
+        AND    cd.code_type = 'APPLYHARDTYPE'
+        ORDER BY cd.code_cd
+       ]]>
+    </select>
+
+    <!-- 取得案件狀態 -->
+    <select id="getSrv_status" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT es.status AS CODE , cd.code_name AS TEXT
+        FROM   eservice_status es
+		    left join CODE cd on code_type = 'APPLYSTATUS' AND cd.code_cd = es.status
+        WHERE  1 = 1 
+       ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="srv_id">
+            <![CDATA[
+	            AND es.srv_id = #srv_id#
+             ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[      
+        ORDER BY es.status
+       ]]>
+    </select>
+
+    <!-- 取得案件狀態 -->
+    <select id="getSrv_status1" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT cd.code_cd AS CODE , cd.code_name AS TEXT
+        FROM   CODE cd
+        WHERE  cd.code_type = 'APPLYSTATUS'
+        ORDER BY cd.code_cd
+       ]]>
+    </select>
+
+    <!-- 取得承辦人 -->
+    <select id="getApy_undertaker" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT ad.userno AS CODE ,ad.username AS TEXT
+        FROM   amdburm ad
+        inner join ESERVICE_SEND_GRP esg on esg.srv_id = #srv_id#
+        inner join AMGRP ag on esg.grp_id = ag.grp_id
+        inner join AMUROLE ar on ar.userno = ad.userno AND ag.grp_id = ar.grp_id
+        WHERE  1 = 1 
+        AND    esg.grp_id = ag.grp_id
+        ORDER BY ad.userno
+       ]]>
+    </select>
+
+    <!-- 取得公告類別清單 -->
+    <select id="getEnews" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT code_cd AS CODE ,code_name AS TEXT
+        FROM   CODE
+        WHERE  1 = 1 
+        AND    code_type = 'ENEWS'
+        AND    status = '1'
+        ORDER BY code_cd
+       ]]>
+    </select>
+
+    <!-- 取得常見問題清單 -->
+    <select id="getfaq" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT code_cd AS CODE ,code_name AS TEXT
+        FROM   CODE 
+        WHERE  1 = 1 
+        AND    code_type = 'FAQ'
+        ORDER BY code_cd
+       ]]>
+    </select>
+
+    <!-- 取得常見問題清單(不顯示停用) -->
+    <select id="getfaq1" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT code_cd AS CODE ,code_name AS TEXT
+        FROM   CODE 
+        WHERE  1 = 1 
+        AND    code_type = 'FAQ'
+        AND    status = '1'
+        ORDER BY code_cd
+       ]]>
+    </select>
+
+    <!-- 取得機構類別 -->
+    <select id="getType_id" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT (code_desc + '-' + code_cd) AS CODE ,code_name AS TEXT
+        FROM   CODE 
+        WHERE  1 = 1 
+        AND    code_type = 'MECHANISM'
+        AND    status =  '1'
+        ORDER BY code_desc,code_cd
+       ]]>
+    </select>
+
+    <!-- 取得登記事項 -->
+    <select id="getApy_change" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT  code_cd  CODE,code_name TEXT
+        FROM   CODE
+        WHERE  1 = 1 
+        AND    code_type = 'DCD'
+        AND    status = '1'
+        ORDER BY  code_cd
+       ]]>
+    </select>
+
+    <!-- 取得病床種類 -->
+    <select id="getBed_type" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT code_cd AS CODE,code_name AS TEXT
+        FROM   CODE
+        WHERE  1 = 1 
+        AND    code_type = 'BEDTYPE'
+        AND    status = '1'
+        ORDER BY  code_cd
+       ]]>
+    </select>
+
+    <!-- 取得病床類型 -->
+    <select id="getBed_kind" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT code_cd CODE,code_name AS TEXT
+        FROM   CODE
+        WHERE  1 = 1 
+        AND    code_type = 'BED'
+        AND    status = '1'
+          ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="apy_hosp_bed_type">
+            <![CDATA[
+	              AND    code_desc = #apy_hosp_bed_type#
+             ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[      
+        
+        ORDER BY code_cd 
+       ]]>
+    </select>
+
+    <!-- 取得執業科別(限機構) -->
+    <select id="getPrtDept" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT (code_desc + code_cd) CODE ,cd.code_name TEXT
+        FROM   ESYS_SEARCH206 s206
+        join code cd on cd.code_name = s206.dcd_name AND cd.code_type = 'NDCD'
+        WHERE  1 = 1
+		    AND  s206.bas_agency_id = #apy_bas_agency_id#
+        ORDER BY cd.code_desc
+       ]]>
+    </select>
+
+    <!-- 取得執業科別 -->
+    <select id="getDcdDept" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT code_cd CODE,code_name AS TEXT
+        FROM   CODE
+        WHERE  1 = 1 
+        AND    code_type = 'DCD'
+        AND    status = '1'
+          ]]>
+      <![CDATA[      
+        
+        ORDER BY code_cd 
+       ]]>
+    </select>
+
+    <!-- 取得執業科別 -->
+    <select id="getNDcdDept" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT (code_desc + /*code_cd*/ CASE code_cd WHEN '0000' THEN '' ELSE code_cd END) CODE,code_name AS TEXT
+        FROM   CODE
+        WHERE  1 = 1 
+        AND    code_type = 'NDCD'
+        AND    status = '1'
+          ]]>
+      <![CDATA[     
+        ORDER BY code_desc, code_cd 
+       ]]>
+    </select>
+
+    <!-- 取得權屬別 -->
+    <select id="getAUTHOR" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT code_cd CODE,code_name AS TEXT
+        FROM   CODE
+        WHERE  1 = 1 
+        AND    code_type = 'AUTHOR'
+        AND    status = '1'
+          ]]>
+      <![CDATA[      
+        
+        ORDER BY code_cd 
+       ]]>
+    </select>
+
+    <!-- 取得縣市類型 -->
+    <select id="getZip_City" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+       	SELECT  CODE,TEXT FROM (
+		    SELECT　DISTINCT SUBSTRING(ZIP_CO,1,1) +  CITYNM CODE,CITYNM TEXT FROM zipcode
+		    ) A
+		    ORDER BY CODE
+       ]]>
+    </select>
+
+    <!-- 取得鄉鎮區狀態 -->
+    <select id="getZip_Town" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT  CODE,TEXT FROM (
+		    SELECT　DISTINCT SUBSTRING(ZIP_CO,1,3) +  TOWNNM CODE,TOWNNM TEXT FROM zipcode
+		    WHERE SUBSTRING(ZIP_CO,1,1) +  CITYNM = #CityCode#
+		    ) A
+		    ORDER BY CODE
+     
+       ]]>
+    </select>
+
+    <select id="getZip_byCode" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT TOP 1 CITYNM + ' ' + TOWNNM AS Result
+FROM ZIPCODE
+WHERE SUBSTRING(ZIP_CO, 1, 3)=#ZIP#
+        ]]>
+    </select>
+
+    <!-- 取得鄉鎮區狀態 -->
+    <select id="getZip_Road" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT　DISTINCT ZIP_CO CODE,ROADNM TEXT FROM zipcode
+		    WHERE SUBSTRING(ZIP_CO,1,3) +  TOWNNM = #TownCode#
+
+       ]]>
+    </select>
+
+    <!-- 取得領取地址(填寫申辦) -->
+    <select id="getBody_w" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT CONVERT(nvarchar,srv_get_id) CODE,body AS TEXT
+        FROM   ESERVICE_GET
+        WHERE  1 = 1 
+        AND write = 1
+        AND srv_id = #srv_id# 
+	    	ORDER BY gettype
+       ]]>
+    </select>
+
+    <!-- 取得領取地址(申辦查詢) -->
+    <select id="getBody_p" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+        SELECT CONVERT(nvarchar,srv_get_id) CODE,body AS TEXT
+        FROM   ESERVICE_GET
+        WHERE  1 = 1 
+        AND preview = 1
+        AND srv_id = #srv_id#      
+	    	ORDER BY gettype
+       ]]>
+    </select>
+
+    <select id="get_QUAL" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT code_cd CODE, code_name AS TEXT
+FROM CODE
+WHERE 1=1 
+  AND code_type='QUAL'
+  AND status='1'
+        ]]>
+    </select>
+
+    <select id="get_APPLYQUAL" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT code_cd CODE, code_name AS TEXT
+FROM CODE
+WHERE 1=1 
+  AND code_type='APPLYQUAL'
+  AND status='1'
+        ]]>
+    </select>
+
+    <select id="get_SCHOOLID" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT CAST(keyid AS NVARCHAR) AS CODE, school_name AS TEXT
+FROM CODE_SCHOOLS
+WHERE 1=1 
+        ]]>
+    </select>
+	  
+    <select id="get_UCODE" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT CAST(keyid AS NVARCHAR) AS CODE, school_dept AS TEXT
+FROM CODE_SCHOOLSDEPT
+WHERE 1=1
+  AND school_keyid=#SCHOOLID#
+        ]]>
+    </select>	  
+	  
+    <select id="get_COURSEID" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT CAST(keyid AS NVARCHAR) AS CODE, code_name1 + '-' + code_name2 AS TEXT
+FROM CODE_SIXFIELDS
+WHERE 1=1
+  AND code_type=#DOMAINID#
+        ]]>
+    </select>
+
+    <select id="get_CODE_WORKHISTORY" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT CAST(keyid AS NVARCHAR) AS CODE, workhistory_name AS TEXT
+FROM CODE_WORKHISTORY
+WHERE 1=1
+        ]]>
+    </select>
+
+    <select id="get_CODE_WORKHISTORYDET" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT CAST(keyid AS NVARCHAR) AS CODE, workhistory_name AS TEXT
+FROM CODE_WORKHISTORYDET
+WHERE 1=1
+  AND workhistory_keyid=#UNITID#
+        ]]>
+    </select>
+
+    <select id="get_CODE_WORKHISTORYPART" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT CAST(keyid AS NVARCHAR) AS CODE, workhistorypart_name AS TEXT
+FROM CODE_WORKHISTORYPART
+WHERE 1=1
+  AND workhistorydet_keyid=#POSITIONID#
+        ]]>
+    </select>
+	  
+    <select id="get_Hospital" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT code AS CODE, text AS TEXT
+FROM EEC_Hospital
+WHERE 1=1
+ORDER BY orderby
+        ]]>
+    </select>
+	  
+    <select id="get_HIS_Type_All" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT CODE, TEXT
+FROM CODE1
+WHERE ITEM='HIS_Type'
+ORDER BY CAST(CODE AS INT)
+        ]]>
+    </select>
+	  
+    <select id="get_HIS_Type_Valid" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT his_type AS CODE, his_type_name AS TEXT
+FROM EEC_Hospital_SetPrice
+WHERE 1=1
+  AND CONVERT(DATE, GETDATE())>=CONVERT(DATE, show_date1, 111)
+  AND CONVERT(DATE, GETDATE())<=CONVERT(DATE, show_date2, 111)
+  AND hospital_code=#hospital_code#
+ORDER BY CAST(his_type AS INT)
+        ]]>
+    </select>
+	  
+	<select id="get_HIS_Type_Valid_Price" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT his_type AS CODE, CAST(price AS NVARCHAR) AS TEXT
+FROM EEC_Hospital_SetPrice
+WHERE 1=1
+  AND CONVERT(DATE, GETDATE())>=CONVERT(DATE, show_date1, 111)
+  AND CONVERT(DATE, GETDATE())<=CONVERT(DATE, show_date2, 111)
+  AND hospital_code=#hospital_code#
+ORDER BY CAST(his_type AS INT)
+        ]]>
+    </select>
+	  
+	<select id="get_login_type" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT CODE, TEXT
+FROM CODE1
+WHERE ITEM='LoginType'
+ORDER BY CAST(CODE AS INT)
+        ]]>
+    </select>
+
+    <select id="get_AccountingYM" resultClass="Turbo.DataLayer.KeyMapModel" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+        <![CDATA[
+SELECT DISTINCT
+  CAST(YEAR(a.createdatetime)      AS NVARCHAR) + '/' + CAST(MONTH(a.createdatetime) AS NVARCHAR) AS CODE,
+  CAST(YEAR(a.createdatetime)-1911 AS NVARCHAR) + '/' + CAST(MONTH(a.createdatetime) AS NVARCHAR) AS TEXT
+FROM EEC_Apply a
+WHERE 1=1
+ORDER BY CAST(YEAR(a.createdatetime) AS NVARCHAR) + '/' + CAST(MONTH(a.createdatetime) AS NVARCHAR) DESC
+        ]]>
+    </select>
+
+  </statements>
+</sqlMap>

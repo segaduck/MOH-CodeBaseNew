@@ -1,0 +1,450 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>HCACS函式 - Sample Code</title>
+    <script type="text/javascript" charset="utf-8" src="HCAAPISVIAdapter.js"></script>
+    <script type="text/javascript" charset="utf-8" src="CheckAndLoad.js"></script>
+    <script type="text/javascript" charset="utf-8" src="AllComponentErrCode.js"></script>
+    <script type="text/javascript" charset="utf-8" src="HCAServiSign.js"></script>
+    <script type="text/javascript">
+        function init() {
+            mainForm.T1.value = "";
+            CheckBrowserAndLoad("HCAAPI");
+        }
+    </script>
+</head>        
+<body onload="init();">  
+        
+    <form name="mainForm" method="POST" action="">
+        <table border="0" width="100%" id="table1">
+            <tr>
+                <td width="428">
+                    <table border="0" width="100%" id="table2">
+                        <tr>
+                            <td>
+                                <!--					<input type="button" value="Test" onclick="Test(document.mainForm)">-->
+                                <input type="button" value="初始化密碼模組" onclick="InitModule(document.mainForm)">
+                                <input type="button" value="開啟SESSION" onclick="InitSession(document.mainForm)">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="button" value="關閉SESSION" onclick="CloseSession(document.mainForm)">
+                                <input type="button" value="關閉密碼模組" onclick="CloseModule(document.mainForm)">
+                                <input type="button" value="關閉密碼模組不斷線" onclick="CloseModuleEx(document.mainForm)">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td height="23">
+                                <fieldset style="padding: 2">
+                                    <legend><font face="Tahoma">HCA函式</font></legend>
+                                    <table border="0" width="100%" id="table3">
+                                        <tr>
+                                            <td width="217">
+                                                <input type="button" value="取得卡片版本" onclick="GetCardVersion(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                            <td>
+                                                <input type="button" value="取憑證" onclick="GetCert(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="217">
+                                                <input type="button" value="取卡別" onclick="GetCardType(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                            <td>
+                                                <input type="button" value="對資料檔取SHA1 Hash" onclick="Hash(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="217">
+                                                <input type="button" value="取得卡片基本資料" onclick="GetBasic(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                            <td>
+                                                <input type="button" value="對資料檔簽章" onclick="Sign(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="217">
+                                                <input type="button" value="取卡片序號" onclick="GetSN(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                            <td>
+                                                <input type="button" value="對資料檔驗章" onclick="Verify(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="217">
+                                                <input type="button" value="讀取卡片資訊" onclick="GetInfo(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                            <td>
+                                                <input type="button" value="由憑證檔驗章" onclick="VerifyByCertFile(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="217">
+                                                <input type="button" value="取金鑰長度" onclick="GetKeyLen(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                            <td>
+                                                <input type="button" value="公鑰加密" onclick="Enc(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="217">
+                                                <input type="button" value="取憑證類型" onclick="GetCertType(document.mainForm)" style="width: 193; height: 27">
+                                            </td>
+                                            <!--							<input type="button" value="驗PIN碼" name="btnVerifyPIN" style="width: 193; height: 27">-->
+                            </td>
+                            <td>
+                                <input type="button" value="由憑證檔加密" onclick="EncByCertFile(document.mainForm)" style="width: 193; height: 27">
+                            </td>
+                        </tr>
+                        <tr>
+                            <!--<td width="217">-->
+                            <!--							<!--<input type="button" value="設PIN碼" name="btnSetPIN" style="width: 193; height: 27"></td>-->
+                            <td width="217">
+                                <input type="button" value="對資料檔取SHA256 Hash" onclick="Hash2(document.mainForm)" style="width: 193; height: 27">
+                            </td>
+                            <td>
+                                <input type="button" value="私鑰解密" onclick="Dec(document.mainForm)" style="width: 193; height: 27">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="217">
+                                <input type="button" value="對資料檔簽章(原文已做Hash)" onclick="SignWithoutHash(document.mainForm)" style="width: 193; height: 27">
+                            </td>
+                            <td>
+                                <input type="button" value="取簽章演算法" onclick="GetSignAlgo(document.mainForm)" style="width: 193; height: 27">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="217">
+                                <input type="button" value="變更PIN碼" onclick="ChangeUserPin(document.mainForm)" style="width: 193; height: 27">
+                            </td>
+                            <!--<td>
+                            <input type="button" value="取簽章演算法" onclick="GetSignAlgo(document.mainForm)" style="width: 193; height: 27"></td>-->
+                        </tr>
+                    </table>
+                    </fieldset>
+                </td>
+            </tr>
+            <tr>
+                <td height="23">
+                    <fieldset style="padding: 2">
+                        <legend><font face="Tahoma">解鎖函式</font></legend>
+                        <table border="0" width="100%" id="table3">
+                            <tr>
+                                <td width="217">
+                                    <input type="button" value="開啟SO SESSION" onclick="InitSOSession(document.mainForm)" style="width: 193; height: 27">
+                                </td>
+                                <td>
+                                    <input type="button" value="解鎖" onclick="UnblockUserPIN(document.mainForm)" style="width: 193; height: 27">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="217">
+                                    <input type="button" value="關閉SO SESSION" onclick="CloseSOSession(document.mainForm)" style="width: 193; height: 27">
+                                </td>
+                                <td></td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </td>
+            </tr>
+            <tr>
+                <td height="23">
+                    <fieldset style="padding: 2">
+                        <legend><font face="Tahoma">TSA Function</font></legend>
+                        <table border="0" width="100%" id="table4">
+                            <tr>
+                                <td>
+                                    <input type="button" value="TS Query" onclick="DoTSQuery(document.mainForm)" style="width: 193; height: 27">
+                                </td>
+                                <td>
+                                    <input type="button" value="Get MSG IMPRINT" onclick="DoGetTSInfo(document.mainForm, GET_MSG_IMPRINT)" style="width: 193; height: 27">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="button" value="TS Verify" onclick="DoTSVerify(document.mainForm)" style="width: 193; height: 27">
+                                </td>
+                                <td>
+                                    <input type="button" value="Get Serial Number" onclick="DoGetTSInfo(document.mainForm, GET_SERIAL)" style="width: 193; height: 27">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="button" value="Get TS Policy ID" onclick="DoGetTSInfo(document.mainForm, GET_POLICY_ID)" style="width: 193; height: 27">
+                                </td>
+                                <td>
+                                    <input type="button" value="Get Time" onclick="DoGetTSInfo(document.mainForm, GET_TIME)" style="width: 193; height: 27">
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </td>
+            </tr>
+            <tr>
+                <td height="23">
+                    <fieldset style="padding: 2">
+                        <legend>憑證屬性工具</legend>
+                        <table border="0" width="100%" id="table11">
+                            <tr>
+                                <td width="168">
+                                    <input type="button" value="GET" onclick="GetCertAttr(document.mainForm)" style="width: 150; height: 40">
+                                </td>
+                                <td>
+                                    <table border="0" width="100%" id="table12">
+                                        <tr>
+                                            <td width="154">
+                                                <font size="2">
+                                                    CertNum 0~2 :
+                                                </font>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="txtCertNum" size="5" value="1">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="154">
+                                                <font size="2">
+                                                    Attribute 1~16 :
+                                                </font>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="txtCertAttr" size="5" value="1">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan=2>
+                                    <table border="0" width="96%" id="table13">
+                                        <tr>
+                                            <td><font size="2">1 : SerialNumber</font></td>
+                                            <td><font size="2">10 : Subject_CN</font></td>
+                                        </tr>
+                                        <tr>
+                                            <td><font size="2">2 : Issuer_C</font></td>
+                                            <td><font size="2">11 : Subject_E</font></td>
+                                        </tr>
+                                        <tr>
+                                            <td><font size="2">3 : Issuer_O</font></td>
+                                            <td><font size="2">12 : UTCIssueDate</font></td>
+                                        </tr>
+                                        <tr>
+                                            <td><font size="2">4 : Issuer_OU</font></td>
+                                            <td height="20">
+                                                <font size="2">
+                                                    13 :
+                                                    UTCExpiredDate
+                                                </font>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="20"><font size="2">5 : Issuer_CN</font></td>
+                                            <td><font size="2">14 : Extension</font></td>
+                                        </tr>
+                                        <tr>
+                                            <td><font size="2">6 : Issuer_E</font></td>
+                                            <td><font size="2">15 : PUBKEY</font></td>
+                                        </tr>
+                                        <tr>
+                                            <td><font size="2">7 : Subject_C</font></td>
+                                            <td><font size="2">16 : KeyUsage</font></td>
+                                        </tr>
+                                        <tr>
+                                            <td><font size="2">8 : Subject_O</font></td>
+                                            <td><font size="2">17 : SignAlgorithm</font></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <font size="2">
+                                                    &nbsp; 9 :
+                                                    Subject_OU
+                                                </font>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+
+                            </tr>
+                        </table>
+                    </fieldset><p>　
+                </td>
+            </tr>
+            <tr>
+                <td height="23">
+                    <fieldset style="padding: 2">
+                        <legend><font face="Tahoma">取憑證延伸欄位</font></legend>
+                        <table border="0" width="100%" id="table7">
+                            <tr>
+                                欲測試之憑證檔:
+                                <td>
+                                    <input type="text" name="T28" size="44" value="C:\tmp\HCATEST\Cert1.cer">
+                                </td>
+                                <td>
+                                    <input type="button" value="測試" onclick="GetCertExt(document.mainForm)" style="width: 193; height: 27">
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </td>
+            </tr>
+
+        </table>
+        </td>
+        <td>
+            <table border="0" width="100%" id="table5">
+                <tr>
+                    <td>
+                        <table border="0" width="100%" id="table6">
+                            <tr>
+                                <td>
+                                    <fieldset style="padding: 2">
+                                        <legend>共用輸入欄位</legend>
+                                        <table border="0" width="100%" id="table10">
+                                            <tr>
+                                                <td width="138" align=right>PIN碼:</td>
+                                                <td><input type="password" name="T1" size="44" value="" autocomplete="off"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>PUK碼:</td>
+                                                <td><input type="password" name="T2" size="44"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>新PIN碼:</td>
+                                                <td><input type="password" name="T3" size="44"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>資料檔:</td>
+                                                <td><input type="text" name="T4" size="44" value="C:\tmp\HCATEST\MSG.TXT"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>簽章檔:</td>
+                                                <td><input type="text" name="T5" size="44" value="C:\tmp\HCATEST\SIG.TXT"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>簽章檔(原文已hash):</td>
+                                                <td><input type="text" name="T29" size="44" value="C:\tmp\HCATEST\SIGwithouthash.TXT"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>資料加密檔:</td>
+                                                <td><input type="text" name="T6" size="44" value="C:\tmp\HCATEST\CIPHER.TXT"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>資料解密檔:</td>
+                                                <td><input type="text" name="T7" size="44" value="C:\tmp\HCATEST\PLAIN.TXT"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>驗章憑證檔:</td>
+                                                <td><input type="text" name="T8" size="44" value="C:\tmp\HCATEST\Cert1.cer"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>加密憑證檔:</td>
+                                                <td><input type="text" name="T9" size="44" value="C:\tmp\HCATEST\Cert2.cer"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>CA憑證檔:</td>
+                                                <td><input type="text" name="T10" size="44" value="C:\tmp\HCATEST\CACert.cer"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>CRL檔:</td>
+                                                <td><input type="text" name="T12" size="44" value="C:\tmp\HCATEST\complete.crl"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>對稱式加密檔檔:</td>
+                                                <td><input type="text" name="T14" size="44" value="C:\tmp\HCATEST\SYM_CIPHER.TXT"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>對稱式解密檔:</td>
+                                                <td><input type="text" name="T15" size="44" value="C:\tmp\HCATEST\SYM_PLAIN.TXT"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>HASH輸出檔:</td>
+                                                <td><input type="text" name="T18" size="44" value="C:\tmp\HCATEST\DIGEST.TXT"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>OCSP要求檔:</td>
+                                                <td><input type="text" name="T19" size="44" value="C:\tmp\HCATEST\TBS_OCSPREQ.TXT"></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="138" align=right>TS簽章檔:</td>
+                                                <td><input type="text" name="T22" size="44" value="C:\tmp\HCATEST\TSSIG.TXT"></td>
+                                            </tr>
+
+                                        </table>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td>
+                                    <fieldset style="padding: 2">
+                                        <legend>驗憑證簽章</legend>
+                                        欲驗證之憑證檔:
+                                        <input type="text" name="T11" size="44" value="C:\tmp\HCATEST\Cert1.cer">
+                                        <input type="button" value="驗憑證" onclick="VerifyCert(document.mainForm)" style="width: 193; height: 27">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <fieldset style="padding: 2">
+                                        <legend>CRL相關</legend>
+                                        <input type="button" value="驗CRL簽章" onclick="VerifyCRLSig(document.mainForm)" style="width: 193; height: 27">
+                                        <input type="button" value="顯示CRL資訊" onclick="GetCRLInfo(document.mainForm)" style="width: 193; height: 27"><br><br>
+                                        欲查詢之憑證序號:
+                                        <input type="text" name="T13" size="44" value="0507FF858D8FD2AFF4C37584D08F90CF">
+                                        <input type="button" value="驗憑證狀態" onclick="SearchCRL(document.mainForm)" style="width: 193; height: 27">
+                                </td>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <fieldset style="padding: 2">
+                            <legend>對稱式加密</legend>
+                            <input type="button" value="產生SESSION KEY" onclick="GenSessionKey(document.mainForm)" style="width: 193; height: 27">
+                            SESSION KEY:
+                            <input type="text" name="T16" size="44" readonly value="1giXhshiVMFG0CoW6Z4BHKIgyC/9hXbW"><br>
+                            IV值(16進位):
+                            <input type="text" name="T17" size="44" value="0000000000000000"><br>
+                            <input type="button" value="加密" onclick="SymmEnc(document.mainForm)" style="width: 193; height: 27">
+                            <input type="button" value="解密" onclick="SymmDec(document.mainForm)" style="width: 193; height: 27">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <fieldset style="padding: 2">
+                            <legend>OCSP</legend>
+                            NONCE(16進位):
+                            <input type="text" name="T21" size="20"><br>
+                            欲查詢之憑證序號(16進位, 以逗號隔開):<br>
+                            <textarea name="T20" rows="4" cols="44">0507FF858D8FD2AFF4C37584D08F90CF,00863B6DDB74DB305FF533FC2B517008FF</textarea><br>
+                            <input type="button" value="產生OCSP要求檔" onclick="GenTbsOCSPReq(document.mainForm)" style="width: 193; height: 27">
+                            <input type="button" value="查詢" onclick="QueryOCSP(document.mainForm)" style="width: 193; height: 27">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <fieldset style="padding: 2">
+                            <legend>由LDAP下載憑證</legend>
+                            UniqueID:<input type="text" name="T23" size="20" value="A2-4861">
+                            Email:<input type="text" name="T24" size="20">
+                            CN:<input type="text" name="T25" size="20"><br>
+                            OU:<input type="text" name="T26" size="20">
+                            SerialNumber:<input type="text" name="T27" size="20"><br>
+                            <input type="button" value="下載" onclick="DownloadCert(document.mainForm)" style="width: 193; height: 27">
+                    </td>
+                </tr>
+            </table>
+        </td>
+        </tr>
+
+        </table>
+        </td>
+        </tr>
+        </table>
+    </form>
+
+</body>
+
+</html>

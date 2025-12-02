@@ -1,0 +1,301 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model ES.Areas.Admin.Models.CaseSumModel
+@{
+    Layout = null;
+}
+@{
+    ViewBag.FunctionTitle = "申辦統計報表";
+    ViewBag.Title = "申辦統計報表";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>申辦統計報表</title>
+</head>
+<body>
+    <p align="center">
+        <b><font color="blue">申辦統計</font></b></p>
+    <table width="100%" cellspacing="1" cellpadding="2" align="center" bgcolor="#FF9933"
+        border="0">
+        <tr>
+            <td valign="top" align="center" colspan="2">
+                <font color="#FFFFFF">統計區間：</font>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top" align="center" colspan="2" bgcolor="#FFFFFF">
+                民國 <font color="red">@Html.Raw(this.Model.Sdate.Split('/')[0])</font>年 <font color="red">@Html.Raw(this.Model.Sdate.Split('/')[1])</font>月
+                <font color="red">@Html.Raw(this.Model.Sdate.Split('/')[2])</font>日到 民國 <font color="red">@Html.Raw(this.Model.Fdate.Split('/')[0])</font>年
+                <font color="red">@Html.Raw(this.Model.Fdate.Split('/')[1])</font>月 <font color="red">@Html.Raw(this.Model.Fdate.Split('/')[2])</font>日
+            </td>
+        </tr>
+    </table>
+    <div align="center">
+        <br />
+        <table width="800" border="1" cellspacing="0" cellpadding="3" style="border-color: #666666">
+            <tr>
+                <td bgcolor="#DCDCDC" class="c13">
+                    項目
+                </td>
+                <td colspan="9" class="c13" align="center" bgcolor="#FFFFCC">
+                    應辦公文統計
+                </td>
+                <td align="center" colspan="6" class="c13" bgcolor="#DFF7C2">
+                    已辦結案統計
+                </td>
+                <td colspan="4" class="c13" align="center" bgcolor="#BEE9FF">
+                    待辦案件統計
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="3" class="c13" align="right" bgcolor="#DCDCDC">
+                    <p class="c13">
+                        數</p>
+                    <p class="c13">
+                        量</p>
+                </td>
+                <td rowspan="2" colspan="7" class="c13" bgcolor="#FFFFCC" align="center">
+                    新收案件數
+                </td>
+                <td rowspan="3" class="c13" bgcolor="#FFFFCC">
+                    截至開始日期前待辦案件數
+                </td>
+                <td rowspan="3" class="c13" bgcolor="#FFFFCC" nowrap>
+                    合計<br />
+                    <br />
+                    (7)+(8)
+                </td>
+                <td class="c13" colspan="2" rowspan="2" bgcolor="#DFF7C2" align="center">
+                    依限辦結
+                </td>
+                <td class="c13" colspan="2" rowspan="2" bgcolor="#DFF7C2" align="center">
+                    逾限辦結
+                </td>
+                <td class="c13" colspan="2" bgcolor="#DFF7C2" align="center">
+                    合計
+                </td>
+                <td rowspan="2" colspan="2" class="c13" bgcolor="#BEE9FF" align="center">
+                    待辦案件<br>
+                    (9)-(12)
+                </td>
+                <td rowspan="3" class="c13" bgcolor="#BEE9FF">
+                    未逾辦理期限案件數
+                </td>
+                <td rowspan="3" class="c13" bgcolor="#BEE9FF">
+                    已逾辦理期限案件數
+                </td>
+            </tr>
+            <tr>
+                <td class="c13" colspan="2" bgcolor="#DFF7C2" align="center">
+                    (10)+(11)
+                </td>
+            </tr>
+            <tr>
+                <td class="c13" bgcolor="#FFFFCC" nowrap align="center">
+                    會員
+                </td>
+                <td class="c13" bgcolor="#FFFFCC" nowrap align="center">
+                    自然人憑證
+                </td>
+                <td class="c13" bgcolor="#FFFFCC" nowrap align="center">
+                    工商憑證
+                </td>
+                <td class="c13" bgcolor="#FFFFCC" nowrap align="center">
+                    醫事憑證(人)
+                </td>
+                <td class="c13" bgcolor="#FFFFCC" nowrap align="center">
+                    醫事憑證(機)
+                </td>
+                <td class="c13" bgcolor="#FFFFCC" nowrap align="center">
+                    數位身分證
+                </td>
+                <td class="c13" bgcolor="#FFFFCC" nowrap align="center">
+                    小計<br>
+                    (1)+(2)+(3)+(4)+(5)+(6)
+                </td>
+                <td class="c13" bgcolor="#DFF7C2" nowrap align="center">
+                    案件數
+                </td>
+                <td class="c13" bgcolor="#DFF7C2" nowrap align="center">
+                    %
+                </td>
+                <td class="c13" bgcolor="#DFF7C2" nowrap align="center">
+                    案件數
+                </td>
+                <td class="c13" bgcolor="#DFF7C2" nowrap align="center">
+                    %
+                </td>
+                <td class="c13" bgcolor="#DFF7C2" nowrap align="center">
+                    案件數
+                </td>
+                <td class="c13" bgcolor="#DFF7C2" nowrap align="center">
+                    %
+                </td>
+                <td class="c13" bgcolor="#BEE9FF" nowrap align="center">
+                    案件數
+                </td>
+                <td class="c13" bgcolor="#BEE9FF" nowrap align="center">
+                    %
+                </td>
+            </tr>
+            <tr>
+                <td bgcolor="#DCDCDC" class="c13" nowrap>
+                    單位 / 機關
+                </td>
+                <td class="c13" nowrap bgcolor="#FFFFCC" align="center">
+                    (1)
+                </td>
+                <td class="c13" nowrap bgcolor="#FFFFCC" align="center">
+                    (2)
+                </td>
+                <td class="c13" nowrap bgcolor="#FFFFCC" align="center">
+                    (3)
+                </td>
+                <td class="c13" nowrap bgcolor="#FFFFCC" align="center">
+                    (4)
+                </td>
+                <td class="c13" nowrap bgcolor="#FFFFCC" align="center">
+                    (5)
+                </td>
+                <td class="c13" nowrap bgcolor="#FFFFCC" align="center">
+                    (6)
+                </td>
+                <td class="c13" nowrap bgcolor="#FFFFCC" align="center">
+                    (7)
+                </td>
+                <td class="c13" nowrap bgcolor="#FFFFCC" align="center">
+                    (8)
+                </td>
+                <td class="c13" nowrap bgcolor="#FFFFCC" align="center">
+                    (9)
+                </td>
+                <td class="c13" nowrap bgcolor="#DFF7C2" align="center">
+                    (10)
+                </td>
+                <td class="c13" nowrap bgcolor="#DFF7C2" align="center">
+                    (10) / (12)
+                </td>
+                <td class="c13" nowrap bgcolor="#DFF7C2" align="center">
+                    (11)
+                </td>
+                <td class="c13" nowrap bgcolor="#DFF7C2" align="center">
+                    (11) / (12)
+                </td>
+                <td class="c13" nowrap bgcolor="#DFF7C2" align="center">
+                    (12)
+                </td>
+                <td class="c13" nowrap bgcolor="#DFF7C2" align="center">
+                    (12) / (9)
+                </td>
+                <td class="c13" nowrap bgcolor="#BEE9FF" align="center">
+                    (13)
+                </td>
+                <td class="c13" nowrap bgcolor="#BEE9FF" align="center">
+                    (13) / (9)
+                </td>
+                <td class="c13" nowrap bgcolor="#BEE9FF" align="center">
+                    (14)
+                </td>
+                <td class="c13" nowrap bgcolor="#BEE9FF" align="center">
+                    (15)
+                </td>
+            </tr>
+            @{
+                foreach (CaseSumResultModel crm in ViewBag.List)
+                {
+                <tr>
+                    <td bgcolor="#FFD8D8" class="c13" align="left" nowrap>@crm.name
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.member
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.moica
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.moeaca
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.hca1
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.hca0
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">
+                        @crm.NEWEID
+                </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.newcase
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.procase
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.sumCase
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.okcase
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">
+                        @{
+                    if (crm.sumOk == 0)
+                    {
+                        @Html.Raw("0.00%");
+                    }
+                    else
+                    {
+                        double v = ((crm.okcase) * 100 / crm.sumOk);
+                        @Html.Raw(v.ToString("0.00") + "%");
+                    }
+                        }
+                    </td>
+                    <td width="31" class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.ok_delay
+                    </td>
+                    <td width="11" class="c13" nowrap align="right" bgcolor="#FFD8D8">
+                        @{
+                
+                    if (crm.sumOk == 0)
+                    {
+                        @Html.Raw("0.00%");
+                    }
+                    else
+                    {
+                        double v2 = ((crm.ok_delay) * 100 / crm.sumOk);
+                        @Html.Raw(v2.ToString("0.00") + "%");
+                    }
+                        }
+                    </td>
+                    <td width="25" class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.sumOk
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">
+                        @{
+                    if (crm.sumCase == 0)
+                    {
+                        @Html.Raw("0.00%");
+                    }
+                    else
+                    {
+                        double v3 = ((crm.sumOk) * 100 / crm.sumCase);
+                        @Html.Raw(v3.ToString("0.00") + "%");
+                    }
+                        }
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.sumUnok
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">
+                        @{
+                    if (crm.sumCase == 0)
+                    {
+                        @Html.Raw("0.00%");
+                    }
+                    else
+                    {
+                        double v4 = ((crm.sumUnok) * 100 / crm.sumCase);
+                        @Html.Raw(v4.ToString("0.00") + "%");
+                    }
+                        }
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.unokcase
+                    </td>
+                    <td class="c13" nowrap align="right" bgcolor="#FFD8D8">@crm.unok_delay
+                    </td>
+                </tr>   
+                }
+            }
+        </table>
+    </div>
+</body>
+</html>

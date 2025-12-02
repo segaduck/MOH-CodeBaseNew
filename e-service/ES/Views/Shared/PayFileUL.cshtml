@@ -1,0 +1,88 @@
+﻿@using ES.Models;
+@model ULPayFileFormModel
+
+@{
+    Layout = "~/Views/Shared/_LayoutForShare.cshtml";
+}
+
+@using (Html.BeginForm("PayFileULSave", "PayFileUL", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-inline", @enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.APP_ID)
+    @Html.HiddenFor(m => m.SRV_ID)
+    @Html.HiddenFor(m => m.FILE_NO)
+    @Html.HiddenFor(m => m.STATUS)
+    <div class="container-fluid">
+        <div class="col-sm-12">
+            <div class="index-note">
+                <div class="form-group">
+                    @switch (Model.SRV_ID)
+                    {
+                        case "005004":
+                            <label class="step-label col-sm-5" for="">藥品優良製造證明書申請表用印之掃描檔</label>
+                            break;
+                        default:
+                            <label class="step-label col-sm-5" for="">繳費紀錄照片或pdf檔案</label>
+                            break;
+                    }
+
+                    <div class="col-sm-7">
+                        @Html.TextBoxFor(x => x.ATTACH_FILE, new { @class = "form-control", @type = "file", onchange = "setFileName($(this).attr('name'))" })
+                        @Html.HiddenFor(x => x.ATTACH_FILE_NAME)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btn-bar text-center">
+            <button type="submit" class="btn btn-save">存檔</button>
+            <button type="button" class="btn btn-gray" onclick="doClose()">關閉</button>
+            <p><font style="color:red">@Html.Raw(((Model.STATUS != "Y" && !string.IsNullOrEmpty(Model.ERRMSG)) ? "錯誤訊息：" + Model.ERRMSG : ""))</font></p>
+        </div>
+    </div>
+
+}
+
+<script type="text/javascript">
+    window.onload = function () {
+        if ("@Model.STATUS" == "Y") {
+            doSelect();
+        }
+    };
+    // 上傳檔案
+    function setFileName(objName)
+    {
+        //var validExts = new Array(".doc", ".docx", ".odt", ".odf", ".ods", ".xls", ".xlsx", ".pdf", ".ppt", ".pptx", ".jpg", ".bmp", ".png", ".gif", ".tif", ".zip");
+        var validExts = new Array(".PDF", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF");
+
+        var fileExt = $('input[name="' + objName + '"]').val();
+        fileExt = fileExt.substring(fileExt.toLowerCase().lastIndexOf('.'));
+
+        if ($('input[name="' + objName + '"]')[0].files[0].size / 1024 / 1024 > 5) {
+            blockAlert("檔案大小不可超過5MB");
+            $('input[name="' + objName + '"]').val(null);
+            return false;
+        }
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + objName + '"]').val(null);
+            return false;
+        }
+        else {
+            $('#ATTACH_FILE_NAME').val($('input[name="' + objName + '"]').val().replace(/C:\\fakepath\\/i, ''));
+            return true;
+        }
+    }
+    function doClose() {
+        parent.closeWindow();
+    }
+
+    /// 選
+    function doSelect() {
+
+        var data = {
+            "STATUS": '@Model.STATUS'
+        }
+        parent.closeWindow(data);
+    }
+
+</script>

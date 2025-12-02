@@ -1,0 +1,190 @@
+﻿@using ES.Models;
+@using ES.Services;
+@using ES.Models.ViewModels;
+@using ES.Commons;
+@model Apply_040001FormModel
+@{
+    Layout = null;
+    ShareCodeListModel sc = new ShareCodeListModel();
+}
+<div class="row">
+    <div class="col-sm-12">
+        <h1 class="form-title title-bg-y">申辦表件預覽</h1>
+        <div class="form-set">
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">申辦項目</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">衛生福利部訴願案件</p>
+                </div>
+                <label class="step-label col-sm-2" for="">申辦日期</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">@Model.APP_DATE</p>
+                </div>
+            </div>
+            @*訴願人*@
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.NAME)</label>
+                <div class="col-sm-4">
+                    @Html.Raw(Model.NAME)
+                </div>
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.BIRTHDAY_STR)</label>
+                <div class="col-sm-4">
+                    @Html.Raw(HelperUtil.DateTimeToTwString(Convert.ToDateTime(Model.BIRTHDAY_STR)))
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.IDN)</label>
+                <div class="col-sm-10">@Html.Raw(Model.IDN)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.EMAIL)</label>
+                <div class="col-sm-10">@Html.Raw(Model.EMAIL)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.H_TEL)</label>
+                <div class="col-sm-10">@Html.Raw(Model.H_TEL)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.MOBILE)</label>
+                <div class="col-sm-10">@Html.Raw(Model.MOBILE)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.C_ZIPCODE)</label>
+                <div class="col-sm-10 form-inline">
+                    <p class="form-control-static">@Model.C_ZIPCODE @Model.C_ZIPCODE_TEXT@Model.C_ADDR</p>
+                </div>
+            </div>
+            @*代表人*@
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CHR_NAME)</label>
+            <div class="col-sm-4">@Html.Raw(Model.CHR_NAME)</div>
+            <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CHR_BIRTH_STR)</label>
+            <div class="col-sm-4">
+                @Html.Raw(HelperUtil.DateTimeToTwString(Convert.ToDateTime(Model.CHR_BIRTH_STR)))
+            </div>
+        </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CHR_IDN)</label>
+                <div class="col-sm-4">@Html.Raw(Model.CHR_IDN)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CHR_TEL)</label>
+                <div class="col-sm-10">@Html.Raw(Model.CHR_TEL)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CHR_MOBILE)</label>
+                <div class="col-sm-10">@Html.Raw(Model.CHR_MOBILE)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CHR_ZIPCODE)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.CHR_ZIPCODE @Model.CHR_ZIPCODE_TEXT@Model.CHR_ADDR</p>
+                </div>
+            </div>
+            @*代理人*@
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_NAME)</label>
+                <div class="col-sm-4">@Html.Raw(Model.R_NAME)</div>
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_BIRTH_STR)</label>
+                <div class="col-sm-4">
+                    @Html.Raw(HelperUtil.DateTimeToTwString(Convert.ToDateTime(Model.R_BIRTH_STR)))
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_IDN)</label>
+                <div class="col-sm-4">@Html.Raw(Model.R_IDN)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_TEL)</label>
+                <div class="col-sm-10">@Html.Raw(Model.R_TEL)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_MOBILE)</label>
+                <div class="col-sm-10">@Html.Raw(Model.R_MOBILE)</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_ZIPCODE)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.R_ZIPCODE @Model.R_ZIPCODE_TEXT@Model.R_ADDR</p>
+                </div>
+            </div>
+            <!--申請說明-->
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.ORG_NAME)</label>
+                <div class="col-sm-4">
+                    @Html.Raw(Model.ORG_NAME)
+                </div>
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.ORG_DATE)</label>
+                <div class="col-sm-4">
+                    @Html.Raw(HelperUtil.DateTimeToTwString(Convert.ToDateTime(Model.ORG_DATE)))
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2"><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.ORG_MEMO)</label>
+                <div class="col-sm-10">
+                    @Html.Raw(Model.ORG_MEMO)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2"><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.ORG_FACT)</label>
+                <div class="col-sm-10">
+                   @Html.Raw(Model.ORG_FACT)
+                </div>
+            </div>
+            <h2 class="second-title">佐證文件檔案上傳</h2>
+            @{
+                if (Model.SRVLIST != null)
+                {
+                    int index = 0;
+                    foreach (var item in Model.SRVLIST)
+                    {
+                        <div id="RowTable">
+                            <div id="row1" data-group="Row">
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2" for="">序號</label>
+                                    <div class="col-sm-1">
+                                        <p class="form-control-static">@(index + 1)</p>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @Html.ImageHoverForTurbo(x => x.SRVLIST[index].FILE_1, item.FILE_1_TEXT, index)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        index++;
+                    }
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<!--form-->
+<div class="form-set">
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="doSave()">確認送出</button>
+        <button type="button" class="btn btn-clear" onclick="doback()">返回修改</button>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('[data-hover!=\"\"]').hover();
+    });
+
+    // 送出
+    function doSave() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+
+    // 返回
+    function doback() {
+        $('#form_tab').attr('class', 'active');
+        $('#form').attr('class', 'tab-pane fade active in');
+        $('#form_tab1').removeClass('active');
+        $('#form1').attr('class', 'tab-pane fade');
+    }
+</script>

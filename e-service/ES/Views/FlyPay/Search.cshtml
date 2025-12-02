@@ -1,0 +1,312 @@
+﻿@using CTCB.Crypto;
+@model ES.Models.FlyPayModel
+@{
+    /**/
+    Layout = "~/Views/Shared/_FlyPayLayout.cshtml";
+}
+
+<div class="col-md-7 col-lg-8">
+    <div class="form-section" id="lt_form">
+        <div class="spr-form-heading">
+            <h2 class="ch">查詢繳費成功識別碼(Identification Code Query)</h2>
+        </div>
+        @using (Html.BeginForm("", "", FormMethod.Post, new { ID = "ActionForm" }))
+            {
+            <div id="payBasic">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="payBasic_mainno">
+                                <strong class="text--danger">*</strong>
+                                護照號碼 / Passport No.
+                            </label>
+                            <div class="input--bt-line-group">
+                                @Html.TextBoxFor(x => x.payBasic.mainno, new { @class = "form-control", @placeholder = "passport number.", @onbeforepaste = "clipboardData.setData('text',clipboardData.getData('text').replace(/[^\\d]/g,''))", @onkeyup = "value=value.replace(/[\\W]/g,'')" })
+                                <i class="tu-alert-circle input-icon" aria-hidden="true"></i>
+                                <font class="tooltip tooltip-bottom-right n-tooltip--v1">請輸入護照之號碼</font>
+                                <span class="bt-line"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="payBasic_birth">
+                                <strong class="text--danger">*</strong>
+                                出生年月日 / Birth Day
+                            </label>
+                            <div class="input--bt-line-group">
+                                @Html.TextBoxFor(x => x.payBasic.birth, new {
+                               @type = "text",
+                               @class = "form-control dpDate t-datepicker-v1 mon_year",
+                               @placeholder = "YYYY/MM/DD",
+                                @data_type="change-month-year"})
+                                <i class="tu-calendar input-icon" aria-hidden="true"></i>
+                                <span class="bt-line"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="payBasic_RAN">
+                                <strong class="text--danger">*</strong>
+                                驗證碼 / ValidateCode
+                            </label>
+                            <div class="form-validatecode">
+                                <div class="input--bt-line-group">
+                                    @Html.TextBoxFor(m => m.ValidateCode, new { @class = "form-control", @placeholder = "請輸入驗證碼", maxlength = "10" })
+                                    <span class="bt-line"></span>
+                                </div>
+                                <img src="@Url.Action("GetValidateCode", "FlyPay")" id="imgChgNum1" alt="產生新驗證碼" title="產生新驗證碼" width="105" height="40">
+                                <a href="javascript:;" class="btn n--btn btn--square btn--square--lg btn--tertiary" id="imgChgNum2">
+                                    <i class="tu-refresh-cw" style="margin-left:300px;margin-top:40px;padding-right:300px;padding-bottom:36px;"></i>
+                                </a>
+                                <noscript> 不支援javascript時，請按鍵盤上的F5鍵以重新產生驗證碼。 </noscript>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-remark remark-warning">
+                <div class="in-bk-mid form-remark-img">
+                    <div class="remind-people-v1"></div>
+                </div>
+                <div class="in-bk-mid form-remark-txt">
+                    <p>
+                        如有任何問題，請撥打 <a href="tel:1922" class="re-mark">1922</a> 專線。
+                    </p>
+                    <p>
+                        If you have any questions, please call <a href="tel:1922" class="re-mark">1922</a>.
+                    </p>
+                </div>
+            </div>
+            <div class="form-group mb-0">
+                <button type="button" class="n--btn btn--3d--dark btn--block btn--md mt-1" onclick="doCheckOut()" id="CheckOutC">
+                    <i class="tu-search1"></i>
+                    <font>查詢繳費成功識別碼 Identification Code Query</font>
+                </button>
+            </div>
+        }
+    </div>
+
+    <!-- <div class="solgan">#Taiwan Can Help #Taiwan Is Helping</div> -->
+</div>
+<div class="col-md-5 col-lg-4">
+    <div class="check-form" id="check_form">
+        <div class="spr-form-heading">
+            <h2 class="ch">查詢結果(Result Query)</h2>
+        </div>
+        <div class="search-cnt" id="searchCnt">
+            @*防疫旅館查詢結果*@
+             <div class="no-search" id="not_search">
+                <img src="/images/no-search.svg" alt="尚未輸入您的查詢條件。">
+                <div class="txt">
+                    尚未輸入您的查詢條件。
+                </div>
+            </div>
+            <div id="Result" style="display:none">
+                <div class="form-group">
+                    <label for="">抵達檢疫所日期 / Arrival Date at the Collective Quarantine Facilities</label>
+                    <br />
+                    <div class="search-val" id="fliGHTdate"></div>
+                </div>
+                <div class="form-group">
+                    <label for="">繳費成功識別碼 / Identification Code Query</label>
+                    <br />
+                    <div class="search-val" id="Guid"></div>
+                </div>
+                <div class="form-group">
+                    <label for="">1.入住者姓名 / Name</label>
+                    <br/>
+                    <div class="search-val" id="fmlName"></div>
+                </div>
+                <div class="form-group">
+                    <label for="">2.入住者姓名 / Name</label>
+                    <br />
+                    <div class="search-val" id="fmlName2"></div>
+                </div>
+                <div class="form-group">
+                    <label for="">3.入住者姓名 / Name</label>
+                    <br />
+                    <div class="search-val" id="fmlName3"></div>
+                </div>
+                <div class="form-group">
+                    <label for="">4.入住者姓名 / Name</label>
+                    <br />
+                    <div class="search-val" id="fmlName4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+        reloadValidCode();
+    });
+    function reloadValidCode() {
+        $('#imgChgNum1').attr("src", '@Url.Action("GetValidateCode", "FlyPay")' + "?rand=" + new Date().getMilliseconds());
+    }
+    $(function () {
+        $('#imgChgNum1').on("click", function (e) {
+            reloadValidCode();
+        });
+        $('#imgChgNum2').on("click", function (e) {
+            reloadValidCode();
+        });
+    });
+
+</script>
+
+<script>
+    function doCheckOut() {
+        // $("#Result").attr("style", "display:none");
+        if ($("#ActionForm").valid()) {
+            blockConfirm("請確認資料是否正確<br>Please confirm whether the information is correct.", "確認訊息 Confirm Message", function () {
+                var url = '@(Url.Action("Result", "FlyPay", new { area = "" }))';
+                var FormData = getFormDataJson("#ActionForm");
+                var btn = $('#CheckOutC');
+                var sCnt = $('#searchCnt');
+                var nSearch = $('#not_search');
+                var el = '<div class="content-placeholder" id="cntLoad">\
+                            <div class="content-placeholder__view">\
+                                <ul>\
+                                    <li>\
+                                        <div class="content-placeholder__textSlot">\
+                                            <div class="content-placeholder__line--first content-placeholder__line"></div>\
+                                            <div class="content-placeholder__line--second content-placeholder__line"></div>\
+                                        </div>\
+                                        <div class="content-placeholder__thumbSlot"></div>\
+                                    </li>\
+                                    <li>\
+                                        <div class="content-placeholder__textSlot">\
+                                            <div class="content-placeholder__line--first content-placeholder__line"></div>\
+                                            <div class="content-placeholder__line--second content-placeholder__line"></div>\
+                                        </div>\
+                                        <div class="content-placeholder__thumbSlot"></div>\
+                                    </li>\
+                                    <li>\
+                                        <div class="content-placeholder__textSlot">\
+                                            <div class="content-placeholder__line--first content-placeholder__line"></div>\
+                                            <div class="content-placeholder__line--second content-placeholder__line"></div>\
+                                        </div>\
+                                        <div class="content-placeholder__thumbSlot"></div>\
+                                    </li>\
+                                </ul>\
+                            </div>\
+                        </div>';
+                
+                nSearch.hide();
+                sCnt.append(el);
+                btn.addClass('loading--btn');
+
+                ajaxLoadMore(url, FormData, function (resp) {
+                    if (resp.status == false) { 
+                         setTimeout(function() {
+                            var loadAni = $('#cntLoad');
+                                loadAni.remove();
+                                btn.removeClass('loading--btn');
+                                nSearch.show();
+
+                                blockAlertChn(resp.message);
+                                reloadValidCode();
+                        }, 1500);
+                    }
+                    else
+                    {
+                        setTimeout(function() {
+                            var loadAni = $('#cntLoad');
+                            loadAni.remove();
+                            btn.removeClass('loading--btn');
+                            $("#Result").removeAttr("style");
+
+                            var fmlName = $("#fmlName");
+                            var fmlName2 = $("#fmlName2");
+                            var fmlName3 = $("#fmlName3");
+                            var fmlName4 = $("#fmlName4");
+                            var fliGHTdate = $("#fliGHTdate");
+                            var Guid = $("#Guid");
+                            var sprL = $("#sprL");
+
+                            fmlName.text(resp.data.fmlName);
+                            fmlName2.text(resp.data.fmlName2);
+                            fmlName3.text(resp.data.fmlName3);
+                            fmlName4.text(resp.data.fmlName4);
+                            fliGHTdate.text(resp.data.fliGHTdate);
+                            Guid.text(resp.data.Guid);
+                            sprL.text(resp.data.sprL);
+                        }, 1500);
+                    }
+                });
+            }, null, "確認 Confirm", "取消 Cancel")
+        } else {
+            $('html, body').animate({
+                scrollTop: ($('.error_lab').offset().top - 300)
+            }, 250);
+            return false;
+        }
+    }
+
+    var bthD = $("#payBasic_birth");
+
+    bthD.mask("9999-99-99");
+    $.TUDatepicker.init(bthD, {
+        dateFormat: 'yy-mm-dd',
+        minDate: new Date('1900-01-01'),
+        maxDate: new Date().toJSON().slice(0, 10).replace(/-/g, '-'),
+        changeMonth: true,
+        changeYear: true,
+        yearRange: '1900:2023',
+        showOtherMonths: false
+    });
+
+    $("#ActionForm").validate({
+        rules: {
+            "payBasic.birth": {
+                required: true,
+                dpDate: false
+            },
+            "payBasic.mainno": {
+                required: true,
+            },
+            "ValidateCode": {
+                required: true,
+                digits: true,
+                maxlength: 4,
+                minlength: 4 
+            }
+        },
+        messages: {
+            "payBasic.birth": {
+                required: "未填寫您的出生年月日<br>Birth Day Is Mandatory",
+            },
+            "payBasic.mainno": {
+                required: "未填寫您的護照號碼<br>Passport No Is Mandatory",
+            },
+            "ValidateCode": {
+                required: "請填寫驗證碼<br>Validatecode Is Mandatory",
+            }
+        },
+        errorClass: 'error_lab',
+        errorElement: 'label',
+        errorElementClass: 'error_group',
+        highlight: function(element, errorClass, validClass, errorElementClass) {
+            $(element).parent().next('label').addClass(this.settings.errorClass);
+            $(element).parents('.form-group').addClass(this.settings.errorElementClass);
+        },
+        unhighlight: function(element, errorClass, validClass, errorElementClass) {
+            $(element).parent().next('label').removeClass(this.settings.errorClass)
+            $(element).parents('.form-group').removeClass(this.settings.errorElementClass);
+        },
+        errorPlacement: function(errorElementClass, element) {
+            if ($(element).attr("name") == "ValidateCode") {
+                errorElementClass.insertAfter(element.parents('.form-validatecode'));;
+            } else {
+                errorElementClass.insertAfter(element.parent());
+            }
+        },
+    });
+</script>

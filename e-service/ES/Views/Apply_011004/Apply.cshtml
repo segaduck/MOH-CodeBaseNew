@@ -1,0 +1,310 @@
+﻿@using ES.Models;
+@using ES.Commons;
+@using ES.Models.ViewModels;
+@model Apply_011004FormModel
+@{
+    Layout = null;
+    ShareCodeListModel sc = new ShareCodeListModel();
+}
+
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申辦項目</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">社工師證書核發（英文）</p>
+        </div>
+        <label class="step-label col-sm-2" for="">申辦日期</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.APP_DATE</p>@Html.HiddenFor(m => m.APP_DATE)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.EMAIL)</label>
+        <div class="col-sm-10">
+            @Html.EmailForTurbo(m => m.EMAIL)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.NAME)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.NAME, new { @class = "form-normal" ,@readonly= true})
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.ENAME)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.ENAME, new { @class = "form-normal" }) &nbsp;<span style="color:red"><strong>例如：王大明，需填寫WANG, DA-MING</strong></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.SEX_CD)</label>
+        <div class="col-sm-10">
+            <label class="radio-inline "><input type="radio" name="GENDER" value="M" checked onchange="GENDERChange()">男</label>
+            <label class="radio-inline "><input type="radio" name="GENDER" value="F" onchange="GENDERChange()">女</label>
+            <label class="radio-inline "><input type="radio" name="GENDER" value="O" onchange="GENDERChange()">其他</label>
+            @Html.HiddenFor(m => m.SEX_CD)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.BIRTHDAY_STR)</label>
+        <div class="col-sm-2">
+            @Html.TextBoxFor(m => m.BIRTHDAY_STR, new { @class = "form-normal", @readonly = "readonly" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.IDN)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.IDN, new { @class = "form-normal", @readonly = "readonly" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.C_TEL)</label>
+        <div class="col-sm-10">
+            @Html.TelForTurbo(m => m.C_TEL)
+            <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.H_TEL)</label>
+        <div class="col-sm-10">
+            @Html.TelForTurbo(m => m.H_TEL)
+            <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.MOBILE)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.MOBILE, new { @class = "form-normal", MaxLength = 10 })
+            <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.C_ZIPCODE)</label>
+        <div class="col-sm-10 form-inline">
+            @Html.TextBoxFor(m => m.C_ZIPCODE, new { @id = "C_ZIPCODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號" })
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.C_ZIPCODE_TEXT, new { @id = "C_ZIPCODE_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-info" onclick="doACC_ADDRSelect()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </span>
+            </div>
+            @Html.TextBoxFor(m => m.C_ADDR, new { @class = "form-normal form-50", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.APPLY_FOR)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.APPLY_FOR, new { @class = "form-normal" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.APPLY_NUM)</label>
+        <div class="col-sm-4">
+            @Html.DropDownListFor(m => m.APPLY_NUM, sc.GetAPPLY_NUM, new { @class = "form-normal" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.TYEAR)</label>
+        <div class="col-sm-4">
+            @Html.DropDownListFor(m => m.TYEAR, sc.GetAPPLY_YEAR, new { @class = "form-normal" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.TYPE)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.TYPE, new { @class = "form-normal" })
+        </div>
+    </div>
+
+    <h2 class="second-title">佐證文件檔案上傳 <span style="color:red;">檔案大小5MB以下，請附上圖檔，例如：JPG、BMP、PNG、GIF、TIF</span></h2>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>社會工作師證書影本</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE_0, new { @id = "FILE_0", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+            @Html.HiddenFor(m => m.FILE_0_TEXT)
+        </div>
+    </div>
+
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="doPreView()">存檔並預覽</button>
+        <button type="reset" class="btn btn-clear">清除資料</button>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('input[name="GENDER"][value = ' + $("#SEX_CD").val() + ']').attr('checked', true)
+        // 地址
+        $('#C_ZIPCODE').on('blur', doACC_ADDRNameGet); doACC_ADDRNameGet();
+        // 出生年月日
+        //$('#BIRTHDAY_STR').datetimepicker({ dateFormat: 'yy/mm/dd', timeFormat: 'HH:mm', showSecond: false, changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+
+        $('#ENAME').blur(function () {
+            $(this).val($(this).val().toUpperCase());
+        });
+    });
+
+    // 地址
+    function loadDialogACC_ADDRCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    console.log(data);
+                    console.log(resp);
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doACC_ADDRSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#C_ZIPCODE').val(retData.Id);
+                    $('#C_ZIPCODE_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doACC_ADDRSelect1() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                console.log(retData);
+                if (retData != null) {
+                    $('#H_ZIPCODE').val(retData.Id);
+                    $('#H_ZIPCODE_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doACC_ADDRNameGet() {
+        var code = $('#C_ZIPCODE');
+        var code_text = $('#C_ZIPCODE_TEXT');
+        var data = null;
+        data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#C_ZIPCODE_TEXT'),
+            'add': $('#C_ZIPCODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            loadDialogACC_ADDRCodeMapName(data);
+        }
+    }
+
+    function doACC_ADDRNameGet1() {
+        var code = $('#H_ZIPCODE');
+        var code_text = $('#H_ZIPCODE_TEXT');
+        var data = null;
+        data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#H_ZIPCODE_TEXT'),
+            'add': $('#H_ZIPCODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            ajaxLoadMore(data.url,
+                data.arg,
+                function (resp) {
+                    if (resp === undefined) data.box.val('');
+                    else {
+                        console.log(data);
+                        console.log(resp);
+                        if (resp.data != '') $('#H_ZIPCODE_TEXT').val(resp.data);
+                        else {
+                            data.box.val('');
+                            data.add.val('');
+                            blockAlert(data.msg);
+                        }
+                    }
+                });
+        }
+    }
+
+    // 申請人性別
+    function GENDERChange() {
+        $("#SEX_CD").val($('input[name="GENDER"]:checked').val());
+    }
+
+    // 轉至瀏覽
+    function doPreView() {
+        //// 確認上傳檔案
+
+        //var FILE_COPY = $('#FILE_0').val();
+        //if (FILE_COPY = "") {
+        //    blockAlert("請上傳社會工作師證書影本 !", "提示訊息");
+        //}
+        //else {
+        //性別
+        $('#SEX_CD').val($('input[name="GENDER"]:checked').val());
+        var data = getFormSubmitableFields($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("Apply")', data, function (retData) {
+            if (retData.status) {
+                ajaxLoadMore('@Url.Action("PreView")', data, function (getHtml) {
+                    $('#form_tab').removeClass('active');
+                    $('#form').attr('class', 'tab-pane fade');
+                    $('#form_tab1').attr('class', 'active');
+                    $('#form1').attr('class', 'tab-pane fade active in');
+                    $("#form1").html(getHtml);
+                });
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+        //}
+    }
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".PDF", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        }
+        else {
+            $("#" + file.name + "_TEXT").val(file.files.item(0).name);
+            return true;
+        }
+    }
+</script>

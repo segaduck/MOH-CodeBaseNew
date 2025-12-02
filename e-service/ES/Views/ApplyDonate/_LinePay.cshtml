@@ -1,0 +1,12 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_007001FormModel
+@{
+}
+<!--LinePay-->
+<div id="LinePayform">
+    <div class="btn-bar text-center">
+        <input type="hidden" id="LinePayModel_orderId" name="LinePayModel_orderId" value="@Model.LinePayModel.orderId">
+        <input type="button" class="btn btn-save" value="確認捐款" onclick="doLinePay()" />
+    </div>
+</div>

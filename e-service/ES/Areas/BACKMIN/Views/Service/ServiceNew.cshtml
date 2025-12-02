@@ -1,0 +1,231 @@
+﻿@model ES.Areas.Admin.Models.ServiceEditModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "案件管理（新增案件）";
+    ViewBag.FunctionTitle = "案件管理 - 新增案件";
+}
+
+@using (Html.BeginForm("ServiceNew", "Service"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件設定 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <h2 class="second-title">基本資料</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CategoryName)</label>
+                <div class="col-sm-10">
+                    @Html.DisplayFor(m => m.CategoryName, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Seq)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Seq, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Name)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Desc)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Desc, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FixUnitCode)</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(m => m.FixUnitCode, (List<SelectListItem>)@ViewBag.FixUnitList, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.PageMakerId)</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(m => m.PageMakerId, (List<SelectListItem>)@ViewBag.PageMakerList, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FileMakerId)</label>
+                <div class="col-sm-10">
+                    @Html.CheckBoxFor(m => m.DesignFileMark)
+                    @Html.DisplayNameFor(m => m.DesignFileMark)，人員：
+                    @Html.DropDownListFor(m => m.FileMakerId, (List<SelectListItem>)@ViewBag.FileMakerList, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">案件處理人</label>
+                <div class="col-sm-10">
+                    @foreach (SelectListItem item in ViewBag.CaseFixUserList)
+                    {
+                        <input type="checkbox" value="@item.Value" name="CaseMakerIds" @(item.Selected ? "checked=\"true\"" : "") />@item.Text<br />
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">分文對象單位</label>
+                <div class="col-sm-10">
+                    @foreach (SelectListItem item in ViewBag.AssignUnitList)
+                    {
+                        <input type="checkbox" value="@item.Value" name="AssignUnitCode" @(item.Selected ? "checked=\"true\"" : "") />@item.Text<br />
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.PayPoint)</label>
+                <div class="col-sm-10">
+                    @Html.RadioButtonFor(m => m.PayPoint1, "A") 不需繳費<br />
+                    @Html.RadioButtonFor(m => m.PayPoint1, "B") 需繳費<br />
+                    <div style="padding-left: 20px;">
+                        <span class="formTable1Title">@Html.DisplayNameFor(m => m.AccountName)</span>
+                        @Html.TextBoxFor(m => m.AccountName, new { @class = "form-normal" })<br />
+                        <span class="formTable1Title">@Html.DisplayNameFor(m => m.AccountCode)</span>
+                        @Html.TextBoxFor(m => m.AccountCode, new { @class = "form-normal" })<br />
+                        <div style="padding-left: 20px;">
+                            @Html.CheckBoxFor(m => m.PayPoint2) 申請時繳費<br />
+                            <div style="padding-left: 20px;">
+                                @Html.RadioButtonFor(m => m.PayUnit, "A")
+                                費用 @Html.TextBoxFor(m => m.ApplyFeeA, new { @class = "form-20 form-normal" }) 元<br />
+                                @Html.RadioButtonFor(m => m.PayUnit, "B")
+                                申請 @Html.TextBoxFor(m => m.BaseNumB, new { @class = "form-20 form-normal" }) 份(張)內
+                                @Html.TextBoxFor(m => m.ApplyFeeB, new { @class = "form-20 form-normal" }) 元，超過每份(張)加收
+                                @Html.TextBoxFor(m => m.FeeExtraB, new { @class = "form-20 form-normal" }) 元<br />
+                                @Html.RadioButtonFor(m => m.PayUnit, "D")
+                                申請 @Html.TextBoxFor(m => m.BaseNumD, new { @class = "form-20 form-normal" }) 份(張)內
+                                @Html.TextBoxFor(m => m.ApplyFeeD, new { @class = "form-20 form-normal" }) 元，超過後加收
+                                @Html.TextBoxFor(m => m.FeeExtraD, new { @class = "form-20 form-normal" }) 元<br />
+                                @Html.RadioButtonFor(m => m.PayUnit, "C") 依資料欄位計價，欄位名稱
+                                @Html.TextBoxFor(m => m.ApplyPayField, new { @class = "form-normal" })
+                            </div>
+                            @Html.CheckBoxFor(m => m.PayPoint3) 審核後繳費<br />
+                            <div style="padding-left: 20px;">
+                                @Html.RadioButtonFor(m => m.ChkPayUnit, "A")
+                                費用 @Html.TextBoxFor(m => m.ChkApplyFeeA, new { @class = "form-20 form-normal" }) 元<br />
+                                @Html.RadioButtonFor(m => m.ChkPayUnit, "B")
+                                申請 @Html.TextBoxFor(m => m.ChkBaseNumB, new { @class = "form-20 form-normal" }) 份(張)內
+                                @Html.TextBoxFor(m => m.ChkApplyFeeB, new { @class = "form-20 form-normal" }) 元，超過每份(張)加收
+                                @Html.TextBoxFor(m => m.ChkFeeExtraB, new { @class = "form-20 form-normal" }) 元<br />
+                                @Html.RadioButtonFor(m => m.ChkPayUnit, "D")
+                                申請 @Html.TextBoxFor(m => m.ChkBaseNumD, new { @class = "form-20 form-normal" }) 份(張)內
+                                @Html.TextBoxFor(m => m.ChkApplyFeeD, new { @class = "form-20 form-normal" }) 元，超過後加收
+                                @Html.TextBoxFor(m => m.ChkFeeExtraD, new { @class = "form-20 form-normal" }) 元<br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.PayMethod)</label>
+                <div class="col-sm-10">
+                    @Html.Raw(@Html.CheckBoxList("PayMethod", (List<ES.Extensions.CheckBoxListItem>)@ViewBag.PayMethodList))
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.PayAccount)</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(m => m.PayAccount, (List<SelectListItem>)ViewBag.PayAccountList, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.PayDeadline)</label>
+                <div class="col-sm-10">
+                    @Html.CheckBoxFor(m => m.PayDeadlineMark)@Html.DropDownListFor(m => m.PayDeadline, (List<SelectListItem>)@ViewBag.PayDeadlineList, new { @class = "form-normal" })天
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ProDeadline)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ProDeadline, new { @class = "form-normal" })天
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">轉檔</label>
+                <div class="col-sm-10">
+                    @Html.CheckBoxFor(m => m.TranMisMark)@Html.LabelFor(m => m.TranMisMark)
+                    @Html.CheckBoxFor(m => m.TranArchiveMark)@Html.LabelFor(m => m.TranArchiveMark)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ArchiveCode)</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(m => m.ArchiveCode, (List<SelectListItem>)@ViewBag.ArchiveCodeList, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.RdecCode)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.RdecCode, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.LoginType)</label>
+                <div class="col-sm-10">
+                    @Html.Raw(@Html.CheckBoxList("LoginType", (List<ES.Extensions.CheckBoxListItem>)@ViewBag.LoginTypeList, 3))
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ApplyTarget)</label>
+                <div class="col-sm-10">
+                    @Html.Raw(@Html.CheckBoxList("ApplyTarget", (List<ES.Extensions.CheckBoxListItem>)@ViewBag.ApplyTargetList))
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.SharedMark)</label>
+                <div class="col-sm-10">
+                    @Html.CheckBoxFor(m => m.SharedMark)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FormID)</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(m => m.FormID, (List<SelectListItem>)@ViewBag.SharedList, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ReUpdateMark)</label>
+                <div class="col-sm-10">
+                    @Html.CheckBoxFor(m => m.ReUpdateMark)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ClassSubCode)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ClassSubCode, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ClassAdmCode)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ClassAdmCode, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ClassSrvCode)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ClassSrvCode, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.KeyWord)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.KeyWord, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.CategoryId)
+                @Html.HiddenFor(m => m.CategoryParentId)
+                <input type="submit" value="存檔" class="btn btn-save" />
+                <input type="reset" value="重填" class="btn btn-gray" />
+                <input type="button" value="返回" class="btn btn-gray" onclick="document.location.href='@Url.Action("Index", new { id = @Model.CategoryId })';" />
+            </div>
+        </div>
+    </div>
+}

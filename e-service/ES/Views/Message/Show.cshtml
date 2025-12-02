@@ -1,0 +1,86 @@
+﻿@model ES.Models.MessageShowModel
+@using ES.Services;
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "最新消息";//"歷史消息";
+
+    string s_msgtype = "";
+    switch (@Model.MESSAGE_TYPE)
+    {
+        case "P":
+            s_msgtype = "<span class=\"newsTag-blue\">繳費公告</span>";
+            break;
+        case "I":
+            s_msgtype = "<span class=\"newsTag-red\">重要公告</span>";
+            break;
+        case "S":
+            s_msgtype = "<span class=\"newsTag-red\" style=\"color: orange\">停機公告</span>";
+            break;
+        case "G":
+            s_msgtype = "<span class=\"newsTag-blue\" style=\"color: orange\">重大政策</span>";
+            break;
+    }
+    string s_title = s_msgtype + Model.Title; //ES.Utils.CheckUtils.GetHtmlEncode();
+}
+<script>
+    $('#lihead_Message').addClass("navMark-orange");
+</script>
+<div class="container-fluid">
+    <!--bread -->
+    <div class="col-sm-12">
+        <div class="breadlink"><i class="fa fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> > <a href="@(Url.Action("Index", "Message"))">@Html.Raw(ViewBag.Title)</a></div>
+    </div>
+    <!--news -->
+    <div class="col-sm-12">
+        <div class="index-note">
+            <h3 class="note-title note-titlebar-blue">@Html.Raw(ViewBag.Title)</h3>
+            <div class="newspage">
+                @*<span class="newsTag-blue">@Html.DisplayNameFor(m => m.Title)</span>*@
+                <h3 class="newstitle">@Html.Raw(s_title)</h3>
+                <div class="up-info">
+                    <ul>
+                        <li>@Html.DisplayNameFor(m => m.UnitName)：@Model.UnitName</li>
+                        <li>起迄時間：@(((DateTime)Model.StartTime).ToString("yyyy/MM/dd HH:mm")) ～ @(((DateTime)@Model.EndTime).ToString("yyyy/MM/dd HH:mm"))</li>
+                    </ul>
+                </div>
+                <div class="news-content">
+                    @Html.Raw(ES.Utils.CheckUtils.GetHtmlEncode(Model.Content).Replace("  ", "&nbsp;&nbsp;").Replace("\n", "<br />"))
+                </div>
+                @if (!string.IsNullOrEmpty(Model.FileName1) || !string.IsNullOrEmpty(Model.FileName2) || !string.IsNullOrEmpty(Model.FileName3))
+                {
+                <div class="news-content">
+                    檔案下載：
+                    @if (!string.IsNullOrEmpty(Model.FileName1))
+                    {
+                        <a title="@Model.FileName1" href="@Url.Action("Down", "Message", new { id = @Model.MessageID, file = @Model.FileName1 }, null)">@Model.FileName1</a>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.FileName2))
+                    {
+                        if (!string.IsNullOrEmpty(Model.FileName1))
+                        {
+                            @Html.Raw("、")
+                        }
+                        <a title="@Model.FileName2" href="@Url.Action("Down", "Message", new { id = @Model.MessageID, file = @Model.FileName2 }, null)">@Model.FileName2</a>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.FileName3))
+                    {
+                        if (!string.IsNullOrEmpty(Model.FileName1)|| !string.IsNullOrEmpty(Model.FileName2))
+                        {
+                            @Html.Raw("、")
+                        }
+                        <a title="@Model.FileName3" href="@Url.Action("Down", "Message", new { id = @Model.MessageID, file = @Model.FileName3 }, null)">@Model.FileName3</a>
+                    }
+
+                </div>
+                }
+
+                <div class="bottom-pager">
+                    <button class="btn btn-pager" onclick="window.history.go(-1);">返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+</div>   

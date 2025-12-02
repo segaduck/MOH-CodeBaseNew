@@ -1,0 +1,87 @@
+﻿@model ES.Areas.Admin.Models.SocialWorker
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "統計分析";
+    ViewBag.FunctionTitle = "爭議案件申請清冊";
+}
+<script type="text/javascript">
+    $(function () {
+        $('#Sdate').datepicker();
+        $('#Fdate').datepicker();
+    });
+    function doQuery(page) {
+        $('#queryModel_NowPage').val(page);
+        $('#ActionType').val('Query');
+    }
+</script>
+@using (Html.BeginForm("SocialWorker7", "Report", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+<div class="col-sm-12 content">
+    <div class="bread">
+        <i class="fas fa-home"></i><a href="#">首頁</a> / <a href="#">@ViewBag.FunctionTitle</a>
+    </div>
+    <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+    <div class="form-blue form-horizontal">
+
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Sdate)</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.Sdate, String.Format("{0:yyyy/MM/dd}", Model.Sdate), new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Sdate)
+            </div>
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Fdate)</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.Fdate, String.Format("{0:yyyy/MM/dd}", Model.Fdate), new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Fdate)
+            </div>
+        </div>
+        <div class="btnbar">
+            @Html.HiddenFor(m => m.queryModel.NowPage)
+            <input type="submit" value="查詢" class="btn btn-blue" />
+            @*<input type="submit" value="匯出" class="btn btn-print" />*@
+        </div>
+    </div>
+
+    @{
+        <div class="table-pager">
+            @Html.HiddenFor(m => m.queryModel.NowPage)
+            @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+        </div>
+        <div class="clearfix"></div>
+        if (ViewBag.List != null)
+        {
+            <h2 class="second-title">查詢結果</h2>
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th>序號</th>
+                            <th>案件編號</th>
+                            <th>申請日期</th>
+                            <th>申請人:姓名/單位名稱</th>
+                            <th>身分證統一編號(或投保單位統一編號、醫事服務機構代號)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            foreach (ES.Areas.Admin.Models.Map map in ViewBag.List)
+                            {
+                                <tr>
+                                    <td>@map.Get("ROW_NUM")</td>
+                                    <td>@map.Get("APP_ID")</td>
+                                    <td>@Html.Raw(map.Get("APP_TIME"))</td>
+                                    <td>@Html.Raw(map.Get("NAME"))</td>
+                                    <td>@Html.Raw(map.Get("IDN"))</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>
+}

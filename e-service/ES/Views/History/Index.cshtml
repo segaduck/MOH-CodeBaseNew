@@ -1,0 +1,137 @@
+﻿@using ES.Models;
+@using ES.Utils;
+@model HistoryFormModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "案件進度查詢";
+    SessionModel sm = SessionModel.Get();
+    var ISEC = DataUtils.GetConfig("PAY_EC_OPEN").ToUpper();
+}
+<script>
+    $('#lihead_History').addClass("navMark-orange");
+</script>
+<!-- content -->
+<div class="container-fluid">
+    <!--bread -->
+    <div class="col-sm-12">
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> > <a href="@(Url.Action("Index", "History"))">@Html.Raw(ViewBag.Title)</a></div>
+    </div>
+    <!--news -->
+    @*@Html.Hidden("STATUS")*@
+    <div class="col-sm-12">
+        @*<div style="float:right; padding-top:12px; padding-right:8px;">
+            <a class="btn btn-search" href="https://ep.cp.gov.tw/paymentservice/querytrans.aspx" target="_blank" title="我的E政府信用卡交易查詢結果">我的E政府信用卡交易查詢結果</a>
+        </div>*@
+        <div class="index-note">
+            <h3 class="note-title note-titlebar-blue">案件進度查詢</h3>
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-statistics table">
+                    <thead>
+                        <tr>
+                            <th>項次</th>
+                            <th width="12%">申請日期</th>
+                            <th width="30%">申請項目</th>
+                            <th width="8%">申辦人</th>
+                            <th>繳費情形</th>
+                            <th>案件進度</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @Html.Partial("_GridRows")
+                    </tbody>
+                </table>
+            </div>
+            @*<div class="btn-bar text-left down-pager">
+                    <a href="@Url.Action("Index", "QuestNonWeb")" type="submit" class="btn btn-save">填寫滿意度</a>
+                </div>*@
+        </div>
+    </div>
+
+
+    <div class="clearfix"></div>
+
+</div>
+<input type="hidden" id="ISEC" value="@ISEC" />
+<input type="hidden" name="SessionTransactionKey" id="SessionTransactionKey" value="" />
+
+@*<form name="TransRedirect" target="_blank" id="TransRedirect" action="https://ep.cp.gov.tw/payment/eGovPaymentService.aspx" method="post" style="display:none">
+        <input type="hidden" name="Others" value="" />
+        <input type="hidden" name="SessionTransactionKey" id="SessionTransactionKey" value="" />
+        系統轉送中，如未自動轉至付費頁面，請 <input type="submit" value="點此" /> 前往信用卡付費頁面。
+    </form>*@
+<form name="HPP" id="HPP" target="_blank" ACTION="https://nccnet-ec.nccc.com.tw/merchant/HPPRequest" method="post" style="display:none">
+    <input type="hidden" name="KEY" id="KEY" value="" />
+    系統轉送中，如未自動轉至付費頁面，請 <input type="submit" value="點此" /> 前往信用卡付費頁面。
+</form>
+<script>
+    $(function () {
+        if ($("#KEY").val() != "") {
+            $('#HPP').submit();
+        }
+    });
+</script>
+<script type="text/javascript">
+
+    // 補件
+    function GetDetail(SRV_ID, APP_ID) {
+        var data = { "APP_ID": APP_ID }
+        location.href = '/Apply_' + SRV_ID + '/AppDoc?' + $.param(data);
+    }
+
+    @*<a href="@Url.Action("Index", "QuestNonWeb")" type="submit" class="btn btn-save">填寫滿意度</a>
+    <a href="#" class="btn btn-case" onclick="GetDetail2('@item.SRV_ID','@item.APP_ID')">填寫滿意度</a>*@
+    function GetQuestWeb(APP_ID) {
+        //var id = $(el).attr('data-id');
+        //var title = $(el).attr('data-title');
+        //var res = confirm('確定要刪除[' + title + ']消息嗎？');
+        //if (!res) { return; }
+        var data = { id: APP_ID };
+        var url = '@Url.Action("Index", "QuestWeb")';
+        goBackPage(url, data, 2, 'GET')
+
+    }
+    function doUploadPayFile(data) {
+        var url = '/PayFileUL?Up_PayFileStr=' + data;
+        var title = '繳費紀錄檔案上傳'; popupWindow({ 'width': 800, 'height': 200 }, url, title, null, function (retData, doc) {
+            if (retData != null) {
+                window.location.reload();
+            }
+        });
+    }
+    // 列印超商繳費單
+    function doDownloadPayFile(data) {
+        var data = { APP_ID: data };
+        var url = '@Url.Action("DownloadPayFile", "History")';
+        goBackPage(url, data, 2, 'GET')
+    }
+    // 信用卡重新繳費
+    function doRepay(appid, srvid) {
+        //var nowdate = new Date().getTime();
+        //var ecdate = new Date(2023,03,01,00,00,00).getTime();
+        var url = '/RePayCredit?APP_ID=' + appid + '&SRV_ID=' + srvid;
+        var title = '信用卡重新繳費'; popupWindow({ 'width': 800, 'height': 200 }, url, title, null, function (retData, doc) {
+            if (retData != null) {
+                $('#SessionTransactionKey').val(retData.SessionTransactionKey);
+                $('#KEY').val(retData.SessionTransactionKey);
+                if ($('#KEY').val() == '') {
+                    //if ($('#ISEC').val() == "Y" && nowdate >= ecdate) {
+                    //document.getElementById("HPP").submit();
+                    //} else {
+                    //    //$('#TransRedirect').submit();
+                    //    document.getElementById("TransRedirect").submit();
+                    //}
+                } else {
+                    document.getElementById("HPP").submit();
+                }
+                //window.location.reload();
+            }
+        });
+    }
+
+    //套印申請書
+    function doPrintDoc(SRV_ID, APP_ID) {
+    var data = { "APP_ID": APP_ID }
+        location.href = '/Apply_' + SRV_ID + '/PrintDoc?' + $.param(data);
+    }
+</script>

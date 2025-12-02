@@ -1,0 +1,45 @@
+﻿@model ES.Areas.Admin.Models.SocialWorker
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "統計分析";
+    ViewBag.FunctionTitle = "社會工作師證書匯出";
+}
+<script type="text/javascript">
+    $(function () {
+         $('#Sdate').datepicker();
+         $('#Fdate').datepicker();
+    });
+</script>
+@using (Html.BeginForm("SocialWorker4", "Report", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i><a href="#">首頁</a> / <a href="#">@ViewBag.FunctionTitle</a>
+    </div>
+    <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+    <div class="form-blue form-horizontal">
+        @*<div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ServiceId)</label>
+            <div class="col-sm-10">
+                @Html.DropDownListFor(m => m.ServiceId, (List<SelectListItem>)ViewBag.List, new { @class = "form-control" })
+            </div>
+        </div>*@
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Sdate)</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.Sdate, String.Format("{0:yyyy/MM/dd}", Model.Sdate), new { @class="form-control"})
+                @Html.ValidationMessageFor(m => m.Sdate)
+            </div>
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Fdate)</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.Fdate, String.Format("{0:yyyy/MM/dd}", Model.Fdate), new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Fdate)
+            </div>
+        </div>
+        <div class="btnbar">
+            <input type="submit" value="匯出" class="btn btn-print"/>
+        </div>
+    </div>
+}

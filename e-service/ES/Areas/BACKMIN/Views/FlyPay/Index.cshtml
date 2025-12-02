@@ -1,0 +1,50 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model FlyPayModel
+
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "航班資料查詢";
+    ViewBag.FunctionTitle = "航班資料查詢";
+}
+<div class="bread">
+    <i class="fas fa-home"></i><a href="#">首頁</a> / <a href="#">帳務管理</a> / <a href="#">@ViewBag.FunctionTitle</a>
+</div>
+<h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+<div class="form-blue form-horizontal">
+    @*@using (Html.BeginForm("FlyImport", "FlyPay", FormMethod.Post, new { ID = "ActionForm2", enctype = "multipart/form-data" }))
+    {
+        @Html.Partial("FlyImport")
+    }*@
+    @using (Html.BeginForm("Index", "FlyPay", FormMethod.Post, new { ID = "ActionForm" }))
+    {
+        @Html.Partial("_FlySearch1")
+        @Html.HiddenFor(x => x.ProjectType)
+    }
+</div>
+<script type="text/javascript">
+    //Export
+    function doExport(type) {
+        $('#ProjectType').val(type);
+        if (type == "1") {
+            $('#ActionForm').prop("action", "@Url.Action("Export", "FlyPay")");
+        } else if (type == "2") {
+            $('#ActionForm').prop("action", "@Url.Action("ExportBasic", "FlyPay")");
+        } else if (type == "11") {
+            $('#ActionForm').prop("action", "@Url.Action("ExportSIM", "FlyPay")");
+        }
+        $('#ActionForm').submit();
+    }
+
+    function doQuery(type) {
+        $('#ProjectType').val(type);
+        $('#ActionForm').prop("action", "@Url.Action("Index", "FlyPay")");
+        $('#ActionForm').submit();
+    }
+
+    function doExportSPR() {
+        $('#ActionForm').prop("action", "@Url.Action("ExportSPR", "FlyPay")");
+        $('#ActionForm').submit();
+    }
+</script>
+

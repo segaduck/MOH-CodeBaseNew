@@ -1,0 +1,65 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model FlySwipeModel
+@{
+    ViewBag.Title = "刷卡對帳匯入";
+    ViewBag.FunctionTitle = "刷卡對帳匯入";
+}
+
+@using (Html.BeginForm("Index", "FlySwipe", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <table class="formTable1" id="searchForm">
+        <caption>查詢條件</caption>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(m => m.QRY_TRACENO)
+            </th>
+            <td>
+                @Html.TextBoxFor(m => m.QRY_TRACENO, new { maxlength = 20 })
+            </td>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(m => m.QRY_PAYDATE)
+            </th>
+            <td>
+                @Html.TextBoxFor(m => m.QRY_PAYDATE, new { style = "width: 90px;", maxlength = 20 })
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="button" value="查詢" onclick="doQuery();" />
+            </td>
+        </tr>
+    </table>
+}
+<table class="gridTable1" id="gridTable" width="100%">
+    <tr>
+        <th>授權號碼 </th>
+        <th>交易日期</th>
+        <th>交易金額</th>
+        <th>帳務日期</th>
+        <th>撥款日期</th>
+    </tr>
+    @{
+        if (Model.grids != null && Model.grids.Count > 0)
+        {
+            foreach (var a in Model.grids)
+            {
+                string s_PAYDATE = (a.PAYDATE.HasValue ? a.PAYDATE.Value.ToString("yyyy-MM-dd") : "");
+                string s_BILLINGDATE = (a.BILLINGDATE.HasValue ? a.BILLINGDATE.Value.ToString("yyyy-MM-dd") : "");
+                string s_GRANTDATE = (a.GRANTDATE.HasValue ? a.GRANTDATE.Value.ToString("yyyy-MM-dd") : "");
+
+                <tr>
+                    <td>@Html.Raw(a.TRACENO)</td>
+                    <td>@Html.Raw(s_PAYDATE)</td>
+                    <td>@Html.Raw(a.PAYMONEY)</td>
+                    <td>@Html.Raw(s_BILLINGDATE)</td>
+                    <td>@Html.Raw(s_GRANTDATE)</td>
+                </tr>
+            }
+        }
+    }
+</table>

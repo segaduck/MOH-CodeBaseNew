@@ -1,0 +1,183 @@
+﻿@using System.Collections
+@using Turbo.ReportTK
+@using Turbo.Commons
+@using Turbo.Helpers
+@model  IList<Condition>
+@{
+    // 配合 Report Condition 定義的 報表 查詢條件輸入表單
+
+    Hashtable dropdownOnchange = new Hashtable();
+    bool formgroupBegin = false;
+}
+<div class="col-sm-12">
+    <div class="theme-news">
+        <div class="form-border">
+
+
+            @for (int i = 0; Model != null && i < Model.Count; i++)
+            {
+                Condition condition = Model[i];
+
+                /*
+                if ("linebreak".Equals(condition.Type))
+                {
+                    if (formgroupBegin)
+                    {
+                        // close p
+                        @Html.Raw("</p>\n")
+                        formgroupBegin = false;
+                    }
+                }
+                else */
+                if ("hidden".Equals(condition.Type))
+                {
+                    @ReportQueryHelper.Hidden(condition.Id, (string)condition.Value)
+                }
+                else
+                {
+                    <div class="form-group">
+                        @*
+                        if (!formgroupBegin)
+                        {
+                        @Html.Raw("<p>")
+                        formgroupBegin = true;
+                        }
+                        *@
+
+                        @ReportQueryHelper.Label(condition.Name, condition.Required, new { @class = "col-sm-2 control-label label-set" })
+
+                        @* === (根據 condition.Type 而輸出不同input內容) === *@
+
+                        @* Select List *@
+                        @if ("dropdown".Equals(condition.Type))
+                        {
+                            if (!string.IsNullOrEmpty(condition.Onchange))
+                            {
+                                dropdownOnchange[condition.Id] = condition.Onchange;
+                            }
+                            @ReportQueryHelper.DropdownList(condition.Id, condition.Source, (string)condition.Value, new Dictionary<string, string> { { "data-type", condition.Type }, { "data-display", condition.Display }, { "class", "form-group col-sm-10" } })
+                        }
+                        // CheckBox List
+                        else if ("checkboxlist".Equals(condition.Type))
+                        {
+                            @ReportQueryHelper.CheckBoxList(condition.Id, condition.Source, (List<string>)condition.Value, new Dictionary<string, string> { { "data-type", condition.Type }, { "data-display", condition.Display }, { "style", "width:" + condition.Width }, { "class", "form-group col-sm-10" } })
+                        }
+                        // RadioGroup List
+                        else if ("radiogrouplist".Equals(condition.Type))
+                        {
+                            @ReportQueryHelper.RadioGroupList(condition.Id, condition.Source, (string)condition.Value, new Dictionary<string, string> { { "data-type", condition.Type }, { "data-display", condition.Display }, { "style", "width:" + condition.Width }, { "class", "form-group col-sm-10" } })
+                        }
+                        // Input Textbox
+                        else if ("text".Equals(condition.Type))
+                        {
+                            <div class="col-sm-10">
+                                @ReportQueryHelper.TextBox(condition.Id, (string)condition.Value, new { size = condition.Size, @class = "form-normal" })
+                                <span>@condition.Hint</span>
+                            </div>
+                        }
+                        // TwYear Textbox
+                        else if ("twyear".Equals(condition.Type))
+                        {
+                            <div class="col-sm-10">
+                                @ReportQueryHelper.TextBox(condition.Id, (string)condition.Value, new { size = condition.Size, maxlength = 3, @class = "form-normal" })
+                                <span>@condition.Hint</span>
+                            </div>
+                        }
+                        // single date picker
+                        else if ("date".Equals(condition.Type))
+                        {
+                            <div class="col-sm-10">
+                                @Html.DatePickerTW(condition.Id, (string)condition.Value)
+                                <span>@condition.Hint</span>
+                            </div>
+                        }
+                        // range date picker
+                        else if ("daterange".Equals(condition.Type))
+                        {
+                            string[] dateValues = (string[])condition.Value;
+                            if (dateValues == null || dateValues.Length != 2)
+                            {
+                                dateValues = new string[2];
+                            }
+                            string conditionId2 = condition.Id + "2";
+
+                        <div class="form-inline col-sm-10" style="position: relative; margin-left:0">
+                            @Html.DatePickerTW(condition.Id, dateValues[0])
+                            @("~")
+                            @Html.DatePickerTW(conditionId2, dateValues[1])
+                            <span>@condition.Hint</span>
+                        </div>
+                        }
+                    </div>
+                }
+            }
+            @*
+    @if (formgroupBegin)
+    {
+        // close p
+        @Html.Raw("</p>\n")
+        formgroupBegin = false;
+    }
+            *@
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_DatePickerTW")
+<script>
+    $(document).ready(function () {
+        @* 隱藏所有 data-display="none" 的項目 *@
+        $("[data-display=none]").hide();
+
+        @* Dropdown Onchange 綁定 *@
+        @foreach (string key in dropdownOnchange.Keys)
+        {
+            @Html.Raw(string.Format("bind_onchage('{0}','{1}');", key, dropdownOnchange[key]))
+        }
+    });
+
+    var refreshDropdown = '@Url.Content("~/Report/Dropdown")';
+    function bind_onchage(source, target) {
+        $("select#" + source).change(function () {
+            var value = $(this).val();
+            debugTrace($(this).attr("id") + " changed, value=" + value + ", refresh: " + target);
+
+            if (source == target) {
+                @* Id 相同, 表示對 target 採用 show/hide 的方式切換 *@
+                $("[id*=" + target + "_" + "]").hide();
+                $("[id*=" + target + "_" + value + "]").show();
+            }
+            else {
+                @*採用 Ajax reload *@
+                var targetElm = $("#" + target);
+                if (targetElm) {
+
+                    var p = {};
+                    p.source = targetElm.attr("data-source");
+                    p.parm = value;
+
+                    /* Dropdown list refresh */
+                    if ("dropdown" == targetElm.attr("data-type")) {
+                        ajaxLoadMore(refreshDropdown, p, function (data) {
+                            targetElm.html(data);
+                        });
+                    }
+                        /* checkbox list refresh */
+                    else if ("checkboxlist" == targetElm.attr("data-type")) {
+                        blockAlert("refresh checkboxlist via Ajax does not implements yet.");
+                    }
+                        /* radiogrouplist list refresh */
+                    else if ("radiogrouplist" == targetElm.attr("data-type")) {
+                        blockAlert("refresh radiogrouplist via Ajax does not implements yet.");
+                    }
+
+                }
+                else {
+                    blockAlert("target element '" + target + "' not found!");
+                }
+
+            }
+
+        });
+    }
+</script>

@@ -1,0 +1,430 @@
+﻿@using ES.Models
+@using ES.Models.ViewModels
+@model Apply_005003ViewModel
+
+@{
+    if (Model == null) { return; }
+    if (Model.FormBack == null) { return; }
+
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+    ViewBag.SRV_NAME = "WHO格式之產銷證明書(英文)";
+
+    Model.FormBack.FieldStr = Model.FormBack.FieldStr ?? "";
+    bool ReadOnly = !Model.FormBack.FieldStr.Contains("ALL");
+    //2B.3僅供外銷專用之原因-dropdown.PList2B3 -m.F_2B_3-s_F_2B_3-Model.F_2B_3
+    //string s_F_2B_2_TEXT = dropdown.Get_PList2B2_TEXT(Model.FormBack.F_2B_2);
+    //string s_F_2A_3_TEXT = dropdown.Get_PList2A3_TEXT(Model.FormBack.F_2A_3);
+    //string s_F_2B_3_TEXT = dropdown.Get_PList2B3_TEXT(Model.FormBack.F_2B_3);
+}
+
+@using (Html.BeginForm("DocSave", "Apply_005003", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@Html.Raw(ViewBag.SRV_NAME)</a></div>
+            <div class="clearfix"></div>
+            <div class="tab-content" id="myTabContent">
+                <div id="form" class="tab-pane fade active in">
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                    <div class="form-set">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">申辦項目</label>
+                                <div class="col-sm-4">
+                                    <p class="form-control-static">@Html.Raw(ViewBag.SRV_NAME)</p>
+                                    @Html.HiddenFor(m => m.FormBack.APP_ID)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">申請日期</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">@Model.FormBack.APP_TIME_TW</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申辦份數</label>
+                                <div class="col-sm-4">
+                                    <p class="form-control-static">@Model.FormBack.PAYCOUNT</p>
+                                </div>
+                                <label class="step-label col-sm-2" for="">繳費金額</label>
+                                <div class="col-sm-4">
+                                    <p class="form-control-static">@Model.FormBack.PAYAMOUNT</p>
+                                </div>
+                            </div>
+                            <h2 class="second-title">申請基本資料</h2>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>公司名稱</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">@Model.FormBack.NAME</p>
+                                    @Html.HiddenFor(m => m.FormBack.NAME)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人</label>
+                                <div class="col-sm-4">
+                                    <p class="form-control-static">@Model.FormBack.CNT_NAME</p>
+                                    @Html.HiddenFor(m => m.FormBack.CNT_NAME)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">@Model.FormBack.TEL</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">傳真</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">@Model.FormBack.FAX</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">@Model.FormBack.EMAIL</p>
+                                    @Html.HiddenFor(m => m.FormBack.EMAIL)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @*外銷國家*@
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>外銷國家</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.MF_ADDR, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">
+                                    <span style="color: red;"> *</span>2A.1藥品許可證字號
+                                    @*<button type="button" class="btn btn-save" onclick="search()">查詢</button>*@
+                                </label>
+                                <div class="col-sm-4">
+                                    @*@Html.HiddenFor(m => m.F_2A_1_WORD) , onchange = "PLChange()"*@
+                                    @Html.DropDownListFor(m => m.FormBack.F_2A_1_WORD, dropdown.PList2A1, new { @class = "form-control", @disabled = "disabled" })
+                                </div>
+                                @*<label class="step-label col-sm-1" for="" style="text-align: right">第</label> , @onchange = "PLNumFun(this)"*@
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.FormBack.F_2A_1_NUM, new { @class = "form-control", placeholder = "請輸入數字", maxlength = "10", @readonly = "readonly" })
+                                </div>
+                                @*<label class="step-label col-sm-1" for="">號</label>*@
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-10">
+                                    <span>
+                                        1.可搜尋藥品許可證字號後自動帶入許可證資料，亦可直接於下方欄位直接輸入。<br>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @*1.2本產品是否獲准在國內販售？*@
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>1.2本產品是否獲准在國內販售？</label>
+                                <div class="col-sm-2">
+                                    @*@Html.TextBoxFor(m => m.FormBack.F_1_2, new { @class = "form-control" })*@
+                                    @Html.DropDownListFor(m => m.FormBack.F_1_2, dropdown.YorN_list, new { @class = "form-control", @disabled = "disabled", onchange = "CG12_CHK()" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">1.藥品名稱</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.F_1, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                @*<div class="col-sm-2"></div>*@
+                                <div class="col-sm-10 col-sm-offset-2">
+                                    1. 請依藥品許可證所載中、英文品名、外銷品名填寫，兩品名之間請空一格。<br />
+                                    2. 可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.F_1_DF, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                <div class="col-sm-10 col-sm-offset-2">
+                                    <span>請輸入劑型之英文名稱。</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>1.1處方說明</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.F_1_1, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                <div class="col-sm-10 col-sm-offset-2">
+                                    <span>處方含量之說明，最後請以「:」結尾，例如：Each gram contains:</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">成分內容</label>
+                                @*成分內容*@
+                                <div class="col-sm-10">
+                                    @Html.EditorFor(m => m.F11, "GoodsDynamicGrid005003")
+                                    <br />
+                                    1. 請依本次申請案需檢附之「處方之中藥材中英文對照表」填寫。
+                                    <br />
+                                    2. 欲重新帶入請重複輸入「藥品許可證字號」之步驟。
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @*1.3本產品是否有在國內販售？*@
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>1.3本產品是否有在國內販售？</label>
+                                <div class="col-sm-2">
+                                    @Html.DropDownListFor(m => m.FormBack.F_1_3, dropdown.YorN_list, new { @class = "form-control", @disabled = "disabled" })
+                                </div>
+                                @*<div class="col-sm-8"></div>*@
+                            </div>
+
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.1核准日期(中文)</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.FormBack.F_2A_1_DATE_TW, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.1核准日期(英文)</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.FormBack.F_2A_1_DATE_AD, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.2/2A.3.1/2B.2.1製造廠名稱</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.F_2A_3_1_NAME, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.2/2A.3.1/2B.2.1製造廠地址</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.F_2A_3_2_ADDR, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div id="F_2A2_CHK">
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>是否為委託製造？</label>
+                                    <div class="col-sm-2">
+                                        @Html.DropDownListFor(m => m.FormBack.F_2A_2_COMM, dropdown.YorN_list, new { @class = "form-control", onchange = "CGF_2A_2_COMM_CHK()", @disabled = "disabled" })
+                                    </div>
+                                </div>
+                                <div id="F_2A_2_COMM_CHK">
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.2藥商名稱</label>
+                                        <div class="col-sm-10">
+                                            @Html.TextBoxFor(m => m.FormBack.F_2A_2, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.2藥商地址</label>
+                                        <div class="col-sm-10">
+                                            @Html.TextBoxFor(m => m.FormBack.F_2A_2_ADDR, new { @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.3藥品許可證持有者之類別</label>
+                                    <div class="col-sm-10">
+                                        @* @Html.TextBoxFor(m => m.FormBack.F_2A_3, new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.CheckBoxFor(m => m.FormBack.F_2A_3_CHK_A, new { @id = "F_2A_3_CHK_A", @onclick = "CheckFunABC('F_2A_3_CHK','A')" })
+                                        A、同時也是製造廠
+                                        @Html.CheckBoxFor(m => m.FormBack.F_2A_3_CHK_B, new { @id = "F_2A_3_CHK_B", @onclick = "CheckFunABC('F_2A_3_CHK','B')" })
+                                        B、僅包裝和(或)貼標
+                                        @Html.CheckBoxFor(m => m.FormBack.F_2A_3_CHK_C, new { @id = "F_2A_3_CHK_C", @onclick = "CheckFunABC('F_2A_3_CHK','C')" })
+                                        C、以上皆非。
+                                        @Html.HiddenFor(m => m.FormBack.F_2A_3, new { @id = "F_2A_3_CHK" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>*2A.4該藥品許可證是否有經認可之試驗佐證？</label>
+                                    <div class="col-sm-2">
+                                        @Html.DropDownListFor(m => m.FormBack.F_2A_4, dropdown.YorN_list, new { @class = "form-control", @disabled = "disabled" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>*2A.5所附產品資訊是否完整且與藥品許可證一致？</label>
+                                    <div class="col-sm-2">
+                                        @Html.DropDownListFor(m => m.FormBack.F_2A_5, dropdown.YorN_list, new { @class = "form-control", @disabled = "disabled" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>*2A.6申請者是否為藥品許可證持有者？</label>
+                                    <div class="col-sm-2">
+                                        @Html.DropDownListFor(m => m.FormBack.F_2A_6, dropdown.YorN_list, new { @class = "form-control", @disabled = "disabled" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""> 2A.6/2B.1申請者之公司名稱</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.F_2A_6_NAME, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""> 2A.6/2B.1申請者之公司地址</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.F_2A_6_ADDR, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div id="F_1_2_CHK">
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2B.2申請者之類別</label>
+                                    <div class="col-sm-10">
+                                        @* @Html.TextBoxFor(m => m.FormBack.F_2B_2, new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.CheckBoxFor(m => m.FormBack.F_2B_2_CHK_A, new { @id = "F_2B_2_CHK_A", @onclick = "CheckFunABC('F_2B_2_CHK','A')" })
+                                        A、製造廠
+                                        @Html.CheckBoxFor(m => m.FormBack.F_2B_2_CHK_B, new { @id = "F_2B_2_CHK_B", @onclick = "CheckFunABC('F_2B_2_CHK','B')" })
+                                        B、僅包裝和(或)貼標
+                                        @Html.CheckBoxFor(m => m.FormBack.F_2B_2_CHK_C, new { @id = "F_2B_2_CHK_C", @onclick = "CheckFunABC('F_2B_2_CHK','C')" })
+                                        C、以上皆非。
+                                        @Html.HiddenFor(m => m.FormBack.F_2B_2, new { @id = "F_2B_2_CHK" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2B.3僅供外銷專用之原因</label>
+                                    <div class="col-sm-4">
+                                        @*@Html.TextBoxFor(m => m.FormBack.F_2B_3, new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.DropDownListFor(m => m.FormBack.F_2B_3, dropdown.PList2B3, new { @class = "form-control", @disabled = "disabled" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2" for=""> 備註</label>
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.FormBack.F_2B_3_REMARKS, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-sm-10 col-sm-offset-2">
+                                        <span>非必填，本欄位即「Remarks」。</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>3.製造廠是否定期接受本部之GMP查核？</label>
+                                <div class="col-sm-2">
+                                    @Html.DropDownListFor(m => m.FormBack.F_3_0, dropdown.YorN_list, new { @class = "form-control", @disabled = "disabled" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>3.1接受定期查核之週期為何？</label>
+                                <div class="col-sm-2">
+                                    @Html.DropDownListFor(m => m.FormBack.F_3_1, dropdown.PListF31, new { @class = "form-control", @disabled = "disabled" })
+                                </div>
+                                <div class="col-sm-2"><span>年</span></div>
+                                <div class="col-sm-2"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>3.2申請案藥品許可證之劑型，是否經過本部查核？</label>
+                                <div class="col-sm-2">
+                                    @Html.DropDownListFor(m => m.FormBack.F_3_2, dropdown.YorN_list, new { @class = "form-control", @disabled = "disabled" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>3.3申請案藥品許可證之製造設備及製程，是否符合WHO建議之GMP規範？</label>
+                                <div class="col-sm-2">
+                                    @Html.DropDownListFor(m => m.FormBack.F_3_3, dropdown.YorN_list, new { @class = "form-control", @disabled = "disabled" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>4.申請者所提供之資訊，是否符合外銷對象對產品製造所有方面的標準？</label>
+                                <div class="col-sm-2">
+                                    @Html.DropDownListFor(m => m.FormBack.F_4, dropdown.YorN_list, new { @class = "form-control", @disabled = "disabled" })
+                                </div>
+                            </div>
+
+                            <h2 class="second-title">佐證文件檔案上傳</h2>
+                            <!--網站 佐證文件採合併檔案-->
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+                                <div class="col-sm-10">
+                                    <label class="radio-inline "><input type="radio" name="RadioMerge" value="Y" onchange="RadioChange()" @(ReadOnly ? "disabled" : "")>是</label>
+                                    <label class="radio-inline "><input type="radio" name="RadioMerge" value="N" checked onchange="RadioChange()" @(ReadOnly ? "disabled" : "")>否</label>
+                                    @Html.HiddenFor(m => m.FormBack.MERGEYN)
+                                </div>
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-10">若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">藥品許可證影本(正面)</label>
+                                <div class="col-sm-10">
+                                    @Html.FileDLForTurbo(m => m.FormBack.FILE_LICF, Model.FormBack.FILE_LICF_TEXT, "N")
+                                    @*@Html.TextBoxFor(m => m.FormBack.FILE_LICF, new { @id = "FormBack_FILE_LICF", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)", @readonly = "readonly" })*@
+                                    @Html.HiddenFor(m => m.FormBack.FILE_LICF_TEXT)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">藥品許可證影本(反面)</label>
+                                <div class="col-sm-10">
+                                    @Html.FileDLForTurbo(m => m.FormBack.FILE_LICB, Model.FormBack.FILE_LICB_TEXT, "N")
+                                    @*@Html.TextBoxFor(m => m.FormBack.FILE_LICB, new { @id = "FormBack_FILE_LICB", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)", @readonly = "readonly" })*@
+                                    @Html.HiddenFor(m => m.FormBack.FILE_LICB_TEXT)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">處方之中藥材中英文對照表</label>
+                                <div class="col-sm-10">
+                                    @Html.FileDLForTurbo(m => m.FormBack.FILE_CHART, Model.FormBack.FILE_CHART_TEXT, "N")
+                                    @*@Html.TextBoxFor(m => m.FormBack.FILE_CHART, new { @id = "FormBack_FILE_CHART", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)", @readonly = "readonly" })*@
+                                    @Html.HiddenFor(m => m.FormBack.FILE_CHART_TEXT)
+                                </div>
+                            </div>
+
+                            <div class="btn-bar text-center">
+                                <button type="button" class="btn btn-save" id="btnReturn">返回</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        CG12_CHK();
+        CGF_2A_2_COMM_CHK();
+        $('#F_2A_1_DATE').val($('#FormBack_F_2A_1_DATE_AD').val());
+        if ($('#F_2A_3_CHK').val() == "A") { $("#F_2A_3_CHK_A").prop("checked", true); }
+        if ($('#F_2A_3_CHK').val() == "B") { $("#F_2A_3_CHK_B").prop("checked", true); }
+        if ($('#F_2A_3_CHK').val() == "C") { $("#F_2A_3_CHK_C").prop("checked", true); }
+        if ($('#F_2B_2_CHK').val() == "A") { $("#F_2B_2_CHK_A").prop("checked", true); }
+        if ($('#F_2B_2_CHK').val() == "B") { $("#F_2B_2_CHK_B").prop("checked", true); }
+        if ($('#F_2B_2_CHK').val() == "C") { $("#F_2B_2_CHK_C").prop("checked", true); }
+        if ($('#FormBack_RADIOYN').val() == "N") {
+            $($('input[type="radio"]')[1]).attr("checked", "checked");
+        }
+        else {
+            $($('input[type="radio"]')[0]).attr("checked", "checked");
+        }
+
+        $('input[type="checkbox"]').attr("disabled", "disabled");
+        $('#btnReturn').click(function () {
+            location.href = '/history/';
+        });
+    })
+
+    function CGF_2A_2_COMM_CHK() {
+        if ($('#FormBack_F_2A_2_COMM option:selected').val() == "Y") {
+            $('#F_2A_2_COMM_CHK').show();
+        }
+        else {
+            $('#F_2A_2_COMM_CHK').hide();
+        }
+    }
+
+    function CG12_CHK() {
+        if ($('#FormBack_F_1_2 option:selected').val() == "Y") {
+            $('#F_1_2_CHK').hide();
+            $('#F_2A2_CHK').show();
+        }
+        else {
+            $('#F_1_2_CHK').show();
+            $('#F_2A2_CHK').hide();
+        }
+    }
+</script>

@@ -1,0 +1,954 @@
+﻿@using ES.Commons;
+@using ES.Models.ViewModels
+@model Apply_001034ViewModel
+
+@{Layout = null; }
+
+<div class="col-sm-12">
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="form-title title-bg-y">申辦表件預覽</h1>
+            <div class="form-set">
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">申辦項目</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">危險性醫療儀器進口申請作業</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">承辦單位</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">衛生福利部醫事司</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">申辦日期</label>
+                        <div class="col-sm-4">
+                            @Html.BLATYPForTurbo(x => x.APPLY_DATE, Model.APPLY_DATE)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">申請人</label>
+                        <div class="col-sm-4">
+                            @Html.BLATYPForTurbo(x => x.APPLY_NAME, Model.APPLY_NAME)
+                        </div>
+                        <label class="step-label col-sm-2" for="">申請人身分證字號</label>
+                        <div class="col-sm-4">
+                            @Html.BLATYPForTurbo(x => x.APPLY_NAME, Model.APPLY_PID)
+                        </div>
+                    </div>
+                    <h2 class="second-title">納稅義務人資料</h2>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">身分證字號/統一編號</label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.TAX_ORG_ID, Model.APPLY_PID)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">姓名/公司名稱<font style="color: red;">中文</font></label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.TAX_ORG_ID, Model.TAX_ORG_NAME)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">姓名/公司名稱<font style="color: red;">英文</font></label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.TAX_ORG_ID, Model.TAX_ORG_ENAME)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">聯絡地址中文</label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.TAX_ORG_ID, Model.TAX_FULL_ADDRESS)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class='step-label col-sm-2' for="">聯絡地址英文</label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.TAX_ORG_ID, Model.TAX_ORG_EADDR)
+                        </div>
+                    </div>
+                    <h2 class="second-title">申辦資料</h2>
+                    <div class='form-group'>
+                        <label class='step-label col-sm-2' for=''>聯絡人姓名</label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.TAX_ORG_ID, Model.TAX_ORG_MAN)
+                        </div>
+                    </div>
+                    <div class='form-group'>
+                        <label class='step-label col-sm-2' for=''>聯絡人電話</label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.TEL, Model.TEL)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">聯絡人E-MAIL</label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.MAIL, Model.MAIL)
+                        </div>
+                    </div>
+                    <div class='form-group'>
+                        <label class='step-label col-sm-2' for=''>聯絡人傳真</label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.FAX, Model.FAX)
+                        </div>
+                    </div>
+
+
+                    <div class='form-group'>
+                        <label class='step-label col-sm-2' for=''>進出口別</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">進口</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">起始日期</label>
+                        <div class="col-sm-4">
+                            @Html.BLATYPForTurbo(x => x.DATE_S_AC, HelperUtil.DateTimeToTwString(Convert.ToDateTime(Model.DATE_S_AC)))
+                        </div>
+                        <label class="step-label col-sm-2" for="">終止日期</label>
+                        <div class="col-sm-4">
+                            @Html.BLATYPForTurbo(x => x.DATE_E_AC, HelperUtil.DateTimeToTwString(Convert.ToDateTime(Model.DATE_E_AC)))
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">生產國家</label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.DEST_STATE, Model.DEST_STATE)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">賣方國家</label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.SELL_STATE, Model.SELL_STATE)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">轉口港</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">@Model.TRN_PORT_COUNTRY &nbsp;&nbsp; @Model.TRN_PORT</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">起運口岸</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">@Model.BEG_PORT_COUNTRY &nbsp;&nbsp; @Model.BEG_PORT</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">賣方英文名稱</label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.SELL_NAME, Model.SELL_NAME)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2">賣方英文地址</label>
+                        <div class='col-sm-10'>
+                            @Html.BLATYPForTurbo(x => x.SELL_ADDR, Model.SELL_ADDR)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2">申請用途</label>
+                        <div class='col-sm-10'>
+                            @Html.BLATYPForTurbo(x => x.APP_USE_TEXT, Model.APP_USE_TEXT)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2">用途說明</label>
+                        <div class='col-sm-10'>
+                            @Html.BLATYPForTurbo(x => x.USE_MARK, Model.USE_MARK)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2">核發方式</label>
+                        <div class="col-sm-10">
+                            @Html.BLATYPForTurbo(x => x.CONF_TYPE_TEXT, Model.CONF_TYPE_TEXT)
+                        </div>
+                    </div>
+                     
+
+                    <!--檢附文件類型 ˇ的勾選框 會與貨品類別(規格下拉連動 其他除外)-->
+                    @{
+                        if (Model.Goods != null)
+                        {
+                            int index=0;
+                            <h2 class="second-title">貨品資料</h2>
+                            foreach (Apply_001034_GoodsViewModel item in Model.Goods)
+                            {
+                                <div class="form-group">
+                                    <label class='step-label col-sm-2'>序</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.SRL_NO</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class='step-label col-sm-2'>貨品類別（規格）：</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.GOODS_TYPE_TEXT</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">貨品名稱</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.GOODS_TYPE</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">申請數量</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.APPLY_CNT</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">貨品單位</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.GOODS_UNIT_TEXT</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">型號</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.GOODS_MODEL</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">規格</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.GOODS_SPEC_1 &nbsp;&nbsp;@item.GOODS_SPEC_2</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">牌名</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.GOODS_BRAND</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">貨品輔助描述</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.GOODS_DESC</p>
+                                    </div>
+                                </div> 
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型一</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_01_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            醫院開業執照影本
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號一</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_01</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明一</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_01</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型二</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_02_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            型錄（圖樣及說明書）一份
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號二</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_02</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明二</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_02</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型三</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_03_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            原廠報價單一份
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號三</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_03</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明三</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_03</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型四</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_04_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            醫療器材許可證明文件影本一份
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號四</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_04</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明四</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_04</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型五</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_05_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            管理醫師：執業執照影本
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號五</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_05</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明五</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_05</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型六</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_06_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            管理醫師：核子醫學科專科醫師證書影本<font style="color: red;">（必選或自行勾選時，請填寫下述二欄位）</font>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號六</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_06</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明六</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_06</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型七</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_07_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            管理醫師：放射線（腫瘤）專科醫師證書影本
+                                            <font style="color: red;">（必選或自行勾選時，請填寫下述二欄位）</font>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號七</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_07</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明七</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_07</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型八</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_08_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            專任輻射防護人員：認可證書影本
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號八</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_08</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明八</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_08</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型九</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_09_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            專任輻射防護人員：在職證明影本
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號九</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_09</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明九</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_09</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_10_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            專任醫學物理專業人員：醫學物理訓練證明影本
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_10</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_10</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十一</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_11_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            專任醫學物理專業人員：在職證明影本
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十一</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_11</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十一</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_11</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十二</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_12_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            專任運轉人員：運轉人員資格證明文件影本
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十二</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_12</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十二</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_12</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十三</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_13_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            專任運轉人員：在職證明影本
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十三</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_13</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十三</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_13</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十四</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_14_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            專任正子放射製藥專業人員：
+                                            具正子放射藥物製備一年以上工作經驗，或曾在國內外醫療機構接受正子放射藥物製備訓練三個月以上之證明文件
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十四</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_14</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十四</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_14</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十五</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_15_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            常駐工程師相關證明文件：
+                                            本國常駐工程師應有維修訓練三個月以上經驗，並取得證明文件。原廠常駐工程師應提出國外相同機組之維修訓練證明文件。
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十五</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_15</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十五</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_15</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十六</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_16_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            醫事放射師或醫事放射士：證書影本
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十六</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_16</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十六</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_16</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十七</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_17_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            醫事放射師或醫事放射士：執業執照影本
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十七</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_17</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十七</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_17</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十八</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_18_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            醫事放射師或醫事放射士：
+                                            應有一人以上具操作單光子斷層掃描設備一年以上之經驗，或曾在國內外 醫療機構接受正子斷層掃描設備操作訓練三個月以上之證明文件
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十八</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_18</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十八</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_18</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十九</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            @if (@item.DOC_TYP_19_CHK)
+                                            {
+                                                <input type="checkbox" checked disabled>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled>
+                                            }
+                                            醫院評鑑結果證明文件
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十九</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_COD_19</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十九</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">@item.DOC_TXT_19</p>
+                                    </div>
+                                </div>
+
+                                @*<h1 class="form-title title-bg-gray">上傳附件預覽</h1>
+                                <div class="col-sm-12">                                    
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型一</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x=>x.Goods[index].DOC_TYP_01_FILE, @item.DOC_TYP_01_FILE_NAME,index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型二</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_02_FILE, @item.DOC_TYP_02_FILE_NAME,index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型三</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_03_FILE, @item.DOC_TYP_03_FILE_NAME,index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型四</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_04_FILE, @item.DOC_TYP_04_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型五</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_05_FILE, @item.DOC_TYP_05_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型六</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_06_FILE, @item.DOC_TYP_06_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型七</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_07_FILE, @item.DOC_TYP_07_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型八</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_08_FILE, @item.DOC_TYP_08_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型九</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_09_FILE, @item.DOC_TYP_09_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型十</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_10_FILE, @item.DOC_TYP_10_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型十一</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_11_FILE, @item.DOC_TYP_11_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型十二</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_12_FILE, @item.DOC_TYP_12_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型十三</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_13_FILE, @item.DOC_TYP_13_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型十四</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_14_FILE, @item.DOC_TYP_14_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型十五</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_15_FILE, @item.DOC_TYP_15_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型十六</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_16_FILE, @item.DOC_TYP_16_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型十七</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_17_FILE, @item.DOC_TYP_17_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型十八</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_18_FILE, @item.DOC_TYP_18_FILE_NAME, index)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">檢附文件類型十九</label>
+                                            <div class="col-sm-10">
+                                                @Html.ImageHoverForTurbo(x => x.Goods[index].DOC_TYP_19_FILE, @item.DOC_TYP_19_FILE_NAME, index)
+                                            </div>
+                                        </div>  
+                                    </div>*@
+
+                                index++;
+                            }
+                        }
+                    }
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-set">
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="doSave()">確認送出</button>
+            <button type="button" class="btn btn-clear" onclick="doApply()">返回修改</button>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('[data-hover!=\"\"]').hover();
+    });
+
+    function doApply()
+    {
+        $('#PreView_Tab').removeClass('active');
+        $('#PreViewForm').attr('class', 'tab-pane fade');
+
+        $('#Apply_Tab').attr('class', 'active');
+        $('#ApplyForm').attr('class', 'tab-pane fade active in');
+
+        //for (var i = 0; i < $('input[id^="CHK_DOC_TYP"]').length; i++) {
+        //    var attrName = $($('input[id^="CHK_DOC_TYP"]')[i]).attr('name');
+
+        //        $('input[name*="DOC_TYP_01_CHK"]').attr('disabled', 'disabled');
+        //        $('input[name*="DOC_TYP_01_CHK"]').attr('value', 'true');
+
+        //        $('input[name*="DOC_TYP_02_CHK"]').attr('disabled', 'disabled');
+        //        $('input[name*="DOC_TYP_02_CHK"]').attr('value', 'true');
+
+        //        $('input[name*="DOC_TYP_03_CHK"]').attr('disabled', 'disabled');
+        //        $('input[name*="DOC_TYP_03_CHK"]').attr('value', 'true');
+
+        //        $('input[name*="DOC_TYP_04_CHK"]').attr('disabled', 'disabled');
+        //        $('input[name*="DOC_TYP_04_CHK"]').attr('value', 'true');
+
+        //        $('input[name*="DOC_TYP_05_CHK"]').attr('disabled', 'disabled');
+        //        $('input[name*="DOC_TYP_05_CHK"]').attr('value', 'true');
+
+        //        $('input[name*="DOC_TYP_07_CHK"]').attr('disabled', 'disabled');
+        //        $('input[name*="DOC_TYP_07_CHK"]').attr('value', 'true');
+
+        //        $('input[name*="DOC_TYP_19_CHK"]').attr('disabled', 'disabled');
+        //        $('input[name*="DOC_TYP_19_CHK"]').attr('value', 'true');
+
+        //} 
+
+    }
+
+    function doSave() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+</script>

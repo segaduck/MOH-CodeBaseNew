@@ -1,0 +1,105 @@
+﻿@using EECOnline.Models
+@{
+    SessionModel sm = SessionModel.Get();
+
+    //int timeout = Session.Timeout;
+    int timeout = 60;
+    DateTime now = DateTime.Now;
+    string twyr = (now.Year - 1911).ToString();
+    string mon = now.Month.ToString("d2");
+    string day = now.Day.ToString("d2");
+    ShareCodeListModel list = new ShareCodeListModel();
+}
+<style>
+    #div_tool {
+        height: 100px;
+    }
+</style>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-6 logo">
+            <a href="@(Url.Action("Index", "C102M", new { area = "Login" }))"><img src="~/images/logo-main.svg" alt="衛生福利部｜民眾線上申辦電子病歷服務平台管理系統" class="img-fluid"></a>
+        </div>
+        <div class="col-sm-6">
+            <div class="user-info">
+                <div class="user-name">
+                    <i class="bx bx-user-circle"></i>@sm.UserInfo.User.username 您好
+                </div>
+                <div style="float: left; height: 36px; display: inline; padding-top: 0.3rem; margin-left: 0.5rem; ">
+                    <div class="data-timer">
+                        <img src="~/images/stopwatch.svg"> 倒數&nbsp;<span class="data-timer-number"></span>
+                    </div>
+                </div>
+                <div class="user-link">
+                    @*<a href="#" class="hvr-bob"><i class="bx bxs-cog"></i></a>*@
+                    <a href="@(Url.Action("Logout", "C101M", new { area = "Login" }))" class="hvr-bob"><i class="bx bx-exit"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    var __ssTimeout = {
+        //timeout   系統登入逾時時間，單位：秒
+        //counter   倒數計時計數器。
+        //hint      登入即將過期提醒訊息的彈出時間點。單位：秒
+        //hintFired 是否顯示過登入即將過期訊息。
+        "timerId": undefined,
+        "redirectUrl": "@(Url.Action("Logout", "C101M", new { area = "Login" }))",
+        "board": $("span.data-timer-number"),
+        "timeout": parseInt("@(timeout * 20)", 10),
+        "counter": parseInt("@(timeout * 20)", 10),
+        "hint": 300,
+        "hintFired": 0,
+        refreshBoard: function () {
+            if (this.counter > 0) {
+                //20171214 修正 IE11 不支援 Math.trunc 方法問題
+                var m = (Math.trunc) ? Math.trunc(this.counter / 60) : Math.floor(this.counter / 60);
+                var s = this.counter % 60;
+                m = ((m < 10) ? "0" : "") + m;
+                s = ((s < 10) ? "0" : "") + s;
+                this.board.text([m, ":", s].join(""));
+            }
+            else {
+                this.board.text("00:00");
+            }
+        },
+        resetCount: function () {
+            this.counter = this.timeout;
+            this.hintFired = 0;
+            this.refreshBoard();
+        },
+        countDown: function () {
+            var self = this;
+            if (this.counter <= 0) {
+                blockAlert("您的登入已經過期，請重新登入系統！", "登入逾時", function () {
+                    window.location.href = self.redirectUrl;
+                });
+                return;
+            }
+
+            this.timerId = setTimeout(function () { self.countDown(); }, 1000);
+            if (this.counter > 0) this.counter--;
+            this.refreshBoard();
+
+            if (this.counter <= this.hint && this.hintFired == 0) {
+                this.hintFired = 1;
+                blockConfirm("您的登入即將過期，要延長時間嗎？", "", function () { self.resetCount(); }, null, "延長", "不延長");
+            }
+        }
+    }
+
+    function logout() {
+        blockConfirm("您確定要登出系統？", null, function () {
+            window.location.href = "@(Url.Action("Logout", "C101M", new { area = "Login" }))";
+        });
+    }
+
+    $(document).ready(function () {
+        __ssTimeout.countDown();
+    });
+
+</script>

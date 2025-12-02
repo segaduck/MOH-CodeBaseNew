@@ -1,0 +1,49 @@
+﻿@model ES.Areas.Admin.Models.CosmeticIngredientsEditModel
+@{
+    ViewBag.Title = "一般化妝品成分管理（修改）";
+    ViewBag.FunctionTitle = "一般化妝品成分管理 - 修改";
+}
+@using (Html.BeginForm("Edit", "CosmeticIngredients"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <table class="formTable1">
+        <tr>
+            <th style="width: 120px;"><span class="formRequired">*</span> @Html.DisplayNameFor(m => m.Content)</th>
+            <td>@Html.TextBoxFor(m => m.Content, new { style = "width: 60%;", maxlength = "50" }) @Html.ValidationMessageFor(m => m.Content)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.Used)</th>
+            <td>@Html.TextBoxFor(m => m.Used, new { style = "width: 60%;", maxlength = "50" }) @Html.ValidationMessageFor(m => m.Used)</td>
+        </tr>
+        <tr>
+            <th><span class="formRequired">*</span> 限量</th>
+            <td>
+                @Html.RadioButtonFor(m => m.Type, "A")
+                @Html.TextBoxFor(m => m.NumberS1, new { style = "width: 60px;", maxlength = "7" }) ％ <br />
+                @Html.RadioButtonFor(m => m.Type, "B")
+                @Html.TextBoxFor(m => m.NumberS2, new { style = "width: 60px;", maxlength = "7" }) ％ ～
+                @Html.TextBoxFor(m => m.NumberS3, new { style = "width: 60px;", maxlength = "7" }) ％
+            </td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.Note)</th>
+            <td>@Html.TextAreaFor(m => m.Note, new { style = "width: 60%;", rows = "5" }) @Html.ValidationMessageFor(m => m.Note)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.UpdateAccount)</th>
+            <td>@Html.DisplayFor(m => m.UpdateAccount)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.UpdateTime)</th>
+            <td>@Html.DisplayFor(m => m.UpdateTime)</td>
+        </tr>
+    </table>
+    <div class="formButtomBar">
+        @Html.HiddenFor(m => m.CosmeticId)
+        <input type="submit" value="存檔" />
+        <input type="reset" value="重填" />
+        <input type="button" value="返回" onclick="document.location.href='@Url.Action("Index", "CosmeticIngredients")';" />
+    </div>
+}

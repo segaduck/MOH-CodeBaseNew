@@ -1,0 +1,68 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model FlySwipeModel
+@{
+    ViewBag.Title = "刷卡對帳匯入";
+    ViewBag.FunctionTitle = "刷卡對帳匯入";
+}
+<div class="bread">
+    <i class="fas fa-home"></i><a href="#">首頁</a> / <a href="#">帳務管理</a> / <a href="#">@ViewBag.FunctionTitle</a>
+</div>
+<h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+<div class="form-blue form-horizontal">
+    @Html.Partial("_FlySwipeImport")
+    @*@Html.Partial("_FlySwipeSearch1")*@
+
+    @Html.Partial("_EsunCondition")
+    @*<div id="Credit" style="display:none">
+        @Html.Partial("_EsunCredit")
+    </div>*@
+    
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        @*$('#sel_QRY_STATUS').val('@this.Model.QRY_STATUS');*@
+        $('#QRY_PAYDATE').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+3' });
+    });
+
+    function doExport() {
+        $('#ActionForm').prop("action", "@Url.Action("Export", "FlySwipe")");
+        $('#ActionForm').submit();
+    }
+
+    function doQuery() {
+        $('#ActionForm').prop("action", "@Url.Action("Index", "FlySwipe")");
+        $('#ActionForm').submit();
+    }
+
+    function doCheckOut(typeItem) {
+        var url = '';
+        if (typeItem == '2') {
+            url = '@(Url.Action("ConditionUnion", "FlySwipe", new { area = "" }))';
+        } else {
+            url = '@(Url.Action("Condition", "FlySwipe", new { area = "" }))';
+        }
+        var FormData = getFormDataJson("#ActionForm");
+        ajaxLoadMore(url, FormData, function (resp) {
+            if (resp.status == false)
+            {
+                blockAlert(resp.message);
+            }
+            else
+            {
+                blockAlert(resp.message);
+                //$("#Credit").css('display', 'block');
+                //$('#esdata').val(resp.data.data);
+                //$('#esksn').val(resp.data.ksn);
+                //$('#esmac').val(resp.data.mac);
+                //$('#fm').attr("action", resp.data.postUrl);
+                //console.log(resp.data.data);
+                //console.log(resp.data.ksn);
+                //console.log(resp.data.mac);
+                //console.log(resp.data.postUrl);
+            }
+        });
+    }
+
+</script>
+

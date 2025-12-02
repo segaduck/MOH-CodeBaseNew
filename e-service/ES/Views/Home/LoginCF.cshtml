@@ -1,0 +1,253 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>憑證登入 - 衛生福利部線上申辦維護系統</title>
+    <script language="javascript" type="text/javascript">
+        var uPKIVersion = "";
+        var cardType = "";
+        var pinCode = "";
+        var GCAType = "";
+        function doInit() {
+            uPKIVersion = "";
+            cardType = "";
+            pinCode = "";
+
+            try {
+                uPKIVersion = AtxClient.GetVersion();
+                cardType = AtxClient.GetCardType();                
+                pinCode = parent.document.getElementById("CertLoginPinCode").value;
+            } catch (ex) {
+
+            }
+
+            if (uPKIVersion != "") {
+                signICCard();
+            } else {
+                parent.jAlert("您尚未安裝uPKI元件，請先安裝。");
+            }
+
+            parent.document.getElementById("CertLoginSubmit").value = "登入";
+            parent.document.getElementById("CertLoginSubmit").disabled = false;
+        }
+
+        function signICCard() {
+            
+            // 設定License資訊
+            setLicense();
+
+            // 初始化PKI元件
+            var nRet = AtxClient.Init();
+
+            if (nRet != 0) {
+                var errmsg = getErrorMessage();
+
+                parent.jAlert(errmsg);
+                AtxClient.Finalize();
+                return;
+            }
+
+            if (!isMOICAorMOEACA && !isHCA()) {
+                parent.jAlert("未知的憑證卡類型：" + cardType);
+                return;
+            }
+
+            if (isHCA()) {
+                cardType += AtxClient.GetHCACardType();
+            }
+
+            var ticket = "TEST";
+            var pSignedData = "";
+
+            // 以IC卡對ticket進行簽章，並包成p7格式簽章封包
+            nRet = AtxClient.EncodeP7SignedData(ticket, "", pSignedData, pinCode);
+
+            if (nRet != 0) {
+                var errmsg = getErrorMessage();
+                if (errmsg == "登入失敗") {
+                    parent.jAlert("您的卡片可能被鎖卡");
+                } else if (errmsg == "密碼輸入錯誤") {
+                    parent.jAlert("PIN Code 輸入錯誤");
+                } else {
+                    parent.jAlert(errmsg);
+                }
+                AtxClient.Finalize();
+                return;
+            }
+
+            var cardData = getCardData();
+            parent.document.getElementById("CertLoginpSignedData").value = AtxClient.HexStringToB64(AtxClient.p7SignedData);
+            AtxClient.Finalize();
+            
+            if (cardData != null) {
+                parent.document.getElementById("CertLoginCardType").value = cardData[3];
+                parent.document.getElementById("CertLoginCardInfo").value = cardData[0];
+                parent.document.getElementById("CertLoginUserId").value = cardData[1];
+                parent.document.getElementById("CertLoginUserName").value = cardData[2];
+                
+                //alert(cardData[1]);
+                //alert(cardData[2]);
+               
+                parent.document.getElementById("CertLoginForm").submit();
+            }
+
+            parent.document.getElementById("CertLoginSubmit").disabled = false;
+            parent.document.getElementById("CertLoginSubmit").value = "登入";
+            parent.document.getElementById("uPkiFrame").src = "";
+        }
+
+        function getCardData() {
+            /* 卡片資訊 
+                0: 憑證
+                1: 身分證號、統一編號
+                2: 姓名、公司名稱 
+                3: 類型
+            */
+            var cardData = new Array("", "", "","");
+            var cert64;
+            var cn = "";
+
+            if (isMOICAorMOEACA()) { // 自然人憑證或工商
+                var certArray;
+
+                // 取得簽章憑證，回傳 base64 格式
+                if (AtxClient.GetUserCertFromToken(pinCode, 1, 0, 1)) {
+                    certArray = AtxClient.certificates;
+                } else {
+                    parent.jAlert(getErrorMessage());
+                    return null;
+                }
+
+                if (typeof(certArray) == "string") {
+                    cert64 = certArray;
+                } else {
+                    cert64 = certArray[certArray.length - 1];
+                }
+                AtxCert.B64Cert = cert64;
+
+                //判斷憑證類型
+              
+                if (AtxClient.GetGCAOID().length !=4) {//工商     
+                    // 簽章憑證
+                    cardData[0] = cert64;
+
+
+                    cardData[1] = AtxClient.GetGCAOrganizationID();
+
+
+                    cardData[2] = AtxClient.GetCertSubjectName();
+                    cardData[3] = "MOEACA";
+                }
+                else {//自然人
+                    cn = AtxCert.CommonName;
+
+                    // 簽章憑證
+                    cardData[0] = cert64;
+
+                    // 身分證號後四碼
+                    if (AtxClient.DecodeCertificate(cert64, 1) == 0) {
+                        cardData[1] = AtxClient.GetGCAOID();
+                    }
+
+                    cardData[2] = cn;
+                    cardData[3] = "MOICA";
+                } 
+                
+            } else if (isHCA0()) { // 醫事機構卡
+                if (AtxClient.GetCertFromToken(1, 0, 1)) {
+                    cert64 = AtxClient.certificates;
+                }
+
+                // 簽章憑證
+                cardData[0] = cert64;
+
+                if (AtxClient.DecodeHCAHospitalRecordData() != 0) {
+                    cardData[1] = AtxClient.GetHCAHospitalID();
+                    cardData[2] = AtxClient.GetHCAHospitalName();
+                }
+
+                cardData[3] = "HCA0";
+
+            } else if (isHCA1()) { // 醫事人員卡
+                /*
+                var nRet = AtxClient.HCAGetCertificate1(cert64, pinCode, 0, 1);
+
+                if (nRet != 0) {
+                    parent.jAlert("取得HCA卡憑證錯誤：" + getErrorMessage());
+                    return null;
+                }
+                */
+
+                // 簽章憑證
+                cardData[0] = cert64;
+
+                // 身分證號
+                if (AtxClient.DecodeHCAPersonRecordData()) {
+                    cardData[1] = AtxClient.GetHCAPersonID();
+                    cardData[2] = AtxClient.GetHCAPersonCHTName();
+                }
+                cardData[3] = "HCA1";
+            } else {
+                parent.jAlert("未知的憑證卡類型：" + cardType);
+                return null;
+            }
+
+            return cardData;
+        }
+
+        function setLicense() {
+            AtxClient.setLicense("0fca842f933eb6292e6fd5d9fb9188e486ac69a35bb7e970d5c69175fefeaa0575b8fb6a3c56c1c12e53b60a35ef7168664af511e5024e0e6cf7739f7a04043d91e69123ffd70e986201858e3f967f476bfce675e12e2aa1b516f2eaa3568924c0c5affd2a165cf377ce28cb4ae149ed6b9e12018a9c9613d583aad599bf2363", "行政院衛生署");
+        }
+
+        function getErrorMessage() {
+            return trim(AtxClient.GetErrorMessage()).replace(/\r/ig, "").replace(/\n/ig, "<br />");
+        }
+
+        function trim(str){
+            var start = -1,
+            end = str.length;
+            while( str.charCodeAt(--end) < 33 );
+            while( str.charCodeAt(++start) < 33 );
+            return str.slice( start, end + 1 );
+        };
+
+        // 是否為自然人憑證或工商憑證
+        function isMOICAorMOEACA() {
+            return (cardType == "HiCOS" || cardType == "HiCard" || cardType == "HiKey" || cardType == "自然人憑證(GP)" || cardType == "自然人憑證(TP)");
+        }
+        
+        // 是否為HCA卡
+        function isHCA() {
+            return (cardType == "HCA");
+        }
+
+        // 是否為醫事機構憑證
+        function isHCA0() {
+            return (cardType == "HCA0");
+        }
+
+        // 是否為醫事人員憑證
+        function isHCA1() {
+            return (cardType == "HCA1");
+        }
+    </script>
+</head>
+<body onload="doInit();">
+<object id="AtxClient"
+    classid="CLSID:EA9EBB6D-6CBB-4BF8-9A12-E0664FFFF93E"
+    codebase="@Url.Action("Index", "Home")ActiveX/AresPKIAtxClient.CAB#version=7,5,0,20">
+</object>
+<object id="AtxCert"
+    classid="clsid:BB795567-9898-40A4-870E-348D07E929FA"
+    codebase="@Url.Action("Index", "Home")ActiveX/AresPKIAtxClient.CAB#Version=7,5,0,20">
+</object>
+<object id="AtxUtil"
+    classid="clsid:E2FB61A3-77EC-4B72-A6AD-10C0641F39CA"
+    codebase="@Url.Action("Index", "Home")ActiveX/AresPKIAtxClient.CAB#Version=7,5,0,20">
+</object>
+</body>
+</html>

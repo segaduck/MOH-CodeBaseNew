@@ -1,0 +1,130 @@
+﻿@using Turbo.DataLayer
+@model PagingResultsViewModel
+
+@*@if (!Model.PagingInfo.ResultExists)
+    {Model.PagingInfo.PageSize = 0;}*@
+@Html.Partial("_PagingLink_js")
+<!--20180909 修正判斷方法-->
+@if (!Model.PagingInfo.ResultExists && Model.PagingInfo.Total == 0)
+{
+    Model.PagingInfo.PageSize = 0;
+}
+
+@if (Model.PagingInfo != null /*&& Model.PagingInfo.ResultExists*/) /*分頁資訊存在時才顯示*/
+{
+    <form name="qryParms" id="@Model.PaginLinkId" action="@(Model.action)" data-rid="@Model.rid" data-total="@(Model.PagingInfo.Total)" data-totalPages="@(Model.PagingInfo.TotalPages)" data-pageSize="@(Model.PagingInfo.PageSize)" data-pageIdx="@(Model.PagingInfo.PageIdx)">
+        <div name="qryParms" id="@Model.PaginLinkId" action="@(Model.action)" data-rid="@Model.rid" data-total="@(Model.PagingInfo.Total)" data-totalPages="@(Model.PagingInfo.TotalPages)" data-pageSize="@(Model.PagingInfo.PageSize)" data-pageIdx="@(Model.PagingInfo.PageIdx)">
+            <div class="pageLink">
+                <div class="pages">
+                    目前筆數/總筆數:<span id="nowPage">@((Model.PagingInfo.PageSize == 0 || Model.PagingInfo.Total == 0 || Model.PagingInfo.Total < Model.PagingInfo.PageSize) ? Model.PagingInfo.Total : Model.PagingInfo.PageSize)</span>/@(Model.PagingInfo.Total)
+                </div>
+                @if (Model.PagingInfo.Total == 1002 || Model.PagingInfo.Total == 2001)/*20180619增加超過1000筆，不顯示分頁元件*/
+                {
+                    <span class="recordsInfo" style="color:black;display:none;">每頁筆數&nbsp;@Html.DropDownListFor(m => m.PagingInfo.PageSize, Model.PageSize_list())</span>
+                }
+                else
+                {
+                    <a id="firstPage" href="javascript:void(0)" class="btn btn-sm btn-secondary disabled">最前頁</a>
+                    <a id="prePage" href="javascript:void(0)" class="btn btn-sm btn-secondary disabled">上頁</a>
+                    <span class="pageInfo">第 <span id="curPage">@(Model.PagingInfo.PageIdx)</span>／<span id="totalpageS">@(Model.PagingInfo.TotalPages)</span> 頁，</span>
+                    <span class="recordsInfo">共 @(Model.PagingInfo.Total) 筆</span>
+                    <a id="nextPage" href="javascript:void(0)" class="btn btn-sm btn-secondary disabled">下頁</a>
+                    <a id="lastPage" href="javascript:void(0)" class="btn btn-sm btn-secondary disabled">最後頁</a>
+                    if (Model.PagingInfo.PageSize == 0)
+                    {
+                        <span class="recordsInfo formbar-bg" style="color:black;">每頁筆數&nbsp;@Html.DropDownListFor(m => m.PagingInfo.PageSize, Model.PageSize_list(), new { @disabled = "disabled" })</span>
+                    }
+                    else
+                    {
+                        <span class="recordsInfo" style="color:black;">每頁筆數&nbsp;@Html.DropDownListFor(m => m.PagingInfo.PageSize, Model.PageSize_list())</span>
+                    }
+                }
+            </div>
+
+
+            @*@Html.HiddenFor(m => m.rid)*@
+            @*
+                <!--20180508 增加分頁隱藏欄位-->
+                @Html.HiddenFor(m => m.PagingInfo.Total)
+                @Html.HiddenFor(m => m.PagingInfo.PageIdx)
+                @Html.HiddenFor(m => m.PagingInfo.TotalPages)
+                @Html.HiddenFor(m => m.PagingInfo.PageSize)
+            *@
+            @{
+                // 將 Model 中當前的查詢條件, 保存在 hidden 欄位中, 分頁連結時再併入 POST 參數
+                System.Collections.Hashtable qryParms = new System.Collections.Hashtable();
+                CommonUtil.SetQueryParameters(qryParms, Model);
+                foreach (string key in qryParms.Keys)
+                {
+                    /*處理 checkbox 多選條件參數(string[])*/
+                    object parm = qryParms[key];
+                    if (parm != null)
+                    {
+                        if (parm is string[])
+                        {
+                            // 多選參數 string[]
+                            // 參數名稱格式: paramName
+                            string[] listParm = (string[])parm;
+                            for (int i = 0; i < listParm.Length; i++)
+                            {
+                                <input type="hidden" data-role="array" name="@(key)" value="@(listParm[i])" />
+                            }
+                        }
+                        else
+                        {
+                            if (!key.Contains("Grid") && !key.Contains("_list"))
+                            {
+                                // 其他視為單值參數 string
+                                <input type="hidden" name="@(key)" value="@(parm)" />
+                            }
+                        }
+                    }
+                }
+            }
+            <!--20180117 增加當總筆數等於 0 時顯示訊息-->
+            @if (Model.PagingInfo.Total < 1)
+            {
+                <div class="form-group page-total" style="text-align:center">
+                    <label class="notfound">您輸入的條件範圍查無資料，請重新輸入</label>
+                </div>
+            }
+            @*else if (Model.PagingInfo.Total == 1002 || Model.PagingInfo.Total == 2001)/*20180619增加超過1000筆，超過跳出警示訊息，且清空tbody[id=row]的Html*/
+            {
+
+                <div class="form-group" style="text-align:center">
+                    <label style="color:red;font-size:1.2em;">本次查詢資料已超過@(Model.PagingInfo.Total - 1)筆，資料筆數過多，請縮小查詢範圍!</label>
+                </div>
+                <script>
+                    $(function () { $("#rows").attr('style', 'display:none'); $("#rows").html(''); });
+                </script>
+            }*@
+            else
+            {
+                <div class="form-group page-total" style="text-align:center">
+                    <label>查詢成功！共 @(Model.PagingInfo.Total) 筆資料</label>
+                </div>
+            }
+        </div>
+    </form>
+    <script type="text/javascript">
+        @*
+            2018.09.05, 為支援單一頁面中存在多個 PagingLink,
+            相關處理 js 程式已拉到另一個獨立的 _PagingLink_js.cshtml 去定義,
+            這裡只負責 Create PagingLink Object
+        *@
+        $(document).ready(function () {
+            var rid = '@Model.rid';
+            var paginLinkId = '@Model.PaginLinkId';
+            var mainFormId = '@Model.MainFormId';
+            var dataFormId = '@Model.DataFormId';
+            var callback;
+            @if (!string.IsNullOrEmpty(Model.ajaxLoadPageCallback))
+            {
+                @Html.Raw("eval('callback=" + Model.ajaxLoadPageCallback + "');\n")
+            }
+            if (rid) {
+                new PagingLink(rid, paginLinkId, mainFormId, callback, dataFormId);
+            }
+        });
+    </script>
+                }

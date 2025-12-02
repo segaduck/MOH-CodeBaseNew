@@ -1,0 +1,318 @@
+﻿@using ES.Models
+@using ES.Models.ViewModels
+@model Apply_005003FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+    ViewBag.SRV_NAME = "WHO格式之產銷證明書(英文)";
+
+    if (Model == null) { return; }
+
+    string s_MERGEYN = "否";
+    if (Model.MERGEYN == "Y") { s_MERGEYN = "是"; }
+
+    string s_F_2B_2_TEXT = dropdown.Get_PList2B2_TEXT(Model.F_2B_2);
+    string s_F_2A_3_TEXT = dropdown.Get_PList2A3_TEXT(Model.F_2A_3);
+    string s_F_2B_3_TEXT = dropdown.Get_PList2B3_TEXT(Model.F_2B_3);
+
+    //*2A.1藥品許可證字號
+    string s_F2A1_TEXT = "(中文)" + dropdown.Get_F2A1_TEXT(Model.F_2A_1_WORD, Model.F_2A_1_NUM);
+    string s_F2A1_ENG = "(英文)" + dropdown.Get_F2A1_ENG(Model.F_2A_1_WORD, Model.F_2A_1_NUM);
+}
+
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">申辦項目</label>
+            <div class="col-sm-4"><p class="form-control-static">@Html.Raw(ViewBag.SRV_NAME)</p></div>
+            <label class="step-label col-sm-2" for="">申請日期</label>
+            <div class="col-sm-4">@Html.BLATYPForTurbo(m => m.APP_TIME_TW, Model.APP_TIME_TW)</div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申辦份數</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">@Model.PAYCOUNT</p>
+            </div>
+            <label class="step-label col-sm-2" for="">繳費金額</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">@Model.PAYAMOUNT</p>
+            </div>
+        </div>
+        <h2 class="second-title">申請基本資料</h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>公司名稱</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.NAME</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">@Model.CNT_NAME</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.TEL</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">傳真</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.FAX</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.EMAIL</p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @*外銷國家*@
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>外銷國家</label>
+            <div class="col-sm-10">@Model.MF_ADDR</div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                @*<span>可輸入多個外銷國，各國名之間以「,」隔開，最後請以「.」結尾。</span>*@
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">
+                <span style="color: red;"> *</span>2A.1藥品許可證字號
+
+            </label>
+            <div class="col-sm-4">@s_F2A1_TEXT</div>
+            <div class="col-sm-4">@s_F2A1_ENG</div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>1.2本產品是否獲准在國內販售？</label>
+            <div class="col-sm-10">@((Model.F_1_2 != null && Model.F_1_2.Equals("Y")) ? "是" : "否")</div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">1.藥品名稱</label>
+            <div class="col-sm-10">@Model.F_1</div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型</label>
+            <div class="col-sm-10">@Model.F_1_DF</div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>1.1處方說明</label>
+            <div class="col-sm-10">@Model.F_1_1</div>
+        </div>
+
+        @if (Model.IS_PREVIEW)
+        {
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">成分內容</label>
+                <div class="col-sm-10">
+                    @Html.EditorFor(m => m.F11, "GoodsDynamicGrid005003")
+                </div>
+            </div>
+        }
+
+        <div class="form-group">
+            @*1.3本產品是否有在國內販售？*@
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>1.3本產品是否有在國內販售？</label>
+            <div class="col-sm-2">@((Model.F_1_2 != null && Model.F_1_3.Equals("Y")) ? "是" : "否")</div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2"><span style="color:red;">*</span>2A.1核准日期(中文)</label>
+            <div class="col-sm-4">@Model.F_2A_1_DATE_TW</div>
+            <label class="step-label col-sm-2">2A.1核准日期(英文)</label>
+            <div class="col-sm-4">@Model.F_2A_1_DATE_AD</div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""> 2A.2/2A.3.1/2B.2.1製造廠名稱</label>
+            <div class="col-sm-10">
+                @Model.F_2A_3_1_NAME
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.2/2A.3.1/2B.2.1製造廠地址</label>
+            <div class="col-sm-10">
+                @Model.F_2A_3_2_ADDR
+            </div>
+        </div>
+        @if (Model.F_1_2 == "Y")
+        {
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>是否為委託製造？</label>
+                <div class="col-sm-2">@((Model.F_2A_2_COMM != null && Model.F_2A_2_COMM.Equals("Y")) ? "是" : "否") </div>
+                <div class="col-sm-2"></div>
+            </div>
+            if (Model.F_2A_2_COMM == "Y")
+            {
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.2藥商名稱</label>
+                    <div class="col-sm-10">@Model.F_2A_2</div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.2藥商地址</label>
+                    <div class="col-sm-10">@Model.F_2A_2_ADDR</div>
+                </div>
+            }
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.3藥品許可證持有者之類別</label>
+                <div class="col-sm-10">
+                    @(s_F_2A_3_TEXT)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>*2A.4該藥品許可證是否有經認可之試驗佐證？</label>
+                <div class="col-sm-2">@((Model.F_1_2 != null && Model.F_2A_4.Equals("Y")) ? "是" : "否")</div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>*2A.5所附產品資訊是否完整且與藥品許可證一致？</label>
+                <div class="col-sm-2">
+                    @((Model.F_1_2 != null && Model.F_2A_5.Equals("Y")) ? "是" : "否")
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>*2A.6申請者是否為藥品許可證持有者？</label>
+                <div class="col-sm-2">
+                    @((Model.F_1_2 != null && Model.F_2A_6.Equals("Y")) ? "是" : "否")
+                </div>
+            </div>
+        }
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""> 2A.6/2B.1申請者之公司名稱</label>
+            <div class="col-sm-10">
+                @Model.F_2A_6_NAME
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""> 2A.6/2B.1申請者之公司地址</label>
+            <div class="col-sm-10">
+                @Model.F_2A_6_ADDR
+            </div>
+        </div>
+        @if (Model.F_1_2 == "N")
+        {
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2B.2申請者之類別</label>
+                <div class="col-sm-10">
+                    <div class="col-sm-10">@(s_F_2B_2_TEXT)</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2B.3僅供外銷專用之原因</label>
+                <div class="col-sm-10">
+                    @(s_F_2B_3_TEXT)
+                </div>
+            </div>
+        }
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""> 備註</label>
+            <div class="col-sm-10">
+                @Model.F_2B_3_REMARKS
+            </div>
+        </div>
+        @*}*@
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>3.製造廠是否定期接受本部之GMP查核？</label>
+            <div class="col-sm-2">
+                @((Model.F_1_2 != null && Model.F_3_0.Equals("Y")) ? "是" : "否")
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>3.1接受定期查核之週期為何？(年)</label>
+            <div class="col-sm-2">
+                @Model.F_3_1
+                <span>年</span>
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>3.2申請案藥品許可證之劑型，是否經過本部查核？</label>
+            <div class="col-sm-2">
+                @((Model.F_1_2 != null && Model.F_3_2.Equals("Y")) ? "是" : "否")
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>3.3申請案藥品許可證之製造設備及製程，是否符合WHO建議之GMP規範？</label>
+            <div class="col-sm-2">
+                @((Model.F_1_2 != null && Model.F_3_3.Equals("Y")) ? "是" : "否")
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>4.申請者所提供之資訊，是否符合外銷對象對產品製造所有方面的標準？</label>
+            <div class="col-sm-2">
+                @((Model.F_1_2 != null && Model.F_4.Equals("Y")) ? "是" : "否")
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+
+        <h2 class="second-title">佐證文件檔案上傳</h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+            <div class="col-sm-10">@Html.Raw(s_MERGEYN)</div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">藥品許可證影本(正面)</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(m => m.FILE_LICF, Model.FILE_LICF_TEXT)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">藥品許可證影本(反面)</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(m => m.FILE_LICB, Model.FILE_LICB_TEXT)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">處方之中藥材中英文對照表</label>
+            <div class="col-sm-10">
+                @Html.ImageHoverForTurbo(m => m.FILE_CHART, Model.FILE_CHART_TEXT)
+            </div>
+        </div>
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="send_preview()">確認送出</button>
+            <button type="button" class="btn btn-clear" onclick="back_preview()">返回修改</button>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('[data-hover!=\"\"]').hover();
+    });
+    //預覽頁面送出
+    function send_preview() {
+        $('#form_tab1').removeClass('active');
+        $('#form_tab2').attr('class', 'active');
+        $('#form1').attr('class', 'tab-pane fade');
+        $('#form2').attr('class', 'tab-pane fade active in');
+    }
+    //預覽頁面返回
+    function back_preview() {
+        $('#form_tab1').removeClass('active');
+        $('#form_tab').attr('class', 'active');
+        $('#form1').attr('class', 'tab-pane fade');
+        $('#form').attr('class', 'tab-pane fade active in');
+    }
+</script>
+

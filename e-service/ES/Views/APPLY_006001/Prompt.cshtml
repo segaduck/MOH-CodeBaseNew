@@ -1,0 +1,106 @@
+﻿@{
+    Layout = null;
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.SRV_NAME = "國民年金爭議審議線上申辦";
+
+    
+    string s_msg_T1A = @"國民年金爭議審議線上申辦<br>
+<b>壹、個資條款說明</b><br>
+依據「個人資料保護法」第8條第1項規定，在您使用「<b>國民年金爭議審議線上申辦</b>」服務，填寫申請資料前，請詳閱以下說明事項：<br><br>
+
+<b>一、蒐集之目的：</b> 申請審議、訴願及行政訴訟。<br>
+<b>二、蒐集之類別：</b> 本部國民年金監理會因提供服務需蒐集您的個人資料包含姓名、生日、身分證字號及連絡方式等資訊。<br><br>
+
+<b>三、個人資料利用之期間、地區、對象及方式：</b><br>
+（一）<b>期間：</b> 本部國民年金監理會因提供服務所須之保存期間。<br>
+（二）<b>地區：</b> 中華民國境內（包含臺澎金馬地區）。<br>
+（三）<b>對象：</b> 本部國民年金監理會或案件權責之公務機關。<br>
+（四）<b>方式：</b> 以自動化機器或其他非自動化之利用方式。<br><br>
+
+<b>四、依據「個人資料保護法」第3條規定，您得就個人資料依法行使下列權利：</b><br>
+（一）得向本部國民年金監理會查詢、請求閱覽或請求製給複製本。<br>
+（二）若您的個人資料有任何異動，得向本部國民年金監理會請求補充或更正，使其保持正確、最新及完整。<br>
+（三）得向本部國民年金監理會請求停止蒐集、處理或利用及請求刪除，但因執行公務所必須者，本部國民年金監理會得拒絕之。<br><br>
+
+<b>五、您可自由選擇是否提供相關個人資料，惟您若拒絕提供相關個人資料，本部國民年金監理會將無法提供相關服務。</b><br>
+請詳閱本部 <a href='https://www.mohw.gov.tw/cp-81-157-1.html' target='_blank'>資訊安全</a>與<a href='https://www.mohw.gov.tw/cp-81-158-1.html' target='_blank'>隱私權政策</a><br><br>
+
+<b>貳、線上申辦服務</b><br>
+<b>一、依據電子簽章法之規定，</b> 您在本項服務所提供之電子文件及所為之電子簽章，在功能上等同於實體文件及簽章，將推定已由您本人親自簽名或蓋章，並具有法律效力。<br><br>
+
+<b>二、國民年金爭議事項審議，</b> 必須是您對勞動部勞工保險局就國民年金所為之行政處分不服而提起。<br>
+如果您不是對行政處分不服，而是對國民年金制度之一般陳情案件，請利用「<a href='https://www.email.mohw.gov.tw/' target='_blank'>本部部長信箱</a>」提出陳情，以免浪費您寶貴的時間。<br><br>
+
+<b>三、申請資料填寫要項：</b><br>
+（一）<b>基本資料：</b> 申請人等之姓名、身分證字號、出生年月日、地址及聯絡電話等（<span style='color:red;'>請注意！</span> 因線上申辦案件經受理後，具有法律效果，故有關姓名、身分證字號、出生年月日、地址及聯絡電話等資料，請務必詳實填入，否則恕不受理。並請您一定要留下電話或傳真號碼，以利文件不齊時，便於聯絡您辦理補正，保障您的權益）。<br>
+（二）<b>原行政處分書之文號。</b><br>
+（三）<b>收受或知悉勞保局原核定之年月日。</b><br>
+（四）<b>申請審議之請求事項、事實及理由。</b><br>
+（五）<b>證據。</b> 其為文書者，應填具繕本或影本。<br>
+（六）<b>年、月、日。</b><br>
+（七）<b>您留下的地址日後若有變更，請主動告知本部國民年金監理會，以免因文書無法送達，影響您的權益。</b><br><br>
+
+<b>四、若有相關疑問，</b> 歡迎參考「<a href='https://dep.mohw.gov.tw/NPSC/np-4857-118.html' target='_blank'>國民年金爭議審議智慧服務專區</a>」之說明內容，或請洽本部國民年金監理會進一步諮詢（聯絡電話：02-3343-7136）。<br>
+
+";
+    string s_msg_T1 = string.Format(s_msg_T1A);
+}
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@Html.Raw(ViewBag.SRV_NAME)</a></div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            <ul>
+                <li id="Apply_Tab" class="active">填寫申辦表件並上傳檔案</li>
+                <li id="PreView_Tab">預覽申辦表件</li>
+                <li>完成申辦</li>
+            </ul>
+        </div>
+
+        <div class="form-set">
+            <h1 class="form-title title-bg-y">@Html.Raw(ViewBag.SRV_NAME)說明事項</h1>
+            @*class="form-group"*@
+            <div class="form-group service-main index-note">
+                <div class="tab-content">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <p class="member-note">
+                                建議您仔細閱讀以下事項，備齊相關文件再申請喔。<br />
+                            </p>
+                            @*<textarea class="form-control" rows="15" readonly="readonly">@Html.Raw(s_msg_T1)</textarea>*@
+                            <div class="form-control" style="height: 300px; overflow-y: auto;">
+                                @Html.Raw(s_msg_T1)
+                            </div>
+                            <p class="member-note">本人已閱讀以上條款，本次申請資料均由本人提供，資料屬實並無違反相關法令，如填寫假資料或有違規情事，願接受相關罰則。</p>
+                            <p class="member-note">如果您已經了解並接受，請按「同意」，進行下一個步驟填寫資料</p>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="btn-bar text-center">
+                        <button type="button" class="btn btn-save" onclick="doCheck()">同意</button>
+                        <button type="button" class="btn btn-clear" onclick="doBack()">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<script>
+
+    //同意
+    function doCheck() {
+        var agree1 = { "agree": 1 }
+        location.href = '@Url.Action("APPLY", "APPLY_006001")?' + $.param(agree1);
+    }
+
+    // 取消
+    function doBack() {
+        location.href = '@Url.Action("Index", "Service")';
+    }
+
+</script>

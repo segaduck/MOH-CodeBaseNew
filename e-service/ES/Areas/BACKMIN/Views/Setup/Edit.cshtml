@@ -1,0 +1,41 @@
+﻿@model ES.Areas.Admin.Models.SetupModel
+@{
+    ViewBag.Title = "參數管理（修改）";
+    ViewBag.FunctionTitle = "參數管理 - 修改";
+}
+@using (Html.BeginForm("Edit", "Setup"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <table class="formTable1">
+        <tr>
+            <th style="width: 120px;"><span class="formRequired">*</span> @Html.DisplayNameFor(m => m.SetupCode)</th>
+            <td>
+                @Html.DisplayFor(m => m.SetupCode)
+                @Html.HiddenFor(m => m.SetupCode)
+                @Html.ValidationMessageFor(m => m.SetupCode)
+            </td>
+        </tr>
+        <tr>
+            <th><span class="formRequired">*</span> @Html.DisplayNameFor(m => m.SetupDesc)</th>
+            <td>
+                @Html.TextBoxFor(m => m.SetupDesc, new { style = "width: 90%;" })
+                @Html.ValidationMessageFor(m => m.SetupDesc)
+            </td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.SetupValue)</th>
+            <td>
+                @Html.TextBoxFor(m => m.SetupValue, new { style = "width: 90%;" })
+                @Html.ValidationMessageFor(m => m.SetupValue)
+            </td>
+        </tr>
+    </table>
+    @Html.ValidationSummary()
+    <div class="formButtomBar">
+        <input type="submit" value="存檔" />
+        <input type="reset" value="重填" />
+        <input type="button" value="返回" onclick="document.location.href='@Url.Action("Index", "Setup")';" />
+    </div>
+}

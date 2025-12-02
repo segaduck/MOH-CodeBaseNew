@@ -1,0 +1,140 @@
+﻿@model ES.Areas.Admin.Models.ClassIndexModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@Html.DisplayFor(m => m.PageName)</title>
+    <link href="../../style/base.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        function selectitem(target, val) {
+            var t = opener.document.all(target).value;
+            if (t == "") {
+                opener.document.all(target).value = val;
+            }
+            else {
+                opener.document.all(target).value += ',' + val;
+            }
+            window.close();
+            //opener.document.all('Html.DisplayFor(m=>m.Target)').value += ',' + 'item.CLS_SUB_CD1'
+        }
+    </script>
+</head>
+<body>
+    @using (Html.BeginForm("Query", "ClassIndex", FormMethod.Post, new { id = "ActionForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(m => m.PageType);
+        @Html.HiddenFor(m => m.Target);
+        @Html.HiddenFor(m => m.PageName);
+        <center>
+            <div class="form-blue form-horizontal">
+                <table class="formTable1" style="width: 400px;">
+                    <tr>
+                        <td colspan="2">
+                            搜尋分類檢索代碼:@Html.DisplayFor(m => m.PageName)<br />
+                            (請輸入分類名稱或分類代碼之關鍵字查詢)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(m => m.ClassName)
+                        </td>
+                        <td>
+                            <input type="submit" value="查詢" class="btn btn-blue"/>
+                            <input type="reset" value="離開" class="btn btn-gray" onclick="window.close();" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            @Html.RadioButtonFor(m => m.ShowWay, "0", new { onclick = "document.getElementById('ActionForm').submit();" })
+                            大分類
+                            @Html.RadioButtonFor(m => m.ShowWay, "1", new { onclick = "document.getElementById('ActionForm').submit();" })
+                            細分類
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </center>
+    }
+    <div class="clearfix"></div>
+    <div class="table-responsive">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+            <thead>
+                <tr>
+                    <th style="width: 200px;">
+                        分類代碼
+                    </th>
+                    <th style="width: 317px;">
+                        分類名稱
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ES.Areas.Admin.Models.Map map in ViewBag.DetailList)
+            {
+                    <tr>
+                        <td align="left" colspan="2">
+                            @map.GetString("NAME")
+                        </td>
+                    </tr>
+                    foreach (ES.Areas.Admin.Models.Map item in ViewBag.List)
+                    {
+                        if (item.GetString("PARENT_CD").Equals(map.GetString("CODE")))
+                        {
+                            String a = ViewBag.SelectValue == null ? "" : ViewBag.SelectValue;
+                            if (this.Model.ShowWay.Equals("0"))
+                            {
+                                <tr onclick="javascript:selectitem('@Html.DisplayFor(m => m.Target)','@item.GetString("CODE")')">
+                                    <td>
+                                        @item.GetString("CODE")
+                                    </td>
+                                    <td>
+                                        @{
+                                            if (String.IsNullOrEmpty(a))
+                                            {
+                                                @Html.Raw(item.GetString("NAME"))
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw(item.GetString("NAME").Replace(a, "<font color='red'>" + a + "</font>"))
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                                            }
+                                            else
+                                            {
+                                                if (item.GetString("NAME").Contains(a))
+                                                {
+                                                    <tr onclick="javascript:selectitem('@Html.DisplayFor(m => m.Target)','@item.GetString("CODE")')">
+                                                        <td>
+                                                            @item.GetString("CODE")
+                                                        </td>
+                                                        <td>
+                                                            @{
+                                                                if (String.IsNullOrEmpty(a))
+                                                                {
+                                                                    @Html.Raw(item.GetString("NAME"))
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.Raw(item.GetString("NAME").Replace(a, "<font color='red'>" + a + "</font>"))
+                                                                }
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                                                }
+                                                                            }
+                                                                        }
+
+                                                                    }
+                                                                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

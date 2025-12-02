@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="A7"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <resultMaps>
+  </resultMaps>
+
+  <cacheModel id="WDASE-cache" implementation="MEMORY">
+    <flushInterval hours="1" />
+    <property name="Type" value="WEAK" />
+  </cacheModel>
+
+  <statements>
+    <!-- A7/C101M 最新消息維護 -->
+    <select id="queryC101MGrid" resultClass="EECOnline.Areas.A7.Models.C101MGridModel" parameterClass="EECOnline.Areas.A7.Models.C101MFormModel" cacheModel="WDASE-cache">
+      <![CDATA[
+        select ROW_NUMBER() OVER(ORDER BY en.enews_id) AS row_id,en.enews_id, en.subject, en.body, en.newstype ,
+               case en.totop when '0' then '否'
+          					         when '1' then '是'
+          	   end as totop,
+               case en.showyn when '0' then '否'
+          					          when '1' then '是'
+          	   end as showyn
+              ,en.showdates, en.showdatee
+              ,en.moduser, en.modusername, en.modtime
+	            ,en.modip, en.del_mk, cd.code_name, cd.code_cd
+       from ENEWS as en
+       left  join CODE as cd on en.newstype = cd.code_cd
+       where code_type = 'ENEWS'
+      ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="subject">
+            <![CDATA[
+	              AND en.subject like '%' + #subject# + '%'
+              ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="enews">
+            <![CDATA[
+	              AND en.newstype like #enews#
+              ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="totop">
+            <![CDATA[
+	              AND en.totop like  #totop#
+              ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="showdates">
+            <![CDATA[
+	              AND  en.showdates >= #showdates#
+              ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="showdatee">
+            <![CDATA[
+	              AND  en.showdatee <= #showdatee#
+              ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+
+      <![CDATA[
+        ORDER BY en.enews_id
+        ]]>
+
+    </select>
+
+    <!-- A7/C102M 友善連結管理 -->
+    <select id="queryC102MGrid" resultClass="EECOnline.Areas.A7.Models.C102MGridModel" parameterClass="EECOnline.Areas.A7.Models.C102MFormModel" cacheModel="WDASE-cache">
+      <![CDATA[
+      select  ROW_NUMBER() OVER(ORDER BY EL.elinks_id) AS row_id, EL.elinks_id, EL.title
+             ,EL.url, EL.linkstype
+             ,EF.FILEPATH,EF.SRCFILENAME,EF.EXTION
+      from ELINKS EL
+      LEFT JOIN EFILE EF ON EF.peky1 = 'ELINKS' AND EF.peky2 = EL.elinks_id
+      where 1 = 1
+      ]]>
+
+      <dynamic>
+        <isParameterPresent>
+
+          <isNotEmpty prepend="" property="title">
+            <![CDATA[
+	              AND title LIKE '%' + #title# + '%'
+              ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+
+      <![CDATA[
+        ORDER BY elinks_id
+        ]]>
+
+    </select>
+
+    <!-- A7/C103M 查詢聯絡資訊 -->
+    <select id="queryC103MGrid" resultClass="EECOnline.Areas.A7.Models.C103MGridModel" parameterClass="EECOnline.Areas.A7.Models.C103MFormModel" cacheModel="WDASE-cache">
+      <![CDATA[
+       SELECT ROW_NUMBER() OVER(ORDER BY con.con_id) AS row_id
+	　         ,con.con_id, con.con_cd, con.con_name
+             ,con.title, con.body
+	           ,case con.status when '0' then '否'
+          			              when '1' then '是'
+              end as status
+            ,con.moduser, con.modusername
+            ,con.modtime, con.modip, con.del_mk
+	         ,un.unit_nm
+       FROM CONTACT con
+       LEFT JOIN UNIT un on un.unit_cd = con.con_cd
+       where 1 = 1
+       ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="con_name">
+            <![CDATA[
+	              AND con_name like '%' + #con_name# + '%'
+              ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="title">
+            <![CDATA[
+	              AND title like '%' + #title# + '%'
+              ]]>
+          </isNotEmpty>
+          <!--<isNotEmpty prepend="" property="body">
+            <![CDATA[
+	              AND body like '%' + #body# + '%'
+              ]]>
+          </isNotEmpty>-->
+          <isNotEmpty prepend="" property="status">
+            <![CDATA[
+	              AND con.status like #status#
+              ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+
+      <![CDATA[
+      order by con_id
+      ]]>
+    </select>
+
+    <!-- A7/C104M 常見問題 -->
+    <select id="queryC104MGrid" resultClass="EECOnline.Areas.A7.Models.C104MGridModel" parameterClass="EECOnline.Areas.A7.Models.C104MFormModel" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ROW_NUMBER() OVER(ORDER BY faq.efaq_id) AS row_id
+              ,faq.efaq_id, faq.question, faq.answer
+              ,faq.faqtype, faq.moduser, faq.modusername
+              ,faq.modtime, faq.modip, faq.del_mk
+              ,case faq.status when '0' then '否'
+          					           when '1' then '是'
+               end as status
+              ,cd.code_name
+        FROM EFAQ faq
+        left join code cd on faq.faqtype = cd.code_cd and cd.code_type = 'FAQ' 
+		    where 1 = 1
+      ]]>
+
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="code_name">
+            <![CDATA[
+            AND faq.faqtype like #code_name# 
+             ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="status">
+            <![CDATA[
+            AND faq.status like  #status#
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="question">
+            <![CDATA[
+            AND faq.question like '%' + #question# + '%'
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="answer">
+            <![CDATA[
+            AND faq.answer like '%' + #answer# + '%'
+            ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+
+      <![CDATA[
+        ORDER BY faq.efaq_id
+        ]]>
+
+    </select>
+
+    <!--結束-->
+  </statements>
+</sqlMap>

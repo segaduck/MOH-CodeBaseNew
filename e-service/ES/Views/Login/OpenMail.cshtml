@@ -1,0 +1,78 @@
+﻿@model ES.Models.MemberForgetModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "服務信箱";
+}
+
+@using (Html.BeginForm("OpenMail", "Login"))
+{
+    <div class="container-fluid">
+        <!--bread -->
+        <div class="col-sm-12">
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> > <a href="#">@Html.Raw(ViewBag.Title)</a></div>
+        </div>
+        <div class="clearfix"></div>
+        <!--form-->
+        <h3 class="note-title note-titlebar-blue">服務信箱</h3>
+        <div class="form-set">
+            @using (Html.BeginForm("Index", "Login", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", @id = "main_form_User" }))
+            {
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="UserNo">聯絡電話</label>
+                    <div class="col-sm-9">
+                        <input name="phone" id="phone" value="@(ViewBag.phone)" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="UserPwd">聯絡信箱</label>
+                    <div class="col-sm-9">
+                        <input name="email" id="email" value="@(ViewBag.email)" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="UserPwd">申辦服務分類</label>
+                    <div class="col-sm-9">
+                        @Html.DropDownList("service", new SelectList(ViewBag.Apply_Service, "Value", "Text"), new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="UserPwd">反應內容</label>
+                    <div class="col-sm-9">
+                        <textarea name="content" id="content" class="form-control" rows="20">@(ViewBag.content)</textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="code">驗證碼</label>
+                    <div class="col-sm-9">
+                        <input name="validCode" id="validCode" value="" placeholder="請輸入下方驗證碼" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                        <img src="@Url.Action("GetValidateCode", "Login")" id="imgChgNum1" alt="產生新驗證碼" title="產生新驗證碼" />
+                        <a href="#" class="btn" id="imgChgNum2"><i class="fas fa-sync-alt"></i></a>
+                        @*<span style="color:red">點擊圖片可更換驗證碼</span>*@
+                        <noscript> 不支援javascript時，請按鍵盤上的F5鍵以重新產生驗證碼。 </noscript>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                        <button type="submit" id="btnSave" class="btn btn-primary" onclick="doSend()">確認寄出信箱</button>
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    function doSend() {
+        blockUI();
+    }
+</script>

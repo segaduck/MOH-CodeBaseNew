@@ -1,0 +1,357 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_001008FormModel
+@{
+    Layout = null;
+}
+
+@*申請表件*@
+@using (Html.BeginForm("Apply", "Apply_001008", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    @Html.FrontControlForTurbo(Model, Model.IsNew)
+
+    <h2 class="second-title">
+        <span style="color:red">*</span>醫事人員或公共衛生師/專科中文證書電子檔
+        @if (Model.FlowMode.Equals("1"))
+        {
+            <button type="button" class="btn btn-save" id="btnAdd" onclick="addGoodRowATHs_()">新增</button>
+        }
+
+    </h2>
+    @*醫事人員/專科中文證書電子檔列*@
+    <div id="goodsTableAth" class="form-set">
+        <div id="row1" data-group="goods">
+            <div class="form-group form-inline">
+                <label id="SRL_NOItem" class="col-sm-2 step-label">電子檔1</label>
+                <div class="col-sm-7">
+                    <input type="file" id="FILE_1_1" name="ATHs[0].FILE_1" class="form-control" onchange="setFileName($(this).attr('name'))">
+                    @Html.HiddenFor(x => x.ATHs[0].FILE_1_FILENAME)
+                    @Html.HiddenFor(x => x.ATHs[0].FILE_1_TEXT)
+                    @Html.Raw("<br><span style='color:red'>(檔案大小5MB以下，可以接受副檔名：PDF、JPG、BMP、PNG、GIF、TIF)</span>")
+                </div>
+                <label class="col-sm-3 form-control-static" for="">
+                    <button type="button" id="btnDelte_1" class="btn btn-clear" onclick="deleteGoodRowATHs_($(this))">刪除</button>
+                </label>
+            </div>
+        </div>
+      
+    </div>
+
+    @Html.HiddenFor(m => m.RowCount)
+    @Html.HiddenFor(m => m.IsUpLoadFile)
+
+    <input type="hidden" id="emptyRow" value="" />
+
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="doPreView()">存檔並預覽</button>
+        <button type="reset" class="btn btn-clear">清除資料</button>
+    </div>
+    @*存檔並預覽所需的中繼iframe (id 及 name 都有需要) *@
+    <iframe id="preViewFrame" name="preViewFrame" method="post" style="display:none"></iframe>
+
+}
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $('#emptyRow').val($('#row1').html());
+        $('#row1 input[name="ATHs[0].SRL_NO"').val('1');
+        $('span button').removeAttr('disabled');
+    })
+
+    //檢核
+    function doChkCopies(copiesObj, colName) {
+        var copies = copiesObj.value;
+
+        if (copies.length > 0) {
+            if (CheckNumeric(copies)) {
+                if (copies <= 0) {
+                    blockAlert(colName + " 請輸入大於0的份數", "提示訊息", function () { copiesObj.value = ""; });
+                } else {
+                    doCountMoney();
+                }
+            } else {
+                //debugger;
+                blockAlert(colName + " 請輸入大於0的份數", "提示訊息", function () { copiesObj.value = ""; });
+            }
+        }
+    }
+
+    //計算金額
+    function doCountMoney() {
+        var txtTotalMoney = $("#TOTAL_MEM");
+        var totalMoney = 0; //合計金額
+        var copies = 0; //寄送份數
+        var blFineMerge = false; //已有整併一張的資料(true:有 / false:無)
+        var rdoTypeCDSel = ""; //開立證明格式類型(1:分別開立 / 2:整併一張)
+        var tmpMergeCopies = 0; //份數都要key一樣才能做整併一張
+        var blNotEqualCopies = false;
+
+        $("table#MeGrid > tbody > tr ").each(function (idx, tr) {
+            //debugger;
+            var txtCopies = $(this).find("input[id*='_" + idx + "__ME_COPIES']");
+            //var rdoTypeCDSel = $(this).find("input:radio[name*='GoodsList[" + idx + "].ME_TYPE_CD']:checked").val();
+            var typeCDSel = $(this).find("select[name*='GoodsList[" + idx + "].ME_TYPE_CD'] option:selected").val();
+            //debugger;
+            copies = txtCopies.val();
+            if (copies != "" && copies > 0) {
+                if (typeCDSel == "1") {
+                    //分別開立(第一份500，第二份開始每份以200計算)
+                    totalMoney += 500;
+                    totalMoney += --copies * 200;
+                } else if (typeCDSel == "2") {
+                    //整併一張(不管新增幾筆做整併，只算第一筆整併的第一份500，第二份起算200)
+                    if (tmpMergeCopies == 0) {
+                        tmpMergeCopies = copies;
+
+                        if (!blFineMerge) {
+                            totalMoney += 500;
+                            totalMoney += --copies * 200;
+                            blFineMerge = true;
+                        }
+                    } else if (tmpMergeCopies != copies) {
+                        blNotEqualCopies = true;
+                        txtCopies.val("");
+                    }
+                }
+            }
+        });
+
+        $("table#PrGrid > tbody > tr ").each(function (idx, tr) {
+            var txtCopies = $(this).find("input[id*='_" + idx + "__PR_COPIES']");
+            var typeCDSel = $(this).find("select[name*='GoodsList[" + idx + "].PR_TYPE_CD'] option:selected").val();
+
+            copies = txtCopies.val();
+            if (copies > 0) {
+                if (typeCDSel == "1") {
+                    //分別開立(第一份500，第二份開始每份以200計算)
+                    totalMoney += 500;
+                    totalMoney += --copies * 200;
+                } else if (typeCDSel == "2") {
+                    //整併一張(不管新增幾筆做整併，都只算第一筆整併的第一份500，第二份起算200)
+                    if (tmpMergeCopies == 0) {
+                        tmpMergeCopies = copies;
+
+                        if (!blFineMerge) {
+                            totalMoney += 500;
+                            totalMoney += --copies * 200;
+                            blFineMerge = true;
+                        }
+                    } else if (tmpMergeCopies != copies) {
+                        blNotEqualCopies = true;
+                        txtCopies.val("");
+                    }
+                }
+            }
+        });
+
+        txtTotalMoney.val(totalMoney);
+
+        if (blNotEqualCopies) {
+            blockAlert("開立證明格式選整併一張時，份數需填一致。", "提示訊息");
+        }
+    }
+
+    //存檔並預覽
+    function doPreView() {
+        $("#IsMode").val("1"); // 0:新增模式 / 1:瀏覽模式
+        $("#IsUpLoadFile").val("0");
+        var data = new FormData($('#main_form')[0]);
+        console.log(data);
+
+        $.ajax({
+            url: '@Url.Action("Apply", "Apply_001008")',
+            type: 'POST',
+            cache: false,
+            data: data,
+            processData: false,
+            contentType: false
+        }).done(function (res) {
+            //debugger;
+            if (res.status) {
+
+                // 2020.11.17, Eric, 改用 form submit 方式處理 Preview 檔案無法預覽的問題
+                $("#IsUpLoadFile").val("1");
+
+                // 綁定 preViewFrame 的 onload 用來抓取 PreView Action 的回應內容
+                $('#preViewFrame').on("load",
+                        function () {
+                            contentWin = document
+                                    .getElementById('preViewFrame').contentWindow;
+                            debugTrace("preViewFrame load: "
+                                    + contentWin.location);
+
+                            // 取得 Preview Action 的回應內容
+                            var prevewContent = contentWin.document.body.innerHTML;
+
+                            // 串接原本 ajax 回應後的顯示邏輯
+                            $('#apply_tab').removeClass('active');
+                            $('#ApplyForm').attr('class', 'tab-pane fade');
+
+                            $('#preview_tab').attr('class', 'active');
+                            $('#PreViewForm').attr('class', 'tab-pane fade active in');
+
+                            $("#PreViewForm").html(prevewContent);
+
+                            //回記錄putfile回傳的檔案存檔路徑資訊
+                            $("#FILE_PAYRECORD_TEXT").val($("#FILE_PAYRECORD_FILENAME").val());
+                            $("#FILE_PASSPORT_TEXT").val($("#FILE_PASSPORT_FILENAME").val());
+                            //debugger;
+                            var index = 0;
+                            $("input[type='hidden'][name*='FILE_1_FULLNAME']").each(function () {
+                                //debugger;
+                                $("#ATHs_" + index + "__FILE_1_TEXT").val($("#ATHs_"+index+"__FILE_1_FULLNAME").val());
+                                index++;
+                            });
+
+                            //反灰效果
+                            $("#GoodsDynamicGird001008Me div.date input").each(function (i, obj) {
+                                $("input[type='text'][id='" + obj.id + "']").attr("style", "pointer-events:none;background:#EEEEEE");
+                            });
+
+                            $("#GoodsDynamicGird001008Pr div.date input").each(function (i, obj) {
+                                $("input[type='text'][id='" + obj.id + "']").attr("style", "pointer-events:none;background:#EEEEEE");
+                            });
+
+                            //送出 Preview 前如果有 blockUI() 則在這裡解除
+                            unblockUI();
+                        });
+
+                // submit 送出申請表單到 /Apply_001008/PreView
+                // target 指向 iframe preViewFrame, 讓目前頁面內容維持不變
+                var form = $('#main_form');
+                var oldAction = form.attr("action");  // 保存舊值
+
+                blockUI();
+                form
+                    .attr("action", '@Url.Action("PreView", "Apply_001008")')
+                    .attr("target", "preViewFrame")
+                    .submit();
+
+                // 這裡是非同步作業, 在 preViewFrame.onload 事件中去處理回應內容顯示
+
+                // 回存舊值
+                form.attr("target", "").attr("action", oldAction);
+
+            }
+            else {
+                blockAlert(res.message, "提示訊息");
+            }
+        });
+    }
+
+    //清除資料
+    function doReset() {
+
+    }
+
+    //新增一筆(醫事人員中文證書電子檔)
+    function addGoodRowATHs_() {
+        var rowCountObj = $('#RowCount');
+        var rowCount = parseInt(rowCountObj.val(), 10) + 1;
+        //debugger;
+        $('#goodsTableAth').append('<div id=\"row' + rowCount + '\" data-group=\"goods\">' + $('#emptyRow').val().replace(/btnDelte_1/gi, 'btnDelte_' + rowCount).replace(/ATHs\[0\]/gi, 'ATHs[' + parseInt(rowCountObj.val(), 10) + ']').replace(/id=\"FILE_1_1/gi, 'id="FILE_1_' + rowCount).replace(/id=\"ATHs_0__FILE_1_/gi, 'id=\"ATHs_'+(rowCount-1)+'__FILE_1_') + '</div>');
+        $('#row' + rowCount + ' #SRL_NOItem').text("電子檔" + rowCount);
+        $('#row' + rowCount + ' input[name="ATHs[' + (rowCount - 1) + '].SRL_NO"]').val(rowCount);
+        rowCountObj.val(rowCount);
+
+    }
+
+    //刪除(醫事人員中文證書電子檔)
+    function deleteGoodRowATHs_(obj) {
+        var rowCountObj = $('#RowCount');
+        var rowId = $('#' + $(obj).attr('id')).parent().parent().parent().attr('id');
+        $('#goodsTableAth #' + rowId).remove();
+
+        var fileSet = $('#goodsTableAth div[id^="row"] input[type="file"]');
+
+        if ($('#goodsTableAth').data('group', 'goods') == null || $('#goodsTableAth').data('group', 'goods') == undefined) {
+            rowCountObj.val(0);
+        }
+        else {
+            var count = 1;
+            for (i = 0; i < $('#goodsTableAth div[id^="row"]').length; i++) {
+                var tempHtml = '';
+                $($('#goodsTableAth div[id^="row"]')[i]).attr('id', 'row' + count);
+                $('#' + $($('#goodsTableAth div[id^="row"]')[i]).attr('id') + ' #SRL_NOItem').text("電子檔" + count);
+
+                $($('#goodsTableAth div[id^="row"]')[i]).find('input[type="text"]').each(function () {
+                    $(this).attr('name', $(this).attr('name').replace(/ATHs\[[0-9]+\]/gi, 'ATHs[' + i + ']'));
+                })
+
+                $($('#goodsTableAth div[id^="row"]')[i]).find('input[type="hidden"]').each(function () {
+                    $(this).attr('name', $(this).attr('name').replace(/ATHs\[[0-9]+\]/gi, 'ATHs[' + i + ']'));
+                })
+
+                count++;
+            }
+
+            rowCountObj.val((count - 1));
+
+            count = 0
+            var rowCount = 1
+
+            for (i = 0; i < $(fileSet).length; i++) {
+                var tagName = '';
+                var tagId = ''
+
+                tagName = 'ATHs[' + count + '].FILE_1';
+                tagId = 'FILE_1_' + rowCount;
+
+                rowCount++;
+                count++;
+
+                $($((fileSet)[i])[0]).attr('id', tagId)
+                $($((fileSet)[i])[0]).attr('name', tagName)
+            }
+
+            count = 1;
+            var rowCount = 0;
+            for (i = 0; i < $('#goodsTableAth div[id^="row"]').length; i++) {
+
+                var destObjId = $($('#goodsTableAth div[id^="row"]')[i]).attr('id')
+
+                $('#' + $($('#goodsTableAth div[id^="row"]')[i]).attr('id') + ' input[name^="ATHs[' + i + '].SRL_NO"]').val(count);
+
+                for (j = 0; j < $('#' + destObjId + ' input[type="file"]').length; j++) {
+                    var newObj = $(fileSet)[rowCount];
+                    $($($($('#' + destObjId + ' input[type="file"]')[j]))[0]).replaceWith($(newObj)[0]);
+                    setHiddenFileName($($('#' + destObjId + ' input[type="file"]')[j]).attr('name'));
+                    rowCount++
+                }
+
+                count++;
+            }
+        }
+    }
+
+    function setFileName(objName) {
+        //var validExts = new Array(".doc", ".docx", ".odt", ".odf", ".ods", ".xls", ".xlsx", ".pdf", ".ppt", ".pptx", ".jpg", ".bmp", ".png", ".gif", ".tif", ".zip");
+        var validExts = new Array(".PDF", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF");
+
+        var fileExt = $('input[name="' + objName + '"]').val();
+        fileExt = fileExt.substring(fileExt.toLowerCase().lastIndexOf('.'));
+
+        var errMsg = "";
+
+        if ($('input[name="' + objName + '"]')[0].files[0].size / 1024 / 1024 > 5) {
+            errMsg += "檔案大小不可超過5MB\n";
+        }
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            errMsg += "檔案類型錯誤，可接受的副檔名有：" + validExts.toString() + "\n";
+        }
+
+        if (errMsg != "") {
+            blockAlert(errMsg);
+            $('input[name="' + objName + '"]').val(null);
+            return false;
+        } else {
+            $($('input[name="' + objName + '"]').siblings()[0]).val($('input[name="' + objName + '"]').val().replace(/C:\\fakepath\\/i, ''));
+            return true;
+        }
+    }
+
+    function setHiddenFileName(objName) {
+        $($('input[name="' + objName + '"]').siblings()[0]).val($('input[name="' + objName + '"]').val().replace(/C:\\fakepath\\/i, ''));
+    }
+    </script>
+

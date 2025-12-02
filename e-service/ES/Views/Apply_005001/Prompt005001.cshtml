@@ -1,0 +1,66 @@
+﻿@{
+    Layout = null;
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.SRV_NAME = "產銷證明書";
+
+    
+    string s_msg_T1A = @"外銷專用藥品許可證請改為申請外銷證明書。";
+    string s_msg_T1 = string.Format(s_msg_T1A);
+}
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@Html.Raw(ViewBag.SRV_NAME)</a></div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            <ul>
+                <li id="apply" class="active">填寫申報表件並上傳檔案</li>
+                <li id="preview">預覽申辦表件</li>
+                <li id="pay">繳費</li>
+                <li id="save">完成申報</li>
+            </ul>
+        </div>
+
+        <div class="form-set">
+            <h1 class="form-title title-bg-y">@Html.Raw(ViewBag.SRV_NAME)說明事項</h1>
+            @*class="form-group"*@
+            <div class="form-group service-main index-note">
+                <div class="tab-content">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <p class="member-note">
+                                建議您仔細閱讀以下事項，備齊相關文件再申請喔。<br />
+                            </p>
+                            <textarea class="form-control" rows="15">@Html.Raw(s_msg_T1)</textarea>
+                            <p class="member-note">本人已閱讀以上條款，本次申請資料均由本人提供，資料屬實並無違反相關法令，如填寫假資料或有違規情事，願接受相關罰則。</p>
+                            <p class="member-note">如果您已經了解並接受，請按「同意」，進行下一個步驟填寫資料</p>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="btn-bar text-center">
+                        <button type="button" class="btn btn-save" onclick="doCheck()">同意</button>
+                        <button type="button" class="btn btn-clear" onclick="doBack()">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<script>
+
+    //同意
+    function doCheck() {
+        var agree1 = { "agree": 1 }
+        location.href = '@Url.Action("APPLY", "APPLY_005001")?' + $.param(agree1);
+    }
+
+    // 取消
+    function doBack() {
+        location.href = '@Url.Action("Index", "Service")';
+    }
+
+</script>

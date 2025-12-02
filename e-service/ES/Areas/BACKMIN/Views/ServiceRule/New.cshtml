@@ -1,0 +1,61 @@
+﻿@model ES.Areas.Admin.Models.ServiceRuleEditModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "案件稽催設定（新增）";
+    ViewBag.FunctionTitle = "案件稽催設定 - 新增";
+}
+
+@using (Html.BeginForm("New", "ServiceRule"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件設定 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <h2 class="second-title">@Html.DisplayFor(m => m.ServiceName)</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ServiceName)</label>
+                <div class="col-sm-4">
+                    @Html.DisplayFor(m => m.ServiceName, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">通知規則</label>
+                <div class="col-sm-10">
+                    @Html.CheckBoxFor(m => m.RuleAMark) 申請後，
+                    @Html.TextBoxFor(m => m.RuleADayS, new { @class = "form-20 form-normal" }) 天未分文(通知分文人,該機關有分文處理權限的人) <br />
+                    @Html.CheckBoxFor(m => m.RuleBMark) 分文後，
+                    @Html.TextBoxFor(m => m.RuleBDayS, new { @class = "form-20 form-normal" }) 天未處理(通知承辦人,該機關有案件處理權限的人) <br />
+                    @Html.CheckBoxFor(m => m.RuleCMark) 處理後，已逾限(通知該承辦人)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.NotifyCount)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.NotifyCountS, new { @class = "form-20 form-normal" }) 次後，
+                    @Html.CheckBoxFor(m => m.ResetMark) 是否還原繼續通知<br />
+                    @Html.ValidationMessageFor(m => m.NotifyCount)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">通知主管</label>
+                <div class="col-sm-10">
+                    @Html.CheckBoxFor(m => m.HeadMark) 請選擇主管：
+                    @Html.DropDownListFor(m => m.HeadAccount, (List<SelectListItem>)@ViewBag.HeadList, new { @class = "form-normal" })
+                    (最後一次稽催時通知主管)
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.ServiceId)
+                @Html.HiddenFor(m => m.CategoryId)
+                <input type="submit" value="存檔" class="btn btn-save" />
+                <input type="reset" value="重填" class="btn btn-gray" />
+                <input type="button" value="返回" class="btn btn-gray" onclick="document.location.href='@Url.Action("Index", "ServiceRule", new { id = Model.CategoryId })';" />
+            </div>
+        </div>
+    </div>
+}

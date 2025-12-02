@@ -1,0 +1,223 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_001035FormModel
+@{
+    Layout = null;
+}
+
+@Html.FrontControlForTurbo(Model, Model.IsNew)
+
+@if (Model.IsNew)
+{
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="doPreView()">存檔並預覽</button>
+        <button type="reset" class="btn btn-clear">清除資料</button>
+    </div>
+}
+else
+{
+    <div class="form-set">
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="doSave()">確認送出</button>
+            <button type="button" class="btn btn-clear" onclick="doBack()">返回修改</button>
+        </div>
+    </div>
+}
+
+
+<script>
+    // 轉至瀏覽
+    function doPreView() {
+        $("#IsMode").val("1"); // 0:新增模式 / 1:瀏覽模式
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Apply")').submit();
+    }
+
+    // 送出
+    function doSave() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+
+    // 返回
+    function doBack() {
+        blockUI();
+        $("#IsMode").val("0"); // 0:新增模式 / 1:瀏覽模式
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Apply")').submit();
+    }
+
+    function doMode() {
+        var formTab = $("#form_tab");
+        var formTab1 = $("#form_tab1");
+        if ($("#IsMode").val() == "1") {
+            formTab.removeClass('active');
+            formTab1.attr('class', 'active');
+        }
+        else {
+            formTab.attr('class', 'active');
+            formTab1.removeClass('active');
+        }
+    }
+
+    $(document).ready(function () {
+        $('span[class="input-group-btn"] button[class="btn btn-info"]').removeAttr("disabled");
+        $('input:radio[name="IM_EXPORT"]').click(function () { doImExportChange(); });
+        $('#APP_USE_ID').change(function () { doDocValid(); });
+        doImExportChange();
+        doDocValid();
+        doMode();
+
+        doDocCheck($("#DOC_TYP_01_SHOW"));
+        doDocCheck($("#DOC_TYP_02_SHOW"));
+        doDocCheck($("#DOC_TYP_03_SHOW"));
+        doDocCheck($("#DOC_TYP_04_SHOW"));
+        doDocCheck($("#DOC_TYP_05_SHOW"));
+        doDocCheck($("#DOC_TYP_06_SHOW"));
+        doDocCheck($("#DOC_TYP_07_SHOW"));
+        doDocCheck($("#DOC_TYP_08_SHOW"));
+        doDocCheck($("#DOC_TYP_09_SHOW"));
+        doDocCheck($("#DOC_TYP_10_SHOW"));
+        doDocCheck($("#DOC_TYP_11_SHOW"));
+        doDocCheck($("#DOC_TYP_12_SHOW"));
+        doDocCheck($("#DOC_TYP_13_SHOW"));
+        doDocCheck($("#DOC_TYP_14_SHOW"));
+        doDocCheck($("#DOC_TYP_15_SHOW"));
+        doDocCheck($("#DOC_TYP_16_SHOW"));
+        doDocCheck($("#DOC_TYP_17_SHOW"));
+        doDocCheck($("#DOC_TYP_18_SHOW"));
+        doDocCheck($("#DOC_TYP_19_SHOW"));
+        doDocCheck($("#DOC_TYP_20_SHOW"));
+        doDocCheck($("#DOC_TYP_21_SHOW"));
+        doDocCheck($("#DOC_TYP_22_SHOW"));
+        doDocCheck($("#DOC_TYP_23_SHOW"));
+    })
+
+    function doImExportChange()
+    {
+        var IM_EXPORT = $('input:radio:checked[name="IM_EXPORT"]').val();
+        var IMPORT = $("#IMPORT");
+        var EXPORT = $("#EXPORT");
+
+        IMPORT.attr("style", "display:none");
+        EXPORT.attr("style", "display:none");
+        if (IM_EXPORT == "0")
+        {
+            IMPORT.removeAttr("style");
+        }
+        if (IM_EXPORT == "1")
+        {
+            EXPORT.removeAttr("style");
+        }
+    }
+
+    function doDocCheck(typ)
+    {
+        var Codc = $("#" + typ.attr('id').replace('TYP', 'COD').replace('_SHOW',''));
+        var Txtc = $("#" + typ.attr('id').replace('TYP', 'TXT').replace('_SHOW', ''));
+        var Filec = $("#" + typ.attr('id').replace('TYP', 'FILE').replace('_SHOW', ''));
+        if (typ.prop("checked")) {
+            Codc.removeAttr("disabled");
+            Txtc.removeAttr("disabled");
+            Filec.removeAttr("disabled");
+        }
+        else {
+            Codc.attr("disabled", "disabled");
+            Txtc.attr("disabled", "disabled");
+            Filec.attr("disabled", "disabled");
+        }
+    }
+
+    function doDocValid() {
+        var typ = $('#APP_USE_ID').val();
+        //必填清空
+        $("#form_DOC_TYP_01_SHOW").children('label').html('檢附文件類型一');
+        $("#form_DOC_COD_01").children('label').html('檢附文件字號一');
+        $("#form_DOC_TXT_01").children('label').html('檢附文件說明一');
+        $("#form_DOC_FILE_01").children('label').html('檢附文件類型一(檔案)');
+        $("#form_DOC_TYP_02_SHOW").children('label').html('檢附文件類型二');
+        $("#form_DOC_COD_02").children('label').html('檢附文件字號二');
+        $("#form_DOC_TXT_02").children('label').html('檢附文件說明二');
+        $("#form_DOC_FILE_02").children('label').html('檢附文件類型二(檔案)');
+        $("#form_DOC_TYP_03_SHOW").children('label').html('檢附文件類型三');
+        $("#form_DOC_COD_03").children('label').html('檢附文件字號三');
+        $("#form_DOC_TXT_03").children('label').html('檢附文件說明三');
+        $("#form_DOC_FILE_03").children('label').html('檢附文件類型三(檔案)');
+        $("#form_DOC_TYP_04_SHOW").children('label').html('檢附文件類型四');
+        $("#form_DOC_COD_04").children('label').html('檢附文件字號四');
+        $("#form_DOC_TXT_04").children('label').html('檢附文件說明四');
+        $("#form_DOC_FILE_04").children('label').html('檢附文件類型四(檔案)');
+        $("#form_DOC_TYP_05_SHOW").children('label').html('檢附文件類型五');
+        $("#form_DOC_COD_05").children('label').html('檢附文件字號五');
+        $("#form_DOC_TXT_05").children('label').html('檢附文件說明五');
+        $("#form_DOC_FILE_05").children('label').html('檢附文件類型五(檔案)');
+        $("#form_DOC_TYP_08_SHOW").children('label').html('檢附文件類型八');
+        $("#form_DOC_COD_08").children('label').html('檢附文件字號八');
+        $("#form_DOC_TXT_08").children('label').html('檢附文件說明八');
+        $("#form_DOC_FILE_08").children('label').html('檢附文件類型八(檔案)');
+        $("#form_DOC_TYP_21_SHOW").children('label').html('檢附文件類型二十一');
+        $("#form_DOC_COD_21").children('label').html('檢附文件字號二十一');
+        $("#form_DOC_TXT_21").children('label').html('檢附文件說明二十一');
+        $("#form_DOC_FILE_21").children('label').html('檢附文件類型二十一(檔案)');
+        $("#form_DOC_TYP_22_SHOW").children('label').html('檢附文件類型二十二');
+        $("#form_DOC_COD_22").children('label').html('檢附文件字號二十二');
+        $("#form_DOC_TXT_22").children('label').html('檢附文件說明二十二');
+        $("#form_DOC_FILE_22").children('label').html('檢附文件類型二十二(檔案)');
+        // 教學、研究、檢查(檢驗)、保存
+        // B11、B12、B13
+        if (typ == "B10" || typ == "B20" || typ == "B30" || typ == "B50") {
+            $("#form_DOC_TYP_01_SHOW").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型一');
+            $("#form_DOC_COD_01").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件字號一');
+            $("#form_DOC_TXT_01").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件說明一');
+            $("#form_DOC_FILE_01").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型一(檔案)');
+            $("#form_DOC_TYP_02_SHOW").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型二');
+            $("#form_DOC_COD_02").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件字號二');
+            $("#form_DOC_TXT_02").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件說明二');
+            $("#form_DOC_FILE_02").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型二(檔案)');
+            $("#form_DOC_TYP_03_SHOW").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型三');
+            $("#form_DOC_COD_03").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件字號三');
+            $("#form_DOC_TXT_03").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件說明三');
+            $("#form_DOC_FILE_03").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型三(檔案)');
+        }
+        // 人體醫療移植使用
+        // B11、B12、B13、B14、B15、B18
+        if (typ == "B40") {
+            $("#form_DOC_TYP_01_SHOW").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型一');
+            $("#form_DOC_COD_01").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件字號一');
+            $("#form_DOC_TXT_01").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件說明一');
+            $("#form_DOC_FILE_01").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型一(檔案)');
+            $("#form_DOC_TYP_02_SHOW").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型二');
+            $("#form_DOC_COD_02").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件字號二');
+            $("#form_DOC_TXT_02").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件說明二');
+            $("#form_DOC_FILE_02").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型二(檔案)');
+            $("#form_DOC_TYP_03_SHOW").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型三');
+            $("#form_DOC_COD_03").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件字號三');
+            $("#form_DOC_TXT_03").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件說明三');
+            $("#form_DOC_FILE_03").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型三(檔案)');
+            $("#form_DOC_TYP_04_SHOW").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型四');
+            $("#form_DOC_COD_04").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件字號四');
+            $("#form_DOC_TXT_04").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件說明四');
+            $("#form_DOC_FILE_04").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型四(檔案)');
+            $("#form_DOC_TYP_05_SHOW").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型五');
+            $("#form_DOC_COD_05").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件字號五');
+            $("#form_DOC_TXT_05").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件說明五');
+            $("#form_DOC_FILE_05").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型五(檔案)');
+            $("#form_DOC_TYP_08_SHOW").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型八');
+            $("#form_DOC_COD_08").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件字號八');
+            $("#form_DOC_TXT_08").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件說明八');
+            $("#form_DOC_FILE_08").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型八(檔案)');
+        }
+        if (typ == "B41") {
+            $("#form_DOC_TYP_21_SHOW").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型二十一');
+            $("#form_DOC_COD_21").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件字號二十一');
+            $("#form_DOC_TXT_21").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件說明二十一');
+            $("#form_DOC_FILE_21").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型二十一(檔案)');
+            $("#form_DOC_TYP_22_SHOW").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型二十二');
+            $("#form_DOC_COD_22").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件字號二十二');
+            $("#form_DOC_TXT_22").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件說明二十二');
+            $("#form_DOC_FILE_22").children('label').html('<span class="mark-red" sr-only="必填">＊必填</span>檢附文件類型二十二(檔案)');
+        }
+    }
+</script>

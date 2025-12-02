@@ -1,0 +1,16 @@
+﻿@using EECOnline.Areas.A3.Models;
+@using EECOnline.Services;
+@model C103MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        <tr>
+            <td align="center"></td>
+            <td align="center"></td>
+            <td align="center"></td>
+        </tr>
+    }
+}

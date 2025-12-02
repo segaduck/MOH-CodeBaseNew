@@ -1,0 +1,43 @@
+﻿@using ES.Models;
+@using ES.Services;
+@using ES.Models.ViewModels;
+@model Apply_001009ViewModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "醫事人員或公共衛生師資格英文求證";
+    SessionModel sm = SessionModel.Get();
+}
+
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink">
+            <i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@ViewBag.Title</a>
+        </div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            <ul>
+                <li id="Apply_Tab">填寫申報表件並上傳檔案</li>
+                <li id="PreView_Tab">預覽申辦表件</li>
+                <li class="active">完成申報</li>
+            </ul>
+        </div>
+
+        <!--form-->
+        <h1 class="form-title  title-bg-y">訊息</h1>
+        <div class="form-set">
+            <div class="form-group">
+                <div class="col-sm-12" style="margin-top:10px">
+                    @sm.UserInfo.Member.NAME，您好:<br />
+                    @Html.Raw("您申請醫事人員或公共衛生師資格英文求證，已完成系統資料填答及上傳流程，將盡速辦理您的申辦案件，謝謝。</br>")
+                    <div style="float:right">衛生福利部</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="clearfix"></div>
+
+</div>   

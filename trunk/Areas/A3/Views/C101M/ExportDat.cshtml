@@ -1,0 +1,58 @@
+﻿@using EECOnline.Areas.A3.Models;
+@model C101MExportDatModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout_NoHeader_NoBg.cshtml";
+}
+
+@* 搜尋式下拉選單用 *@
+<link href="~/vendor/select2/dist/css/select2.min.css" rel="stylesheet" />
+<script src="~/vendor/select2/dist/js/select2.min.js"></script>
+
+<div class="col-sm-12 content" style="background-color: white;">
+    <div class="form-blue">
+        @using (Html.BeginForm("ExportDat", "C101M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+        {
+            @Html.ControlForTurbo(Model)
+            <div class="btnBar" style="text-align: center; margin-top: 1rem; margin-bottom: 1.5rem;">
+                <button type="button" style="margin-right: 0.5rem;" class="btn btn-blue" onclick="doExport()">匯出請款檔</button>
+                <button type="button" style="margin-right: 0.5rem;" class="btn btn-gray" onclick="doClose()">關閉</button>
+            </div>
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        document.getElementById("hospital_code").classList.remove('form-control');
+        document.getElementById("hospital_code").classList.remove('formbar-bg');
+        document.getElementById("hospital_code").classList.add('js-example-basic-single');
+        $(".js-example-basic-single").select2();
+        $(".select2.select2-container.select2-container--default").attr("style", "width: 45rem;");
+        $(".select2-selection.select2-selection--single").attr("style", "height: 2rem;");
+        $(".select2-selection__rendered").attr("style", "font-size: 1rem;");
+        $(".select2-selection__arrow").attr("style", "top: 0.2rem;");
+    })
+
+    function doExport() {
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("ExportDat_Go", "C101M")').submit();
+        @*
+        // 等待程序遮罩 - by.Senya
+        blockUI();
+        var CookieStr = "CheckHasBeenDownloaded=OK";  // 餅乾的關鍵字
+        var downloadTimer = window.setInterval(function () {
+            console.log(document.cookie);
+            if ((document.cookie.indexOf(CookieStr) != -1)) {
+                unblockUI();
+                window.clearInterval(downloadTimer);
+            }
+        }, 1000);
+        *@
+    }
+
+    function doClose() {
+        parent.closeWindow();
+    }
+
+</script>

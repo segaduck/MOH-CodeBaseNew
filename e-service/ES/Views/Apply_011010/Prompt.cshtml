@@ -1,0 +1,80 @@
+﻿@using ES.Models;
+@using ES.Commons;
+@using ES.Models.ViewModels;
+@model Apply_011010FormModel
+
+@{
+    Layout = null;
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.SRV_NAME = "全國社會工作專業人員選拔推薦";
+
+    string s_msg_T1A = @"
+一、受理推薦日期為114年9月22日至114年11月7日止，逾期不予受理。
+二、推薦表（含年資證明、考績證明及佐證資料）、彙整表及檢核表均為應備文件，請各推薦單位務必檢附。
+三、單一檔案大小上限為5MB，至多上傳2個檔案，推薦表至多10頁，推薦表之附件則不限頁數，惟應以必要資料為主
+四、推薦表申請序號請與彙整表(excel檔案)排序一致，俾利後續彙整作業。
+五、推薦單位所屬分會、分事務所等，請由總會統一推薦，並分別填報總、分會之社工人員總數；直轄市、縣(市)政府由社會局(處)統一推薦。
+六、推薦資料請務必自行檢核及審查，提交後不予更改。
+";
+    string s_msg_T1 = string.Format(s_msg_T1A, "");
+}
+
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@Html.Raw(ViewBag.SRV_NAME)</a></div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            <ul>
+                <li id="form_tab" class="active">填寫申報表件並上傳檔案</li>
+                <li id="form_tab1">預覽申辦表件</li>
+                <li>完成申報</li>
+            </ul>
+        </div>
+
+        <div class="form-set">
+            <h1 class="form-title title-bg-y">@Html.Raw(ViewBag.SRV_NAME)說明事項</h1>
+            @*class="form-group"*@
+            <div class="form-group service-main index-note">
+                <div class="tab-content">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <p class="member-note">
+                                僅限企業會員申請，建議您仔細閱讀以下事項，備齊相關文件再申請喔。<br />
+                            </p>
+                            <textarea class="form-control" rows="15" readonly="readonly">@Html.Raw(s_msg_T1)</textarea>
+                            <p class="member-note">本人已閱讀以上條款，本次申請資料均由本人提供，資料屬實並無違反相關法令，如填寫假資料或有違規情事，願接受相關罰則。</p>
+                            <p class="member-note">如果您已經了解並接受，請按「同意」，進行下一個步驟填寫資料</p>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="btn-bar text-center">
+                        @if (ViewBag.CanApply == "Y")
+                        {
+                            <button type="button" class="btn btn-save" onclick="doCheck()">同意</button>
+                        }
+                        <button type="button" class="btn btn-clear" onclick="doBack()">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<script>
+
+    //同意
+    function doCheck() {
+        var agree1 = { "agree": 1 }
+        location.href = '@Url.Action("APPLY", "APPLY_011010")?' + $.param(agree1);
+    }
+
+    // 取消
+    function doBack() {
+        location.href = '@Url.Action("Index", "Service")';
+    }
+
+</script>

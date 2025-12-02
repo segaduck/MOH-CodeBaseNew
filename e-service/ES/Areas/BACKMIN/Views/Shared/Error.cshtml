@@ -1,0 +1,43 @@
+﻿@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout2.cshtml";
+    
+    //CustomHandleErrorAttribute
+    string ErrLogMsg = null;
+    string s_show = Convert.ToString(TempData["show"]);
+    bool flag_show = false;
+    if (!string.IsNullOrEmpty(s_show))
+    {
+        bool flag_t = Boolean.TryParse(s_show, out flag_show);
+        if (flag_t && flag_show)
+        {
+            Layout = null;
+            ErrLogMsg = TempData["ErrLogMsg"].ToString();//ViewBag.ErrLogMsg;
+        }
+    }
+    if (Request.IsLocal)
+    {
+        Layout = null;
+        ErrLogMsg = TempData["ErrLogMsg"].ToString();//ViewBag.ErrLogMsg;
+    }
+}
+
+@if (string.IsNullOrEmpty(ErrLogMsg))
+{
+    <center>
+        <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+        抱歉，處理您的要求時發生錯誤。<br />
+    </center>
+}
+else
+{
+    <center>
+        <br />
+        抱歉，處理您的要求時發生錯誤。<br />
+        <br />
+    </center>
+    <left>
+        <br />
+        ErrLogMsg: <br />@Html.Raw(ErrLogMsg)
+        <br />
+    </left>
+}

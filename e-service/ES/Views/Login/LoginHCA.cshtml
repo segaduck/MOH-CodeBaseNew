@@ -1,0 +1,123 @@
+﻿@{
+    Layout = null;
+    //Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>LoginHCA</title>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/bootstrap")
+    @*@Scripts.Render("~/bundles/HiPKICerts")*@
+    @Scripts.Render("~/bundles/HCAAPISVI")
+    @Scripts.Render("~/Scripts/jquery-confirm.min.js")
+    @Scripts.Render("~/Scripts/jquery.fileDownload.js")
+    @Scripts.Render("~/Scripts/vue.js")
+
+    @Styles.Render("~/Content/fontawesome/css")
+    @Styles.Render("~/Content/base2/css")
+    @Styles.Render("~/Content/jquery-confirm.min.css")
+
+    @using (Html.BeginForm("Index", "Login", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", @id = "main_form_ID" }))
+    {
+        @Html.Hidden("Hide_PinVerify")
+        @Html.Hidden("Hide_enccert")
+        @Html.Hidden("Hide_cadata")
+        @Html.Hidden("Hide_sign")
+        @Html.Hidden("Hide_loginType")
+    }
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            CheckEnvAndLoad('pcsc');
+            debugger;
+            if (parent.document.getElementById("txtPin")) { GetHCAData(parent.document.getElementById("txtPin").value) }
+        });
+
+        function GetHCAData(PIN) {
+            var checkHCA = false;
+            CheckBrowserAndLoad("HCAAPI");
+            debugger;
+            if (PIN != "") {
+                VerifyHCA(PIN,
+                    function (data, cert) {
+                        console.log(data);
+                        /*下列範例資料是 醫事人員卡 格式, 有另外一種 醫事機構卡*/
+                        /*{ "type": "醫事人員卡",}*/
+                        console.log(cert);
+                        debugger;
+                        /*{}*/
+                        // PIN 碼驗證成功
+                        // 取出所需的憑證資料, 串接到 hidden 欄位, 再 submit 到後端
+                        // 要再額外檢查: 憑證效期, 卡片持有者IDNO, 會員帳號綁定的憑證序號是否相同,...
+                        //alert("PIN碼驗證成功, 請檢視 console log 以得知取得的欄位");
+                        var msg1 = data.醫事人員中文姓名 + '~~' + data.醫事人員出生日期 + '~~' + data.醫事人員身份證號 + '~~' + cert.UTCExpiredDate;
+                        //console.log(msg1);
+                        //var formObj = $("form#main_form_ID");
+                        var formObj = $('form#main_form_ID');
+                        formObj.find("#Hide_sign").val(cert.SN);
+                        formObj.find("#Hide_cadata").val(msg1);
+                        formObj.find("#Hide_enccert").val(cert.b64);
+                        formObj.find("#Hide_PinVerify").val("Ok");
+                        formObj.find("#Hide_loginType").val("3");
+
+                        certVerifyOk = 1;
+                        if (console) console.log("Cert Verfify Success");
+                        formObj.submit();
+                    },
+                    function (msg) {
+                        blockAlert(msg, "憑證驗證失敗");
+                    });
+            }
+            return checkHCA;
+        }
+
+
+
+                    //if (PinCode != "") {
+                    //    //使用HCA醫事憑證 - 登入驗證
+                    //    VerifyHCA(PinCode,
+                    //       function (data, cert) {  // success
+                    //           console.log(data);
+                    //           /*下列範例資料是 醫事人員卡 格式, 有另外一種 醫事機構卡*/
+                    //           /*{ "type": "醫事人員卡",}*/
+                    //           console.log(cert);
+                    //           debugger;
+                    //           /*{}*/
+                    //           // PIN 碼驗證成功
+                    //           // 取出所需的憑證資料, 串接到 hidden 欄位, 再 submit 到後端
+                    //           // 要再額外檢查: 憑證效期, 卡片持有者IDNO, 會員帳號綁定的憑證序號是否相同,...
+                    //           //alert("PIN碼驗證成功, 請檢視 console log 以得知取得的欄位");
+                    //           var msg1 = data.醫事人員中文姓名 + '~~' + data.醫事人員出生日期 + '~~' + data.醫事人員身份證號 + '~~' + cert.UTCExpiredDate;
+                    //           //console.log(msg1);
+                    //           //var formObj = $("form#main_form_ID");
+                    //           var formObj = $(this).parents('form#main_form_ID');
+                    //           formObj.find("#Hide_sign").val(cert.SN);
+                    //           formObj.find("#Hide_cadata").val(msg1);
+                    //           formObj.find("#Hide_enccert").val(cert.b64);
+                    //           formObj.find("#Hide_PinVerify").val("Ok");
+                    //           formObj.find("#Hid_logType").val("3");
+
+                    //           certVerifyOk = 1;
+                    //           if (console) console.log("Cert Verfify Success");
+                    //           formObj.submit();
+                    //       },
+                    //       function (msg) {
+                    //           // fail
+                    //           // alert(msg);
+                    //           blockAlert(msg, "憑證驗證失敗");
+                    //           return;
+                    //       });
+                    //}
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

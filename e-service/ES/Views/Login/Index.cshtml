@@ -1,0 +1,481 @@
+﻿@using ES.Models;
+@using ES.Utils;
+@model LoginViewModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+    bool show_no_login1 = false;
+    if (!show_no_login1 && sm == null) { show_no_login1 = true; }
+    if (!show_no_login1 && sm.UserInfo == null) { show_no_login1 = true; }
+    if (!show_no_login1 && sm.UserInfo.Member == null) { show_no_login1 = true; }
+}
+
+<script>
+    //onload
+    $(window).load(function () {
+        //if ($('#Hid_logType').length) { if ($('#Hid_logType').val() == "3") { CheckBrowserAndLoad("HCAAPI"); } }
+        //CheckBrowserAndLoad("HCAAPI");
+    });
+    $('#lihead_Login').addClass("navMark-orange");
+</script>
+
+@if (show_no_login1)
+{
+    <div class="login-bg">
+        <marquee behavior="" style="position: absolute;
+             left: 0;
+             top: 0;
+             background: #2a3c4b;
+             opacity: .88;
+             color: #fff;
+             padding: .5rem;
+             ">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+        </marquee>
+        <div class="container-fluid">
+            <!-- AD -->
+            <div class="col-sm-8">
+                <div class="ad-board"></div>
+            </div>
+            <!-- login -->
+            <div class="col-sm-4">
+                <div class="index-login">
+                    @*<ul class="nav nav-tabs nav-justified">
+                            <li class="active"><a data-toggle="tab" href="#login1">會員登入</a></li>
+                            <li><a data-toggle="tab" href="#login2" onclick="blockAlert('為維護您個人資料的安全與申辦權益，若您尚未成為本網站會員，請先註冊登錄為會員後，才可進行憑證帳號綁定作業。謝謝。')">憑證登入</a></li>
+                        </ul>*@
+                    <ul class="nav nav-tabs nav-justified" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="javascript:void(0);" role="tab" onclick="switchTab('login1', this)">會員登入</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="javascript:void(0);" role="tab" onclick="blockAlert('為維護您個人資料的安全與申辦權益，若您尚未成為本網站會員，請先註冊登錄為會員後，才可進行憑證帳號綁定作業。謝謝。'); switchTab('login2', this);">憑證登入</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="login1" class="tab-pane fade show in active" role="tabpanel">
+                            @*<div id="login1" class="tab-pane fade show active">*@
+                            @using (Html.BeginForm("Index", "Login", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", @id = "main_form_User" }))
+                            {
+                                <div class="form-group">
+                                    <label class="control-label col-sm-3" for="UserNo">帳號</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(m => m.Form.UserNo, new { @class = "form-control", placeholder = "請輸入您的帳號", maxlength = "32" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-sm-3" for="UserPwd">密碼</label>
+                                    <div class="col-sm-8">
+                                        @Html.PasswordFor(m => m.Form.UserPwd, new { @class = "form-control usr_pwd", placeholder = "請輸入您的密碼", maxlength = "100" })
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <div style="padding-top:10px;">
+                                            <span class="input-group-text" id="togglePassword">
+                                                <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-sm-3" for="code">驗證碼</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(m => m.Form.ValidateCode, new { @class = "form-control", placeholder = "請輸入下方驗證碼", maxlength = "10" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-3 col-sm-9">
+                                        <img src="@Url.Action("GetValidateCode", "Login")" id="imgChgNum1" alt="產生新驗證碼" title="產生新驗證碼" />
+                                        <a href="#" class="btn" id="imgChgNum2"><i class="fas fa-sync-alt"></i></a>
+                                        @*<span style="color:red">點擊圖片可更換驗證碼</span>*@
+                                        <noscript> 不支援javascript時，請按鍵盤上的F5鍵以重新產生驗證碼。 </noscript>
+                                    </div>
+                                </div>
+                                @*<div class="form-group">
+                                        <div class="col-sm-offset-3 col-sm-9">
+                                            <button type="submit" class="btn btn-primary btn-group-justified">登入</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3" for="code">驗證碼</label>
+                                        <div class="col-sm-9"></div>
+                                        <div class="col-sm-3"></div>
+                                        <div class="col-sm-9">
+                                            <img src="@Url.Action("GetValidateCode", "Login")" id="imgChkNum" alt="產生新驗證碼" title="產生新驗證碼" />&nbsp;
+                                            <span style="color:red">點擊圖片可更換驗證碼</span>
+                                            <noscript> 不支援javascript時，請按鍵盤上的F5鍵以重新產生驗證碼。 </noscript>
+                                        </div>
+                                    </div>*@
+                                @*<div class="form-group">
+                                        <div class="col-sm-offset-3 col-sm-9">
+                                            <img src="images/pic-code.jpg" alt="code"><a href="#" class="btn"><i class="fas fa-sync-alt"></i></a>
+                                        </div>
+                                    </div>*@
+                                <div class="form-group" style="text-align:right;">
+                                    <a href="@(Url.Action("New", "Login"))" class="btn btn-cancel">加入會員</a>
+                                    <a href="@(Url.Action("Forget", "Login"))" class="btn btn-cancel">忘記密碼</a>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-3 col-sm-9">
+                                        @*<button type="button" onclick="doUserLogin()" class="btn btn-primary btn-group-justified">登入</button>*@
+                                        <button type="button" class="btn btn-primary" onclick="doUserLogin()">登入</button>
+                                        <button type="reset" class="btn btn-default">重設</button>
+                                    </div>
+                                </div>
+
+                            }
+                        </div>
+                        <div id="login2" class="tab-pane fade" role="tabpanel">
+                            @*<div id="login2" class="tab-pane fade">*@
+                            @*自然人憑證 工商憑證 醫事人員憑證  數位身分證*@
+                            <div class="form-group">
+                                <label class="control-label col-sm-3">憑證類別</label>
+                                <div class="col-sm-9">
+                                    <input name="Certfname" type="radio" onclick="setRadioValue('1');" />
+                                    自然人憑證
+                                    <input name="Certfname" type="radio" onclick="setRadioValue('2');" />
+                                    工商憑證<br />
+                                    <input name="Certfname" type="radio" onclick="setRadioValue('3');" />
+                                    醫事人員或公共衛生師憑證
+                                    @if (DataUtils.GetConfig("NEWEIDOPEN") == "Y")
+                                    {
+                                        <input name="Certfname" type="radio" onclick="setRadioValue('4');" />
+                                        @("數位身分證")
+                                    }
+
+                                </div>
+                            </div>
+                            @using (Html.BeginForm("Index", "Login", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", @id = "main_form_ID" }))
+                            {
+                                @Html.HiddenFor(m => m.Hide_PinVerify, new { id = "Hide_PinVerify" })
+                                @Html.HiddenFor(m => m.Hide_enccert, new { id = "Hide_enccert" })
+                                @Html.HiddenFor(m => m.Hide_cadata, new { id = "Hide_cadata" })
+                                @Html.HiddenFor(m => m.Hide_sign, new { id = "Hide_sign" })
+                                @Html.HiddenFor(m => m.Hide_loginType, new { id = "Hid_logType" })
+
+                                if (show_no_login1)
+                                {
+                                    <div class="form-group">
+                                        <label id="labelpin2" class="control-label col-sm-12" style="text-align:left" for="pin">醫事人員或公共衛生師卡PIN碼</label>
+                                        <div class="col-sm-10"><input type="password" autocomplete="off" class="form-control usr_pwd2" id="txtPin" placeholder="請輸入您的PIN碼" maxlength="30"></div>
+                                        <div class="col-sm-2">
+                                            <div style="padding-top:10px;">
+                                                <span class="input-group-text" id="togglePassword2">
+                                                    <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-3 col-sm-12">
+                                            <label id="labelinput3" class="text-left">請插入醫事人員或公共衛生師卡後按確認</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-3 col-sm-9">
+                                            @*btn-group-justified*@
+                                            <button type="button" class="btn btn-primary" onclick="dosign()" id="LoginSubmit" style="display:none">確認登入</button>
+                                            <button type="button" class="btn btn-primary" onclick="uPkiLogin()" id="CertLoginSubmit" style="display:none">憑證登入</button>
+                                            <button type="reset" class="btn btn-default">重設</button>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-3 col-sm-9">
+                                            <button type="button" onclick="doLogOut('2')" class="btn btn-primary btn-group-justified">登出</button>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <iframe frameborder="0" width="100%" height="0" scrolling="no" id="uPkiFrame"></iframe>
+}
+<script>
+    function switchTab(tabId, linkElement) {
+        // 移除所有 tab-pane 的 active 類別
+        var tabPanes = document.querySelectorAll('.tab-pane');
+        tabPanes.forEach(function (pane) {
+            pane.classList.remove('show', 'active');
+            pane.classList.remove('in', 'active');
+        });
+
+        // 隱藏所有 nav-link active 樣式
+        var tabLinks = document.querySelectorAll('.nav-link');
+        tabLinks.forEach(function (link) {
+            link.classList.remove('active');
+        });
+
+        // 顯示點選的 tab-pane
+        var targetTab = document.getElementById(tabId);
+        if (targetTab) {
+            targetTab.classList.add('show', 'active');
+            targetTab.classList.add('in', 'active');
+        }
+
+        // 加上 nav-link 的 active 樣式
+        if (linkElement) {
+            linkElement.classList.add('active');
+        }
+    }
+</script>
+
+<div id="waiting" style="display: none; width: 200px; height: 200px; left: 100px; top: 20px; position: absolute; z-index: 999; background-color: #FFF; border: 2px solid #808080; text-align: center; padding-top: 15px">
+    <span>憑證檢核中</span><br />
+    <img src="~/Images/waiting.gif" alt="憑證檢核中" />
+</div>
+
+<div class="clearfix"></div>
+
+<div class="container-fluid">
+    <div class="col-sm-12">
+
+        <!-- banner -->
+        <div style="margin-bottom: 10px;">
+            <a href="https://eecapply.mohw.gov.tw" target="_blank"><img src="~/Images/banner-20240802-a.jpg" alt="衛生福利部民眾線上申辦電子病歷服務平台" class="img-responsive" style="width: 100%;"></a>
+        </div>
+
+    </div>
+    <!-- quick link -->
+    <ul class="quickLink">
+        <li><a href="javascript:void(0)" onclick="doQuery('1','1')"><img src="~/Images/quickLink-pic01.svg" alt="醫事人員或公共衛生師" title="醫事人員或公共衛生師"><div class="quickLink-title">醫事人員或公共衛生師</div></a></li>
+        <li><a href="javascript:void(0)" onclick="doQuery('1','2')"><img src="~/Images/quickLink-pic02.svg" alt="社工相關" title="社工相關"><div class="quickLink-title">社工相關</div></a></li>
+        <li><a href="javascript:void(0)" onclick="doQuery('1','3')"><img src="~/Images/quickLink-pic03.svg" alt="中醫藥相關" title="中醫藥相關"><div class="quickLink-title">中醫藥相關</div></a></li>
+        <li><a href="javascript:void(0)" onclick="doQuery('1','5')"><img src="~/Images/quickLink-pic05.svg" alt="補助相關" title="補助相關"><div class="quickLink-title">補助相關</div></a></li>
+        <li><a href="javascript:void(0)" onclick="doQuery('1','4')"><img src="~/Images/quickLink-pic06.svg" alt="生醫、器官與儀器" title="生醫、器官與儀器"><div class="quickLink-title">生醫、器官與儀器</div></a></li>
+    </ul>
+
+    <div class="clearfix"></div>
+
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#togglePassword").click(function () {
+            var passwordField = $(".usr_pwd");
+            var passwordFieldType = passwordField.attr("type");
+            if (passwordFieldType === "password") {
+                passwordField.attr("type", "text");
+                $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+            } else {
+                passwordField.attr("type", "password");
+                $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
+            }
+        });
+
+        $("#togglePassword2").click(function () {
+            var passwordField = $(".usr_pwd2");
+            var passwordFieldType = passwordField.attr("type");
+            if (passwordFieldType === "password") {
+                passwordField.attr("type", "text");
+                $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+            } else {
+                passwordField.attr("type", "password");
+                $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
+            }
+        });
+
+        reloadValidCode();
+        $('#Hid_logType').val("");
+    });
+
+    // 一般登入
+    function doUserLogin() {
+        var data = getFormDataToObject($("form[id=main_form_User]"));
+        ajaxLoadMore('@Url.Action("UserLogin", "Login")', data, function (retData) {
+            if (retData.status) {
+                blockMessage(retData.message, "提示訊息", function () {
+                    if (retData.message.includes("為保障申辦權益")) {
+                        location.href = '@Url.Action("Edit1","Login")';
+                    } else {
+                        location.href = '@Url.Action("Index", "History")';
+                    }
+                });
+            }
+            else {
+                if (retData.message) {
+                    blockAlert(retData.message);
+                    reloadValidCode();
+                } else { blockAlert("登入失敗!!"); }
+
+            }
+        });
+    }
+
+    // 憑證登入
+    function doIDLogin() {
+        var data = getFormDataToObject($("form[id=main_form_User]"));
+        ajaxLoadMore('@Url.Action("UserLogin", "Login")', data, function (retData) {
+            if (retData.status) {
+                blockMessage(retData.message, "提示訊息", function () {
+                    //var url = '@Url.Action("Index", "Login")';
+                    location.href = '@Url.Action("Index", "History")';
+                });
+            }
+            else {
+                if (retData.message) { blockAlert(retData.message); } else { blockAlert("登入失敗!!"); }
+            }
+        });
+        var form = $("form[id=main_form_ID]");
+        form.attr('action', '@Url.Action("IDLogin", "Login")').submit();
+    }
+
+    function setRadioValue(id) {
+        @*自然人憑證 工商憑證 醫事人員憑證  數位身分證 1/2/3/4*@
+        var tmp = "";
+        var tmp2 = "";
+        $('#LoginSubmit').hide();
+        $('#CertLoginSubmit').hide();
+        switch (id) {
+            case '1':
+                tmp = "自然人憑證";
+                tmp2 = "自然人憑證卡PIN碼";
+                tmp3 = "請插入自然人憑證卡後按確認"
+                $('#LoginSubmit').show();
+                break;
+            case '2':
+                tmp = "工商憑證";
+                tmp2 = "工商憑證卡PIN碼";
+                tmp3 = "請插入工商憑證卡後按確認"
+                $('#LoginSubmit').show();
+                break;
+            case '3':
+                tmp = "醫事人員或公共衛生師憑證";
+                tmp2 = "醫事人員或公共衛生師憑證卡PIN碼";
+                tmp3 = "請插入醫事人員或公共衛生師卡後按確認"
+                $('#CertLoginSubmit').show();
+                break;
+            case '4':
+                tmp = "數位身分證";
+                tmp2 = "數位身分證卡PIN碼";
+                tmp3 = "請插入數位身分證卡後按確認"
+                $('#LoginSubmit').show();
+                break;
+        }
+        //$('#labelpin2').text(tmp2);
+        $('#labelpin2').html(tmp2);
+        $('#labelinput3').html(tmp3);
+        $('#Hid_logType').val(id);
+        //debugger;
+        //$('#labelpin2').val(tmp2);
+    }
+
+    // 登出-憑證
+    function doIDLogin(i) {
+        if (i == '1') var form = $("form[id=main_form_User]");
+        else var form = $("form[id=main_form_ID]");
+        form.attr('action', '@Url.Action("Logout")').submit();
+    }
+
+    //執行輸入驗證-憑證
+    function dosign() {
+        var msg = "";
+        var vlogType = $("input#Hid_logType").val();
+        if (!vlogType) {
+            msg += "請選擇憑證類別。<br/>";
+        }
+        var PinCode = $("input#txtPin").val();
+        if (!PinCode) {
+            msg += "請輸入正確的PIN 密碼，不可為空。<br/>";
+        }
+        if (msg != "") {
+            blockAlert(msg);
+            return false;
+        }
+
+        if (_UA.indexOf("MSIE") != -1 || _UA.indexOf("Trident") != -1) {
+            $("#waiting").show("fast", "swing", function () {
+                //呼叫自然人跨平台元件驗證Pin碼
+                CertValidation(PinCode, CertCallback);
+            });
+        }
+        else {
+            //呼叫自然人跨平台元件驗證Pin碼
+            CertValidation(PinCode, CertCallback);
+        }
+    }
+
+    //自然人跨平台元件驗證後會呼叫這個 function
+    function CertCallback(certData, rtnCode, msg) {
+        $("#waiting").hide();
+        if (rtnCode != 0) {
+            blockAlert(msg, "憑證驗證失敗");
+            return;
+        }
+        if (!certData) {
+            blockAlert("跨平台元件 CertValidation() 失敗: 沒有回傳憑證資料!");
+            return;
+        }
+        var name = "";
+        var serial = "";
+        var lastfour = certData.subjectID;
+        var dnPairs = certData.subjectDN.split(",");
+        for (var i = 0; i < dnPairs.length; i++) {
+            var tokens = dnPairs[i].split("=");
+            if (tokens.length == 2) {
+                //console.log("tokens[0]:" + tokens[0] + ",tokens[1]:" + tokens[1]);
+                if (tokens[0].toUpperCase() == "CN".toUpperCase() || tokens[0].toUpperCase() == "O".toUpperCase()) {
+                    name = tokens[1];
+                }
+                else if (tokens[0].toUpperCase() == "serialNumber".toUpperCase()) {
+                    serial = tokens[1];
+                }
+            }
+        }
+        if (serial == "" && lastfour != "" && lastfour.length == 8) { serial = lastfour; }
+
+        //var msg = 'name=' + name + '\nserialnumber=' + serial + '\nlast four=' + lastfour;
+        var msg1 = name + '~~' + serial + '~~' + lastfour;
+        //console.log(msg1);
+        var formObj = $("form#main_form_ID");
+        formObj.find("#Hide_sign").val(certData.signedData);
+        formObj.find("#Hide_enccert").val(certData.certB64);
+        formObj.find("#Hide_cadata").val(msg1);
+        formObj.find("#Hide_PinVerify").val("Ok");
+        certVerifyOk = 1;
+        if (console) console.log("Cert Verfify Success");
+        formObj.submit();
+    }
+
+    function reloadValidCode() {
+        if ($('#imgChgNum1').length) { blockUI(); } else { unblockUI(); }
+        $('#imgChgNum1').attr("src", '@Url.Action("GetValidateCode", "Login")' + "?rand=" + new Date().getMilliseconds());
+    }
+    $(function () {
+        $('#imgChgNum1').on("click", function (e) {
+            reloadValidCode();
+        });
+        $('#imgChgNum2').on("click", function (e) {
+            reloadValidCode();
+        });
+        $('#imgChgNum1').on("load", function () {
+            unblockUI();
+        });
+        $('#imgChgNum2').on("load", function () {
+            unblockUI();
+        });
+        //$('[data-toggle="tooltip"]').tooltip()
+    });
+
+    function doQuery(act_type, id) {
+        //var id = $(el).attr('data-id');
+        //var title = $(el).attr('data-title');
+        //var res = confirm('確定要刪除[' + title + ']消息嗎？');
+        //if (!res) { return; }
+        //var ref_this = $("ul.nav.nav-tabs.nav-justified li.active");
+        //var act_type = $("ul.nav.nav-tabs.nav-justified li.active").data("id");
+        //alert(act_type);
+        //return;
+        var data = { act_type: act_type, id: id };
+        var url = '@(Url.Action("Index", "ServiceLst"))';
+        goBackPage(url, data, 2, 'POST')
+    }
+
+</script>

@@ -1,0 +1,58 @@
+﻿@using ES.Models;
+@using ES.Services;
+@using ES.Models.ViewModels;
+@model Apply_011005DoneModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+    SessionModel sm = SessionModel.Get();
+    ViewBag.Title = "專科社會工作師證書補發（遺失)";
+    ViewBag.TitleType = "補發";
+}
+
+
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink">
+            <i class="fas fa-home"></i>
+            <a href="@(Url.Action("Index", "Login"))">首頁</a> ／
+            <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／
+            <a href="#">@ViewBag.Title</a>
+        </div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            <ul>
+                <li>填寫申報表件並上傳檔案</li>
+                <li>預覽申辦表件</li>
+                <li class="active">完成申報</li>
+            </ul>
+        </div>
+        <h1 class="form-title  title-bg-y">訊息</h1>
+        <div class="form-set">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    @sm.UserInfo.Member.NAME 您好：
+                    <br />
+                    @switch (Model.status.TONotNullString())
+                    {
+                        case "1":
+                            @Html.Raw("您所提交的" + ViewBag.Title + "申請，已完成系統資料填答及上傳流程。本項目尚有1件紙本文件需要繳交（包括1郵局匯票500元１紙，戶名：衛生福利部），提醒您於1週內以掛號郵遞方式寄至「衛生福利部社會救助及社工司」(地址：115204 臺北市南港區忠孝東路六段488號)， 並於信封左下角註明「申請" + ViewBag.TitleType + "專科社會工作師證書」、申請人姓名及連絡電話。俟本部收訖後將據以辦理您的申請案件。")
+                            break;
+                        case "2":
+                            @Html.Raw("您所提交的" + ViewBag.Title + "申請，已完成資料補件，將盡速辦理您的申辦案件，謝謝。")
+                            break;
+                        default:
+                            break;
+                    }
+
+                    <br />
+                    <div style="float:right">衛生福利部</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+
+</div>

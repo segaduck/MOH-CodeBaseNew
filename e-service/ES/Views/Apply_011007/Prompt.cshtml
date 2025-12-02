@@ -1,0 +1,93 @@
+﻿@using ES.Models;
+@using ES.Commons;
+@using ES.Models.ViewModels;
+@model Apply_011007FormModel
+
+@{
+    Layout = null;
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.SRV_NAME = "社工師證書核發（中文）";
+
+    string s_URL_1 = "https://dep.mohw.gov.tw/DOSAASW/cp-530-44086-103.html";
+    string s_msg_T1A = @"
+中文證書核發申請流程
+（一）請至【衛生福利部人民申請案件線上申辦系統】加入會員申辦，填列基本資料，並上傳佐證文件檔案（※無須另行郵寄），完成線上申請。（路徑：衛生福利部首頁 / 便民服務 / 人民線上申辦服務專區 / 申辦服務 / 社工相關 / 社工師證書核發(中文) / 線上申辦）
+
+（二）請至郵局購買【新臺幣五百元郵局匯票乙紙】，匯票抬頭請註明「衛生福利部」（※請勿另行註記其他文字），並將匯票寄至本部：
+1.寄送地址：11558台北市南港區忠孝東路6段488號
+2.備註：請於信封上註明「衛生福利部社會救助及社工司」收，並於信封右下角註明「申請核(換、補)發社會工作師證書」、「申請人姓名」及「身分證統一編號前6碼(含首字英文字母)」等資訊。
+
+檢附文件
+社會工作師證書核（換、補）發，一律採線上申請（僅須郵寄匯票）方式辦理
+1.考選部考試及格證書影本或電子證書
+2.身分證正、反面
+3.照片(規格應同護照照片)
+4.新臺幣500元郵局匯票乙紙
+
+收費說明
+申請核發社會工作師證書，每件收費新臺幣500元整。
+
+備註
+（一）處理期間：3週（21工作天），不含例假日、紙本寄件及補件時間。
+社工師證書核發約需2至3周工作天（不含例假日、紙本寄件及補正時間）。
+
+";
+    string s_msg_T1 = string.Format(s_msg_T1A, s_URL_1);
+}
+
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@Html.Raw(ViewBag.SRV_NAME)</a></div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            <ul>
+                <li id="form_tab" class="active">填寫申報表件並上傳檔案</li>
+                <li id="form_tab1">預覽申辦表件</li>
+                <li>完成申報</li>
+            </ul>
+        </div>
+
+        <div class="form-set">
+            <h1 class="form-title title-bg-y">@Html.Raw(ViewBag.SRV_NAME)說明事項</h1>
+            @*class="form-group"*@
+            <div class="form-group service-main index-note">
+                <div class="tab-content">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <p class="member-note">
+                                社會工作師證書僅限社工師本人申請，建議您仔細閱讀以下事項，備齊相關文件再申請喔。<br />
+                            </p>
+                            <textarea class="form-control" rows="15" readonly="readonly">@Html.Raw(s_msg_T1)</textarea>
+                            <p class="member-note">本人已閱讀以上條款，本次申請資料均由本人提供，資料屬實並無違反相關法令，如填寫假資料或有違規情事，願接受相關罰則。</p>
+                            <p class="member-note">如果您已經了解並接受，請按「同意」，進行下一個步驟填寫資料</p>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="btn-bar text-center">
+                        <button type="button" class="btn btn-save" onclick="doCheck()">同意</button>
+                        <button type="button" class="btn btn-clear" onclick="doBack()">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<script>
+
+    //同意
+    function doCheck() {
+        var agree1 = { "agree": 1 }
+        location.href = '@Url.Action("APPLY", "APPLY_011007")?' + $.param(agree1);
+    }
+
+    // 取消
+    function doBack() {
+        location.href = '@Url.Action("Index", "Service")';
+    }
+
+</script>

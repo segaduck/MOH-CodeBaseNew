@@ -1,0 +1,37 @@
+﻿@using EECOnline.Areas.A5.Models;
+@model C101MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        @Html.HiddenFor(m => m.Grid[i].userno);
+        var item = Model.Grid[i];
+<tr>
+    <td align="center">
+        <button type="button" class="btn btn-login" onclick="doModify('@item.userno')">編輯</button>
+    </td>
+    <td align="center">
+        <div align="center">@item.unit_nm</div>
+    </td>
+    <td align="center">
+        <div align="center">@item.userno</div>
+    </td>
+    <td align="center">
+        <div align="center">@item.username</div>
+    </td>
+    <td align="center">
+        <div align="center">@item.authstatus_nm</div>
+    </td>
+    @*<td align="center">
+            <div align="center">@item.grp_nm</div>
+        </td>
+        <td align="center">
+            <div align="center">@item.logintype</div>
+        </td>*@
+    <td align="center">
+        <button type="button" class="btn btn-blue" onclick="doGrp('@item.userno')">功能權限設定</button>
+    </td>
+</tr>
+    }
+}

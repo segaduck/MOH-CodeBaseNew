@@ -1,0 +1,142 @@
+﻿@using System.Text
+@using EECOnline.Models
+@using EECOnline.DataLayers
+@using EECOnline.Services
+@using Omu.ValueInjecter;
+@using EECOnline.Models.Entities
+@{
+    SessionModel sm = SessionModel.Get();
+    string mainMenuType = ConfigModel.MainMenuType;
+    string OnOrOff = ConfigModel.OnOrOff;
+    // 最外層未有程式連結的節點
+    IList<TblAMFUNCM> BigFuncModules = ApplicationModel.GetClamFuncsOutAll();
+    // 有程式連結的節點
+    IList<TblAMFUNCM> funcModules = new List<TblAMFUNCM>();
+    // 依權限給予節點
+    foreach (var item in sm.RoleFuncs)
+    {
+        // 第一層
+        var firstFuncCode = item.sysid + "| " + "| " + "| ";
+
+        var firstFunc = BigFuncModules.Where(m =>
+        m.sysid + "|" +
+        m.modules + "|" +
+        m.submodules + "|" +
+        m.prgid == firstFuncCode).FirstOrDefault();
+
+        if (!funcModules.Contains(firstFunc) && firstFunc != null) { funcModules.Add(firstFunc); }
+
+        // 第二層
+        var secFuncCode = item.sysid + "|" + item.modules + "| " + "| ";
+
+        var secFunc = BigFuncModules.Where(m =>
+        m.sysid + "|" +
+        m.modules + "|" +
+        m.submodules + "|" +
+        m.prgid == secFuncCode).FirstOrDefault();
+
+        if (!funcModules.Contains(secFunc) && secFunc != null) { funcModules.Add(secFunc); }
+
+        // 第三層
+        var thrFuncCode = item.sysid + "|" + item.modules + "|" + item.submodules + "| ";
+
+        var thrFunc = BigFuncModules.Where(m =>
+       m.sysid + "|" +
+       m.modules + "|" +
+       m.submodules + "|" +
+       m.prgid == thrFuncCode).FirstOrDefault();
+
+        if (!funcModules.Contains(thrFunc) && thrFunc != null) { funcModules.Add(thrFunc); }
+
+        TblAMFUNCM func = new TblAMFUNCM();
+        func.InjectFrom(item);
+        funcModules.Add(func);
+    }
+}
+@functions{
+
+    /// <summary>
+    /// 建立第二層以後節點
+    /// 並以字串回傳組成的 li, ul 等 html 內容
+    /// </summary>
+    /// <param name="funcModules">系統功能項目集合</param>
+    /// <param name="branch1">目前第一層功能項目</param>
+    /// <returns></returns>
+    private string MakeTree(IList<TblAMFUNCM> funcModules)
+    {
+        string html = "<ul class='nav-links'>";
+        var branchGroup1 = funcModules.Where(m => m.sysid.TONotNullString() != " " && m.modules.TONotNullString() == " " && m.submodules.TONotNullString() == " " && m.prgid.TONotNullString() == " ").ToList();
+        foreach (var branch1 in branchGroup1)
+        {
+            var active1 = "";
+            var active2 = "";
+            var show = CheckStringContains(branch1.prgname);
+
+            html += "<li><div class='iocn-link'><a href='#'><i class='bx bxs-" + show +"'></i><span class='link_name'" + active1 + "' data-nav1='" + branch1.prgname + "'>" + branch1.prgname + "</span></a><i class='bx bx-caret-right arrow' ></i></div>";
+            // 第二層
+            var branchGroup2 = funcModules.Where(m => m.sysid == branch1.sysid && m.modules.TONotNullString() != " " && m.submodules.TONotNullString() == " " && m.prgid.TONotNullString() != " ");
+            html += "<ul class='sub-menu'>";
+            //有第二層父節點
+            foreach (var branch2 in branchGroup2)
+            {
+                html += string.Format("<li><a href = \"/{0}\" id=\"{1}|{2}| | \" title = \"{3}\" data-nav2='{4}' class='" + active2 + "'><i class='bx bxs-chevron-right'></i>{4}</a ></li> ", branch2.prgid, branch2.sysid, branch2.modules, branch2.prgname, branch2.prgname);
+            }
+            html += "</ul><li>";
+        }
+        html += "</ul>";
+        return string.Format(html);
+    }
+
+    /// <summary>
+    /// 選單icon對應
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public string CheckStringContains(string input)
+    {
+        if (input.Contains("病歷"))
+        {
+            return "clinic";
+        }
+        else if (input.Contains("案件"))
+        {
+            return "detail";
+        }
+        else if (input.Contains("帳務"))
+        {
+            return "wallet";
+        }
+        else if (input.Contains("統計"))
+        {
+            return "bar-chart-square";
+        }
+        else if (input.Contains("系統"))
+        {
+            return "cog";
+        }
+        else if (input.Contains("帳號"))
+        {
+            return "user-account";
+        }
+        else if (input.Contains("紀錄"))
+        {
+            return "file-find";
+        }
+        else if (input.Contains("網站"))
+        {
+            return "data";
+        }
+        else
+        {
+            return "right-arrow-alt";
+        }
+    }
+}
+
+<div class="sidebar" id="sideNav">
+    <div class="logo-details">
+        <span class="logo_name">系統選單</span>
+        <i class="bx bxs-chevrons-left"></i>
+    </div>
+    @Html.Raw(this.MakeTree(funcModules))
+</div>

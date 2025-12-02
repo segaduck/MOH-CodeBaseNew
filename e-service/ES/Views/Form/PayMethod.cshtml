@@ -1,0 +1,135 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    ViewBag.Title = "選擇繳費方式";
+    ViewBag.Script = @"
+        function chgPayMethod(obj) {
+            if(obj.value == 'C') {
+                $('#TR_CARD_IDN').show();
+                jAlert(""花旗銀行及中國信託因未加入NCCC無法使用信用卡線上繳費。<br/>【<a href='http://www8.www.gov.tw/school/rate.htm' target='_blank'>e政府平台可使用信用卡銀行清單</a>】"");
+            } else {
+                $('#TR_CARD_IDN').hide();
+            }
+        }
+
+        function doSubmit() {
+            if($(""input[name='PAY_METHOD']:checked"").length == 0) {
+                jAlert('請選擇繳費方式');
+            } else if($(""input[name='PAY_METHOD']:checked"").val() == 'C' && $('#CARD_IDN').val().length != 10) {
+                jAlert('持卡人身分證號未填或格式錯誤');
+            } else {
+                $('#btnNext').prop('disabled', true);
+                $('#btnNext').val('請稍候...');
+                $('#ActionForm').submit();
+            }
+        }
+    ";
+}
+
+@using (Html.BeginForm("Success", "Form", FormMethod.Post, new { id="ActionForm" }))
+{
+    <br />
+    <div>．@ViewBag.Dict["NAME"]</div>
+    <hr />
+    <div style="float: right; color: #AAAAAA;">
+        <span>填表 → 預覽填表資料 → </span>
+        <span style="color: #B22222;">選擇繳費方式 </span>
+        <span>→ 完成申辦手續</span>
+    </div>
+    <table class="formTable1">
+    <caption>選擇繳費方式</caption>
+        <tr>
+            <th style="width: 120px;"><span style="color:red;">*</span>繳費方式</th>
+            <td>
+                @if (((string)ViewBag.Dict["PAY_METHOD"]).IndexOf("C") >= 0)
+                {
+                <div>@Html.RadioButton("PAY_METHOD", "C", false, new { onclick = "chgPayMethod(this);" }) 信用卡線上刷卡（電子化政府網路付費服務）</div>
+                }
+                @if (((string)ViewBag.Dict["PAY_METHOD"]).IndexOf("D") >= 0)
+                {
+                <div>@Html.RadioButton("PAY_METHOD", "D", false, new { onclick = "chgPayMethod(this);" }) 匯票(抬頭：衛生福利部)</div>
+                }
+                @if (((string)ViewBag.Dict["PAY_METHOD"]).IndexOf("T") >= 0)
+                {
+                <div>@Html.RadioButton("PAY_METHOD", "T", false, new { onclick = "chgPayMethod(this);" }) 劃撥（見註一、註三）</div>
+                }
+                @if (((string)ViewBag.Dict["PAY_METHOD"]).IndexOf("B") >= 0)
+                {
+                <div>@Html.RadioButton("PAY_METHOD", "B", false, new { onclick = "chgPayMethod(this);" }) 臨櫃（現金，見註二）</div>
+                }
+                @if (((string)ViewBag.Dict["PAY_METHOD"]).IndexOf("S") >= 0)
+                {
+                <div>@Html.RadioButton("PAY_METHOD", "S", false, new { onclick = "chgPayMethod(this);" }) 超商（見註五）</div>
+                }
+                @if (((string)ViewBag.Dict["PAY_METHOD"]).IndexOf("M") >= 0)
+                {
+                    <div>@Html.RadioButton("PAY_METHOD", "M", false, new { onclick = "chgPayMethod(this);" }) 郵寄（見註六）</div>
+                }
+            </td>
+        </tr>
+        <tr>
+            <th>申請時應繳費用</th>
+            <td>@Html.Raw(ViewBag.Data["PAY_A_FEE"])元</td>
+        </tr>
+        <tr id="TR_CARD_IDN" style="display: none;">
+            <th><span style="color:red;">*</span>持卡人身分證號</th>
+            <td>
+                @Html.TextBox("CARD_IDN", "", new { style = "width: 150px", maxlength = "10" })
+                @if (ViewBag.Dict["SRV_ID"].Equals("001005"))
+                {
+                <span style="color: red; font-weight: bold;">請使用申請人信用卡繳費</span>
+                }
+            </td>
+        </tr>
+        @if (((string)ViewBag.Dict["PAY_METHOD"]).IndexOf("T") >= 0)
+        {
+        <tr>
+            <th>註一</th>
+            <td><font color="#CC3333">請於郵寄繳費憑據時加註「申請編號」，以利核銷。</font></td>
+        </tr>
+        }
+        @if (((string)ViewBag.Dict["PAY_METHOD"]).IndexOf("B") >= 0)
+        {
+        <tr>
+            <th>註二</th>
+            <td><font color="#CC3333">請於現場繳費時告知「申請編號」，以利核銷。</font></td>
+        </tr>
+        }
+        @if (((string)ViewBag.Dict["PAY_METHOD"]).IndexOf("T") >= 0)
+        {
+        <tr>
+            <th>註三</th>
+            <td><font color="#CC3333">劃撥金額須外加手續費(金額1,000元以下，每筆15元；1,001元以上，每筆20元手續費，詳情請參考<a href="http://www.post.gov.tw/post/index.jsp" target="_blank">中華郵政全球資訊網</a>)。</font></td>
+        </tr>
+        }
+        @if (((string)ViewBag.Dict["PAY_METHOD"]).IndexOf("C") >= 0)
+        {
+        <tr>
+            <th>註四</th>
+            <td><font color="#CC3333">使用信用卡繳費時請注意，刷卡繳費完成後該系統會自動導回本申辦頁面，並成功取得案件編號才算完成此案件申辦。</font></td>
+        </tr>
+        }
+        @if (((string)ViewBag.Dict["PAY_METHOD"]).IndexOf("S") >= 0)
+        {
+        <tr>
+            <th>註五</th>
+            <td><font color="#CC3333">使用超商繳費時，須外加手續費 @Html.Raw(ES.Utils.DataUtils.GetConfig("PAY_STORE_FEE")) 元。</font></td>
+        </tr>
+        }
+        @if (((string)ViewBag.Dict["PAY_METHOD"]).IndexOf("M") >= 0)
+        {
+            <tr>
+                <th>註六</th>
+                <td><font color="#CC3333">請將公文及相關附件寄至衛生福利辦理。</font></td>
+            </tr>
+        }
+    </table>
+    <br />
+    <div class="formButtomBar">
+        @Html.Hidden("SRV_ID", (string)@ViewBag.Dict["SRV_ID"])
+        @Html.Hidden("APP_TIME", (string)ViewBag.Dict["APP_TIME"])
+        @Html.Hidden("APP_FEE", (string)ViewBag.Dict["APP_FEE"])
+        @Html.Hidden("DocumentId", (string)ViewBag.DocumentId)
+        <input type="button" id="btnNext" value="下一步" onclick="doSubmit();" />
+        <input type="button" value="返回" onclick="window.history.go(-1);" />
+    </div>
+}

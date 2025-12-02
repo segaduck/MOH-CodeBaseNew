@@ -1,0 +1,15 @@
+﻿@using EECOnline.Areas.SHARE.Models;
+@model UNITFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        <tr>
+            <td align="center"><button type="button" class="btn btn-info" onclick="doSelect('@item.unit_cd','@item.unit_nm')">選</button></td>
+            <td>@item.unit_cd</td>
+            <td>@item.unit_nm</td>
+        </tr>
+    }
+}

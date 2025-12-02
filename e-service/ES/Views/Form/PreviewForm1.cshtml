@@ -1,0 +1,26 @@
+﻿@using ES.Extensions
+@{
+    Layout = null;
+}
+
+@Html.Hidden("APP_TIME", (string)ViewBag.ApplyTime)
+@Html.BuildPreviewTable()
+
+<script language="javascript" type="text/javascript">
+    $(function () {
+        //$("#ActionForm").find('input[type="radio"]:not(:checked)').each(function () { $(this).attr('disabled', true); });
+        //$("#ActionForm").find('input[type="checkbox"]:not(:checked)').each(function () { $(this).attr('disabled', true); });
+        //$("#ActionForm").find('input[type="checkbox"]:checked').each(function () { $(this).click(function () { return false; }); });
+        $("#ActionForm").find('input[type="radio"]').each(function () { $(this).attr('disabled', true); });
+        $("#ActionForm").find('input[type="checkbox"]').each(function () { $(this).attr('disabled', true); });
+
+        var len = $("#ActionForm").find('input[type="button"]').length;
+        var text;
+        for (var i = 0; i < len - 2; i++) {
+            text = $("#ActionForm").find('input[type="button"]:eq(' + i + ')').val();
+            if (text != "隱藏") {
+                $("#ActionForm").find('input[type="button"]:eq(' + i + ')').hide();
+            }
+        }
+    });
+</script>

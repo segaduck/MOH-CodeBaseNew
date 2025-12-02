@@ -1,0 +1,28 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model FlySwipeModel
+@{
+    ViewBag.Title = "單筆查詢";
+    ViewBag.FunctionTitle = "單筆查詢";
+}
+
+@using (Html.BeginForm("Condition", "FlySwipe", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>玉山銀行單筆查詢</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ONO)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ONO, new { maxlength = 20, @class = "form-control" })
+                </div>
+            </div>
+            <div class="btnbar">
+                <input type="button" value="一般查詢" onclick="doCheckOut('1');" class="btn btn-blue"  />
+                <input type="button" value="銀聯查詢" onclick="doCheckOut('2');" class="btn btn-blue" />
+            </div>
+        </div>
+    </div>
+}

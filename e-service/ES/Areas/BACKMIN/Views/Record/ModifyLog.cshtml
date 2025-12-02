@@ -1,0 +1,121 @@
+﻿@using ES.Utils;
+@model ES.Areas.Admin.Models.ModifyLogModel
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#TIME_S').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#TIME_F').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $("#tx_catid").find("option").each(
+            function () {
+                var a = $(this).val();
+                if (a == '@this.Model.TYPE') {
+                    $(this).prop("selected", true);
+                }
+            }
+        );
+    });
+
+    function doQuery(page) {
+        $("#NowPage").val(page);
+    }
+</script>
+
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "異動紀錄列表";
+    ViewBag.FunctionTitle = "異動紀錄列表";
+}
+@using (Html.BeginForm("ModifyLog", "Record", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 紀錄查詢 / @ViewBag.Title
+    </div>
+    <div class="col-sm-12 content">
+        @*<div class="bread">
+                <i class="fas fa-home"></i><a href="#">首頁</a> / <a href="#">@ViewBag.FunctionTitle</a>
+            </div>*@
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">異動區間</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.TIME_S, new { @class = "form-normal" })～
+                    @Html.TextBoxFor(m => m.TIME_F, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">異動類別</label>
+                <div class="col-sm-10">
+                    @Html.HiddenFor(m => m.TYPE)
+                    <select id="tx_catid" name="tx_catid" onchange="$('#TYPE').val(this.value)" class="form-normal">
+                        <option value="">請選擇</option>
+                        <option value="1">管理帳號</option>
+                        <option value="2">案件管理</option>
+                        <option value="3">申請須知</option>
+                        <option value="4">書表下載</option>
+                        <option value="5">案件處理</option>
+                        <option value="6">帳務管理</option>
+                    </select>
+                    FIX: 未從資料庫取得資料
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">申辦編號</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ID, new { @class = "form-normal" })
+                    於異動類別 選擇[案件處理] 此條件才與附加
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.NowPage)
+                <input type="submit" value="查詢" onclick="$('#NowPage').val(1);" class="btn btn-blue" />
+            </div>
+        </div>
+
+        @{
+            if (ViewBag.List != null)
+            {
+                <div class="table-pager">
+                    @Html.HiddenFor(m => m.NowPage)
+                    @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+                </div>
+                <div class="clearfix"></div>
+                <h2 class="second-title">查詢結果</h2>
+                <div class="table-responsive">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                        <thead>
+                            <tr align="left">
+                                <th>日期/時間</th>
+                                <th>異動人員</th>
+                                <th>異動方式</th>
+                                <th>內容</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                foreach (ES.Areas.Admin.Models.Map map in ViewBag.List)
+                                {
+                                    <tr align="left">
+                                        <td>
+                                            @map.GetString("TX_TIME")
+                                        </td>
+                                        <td>
+                                            @map.GetString("UNIT_NAME")/@map.GetString("TX_LOGIN_NAME")
+                                        </td>
+                                        <td>
+                                            @WebUtils.GetModifySearchType(map.GetInt("TX_TYPE"), map.GetString("TX_CATE_CD"))
+                                        </td>
+                                        <td>
+                                            @map.GetString("TX_DESC")
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+        }
+    </div>
+}

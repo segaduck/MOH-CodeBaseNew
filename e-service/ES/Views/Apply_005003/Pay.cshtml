@@ -1,0 +1,80 @@
+﻿@using System.Web.Razor.Parser
+@using ES.Models
+@using ES.Models.ViewModels
+@model Apply_005003FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+    ViewBag.SRV_NAME = "WHO格式之產銷證明書(英文)";
+    string s_SRV_ID = "005003";
+    if (Model != null && Model.SRV_ID != null) { s_SRV_ID = Model.SRV_ID; }
+}
+
+<h1 class="form-title  title-bg-y">選擇繳費方式</h1>
+<div class="form-set">
+    <form class="form-horizontal" method="post">
+        @*PAY_METHOD-繳費方式-*@
+        @Html.PayForTurbo(s_SRV_ID)
+
+        <div class='form-group'>
+            <label class='step-label col-sm-2'>申請份數</label>
+            <div class='col-sm-10' style='margin-top: 10px'>
+                <input type="text" value="" id="pay_paycount" class="form-10 form-normal" readonly>
+            </div>
+        </div>
+        <div class='form-group'>
+            <label class='step-label col-sm-2'>申請時應繳費用</label>
+            <div class='col-sm-10' style='margin-top: 10px'>
+                <input type="text" value="" id="pay_payamount" class="form-10 form-normal" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">註一</label>
+            <div class="col-sm-10" style="margin-top:10px">
+                <font color="#CC3333">請於郵寄繳費憑據時加註「申請編號」，以利核銷。</font>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">註二</label>
+            <div class="col-sm-10" style="margin-top:10px">
+                <font color="#CC3333">請於現場繳費時告知「申請編號」，以利核銷。</font>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">註三</label>
+            <div class="col-sm-10">
+                <font color="#CC3333">劃撥金額須外加手續費(金額1,000元以下，每筆15元；1,001元以上，每筆20元手續費，詳情請參考<a href="http://www.post.gov.tw/post/index.jsp" target="_blank">中華郵政全球資訊網</a>)。</font>
+            </div>
+        </div>
+
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="send_pay()">確認送出</button>
+            <button type="button" class="btn btn-clear" onclick="back_pay()">返回修改</button>
+        </div>
+    </form>
+</div>
+<script>
+    //繳費頁面送出
+    function send_pay() {
+        var err_msg1 = "";
+        var PAY_METHOD = $("input[name='PAY_METHOD']:checked").val();
+        if (PAY_METHOD == undefined || PAY_METHOD == "") {
+            err_msg1 += "請選擇繳費方式! \n";
+        }
+        if (err_msg1 != "") {
+            blockAlert(err_msg1, "提示訊息");
+            return;
+        }
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+    //繳費頁面返回
+    function back_pay() {
+        $('#form_tab2').removeClass('active');
+        $('#form_tab').attr('class', 'active');
+        $('#form2').attr('class', 'tab-pane fade');
+        $('#form').attr('class', 'tab-pane fade active in');
+    }
+</script>

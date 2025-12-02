@@ -1,0 +1,68 @@
+﻿@using ES.Models;
+@model HistoryFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        <tr>
+            <td align="center">@(i + 1)</td>
+            <td>@item.APP_TIME</td>
+            <td>@item.SRV_ID_NAM<br />@item.APP_ID</td>
+            <td>@item.NAME</td>
+            <td>
+                @item.PAY_STATUS
+                @if (!string.IsNullOrEmpty(item.Upload_PayFile))
+                {
+                    <br />
+                    string srvid = item.Upload_PayFile.Split('-')[1];
+                    switch (srvid)
+                    {
+                        case "005004":
+                            <button type="button" onclick="doUploadPayFile('@item.Upload_PayFile')">上傳藥品優良製造證明書申請表用印之掃描檔</button>
+                            break;
+                        default:
+                            <button type="button" onclick="doUploadPayFile('@item.Upload_PayFile')">上傳繳費紀錄檔案</button>
+                            break;
+                    }
+                }
+                @if (!string.IsNullOrEmpty(item.Download_PayFile))
+                {
+                    <br />
+                    <button type="button" onclick="doDownloadPayFile('@item.APP_ID')">列印超商繳費單</button>
+                }
+                @if (!string.IsNullOrEmpty(item.RePayCard))
+                {
+                    <br />
+                    <button type="button" onclick="doRepay('@item.APP_ID','@item.SRV_ID')">信用卡重新繳費</button>
+                }
+            </td>
+            <td>
+                @if (item.SRV_ID == "041001")
+                {
+                    <a href="https://service.mohw.gov.tw/AP/NHIDSB/RCERQueryForm.aspx" target="_blank" title="前往全民健康保險爭議審議會權益案件審理進度及審定書查詢">案件審理進度</a>
+                }
+                else
+                {
+                    <a href="#" onclick="GetDetail('@item.SRV_ID','@item.APP_ID')">@item.FLOW_NAME</a>
+                }
+                <a href="#" class="btn btn-case" onclick="GetDetail('@item.SRV_ID','@item.APP_ID')">看明細</a>
+                @*<a href="@Url.Action("Index", "QuestNonWeb")" type="submit" class="btn btn-save">填寫滿意度</a>*@
+                @if (item.SRV_ID == "006001" || item.SRV_ID == "040001" || item.SRV_ID == "041001")
+                {
+                    //隱藏填寫滿意度
+                }
+                else
+                {
+                    <a href="#" class="btn btn-case" onclick="GetQuestWeb('@item.APP_ID')">填寫滿意度</a>
+                }
+
+                @if (item.SRV_ID == "040001" || item.SRV_ID == "041001" || item.SRV_ID == "006001")
+                {
+                    <a href="#" class="btn btn-case" onclick="doPrintDoc('@item.SRV_ID','@item.APP_ID')">下載申請書</a>
+                }
+            </td>
+        </tr>
+    }
+}

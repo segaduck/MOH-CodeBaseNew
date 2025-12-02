@@ -1,0 +1,128 @@
+﻿@using ES.Utils;
+@model ES.Areas.Admin.Models.LoginRecordQueryModel
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#StartDate').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#EndDate').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#sel_ErrTimes').val(@Html.Raw(this.Model.ErrTimes));
+    });
+</script>
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "查詢異常登入紀錄";
+    ViewBag.FunctionTitle = "查詢異常登入紀錄";
+
+    ViewBag.Script = @"
+
+function doQuery(page) {
+$('#ActionType').val('Query');
+$('#NowPage').val(page);
+}
+
+function selChange(val){
+$('#ErrTimes').val(val);
+}
+";
+}
+@using (Html.BeginForm("SysInOutErrLog", "Record", FormMethod.Post, new { id = "ActionForm" }))
+{
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 紀錄查詢 / @ViewBag.Title
+    </div>
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="col-sm-12 content">
+
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.StartDate)</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.StartDate, new { @class = "form-normal" })
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.EndDate)</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.EndDate, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Account)</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.Account, new { @class = "form-control" })
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ErrTimes)</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.ErrTimes)
+                    <select id="sel_ErrTimes" onchange="selChange(this.value)" class="form-control">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.NowPage)
+                @Html.HiddenFor(m => m.ActionType)
+                <input type="submit" value="查詢" onclick="doQuery('1')" class="btn btn-blue" />
+                <input type="reset" value="重填" class="btn btn-gray" />
+            </div>
+        </div>
+        <div class="table-pager">
+            @Html.HiddenFor(m => m.NowPage)
+            @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+        </div>
+        <div class="clearfix"></div>
+        <h2 class="second-title">查詢結果</h2>
+        <div class="table-responsive">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th>帳號</th>
+                        <th>姓名</th>
+                        <th>機關</th>
+                        <th>IP</th>
+                        <th>登出、入狀態</th>
+                        <th>登出、入時間</th>
+                        <th>失敗次數</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (ES.Areas.Admin.Models.Map item in ViewBag.List)
+                    {
+                        <tr>
+                            <td>
+                                @item.GetString("LOGIN_ID")
+                            </td>
+                            <td>
+                                @item.GetString("NAME")
+                            </td>
+                            <td>
+                                @Html.Raw(WebUtils.GetUnitName(item.GetInt("UNIT_CD")))
+                            </td>
+                            <td>
+                                @item.GetString("IP_ADDR")
+                            </td>
+                            <td>
+                                @Html.Raw(WebUtils.GetLoginStatusName(item.GetString("STATUS")))
+                            </td>
+                            <td>
+                                @item.GetString("LOGIN_TIME")
+                            </td>
+                            <td>
+                                @item.GetInt("FAIL_COUNT")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

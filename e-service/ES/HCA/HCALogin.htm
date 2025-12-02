@@ -1,0 +1,74 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>HCA醫事憑證 - 登入驗證</title>
+    <script type="text/javascript" charset="utf-8" src="HCAAPISVIAdapter.js"></script>
+    <script type="text/javascript" charset="utf-8" src="CheckAndLoad.js"></script>
+    <script type="text/javascript" charset="utf-8" src="AllComponentErrCode.js"></script>
+    <script type="text/javascript" charset="utf-8" src="HCALogin.js"></script>
+    <script type="text/javascript">
+        function init() {
+            mainForm.PIN.value = "";
+            CheckBrowserAndLoad("HCAAPI");
+        }
+
+        function doVerifyHCA(form) {
+            VerifyHCA(form.PIN.value,
+                function (data, cert) {  // success
+                    console.log(data);
+                    /*下列範例資料是 醫事人員卡 格式, 有另外一種 醫事機構卡*/
+                    /*
+{
+  "type": "醫事人員卡",
+  "醫事人員中文姓名": "王弘裕",
+  "醫事人員英文姓名": "",
+  "醫事人員性別": "M",
+  "醫事人員出生日期": "0641018",
+  "醫事人員身份證號": "Q122544247",
+  "醫事人員類別": "A"
+}
+                    */
+                    console.log(cert);
+                    /*
+{
+  "b64": "MIIEvTCCA6WgAwIBAgIQAQBqGAAAAUqKQzLtAAzbwTANBgkqhkiG9w0BAQUFADBE\nMQswCQYDVQQGEwJUVzESMBAGA1UECgwJ6KGM5pS/6ZmiMSEwHwYDVQQLDBjphqvk\nuovmhpHorYnnrqHnkIbkuK3lv4MwHhcNMTQxMjI3MDU0MTA3WhcNMjQxMjI3MDU0\nMTA3WjA5MQswCQYDVQQGEwJUVzEPMA0GA1UEAx4Gc4tfGIjVMRkwFwYDVQQFExAw\nMDAwMDAwMDEwMjg4NTI3MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA\npTm+DScg5mIbRjUeJjgPCIAMyhyd2pxv94V/G+w2yvvL5rL6YlseBKHIk8zLweI5\n3+Ercsub81gE43ppE9+/Zu4B5lljXxzMxN8Pm/haq1cWREgyzCXSFbY1jao8K3iR\nk3+yo1ARby4tGvkzxlq4G/rahe2NEniPuPPEzmk/bmXkaufSh5IQXspUVT3x9fiQ\nsowrP+pfHvg2NJwhy5UAvhS5doj8fLLVzBsR2T4M14xSDDkI/EgeoNgIpzpLA170\n4iLdZzFtjwV8uZgbxuWKBCvYcf/tnA+B1hxVn9DT4dYae/n4kmb4xeC9TyRWZi+3\nhXwZypl8VG3UpOH9YsvbGQIDAQABo4IBtDCCAbAwHQYDVR0OBBYEFF+BH2wC5Ooi\nvrvQ+yxcjHEV76leMB8GA1UdIwQYMBaAFLPIVnJoxoUiC6l5vB0QP3ZxsZTQMEoG\nA1UdHwRDMEEwP6A9oDuGOWh0dHA6Ly9oY2FvY3NwLm5hdC5nb3YudHcvcmVwb3Np\ndG9yeS9IQ0EvQ1JML2NvbXBsZXRlLmNybDALBgNVHQ8EBAMCB4AwHwYDVR0RBBgw\nFoEUaHl3YW5nMTk3NUBnbWFpbC5jb20wgaMGCCsGAQUFBwEBBIGWMIGTMEIGCCsG\nAQUFBzABhjZodHRwOi8vaGNhb2NzcC5uYXQuZ292LnR3L2NnaS1iaW4vT0NTUC9v\nY3NwX3NlcnZlci5leGUwTQYIKwYBBQUHMAKGQWh0dHA6Ly9oY2FvY3NwLm5hdC5n\nb3YudHcvcmVwb3NpdG9yeS9IQ0EvQ2VydHMvSXNzdWVkVG9UaGlzQ0EucDdiMBYG\nA1UdIAQPMA0wCwYHYIZ2ZQADAzAAMDYGA1UdCQQvMC0wFQYHYIZ2AWQCATEKBghg\nhnYBZAMBBzAUBgdghnYBZAI5MQkMB1ExLTQyNDcwDQYJKoZIhvcNAQEFBQADggEB\nAAFOPsYPDgZXAB+aORzQ24T58vcsBKmth00FChVDVFQQzG9rrPneIzlRF8cHtA/w\nnel8hckbVAgmMG4dB6lgYOoiRNGSsG9uSd/o24xuulD5N+u4GxT+b9VtN4aATp+B\nQizbJCg0Ds2Wv/PvkSFraop3iuTeoxtuYsTB9t3mmAFWICeNg72CjxjfVdte6AkN\nbLCjVJyqUVAa9e9+Z4mj5p7BcAzlt5JyjJ0HPNeHjQPfDTXFKEMF8TYUXN8OSeOS\npmUrCR8IFkhZBMZVT47B+K2cwTkNHkSKgk2dJtsX32NtVxwUfANaiG806PyYjpNI\nqcvL1nIJpqTVQED6AAgl2kI=\n",
+  "SN": "01006A180000014A8A4332ED000CDBC1",
+  "Subject_CN": "王弘裕",
+  "Subject_E": "",
+  "UTCIssueDate": "Sat Dec 27 13:41:07 2014\n",
+  "UTCExpiredDate": "Fri Dec 27 13:41:07 2024\n"
+}
+                    */
+
+
+                    // PIN 碼驗證成功
+                    // 取出所需的憑證資料, 串接到 hidden 欄位, 再 submit 到後端
+                    // 要再額外檢查: 憑證效期, 卡片持有者IDNO, 會員帳號綁定的憑證序號是否相同,...
+
+                    alert("PIN碼驗證成功, 請檢視 console log 以得知取得的欄位");
+                },
+                function (msg) {  // fail
+                    alert(msg);
+                });
+        }
+    </script>
+</head>        
+<body onload="init();">  
+        
+    <form name="mainForm" method="POST" action="">
+        <h2>HCA醫事憑證登入</h2>
+        <label for="IDNO">身份證號：</label><input id="IDNO" name="IDNO" value="" autocomplete="off" /> <br />
+        <label for="PIN">憑證PIN碼：</label><input id="PIN" name="PIN" type="password" value="" autocomplete="off" /> <br /><br />
+        <input type="button" value="登入" onclick="doVerifyHCA(this.form)" />
+
+        <!--驗證成功後, 儲存憑證序號-->
+        <input type="hidden" name="SerialNumber" value="" />
+        <!--驗證成功後, 儲存憑證資料-->
+        <input type="hidden" name="Cert1" value="" />
+
+
+    </form>
+
+</body>
+
+</html>

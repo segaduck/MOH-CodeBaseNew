@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "LoginC2";
+}
+
+
+@using (Html.BeginForm("CertLogin2", "Member", new { ReturnUrl = Request.QueryString["ReturnUrl"] }, FormMethod.Post, new { id = "CertLoginForm2" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <table class="formTable1">
+        <tr>
+            <th style="width: 130px;">身份證字號</th>
+            <td>
+               @Html.TextBox("CertLoginUserId", "", new { style = "width: 100px;" })            </td>
+        </tr>
+       
+    </table>
+    <div class="formButtomBar">
+         <input type="button" value="確定" onclick="document.getElementById('CertLoginForm2').submit();" id="CertLoginSubmit" />
+    </div>
+   
+}

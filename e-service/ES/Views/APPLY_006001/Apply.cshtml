@@ -1,0 +1,582 @@
+﻿@using ES.Models;
+@using ES.Commons;
+@using ES.Models.ViewModels;
+@model Apply_006001FormModel
+@{
+    Layout = null;
+    ShareCodeListModel sc = new ShareCodeListModel();
+    ViewBag.Title = "國民年金爭議審議線上申辦";
+}
+
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申辦項目</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">@ViewBag.Title</p>
+        </div>
+        <label class="step-label col-sm-2" for="">申辦日期</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.APP_DATE</p>@Html.HiddenFor(m => m.APP_DATE)
+        </div>
+    </div>
+    @*申請人*@
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.NAME)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.NAME, new { @class = "form-control", @readonly = true })
+        </div>
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.BIRTHDAY_STR)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.BIRTHDAY_STR, new { @class = "form-control", @readonly = "readonly" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.IDN)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.IDN, new { @class = "form-control", @readonly = "readonly" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.EMAIL)</label>
+        <div class="col-sm-10">
+            @Html.EmailForTurbo(m => m.EMAIL)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.H_TEL)</label>
+        <div class="col-sm-10">
+            @Html.TelForTurbo(m => m.H_TEL)
+            <span>連絡電話、行動電話請擇一填寫</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.MOBILE)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.MOBILE, new { @class = "form-control", MaxLength = 10 })
+            <span>連絡電話、行動電話請擇一填寫</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.C_ZIPCODE)</label>
+        <div class="col-sm-10 form-inline">
+            @Html.TextBoxFor(m => m.C_ZIPCODE, new { @id = "C_ZIPCODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號" })
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.C_ZIPCODE_TEXT, new { @id = "C_ZIPCODE_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-info" onclick="doACC_ADDRSelect('1')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </span>
+            </div>
+            @Html.TextBoxFor(m => m.C_ADDR, new { @class = "form-normal form-50", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+        </div>
+    </div>
+
+    @*被保險人*@
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">同上資料（被保險人與申請人為同一人）</label>
+        <div class="col-sm-4">
+            @Html.HiddenFor(m=>m.ISSAME)
+            @Html.CheckBoxFor(m => m.ISSAME_CHK)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.R_NAME)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.R_NAME, new { @class = "form-control" })
+        </div>
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.R_BIRTH_STR)</label>
+        <div class="col-sm-4">
+            @Html.DatePickerTWFor(m => m.R_BIRTH_STR, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.R_IDN)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.R_IDN, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_TEL)</label>
+        <div class="col-sm-10">
+            @Html.TelForTurbo(m => m.R_TEL)
+            <span>連絡電話、行動電話請擇一填寫</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_MOBILE)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.R_MOBILE, new { @class = "form-control", MaxLength = 10 })
+            <span>連絡電話、行動電話請擇一填寫</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.R_ZIPCODE)</label>
+        <div class="col-sm-10 form-inline">
+            @Html.TextBoxFor(m => m.R_ZIPCODE, new { @id = "R_ZIPCODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號" })
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.R_ZIPCODE_TEXT, new { @id = "R_ZIPCODE_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-info" onclick="doACC_ADDRSelect('3')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </span>
+            </div>
+            @Html.TextBoxFor(m => m.R_ADDR, new { @class = "form-normal form-50", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+            <br /><input type="checkbox" id="isSameAddr"/><span>同申請人通訊地址</span>
+        </div>
+    </div>
+    <!--申請說明-->
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.KINDTYPE)</label>
+        <div class="col-sm-10 form-inline">
+            <label class="radio-inline">
+                @Html.CheckBoxFor(m => m.KIND1_CHK) &nbsp;&nbsp;
+                @*@Html.RadioButtonFor(m => m.KINDTYPE, "1", new { @class = "form-normal" }) &nbsp;&nbsp;*@
+                @Html.DatePickerTWFor(m => m.LIC_DATE_STR, new { @class = "form-normal" })&nbsp;&nbsp;保國
+                @Html.TextBoxFor(m => m.LIC_CD, new { @class = "form-normal" }) &nbsp;&nbsp; 字第
+                @Html.TextBoxFor(m => m.LIC_NUM, new { @class = "form-normal" }) &nbsp;&nbsp; 號
+            </label>
+            <br />
+            <label class="radio-inline">
+                @Html.CheckBoxFor(m => m.KIND2_CHK)
+                @*@Html.RadioButtonFor(m => m.KINDTYPE, "2", new { @class = "form-normal" })*@ 
+                &nbsp;&nbsp;繳款單&nbsp;&nbsp;(
+                @Html.TextBoxFor(m => m.PAY_YEAR, new { @class = "form-normal", @maxlength = "3" })&nbsp;&nbsp;年
+                @Html.TextBoxFor(m => m.PAY_MONTH, new { @class = "form-normal", @maxlength = "2" })&nbsp;&nbsp;月
+                &nbsp;&nbsp;第&nbsp;&nbsp;
+                @Html.TextBoxFor(m => m.PAY_NUM, new { @class = "form-normal", @maxlength = "30" })
+                &nbsp;&nbsp;號&nbsp;&nbsp;)
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>收受或知悉核定文件日期</label>
+        <div class="col-sm-4 form-inline">
+            @Html.DatePickerTWFor(m => m.KNOW_DATE_STR, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2"><span style="color:red;">*</span>申請審議之請求事項、事實及理由</label>
+        <div class="col-sm-10">
+            <span style="color:red;">*</span><span>@Html.LabelFor(m => m.KNOW_MEMO)</span>
+            @Html.TextAreaFor(m => m.KNOW_MEMO, new { @class = "form-control", @maxlength = "300" })
+            <br />
+            <span style="color:red;">*</span><span>@Html.LabelFor(m => m.KNOW_FACT)</span>
+            @Html.TextAreaFor(m => m.KNOW_FACT, new { @class = "form-control", @maxlength = "300" })
+        </div>
+    </div>
+    <h2 class="second-title"><a href="javascript:void(0)" onclick="doAdd()" class="btn btn-save">新增</a>&nbsp;&nbsp;&nbsp;&nbsp;佐證文件檔案上傳<span style="color:red">(每1個檔案須小於2MB，總檔案大小5MB以下，請附上圖檔，例如：PDF、JPG、JPEG、BMP、PNG、GIF、TIF)</span></h2>
+    @Html.HiddenFor(m => m.IS_MERGE)
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">勞保局核定文件影本</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE_1, new { @id = "FILE_1", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+            @Html.HiddenFor(m => m.FILE_1_TEXT)
+        </div>
+    </div>
+    <div id="RowTable">
+        <div id="row1" data-group="Row">
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><button type="button" id="btnDelte_1" class="btn btn-clear" onclick="deleteRow($(this))">刪除</button>&nbsp;&nbsp;&nbsp;&nbsp;序號</label>
+                <div class="col-sm-1">
+                    <p id="SEQ_NO" class="form-control-static">1</p>
+                    @Html.HiddenFor(m => m.SRVLIST[0].SEQ_NO)
+                </div>
+                <div class="col-sm-9">
+                    @Html.TextBoxFor(m => m.SRVLIST[0].FILE_2, new { @id = "FILE_2", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                    @Html.HiddenFor(m => m.SRVLIST[0].FILE_2_TEXT)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="doPreView()">存檔並預覽</button>
+        <button type="reset" class="btn btn-clear" onclick="doReset()">清除資料</button>
+    </div>
+    <input type="hidden" id="rowCount" value="1" />
+    <input type="hidden" id="emptyRow" value="" />
+</div>
+
+<script>
+    $(document).ready(function () {
+        //$("input[name='KINDTYPE']").on("change", function () {
+        //    console.log("KINDTYPE 選擇: " + $(this).val());
+        //    if ($(this).val() == "1") {
+        //        $("#KIND1_CHK").val("true");  // 更新隱藏欄位的值
+        //        $("#KIND2_CHK").val("false");
+        //        $('#PAY_YEAR').val('');
+        //        $('#PAY_MONTH').val('');
+        //        $('#PAY_NUM').val('');
+        //    } else {
+        //        $("#KIND1_CHK").val("false");
+        //        $("#KIND2_CHK").val("true");
+        //        $('#LIC_DATE_STR').val('');       // 清空隱藏欄位
+        //        $('#LIC_DATE_STR_TW').val('');    // 清空可見輸入框
+        //        $('#LIC_CD').val('');
+        //        $('#LIC_NUM').val('');
+        //    }
+        //});
+        
+        // 申請人地址
+        $('#C_ZIPCODE').on('blur', doACC_ADDRNameGet1); doACC_ADDRNameGet1();
+        // 代理人地址
+        $('#R_ZIPCODE').on('blue', doACC_ADDRNameGet3); doACC_ADDRNameGet3();
+        // 動帶檔案上傳
+        $('#emptyRow').val($('#row1').html());
+        $('#row1 input[name="SRVLIST[0].SEQ_NO"').val('1');
+
+        $("#ISSAME_CHK").on("change", function () {
+            if ($(this).prop("checked")) {
+                $("#ISSAME").val("Y");
+                // 申請人 → 被保險人 (電話)
+                $("#R_TEL").val($("#H_TEL").val()).prop("readonly", true);
+                $("#R_MOBILE").val($("#MOBILE").val()).prop("readonly", true);
+                // 申請人 → 被保險人 (電話)
+                $("#R_TEL_Zip").val($("#H_TEL_Zip").val()).prop("readonly", true);
+                $("#R_TEL_Phone").val($("#H_TEL_Phone").val()).prop("readonly", true);
+                $("#R_TEL_Num").val($("#H_TEL_Num").val()).prop("readonly", true);
+
+                // 申請人 → 被保險人 (地址)
+                //$("#R_ZIPCODE").val($("#C_ZIPCODE").val()).prop("readonly", true);
+                //$("#R_ZIPCODE_TEXT").val($("#C_ZIPCODE_TEXT").val()).prop("readonly", true);
+                //$("#R_ADDR").val($("#C_ADDR").val()).prop("readonly", true);
+
+                // 申請人 → 被保險人 (姓名)、身分證字號
+                $("#R_NAME").val($("#NAME").val()).prop("readonly", true);
+                $("#R_IDN").val($("#IDN").val()).prop("readonly", true);
+
+                // 申請人 → 被保險人 (生日)
+                var birthday = $("#BIRTHDAY_STR").val();
+                $("#R_BIRTH_STR").val(birthday);
+                $("#R_BIRTH_STR_TW").val(birthday).prop("readonly", true);
+            } else {
+                $("#ISSAME").val("N");
+                // 取消勾選後清空並恢復可編輯
+                $("#R_TEL").val("").prop("readonly", false);
+                $("#R_MOBILE").val("").prop("readonly", false);
+                $("#R_TEL_Zip").val("").prop("readonly", false);
+                $("#R_TEL_Phone").val("").prop("readonly", false);
+                $("#R_TEL_Num").val("").prop("readonly", false);
+                //$("#R_ZIPCODE").val("").prop("readonly", false);
+                //$("#R_ZIPCODE_TEXT").val("").prop("readonly", false);
+                //$("#R_ADDR").val("").prop("readonly", false);
+                $("#R_NAME").val("").prop("readonly", false);
+                $("#R_IDN").val("").prop("readonly", false);
+                $("#R_BIRTH_STR").val("");
+                $("#R_BIRTH_STR_TW").val("").prop("readonly", false);
+            }
+        });
+
+        // 被保險人同申請人通訊地址
+        $("#isSameAddr").on("change", function () {
+            if ($(this).prop("checked")) {
+                // 申請人 → 被保險人 (地址)
+                $("#R_ZIPCODE").val($("#C_ZIPCODE").val());
+                $("#R_ZIPCODE_TEXT").val($("#C_ZIPCODE_TEXT").val());
+                $("#R_ADDR").val($("#C_ADDR").val());
+            }
+        });
+    });
+
+    // 申請人地址
+    function loadDialogACC_ADDRCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    console.log(data);
+                    console.log(resp);
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doACC_ADDRSelect(casetype) {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    if (casetype == "1") {
+                        //訴願人
+                        $('#C_ZIPCODE').val(retData.Id);
+                        $('#C_ZIPCODE_TEXT').val(retData.Name);
+                    } else if (casetype == "3") {
+                        //代理人
+                        $('#R_ZIPCODE').val(retData.Id);
+                        $('#R_ZIPCODE_TEXT').val(retData.Name);
+                    }
+                }
+            });
+    }
+
+    function doACC_ADDRNameGet1() {
+        var code = $('#C_ZIPCODE');
+        var code_text = $('#C_ZIPCODE_TEXT');
+        var data = null;
+        data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#C_ZIPCODE_TEXT'),
+            'add': $('#C_ZIPCODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            loadDialogACC_ADDRCodeMapName(data);
+        }
+    }
+
+    function doACC_ADDRNameGet3() {
+        var code = $('#R_ZIPCODE');
+        var code_text = $('#R_ZIPCODE_TEXT');
+        var data = null;
+        data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#R_ZIPCODE_TEXT'),
+            'add': $('#R_ZIPCODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            loadDialogACC_ADDRCodeMapName(data);
+        }
+    }
+
+    //檢核 有誤為 false 正常為true
+    function validfile() {
+        var err_msg1 = "";
+        //身份證字號格式檢查
+        if ($('#R_IDN').val() != "" && ($('#R_IDN').val() != null)) {
+            id = $('#R_IDN').val().toUpperCase();
+            if (!studIdNumberIdentify(id)) {
+                err_msg1 = "被保險人身分證格式錯誤!";
+            }
+        }
+        if (err_msg1 != "") {
+            blockAlert(err_msg1, "提示訊息");
+            return false;
+        }
+        return true;
+    }
+
+    // 轉至瀏覽
+    function doPreView() {
+        if (!validfile()) { return; }
+
+        var data = getFormSubmitableFields($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("Apply")', data, function (retData) {
+            if (retData.status) {
+                ajaxLoadMore('@Url.Action("PreView")', data, function (getHtml) {
+                    $('#form_tab').removeClass('active');
+                    $('#form').attr('class', 'tab-pane fade');
+                    $('#form_tab1').attr('class', 'active');
+                    $('#form1').attr('class', 'tab-pane fade active in');
+                    $("#form1").html(getHtml);
+                });
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+        //}
+    }
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".PDF",".JPG",".JPEG",".BMP",".PNG",".GIF",".TIF");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        }
+        else {
+            //$("#" + file.name + "_TEXT").val(file.files.item(0).name);
+            $('input[type="hidden"][name="' + file.name + '_TEXT"]').val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+    // 佐證檔案 新增
+    function doAdd() {
+        var rowCount = parseInt($('#rowCount').val(), 10) + 1;
+        console.log(rowCount);
+        console.log('<div id=\"row' + rowCount + '\" data-group=\"Row\">' + $('#emptyRow').val().replace(/btnDelte_1/gi, 'btnDelte_' + rowCount).replace(/SRVLIST_0/gi, 'SRVLIST_' + parseInt($('#rowCount').val(), 10)).replace(/SRVLIST\[0\]/gi, 'SRVLIST[' + parseInt($('#rowCount').val(), 10) + ']') + '</div>');
+        $('#RowTable').append('<div id=\"row' + rowCount + '\" data-group=\"Row\">' + $('#emptyRow').val().replace(/btnDelte_1/gi, 'btnDelte_' + rowCount).replace(/SRVLIST_0/gi, 'SRVLIST_' + parseInt($('#rowCount').val(), 10)).replace(/SRVLIST\[0\]/gi, 'SRVLIST[' + parseInt($('#rowCount').val(), 10) + ']') + '</div>');
+        $('#row' + rowCount + ' #SEQ_NO').text(rowCount);
+        $('#row' + rowCount + ' #SEQ_NO').val(rowCount);
+        $('#row' + rowCount + ' input[name="SRVLIST[' + (rowCount - 1) + '].SEQ_NO"]').val(rowCount);
+        $('#rowCount').val(rowCount);
+    }
+
+    // 清除資料
+    function doReset() {
+        $('#RowTable div[id^="row"]').remove();
+        $('#rowCount').val(0);
+        addGoodRow();
+    }
+
+    // 刪除檔案
+    function deleteRow(obj) {
+        var rowId = $('#' + $(obj).attr('id')).parent().parent().parent().attr('id');
+        var cntrow = 0;
+        $('div[id^="row"]').each(function () {
+            cntrow++;
+        })
+        if (cntrow > 1) {
+            $('#RowTable #' + rowId).remove();
+            var fileSet = $('#RowTable div[id^="row"] input[type="file"]');
+            if ($('#RowTable').data('group', 'Row') == null || $('#RowTable').data('group', 'Row') == undefined) {
+                $('#rowCount').val(0);
+            }
+            else {
+                var count = 1;
+                for (i = 0; i < $('#RowTable div[id^="row"]').length; i++) {
+                    $($('#RowTable div[id^="row"]')[i]).attr('id', 'row' + count);
+                    $('#' + $($('#RowTable div[id^="row"]')[i]).attr('id') + ' #SEQ_NO').text(count);
+                    $($('#RowTable div[id^="row"]')[i]).find('input[type="text"]').each(function () {
+                        $(this).attr('name', $(this).attr('name').replace(/SRVLIST_[0-9]/gi, 'SRVLIST_' + i).replace(/SRVLIST\[[0-9]\]/gi, 'SRVLIST[' + i + ']'));
+                    })
+                    $($('#RowTable div[id^="row"]')[i]).find('input[type="hidden"]').each(function () {
+                        $(this).attr('name', $(this).attr('name').replace(/SRVLIST_[0-9]/gi, 'SRVLIST_' + i).replace(/SRVLIST\[[0-9]\]/gi, 'SRVLIST[' + i + ']'));
+                    })
+                    count++;
+                }
+
+                $('#rowCount').val((count - 1));
+
+                count = 0
+                var rowCount = 1
+                var cnt = 0;
+                $(fileSet).each(function () {
+                    var newcnt = parseInt(cnt / 5)
+                    var pnam = ($(this)[0].name).replace(/SRVLIST\[[0-9]\]/gi, 'SRVLIST[' + newcnt + ']');
+                    var tagName = pnam;
+                    var tagId = pnam.replace(/SRVLIST\[[0-9]\]./gi, '');
+                    $($((fileSet)[cnt])[0]).attr('id', tagId)
+                    $($((fileSet)[cnt])[0]).attr('name', tagName)
+                    cnt++;
+                })
+
+                count = 1;
+                var rowCount = 0;
+                for (i = 0; i < $('#RowTable div[id^="row"]').length; i++) {
+                    var destObjId = $($('#RowTable div[id^="row"]')[i]).attr('id')
+                    $('#' + $($('#RowTable div[id^="row"]')[i]).attr('id') + ' input[name^="SRVLIST[' + i + '].SRL_NO"]').val(count);
+                    for (j = 0; j < $('#' + destObjId + ' input[type="file"]').length; j++) {
+                        var newObj = $(fileSet)[rowCount];
+                        $($($($('#' + destObjId + ' input[type="file"]')[j]))[0]).replaceWith($(newObj)[0]);
+                        setHiddenFileName($($('#' + destObjId + ' input[type="file"]')[j]).attr('name'));
+                        rowCount++
+                    }
+                    count++;
+                }
+            }
+        }
+    }
+
+    function setHiddenFileName(objName) {
+        $($('input[name="' + objName + '"]').siblings()[0]).val($('input[name="' + objName + '"]').val().replace(/C:\\fakepath\\/i, ''));
+    }
+
+    //身分證字號或外籍人士居留証驗證
+    /*
+     * 第一個字元代表地區，轉換方式為：A轉換成1,0兩個字元，B轉換成1,1……但是Z、I、O分別轉換為33、34、35
+     * 第二個字元代表性別，1代表男性，2代表女性
+     * 第三個字元到第九個字元為流水號碼。
+     * 第十個字元為檢查號碼。
+     * 每個相對應的數字相乘，如A123456789代表1、0、1、2、3、4、5、6、7、8，相對應乘上1987654321，再相加。
+     * 相加後的值除以模數，也就是10，取餘數再以模數10減去餘數，若等於檢查碼，則驗證通過
+     */
+    function studIdNumberIdentify(idNumber) {
+        var isPass = false;
+        var idtype = "0";
+        var errmsg = "";
+        studIdNumber = idNumber.toUpperCase();
+        console.log(studIdNumber);
+        // 判斷本國人或外籍
+        //驗證填入身分證字號長度
+        if (idNumber.length != 10) {
+            console.log("本國人長度不足");
+            errsmg = "身分證字號長度不足";
+        }
+
+        //格式，用正則表示式比對第一個字母是否為英文字母
+        if (!isNaN(idNumber.substr(1, 9)) && (/^[A-Z]$/.test(idNumber.substr(0, 1)))) {
+            idtype = "1";
+        }
+        //外籍生，居留證號規則跟身分證號差不多，只是第二碼也是英文字母代表性別，跟第一碼轉換二位數字規則相同，但只取餘數
+        //格式，用正則表示式比對第一個字母是否為英文字母
+        if (!isNaN(idNumber.substr(2, 8)) && (/^[A-Z]$/.test(idNumber.substr(0, 1))) && (/^[A-Z]$/.test(idNumber.substr(1, 1)))) {
+            idtype = "2";
+        }
+        if (errmsg == "" && idtype == "1") {
+            var idHeader = "ABCDEFGHJKLMNPQRSTUVXYWZIO"; //按照轉換後權數的大小進行排序
+            //這邊把身分證字號轉換成準備要對應的
+            studIdNumber = (idHeader.indexOf(idNumber.substring(0, 1)) + 10) + '' + idNumber.substr(1, 9);
+            //開始進行身分證數字的相乘與累加，依照順序乘上1987654321
+            s = parseInt(studIdNumber.substr(0, 1)) +
+                parseInt(studIdNumber.substr(1, 1)) * 9 +
+                parseInt(studIdNumber.substr(2, 1)) * 8 +
+                parseInt(studIdNumber.substr(3, 1)) * 7 +
+                parseInt(studIdNumber.substr(4, 1)) * 6 +
+                parseInt(studIdNumber.substr(5, 1)) * 5 +
+                parseInt(studIdNumber.substr(6, 1)) * 4 +
+                parseInt(studIdNumber.substr(7, 1)) * 3 +
+                parseInt(studIdNumber.substr(8, 1)) * 2 +
+                parseInt(studIdNumber.substr(9, 1));
+
+            checkNum = parseInt(studIdNumber.substr(10, 1));
+            //模數 - 總和/模數(10)之餘數若等於第九碼的檢查碼，則驗證成功
+            //若餘數為0，檢查碼就是0
+            if ((s % 10) == 0 || (10 - s % 10) == checkNum) {
+                isPass = true;
+                console.log("local isPass");
+            } else {
+                isPass = false;
+                console.log("local檢查碼錯誤");
+            }
+        } else if (errmsg == "" && idtype == "2") {
+            var idHeader = "ABCDEFGHJKLMNPQRSTUVXYWZIO"; //按照轉換後權數的大小進行排序
+            //這邊把身分證字號轉換成準備要對應的
+            studIdNumber = (idHeader.indexOf(idNumber.substring(0, 1)) + 10) + '' + ((idHeader.indexOf(idNumber.substr(1, 1)) + 10) % 10) + '' + idNumber.substr(2, 8);
+            //開始進行身分證數字的相乘與累加，依照順序乘上1987654321
+
+            s = parseInt(studIdNumber.substr(0, 1)) +
+                parseInt(studIdNumber.substr(1, 1)) * 9 +
+                parseInt(studIdNumber.substr(2, 1)) * 8 +
+                parseInt(studIdNumber.substr(3, 1)) * 7 +
+                parseInt(studIdNumber.substr(4, 1)) * 6 +
+                parseInt(studIdNumber.substr(5, 1)) * 5 +
+                parseInt(studIdNumber.substr(6, 1)) * 4 +
+                parseInt(studIdNumber.substr(7, 1)) * 3 +
+                parseInt(studIdNumber.substr(8, 1)) * 2 +
+                parseInt(studIdNumber.substr(9, 1));
+
+            //檢查號碼 = 10 - 相乘後個位數相加總和之尾數。
+            checkNum = parseInt(studIdNumber.substr(10, 1));
+            //模數 - 總和/模數(10)之餘數若等於第九碼的檢查碼，則驗證成功
+            ///若餘數為0，檢查碼就是0
+            if ((s % 10) == 0 || (10 - s % 10) == checkNum) {
+                isPass = true;
+                console.log("foreign isPass");
+            } else {
+                isPass = false;
+                console.log("foreign檢查碼錯誤");
+            }
+        }
+
+        return isPass;
+    }
+</script>

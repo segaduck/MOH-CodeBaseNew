@@ -1,0 +1,950 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_005003FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+    ViewBag.SRV_NAME = "WHO格式之產銷證明書(英文)";
+    //2B.3僅供外銷專用之原因-dropdown.PList2B3 -m.F_2B_3-s_F_2B_3-Model.F_2B_3
+    if (Model == null) { return; }
+    //string s_MERGEYN = "否";
+    //if (Model.MERGEYN == "Y") { s_MERGEYN = "是"; }
+    //string s_F_2B_2_TEXT = dropdown.Get_PList2B2_TEXT(Model.F_2B_2);
+    //string s_F_2A_3_TEXT = dropdown.Get_PList2A3_TEXT(Model.F_2A_3);
+    //string s_F_2B_3_TEXT = dropdown.Get_PList2B3_TEXT(Model.F_2B_3);
+}
+
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    @Html.HiddenFor(m => m.APP_ID)
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">申辦項目</label>
+            <div class="col-sm-4"><p class="form-control-static">@Html.Raw(ViewBag.SRV_NAME)</p></div>
+            <label class="step-label col-sm-2" for="">申請日期</label>
+            <div class="col-sm-4">@Html.BLATYPForTurbo(m => m.APP_TIME_TW, Model.APP_TIME_TW)</div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申辦份數</label>
+            <div class="col-sm-4">
+                @Html.HiddenFor(m => m.PAYCOUNT)
+                @Html.HiddenFor(m => m.COPIES)
+                @Html.DropDownListFor(m => m.PAYCOUNT, dropdown.GetPayCountSelect, new { @id = "PAYCOUNTSELECT", @class = "form-normal", onchange = "CalculationVal()" })
+            </div>
+            <label class="step-label col-sm-2" for="">繳費金額</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.PAYAMOUNT, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+        </div>
+        <h2 class="second-title">申請基本資料</h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>公司名稱</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.NAME, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.CNT_NAME, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話</label>
+            <div class="col-sm-10">
+                <span>(</span>
+                @Html.TextBoxFor(m => m.TEL_0, new { @class = "form-normal form-10" })
+                <span>)</span>
+                @Html.TextBoxFor(m => m.TEL_1, new { @class = "form-normal" })
+                <span>#</span>
+                @Html.TextBoxFor(m => m.TEL_2, new { @class = "form-normal form-10" })
+                @Html.HiddenFor(m => m.TEL)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">傳真</label>
+            <div class="col-sm-10">
+                <span>(</span>
+                @Html.TextBoxFor(m => m.FAX_0, new { @class = "form-normal form-10" })
+                <span>)</span>
+                @Html.TextBoxFor(m => m.FAX_1, new { @class = "form-normal" })
+                <span>#</span>
+                @Html.TextBoxFor(m => m.FAX_2, new { @class = "form-normal form-10" })
+                @Html.HiddenFor(m => m.FAX)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.EMAIL_0, new { @class = "form-normal form-30" })
+                @Html.DropDownListFor(m => m.EMAIL_1, dropdown.GetMailDomainList, new { @class = "form-normal", onchange = "doEmailChange()" })
+                @Html.TextBoxFor(m => m.EMAIL_2, new { @class = "form-normal" })
+                @Html.HiddenFor(m => m.EMAIL)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @*外銷國家*@
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>外銷國家</label>
+            <div class="col-sm-10">@Html.TextBoxFor(m => m.MF_ADDR, new { @class = "form-control" })</div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                <span>可輸入多個外銷國，各國名之間以「,」隔開，最後請以「.」結尾。</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">
+                <span style="color: red;"> *</span>2A.1藥品許可證字號
+                <button type="button" class="btn btn-save" onclick="F_2A_1_WORDsearch()">查詢</button>
+            </label>
+            <div class="col-sm-4">
+                @Html.DropDownListFor(m => m.F_2A_1_WORD, dropdown.PList2A1, new { @class = "form-control" })
+            </div>
+            <label class="step-label col-sm-1" for="" style="text-align: right">第</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.F_2A_1_NUM, new { @class = "form-control", placeholder = "請輸入數字", maxlength = "10" })
+            </div>
+            <label class="step-label col-sm-1" for="">號</label>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                <span>
+                    1.可搜尋藥品許可證字號後自動帶入許可證資料，亦可直接於下方欄位直接輸入。<br>
+                </span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">1.勾選藥品名稱</label>
+            <div class="col-sm-10">
+                <table border="1" width="100%">
+                    <thead>
+                        <tr>
+                            <th align="center">選取</th>
+                            <th align="center" colspan="2">藥品品名</th>
+                        </tr>
+                    </thead>
+                    <tbody id="changeItemDRUG"></tbody>
+                </table>
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">請勾選欲申請之藥品名稱。</div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>1.2本產品是否獲准在國內販售？</label>
+            <div class="col-sm-2">
+                @Html.DropDownListFor(m => m.F_1_2, dropdown.YorN_list, new { @class = "form-control", onchange = "CG12_CHK()" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                1.若為外銷專用許可證則選擇「否」。<br />
+                2.可以下拉式選單修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">1.藥品名稱</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.F_1, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                1. 請依藥品許可證所載中、英文品名、外銷品名填寫，兩品名之間請空一格。<br />
+                2. 可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.F_1_DF, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-10 col-sm-offset-2">
+                <span>請輸入劑型之英文名稱。</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>1.1處方說明</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.F_1_1, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                <span>處方含量之說明，最後請以「:」結尾，例如：Each gram contains:</span>
+            </div>
+        </div>
+
+        @*GoodsDynamicGird005003*@
+        @*成分內容*@
+        @if (!Model.IS_PREVIEW)
+        {
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">成分內容</label>
+                <div class="col-sm-10">
+                    @Html.EditorFor(m => m.F11, "GoodsDynamicGrid005003")
+                    <br />
+                    1. 請依本次申請案需檢附之「處方之中藥材中英文對照表」填寫。
+                    <br />
+                    2. 欲重新帶入請重複輸入「藥品許可證字號」之步驟。
+                </div>
+            </div>
+        }
+
+        <div class="form-group">
+            @*1.3本產品是否有在國內販售？*@
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>1.3本產品是否有在國內販售？</label>
+            <div class="col-sm-2">
+                @Html.DropDownListFor(m => m.F_1_3, dropdown.YorN_list, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10"><span>可以下拉式選單修改自動帶入之資料。</span></div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2"><span style="color:red;">*</span>2A.1核准日期(中文)</label>
+            <div class="col-sm-4">
+                @Html.DatePickerTWFor(m => m.F_2A_1_DATE_AD, new { size = "10" })
+            </div>
+            <label class="step-label col-sm-2">2A.1核准日期(英文)</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="F_2A_1_DATE_AD_TW_AC" readonly>
+                @*@Html.TextBoxFor(m => m.F_2A_1_DATE_AD, new { @class = "form-control", @readonly = "readonly" })*@
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                1.即藥品許可證所載發證日期。<br />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.2/2A.3.1/2B.2.1製造廠名稱</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.F_2A_3_1_NAME, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.2/2A.3.1/2B.2.1製造廠地址</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.F_2A_3_2_ADDR, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-10">
+                <span>
+                    1. 請依藥品許可證所載製造廠地址，以及郵遞區號、國名，英譯後輸入。<br />
+                    2. 建議可至中華郵政官網使用中文地址英譯功能，翻譯製造廠地址。<br />
+                    3. 若非外銷專用之藥品許可證持有者同時為製造廠(無委託製造)，則本欄位即2A.2(藥商)及2A.3.1(製造廠)。<br />
+                    4. 若非外銷專用之藥品許可證，且為委託製造，則本欄位即2A.3.1(製造廠)。<br />
+                    5. 若為外銷專用之藥品許可證，則本欄位即2B.2.1(製造廠)。<br />
+                </span>
+            </div>
+
+        </div>
+        <div id="F_2A2_CHK">
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>是否為委託製造？</label>
+                <div class="col-sm-2">
+                    @Html.DropDownListFor(m => m.F_2A_2_COMM, dropdown.YorN_list, new { @class = "form-control", onchange = "CGF_2A_2_COMM_CHK()" })
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div id="F_2A_2_COMM_CHK">
+                <div class="form-group">
+                    <label id="LB2A2" class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.2藥商名稱</label>
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(m => m.F_2A_2, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label id="LB2A2AD" class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.2藥商地址</label>
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(m => m.F_2A_2_ADDR, new { @class = "form-control" })
+                    </div>
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <span>
+                            1. 請依藥商許可執照所載地址，以及郵遞區號、國名，英譯後輸入。<br />
+                            2. 建議可至中華郵政官網使用中文地址英譯功能，翻譯藥商地址。
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.3藥品許可證持有者之類別</label>
+                <div class="col-sm-10">
+                    @Html.CheckBoxFor(m => m.F_2A_3_CHK_A, new { @id = "F_2A_3_CHK_A", @onclick = "CheckFunABC('F_2A_3_CHK','A')" })
+                    A、同時也是製造廠
+                    @Html.CheckBoxFor(m => m.F_2A_3_CHK_B, new { @id = "F_2A_3_CHK_B", @onclick = "CheckFunABC('F_2A_3_CHK','B')" })
+                    B、僅包裝和(或)貼標
+                    @Html.CheckBoxFor(m => m.F_2A_3_CHK_C, new { @id = "F_2A_3_CHK_C", @onclick = "CheckFunABC('F_2A_3_CHK','C')" })
+                    C、以上皆非。
+                    @Html.HiddenFor(m => m.F_2A_3, new { @id = "F_2A_3_CHK" })
+                </div>
+
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <span>
+                        1.同時為申請案藥品許可證之持有者及製造廠，則選A。<br />
+                        2.可以修改自動帶入之資料。
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.4該藥品許可證是否有經認可之試驗佐證？</label>
+                <div class="col-sm-2">
+                    @Html.DropDownListFor(m => m.F_2A_4, dropdown.YorN_list, new { @class = "form-control" })
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.5所附產品資訊是否完整且與藥品許可證一致？</label>
+                <div class="col-sm-2">
+                    @Html.DropDownListFor(m => m.F_2A_5, dropdown.YorN_list, new { @class = "form-control" })
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>2A.6申請者是否為藥品許可證持有者？</label>
+                <div class="col-sm-2">
+                    @Html.DropDownListFor(m => m.F_2A_6, dropdown.YorN_list, new { @class = "form-control" })
+                </div>
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <span>若選「是」，輸出證明書時2A.6會帶入「The same as the license holder.」。</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""> 2A.6/2B.1申請者之公司名稱</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.F_2A_6_NAME, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""> 2A.6/2B.1申請者之公司地址</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.F_2A_6_ADDR, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                <span>
+                    1. 建議可至中華郵政官網使用中文地址英譯功能，翻譯地址。<br />
+                    2. 若非外銷專用之藥品許可證，則本欄位即2A.6。<br />
+                    3. 若為外銷專用之藥品許可證，則本欄位即2B.1。
+                </span>
+            </div>
+        </div>
+
+        <div id="F_1_2_CHK">
+            <div class="form-group">
+                <label id="LB2B2" class="step-label col-sm-2" for=""><span style="color:red;">*</span>2B.2申請者之類別</label>
+                <div class="col-sm-10">
+                    <div class="col-sm-10">
+                        @Html.CheckBoxFor(m => m.F_2B_2_CHK_A, new { @id = "F_2B_2_CHK_A", @onclick = "CheckFunABC('F_2B_2_CHK','A')" })
+                        A、製造廠
+                        @Html.CheckBoxFor(m => m.F_2B_2_CHK_B, new { @id = "F_2B_2_CHK_B", @onclick = "CheckFunABC('F_2B_2_CHK','B')" })
+                        B、僅包裝和(或)貼標
+                        @Html.CheckBoxFor(m => m.F_2B_2_CHK_C, new { @id = "F_2B_2_CHK_C", @onclick = "CheckFunABC('F_2B_2_CHK','C')" })
+                        C、以上皆非。
+                        @Html.HiddenFor(m => m.F_2B_2, new { @id = "F_2B_2_CHK" })
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label id="LB2B3" class="step-label col-sm-2" for=""><span style="color:red;">*</span>2B.3僅供外銷專用之原因</label>
+                <div class="col-sm-4">
+                    @*@Html.TextBoxFor(m => m.F_2B_3, new { @class = "form-control" })*@
+                    @*2B.3僅供外銷專用之原因m.F_2B_3*@
+                    @Html.DropDownListFor(m => m.F_2B_3, dropdown.PList2B3, new { @class = "form-control" })
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+        </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""> 備註</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.F_2B_3_REMARKS, new { @class = "form-control" })
+                </div>
+                <div class="col-sm-10 col-sm-offset-2">
+                    <span>非必填，本欄位即「Remarks」。</span>
+                </div>
+            </div>
+        @*</div>*@
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>3.製造廠是否定期接受本部之GMP查核？</label>
+            <div class="col-sm-2">
+                @Html.DropDownListFor(m => m.F_3_0, dropdown.YorN_list, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>3.1接受定期查核之週期為何？(年)</label>
+            <div class="col-sm-2">
+                @Html.DropDownListFor(m => m.F_3_1, dropdown.PListF31, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"><span>年</span></div>
+            <div class="col-sm-2"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>3.2申請案藥品許可證之劑型，是否經過本部查核？</label>
+            <div class="col-sm-2">
+                @Html.DropDownListFor(m => m.F_3_2, dropdown.YorN_list, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>3.3申請案藥品許可證之製造設備及製程，是否符合WHO建議之GMP規範？</label>
+            <div class="col-sm-2">
+                @Html.DropDownListFor(m => m.F_3_3, dropdown.YorN_list, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>4.申請者所提供之資訊，是否符合外銷對象對產品製造所有方面的標準？</label>
+            <div class="col-sm-2">
+                @Html.DropDownListFor(m => m.F_4, dropdown.YorN_list, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+
+
+        <!--網站 佐證文件採合併檔案-->
+        <h2 class="second-title">佐證文件檔案上傳</h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+            <div class="col-sm-10">
+                <label class="radio-inline "><input type="radio" name="RadioMerge" value="Y" onchange="RadioChange()">是</label>
+                <label class="radio-inline "><input type="radio" name="RadioMerge" value="N" checked onchange="RadioChange()">否</label>
+                @Html.HiddenFor(m => m.MERGEYN)
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"</div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">藥品許可證影本(正面)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_LICF, new { @id = "FILE_LICF", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_LICF_TEXT)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">藥品許可證影本(反面)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_LICB, new { @id = "FILE_LICB", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_LICB_TEXT)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">處方之中藥材中英文對照表</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_CHART, new { @id = "FILE_CHART", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_CHART_TEXT)
+
+            </div>
+        </div>
+        <div class="btn-bar text-center">
+            @if (HttpContext.Current.Request.IsLocal)
+            {
+                <button type="button" class="btn btn-save" onclick="doTestView()">帶入預設值</button>
+            }
+            <button type="button" class="btn btn-save" onclick="doPreView()">存檔並預覽</button>
+            <button type="reset" class="btn btn-clear">清除資料</button>
+            <button type="button" class="btn btn-clear" onclick="preview_pay()">套印證明書</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        CGF_2A_2_COMM_CHK();
+        CG12_CHK();
+        doEmailChange(); // MAIL 選自訂
+        RadioChange(); // 是否合併檔案
+        CalculationVal(); // 計算繳費金額(n*1500)
+        var F_2A_3_CHK = $("#F_2A_3_CHK").val();
+        var F_2B_2_CHK = $("#F_2B_2_CHK").val();
+        CheckFunABC('F_2A_3_CHK', F_2A_3_CHK);
+        CheckFunABC('F_2B_2_CHK', F_2B_2_CHK);
+    });
+
+    function doTestView() {
+        var s_COLNAME = "";
+        $("#COPIES").val("1");
+        //* 公司名稱
+        //if (string.IsNullOrEmpty(form.NAME)) ModelState.AddModelError("NAME", "公司名稱 為必填欄位");
+        //* 聯絡人
+        //if (string.IsNullOrEmpty(form.CNT_NAME)) ModelState.AddModelError("CNT_NAME", "聯絡人 為必填欄位");
+        $("#CNT_NAME").val("聯絡人");
+        //* 電話
+        $("#TEL").val("22-9378362829#11");
+        //*E-MAIL
+        $("#EMAIL").val("amuting@gmail.com");
+        //* 外銷國家
+        $("#MF_ADDR").val("外銷國家,美國,泰國,英國..");
+        //* 2A.1藥品許可證字號
+        $("#F_2A_1_WORD").val("DOH-OM");
+        $("#F_2A_1_NUM").val("F_2A_1_NUM");
+        //* 1.2本產品是否獲准在國內販售？
+        $("#F_1_2").val("Y");
+        //*劑型
+        $("#F_1_DF").val("劑型");
+        //* 1.1處方說明
+        $("#F_1_1").val("1.1處方說明");
+        //* 1.3本產品是否有在國內販售？
+        $("#F_1_3").val("Y");
+        //*2A.1核准日期
+        //if (!form.F_2A_1_DATE.HasValue) ModelState.AddModelError("F_2A_1_DATE", "2A.1核准日期 為必填欄位");
+        //$("#F_2A_1_DATE").val("2022/01/01");
+        $("#F_2A_1_DATE_AD_TW").val("111/01/01");
+        //$("#F_2A_1_DATE_TW_AC").val("2022/01/01");
+        //* 2A.2/2A.3.1/2B.2.1製造廠地址
+        $("#F_2A_3_2_ADDR").val("2A.2/2A.3.1/2B.2.1製造廠地址");
+        //* 是否為委託製造？
+        $("#F_2A_2_COMM").val("Y");
+        //* 2A.2藥商名稱
+        $("#F_2A_2").val("2A.2藥商名稱");
+        //* 2A.2藥商地址
+        $("#F_2A_2_ADDR").val("2A.2藥商地址");
+        //* 2A.3藥品許可證持有者之類別A、同時也是製造廠 B、僅包裝和(或)貼標
+        $("#F_2A_3").val("A");
+        $("#F_2A_3_CHK").val("A");
+        //* 2A.4該藥品許可證是否有經認可之試驗佐證？
+        $("#F_2A_4").val("Y");
+        //*2A.5所附產品資訊是否完整且與藥品許可證一致？
+        $("#F_2A_5").val("Y");
+        //*2A.6申請者是否為藥品許可證持有者？
+        $("#F_2A_6").val("Y");
+        //* 2B.2申請者之類別 A、製造廠 B、僅包裝和(或)貼標 C、以上皆非。
+        $("#F_2B_2").val("A");
+        $("#F_2B_2_CHK").val("A");
+        //*2B.3僅供外銷專用之原因
+        s_COLNAME = "2B.3僅供外銷專用之原因";
+        $("#F_2B_3").val(s_COLNAME);
+        //* 3.製造廠是否定期接受本部之GMP查核？
+        $("#F_3_0").val("Y");
+        //*3.1接受定期查核之週期為何？
+        $("#F_3_1").val("10");
+        //*3.2申請案藥品許可證之劑型，是否經過本部查核？
+        $("#F_3_2").val("Y");
+        //*3.3申請案藥品許可證之製造設備及製程，是否符合WHO建議之GMP規範？
+        $("#F_3_3").val("Y");
+        //s_COLNAME = "4.申請者所提供之資訊，是否符合外銷對象對產品製造所有方面的標準？";
+        $("#F_4").val("Y");
+    }
+
+    //2A.3藥品許可證持有者之類別
+    //2B.2申請者之類別
+    function CheckFunABC(n1, n2) {
+        $("#" + n1).val(n2);
+        $("#" + n1 + "_A").prop("checked", false);
+        $("#" + n1 + "_B").prop("checked", false);
+        $("#" + n1 + "_C").prop("checked", false);
+        if (n2 == 'A') { $("#" + n1 + "_A").prop("checked", true); }
+        if (n2 == 'B') { $("#" + n1 + "_B").prop("checked", true); }
+        if (n2 == 'C') { $("#" + n1 + "_C").prop("checked", true); }
+    }
+
+    // MAIL 選自訂
+    function doEmailChange() {
+        var ADM_MAIL = $('#EMAIL_1').val();
+        $('#EMAIL_2').removeAttr("readonly");
+        if (ADM_MAIL != "" && ADM_MAIL != "0") {
+            $('#EMAIL_2').attr("readonly", "readonly");
+            var text = $("#EMAIL_1 option:selected").text();
+            //console.log(text);
+            if (text != null && text != "") {
+                //$('#EMAIL_3').val(text);
+                $('#EMAIL_2').val(text);
+            }
+        }
+        $('#EMAIL').val($('#EMAIL_0').val() + '@@' + $('#EMAIL_2').val());
+    }
+
+    // 是否合併檔案
+    function RadioChange() {
+        var MERGE = $('input[name="RadioMerge"]:checked').val();
+        $("#MERGEYN").val(MERGE);
+        //var APPLY_TYPE = $('input[name="APPLY_TYPE"]:checked').val();
+        //if (APPLY_TYPE == "3") {
+        //    $("#opt4").show();
+        //} else {
+        //    $("#opt4").hide();
+        //}
+    }
+
+    // 計算繳費金額(n*1500)
+    function CalculationVal() {
+        $("#PAYCOUNT").val($("#PAYCOUNTSELECT :selected").val());
+        $("#COPIES").val($("#PAYCOUNT").val());
+        $("#PAYAMOUNT").val($("#PAYCOUNTSELECT :selected").val() * 1500);
+
+        $("#pay_paycount").val($("#PAYCOUNTSELECT :selected").val());
+        $("#pay_payamount").val($("#PAYCOUNTSELECT :selected").val() * 1500);
+    }
+
+    //檢核 有誤為 false 正常為true
+    function validfile() {
+        var err_msg1 = "";
+        //if (!validfile()) { return; }
+
+        var TEL_0 = $('#TEL_0').val();
+        var TEL_1 = $('#TEL_1').val();
+        var TEL_2 = $('#TEL_2').val();
+        var TEL = "";
+        if (TEL_0 != "" && TEL_1 != "" && TEL_2 == "") { TEL = TEL_0 + '-' + TEL_1; }
+        else if (TEL_0 != "" && TEL_1 != "" && TEL_2 != "") { TEL = TEL_0 + '-' + TEL_1 + '#' + TEL_2; }
+        else if (TEL_0 == "" && TEL_1 != "" && TEL_2 == "") { TEL = TEL_1; }
+        $('#TEL').val(TEL);
+
+        var FAX_0 = $('#FAX_0').val();
+        var FAX_1 = $('#FAX_1').val();
+        var FAX_2 = $('#FAX_2').val();
+        var FAX = "";
+        if (FAX_0 != "" && FAX_1 != "" && FAX_2 == "") { FAX = FAX_0 + '-' + FAX_1; }
+        else if (FAX_0 != "" && FAX_1 != "" && FAX_2 != "") { FAX = FAX_0 + '-' + FAX_1 + '#' + FAX_2; }
+        else if (FAX_0 == "" && FAX_1 != "" && FAX_2 == "") { FAX = FAX_1; }
+        $('#FAX').val(FAX);
+
+        var EMAIL_0 = $('#EMAIL_0').val();
+        var EMAIL_1 = $('#EMAIL_1').val();
+        var EMAIL_2 = $('#EMAIL_2').val();
+        var EMAIL = "";
+        if (EMAIL_0 != "" && EMAIL_2 != "") { EMAIL = EMAIL_0 + '@@' + EMAIL_2; }
+        $('#EMAIL').val(EMAIL);
+
+        var s_COLNAME = "";
+        //申辦份數
+        if ($('#COPIES').val() == "") { err_msg1 += "申辦份數 為必選欄位 \n"; };
+        //* 公司名稱
+        if ($('#NAME').val() == "") { err_msg1 += "公司名稱 為必填欄位 \n"; };
+        //* 聯絡人
+        if ($('#CNT_NAME').val() == "") { err_msg1 += "聯絡人 為必填欄位 \n"; };
+        //* 電話        //00-0000#00
+        if ($('#TEL').val() == "") { err_msg1 += "電話 為必填欄位 \n"; };
+        //*E-MAIL
+        if ($('#EMAIL').val() == "") { err_msg1 += "E-MAIL 為必填欄位 \n"; };
+        //* 外銷國家
+        if ($('#MF_ADDR').val() == "") { err_msg1 += "外銷國家 為必填欄位 \n"; };
+        var MF_ADDR_len = $('#MF_ADDR').val().length;
+        if ($('#MF_ADDR').val().substring(MF_ADDR_len - 1, MF_ADDR_len) != ".") { err_msg1 += "外銷國家最後請以「.」結尾。 \n"; };
+        //* 2A.1藥品許可證字號
+        s_COLNAME = "2A.1藥品許可證字號-字";
+        if ($('#F_2A_1_WORD').val() == "") { err_msg1 += s_COLNAME + "為必填欄位 \n"; };
+        s_COLNAME = "2A.1藥品許可證字號-號";
+        if ($('#F_2A_1_NUM').val() == "") { err_msg1 += s_COLNAME + "為必填欄位 \n"; };
+        //* 1.2本產品是否獲准在國內販售？
+        s_COLNAME = "1.2本產品是否獲准在國內販售？";
+        if ($('#F_1_2').val() == "") { err_msg1 += s_COLNAME + "為必選欄位 \n"; };
+        //*劑型
+        s_COLNAME = "劑型";
+        if ($('#F_1_DF').val() == "") { err_msg1 += s_COLNAME + "為必填欄位 \n"; };
+        //* 1.1處方說明
+        s_COLNAME = "1.1處方說明";
+        if ($('#F_1_1').val() == "") { err_msg1 += s_COLNAME + "為必填欄位 \n"; };
+        //* 1.3本產品是否有在國內販售？
+        s_COLNAME = "1.3本產品是否有在國內販售？";
+        if ($('#F_1_3').val() == "") { err_msg1 += s_COLNAME + "為必選欄位 \n"; };
+        //*2A.1核准日期
+        s_COLNAME = "2A.1核准日期 ";
+        if ($('#F_2A_1_DATE_AD').val() == "") { err_msg1 += s_COLNAME + "為必填欄位 \n"; };
+        //* 3.製造廠是否定期接受本部之GMP查核？
+        s_COLNAME = "3.製造廠是否定期接受本部之GMP查核？";
+        if ($('#F_3_0').val() == "") { err_msg1 += s_COLNAME + "為必選欄位 \n"; };
+        //*3.1接受定期查核之週期為何？
+        s_COLNAME = "3.1接受定期查核之週期為何？";
+        if ($('#F_3_1').val() == "") { err_msg1 += s_COLNAME + "為必選欄位 \n"; };
+        //*3.2申請案藥品許可證之劑型，是否經過本部查核？
+        s_COLNAME = "3.2申請案藥品許可證之劑型，是否經過本部查核？";
+        if ($('#F_3_2').val() == "") { err_msg1 += s_COLNAME + "為必選欄位 \n"; };
+        //*3.3申請案藥品許可證之製造設備及製程，是否符合WHO建議之GMP規範？
+        s_COLNAME = "3.3申請案藥品許可證之製造設備及製程，是否符合WHO建議之GMP規範？";
+        if ($('#F_3_3').val() == "") { err_msg1 += s_COLNAME + "為必選欄位 \n"; };
+        //*4.申請者所提供之資訊，是否符合外銷對象對產品製造所有方面的標準？
+        s_COLNAME = "4.申請者所提供之資訊，是否符合外銷對象對產品製造所有方面的標準？";
+        if ($('#F_4').val() == "") { err_msg1 += s_COLNAME + "為必選欄位 \n"; };
+
+        // 確認上傳檔案
+        var MERGE = $('input[name="RadioMerge"]:checked').val();
+        var FILE_LICF = $('#FILE_LICF').val();
+        var FILE_LICB = $('#FILE_LICB').val();
+        var FILE_CHART = $('#FILE_CHART').val();
+        //var err_msg1 = "";
+        if (MERGE == 'Y' && FILE_LICF == "" && FILE_LICB == "" && FILE_CHART == "") {
+            err_msg1 += "請至少上傳一個檔案 !\n";
+        }
+        if (MERGE != 'Y') {
+            //if (FILE_LICF == "") {
+            //    err_msg1 += "請上傳藥品許可證影本(正面) !\n";
+            //}
+            //if (FILE_LICB == "") {
+            //    err_msg1 += "請上傳藥品許可證影本(反面) !\n";
+            //}
+            //if (FILE_CHART == "") {
+            //    err_msg1 += "請上傳處方之中藥材中英文對照表。 !\n";
+            //}
+        }
+        if (err_msg1 != "") {
+            blockAlert(err_msg1, "提示訊息");
+            return false;
+        }
+        return true;
+    }
+
+
+    // 轉至瀏覽-存檔並預覽
+    function doPreView() {
+        if (!validfile()) { return; }
+
+        @*li_apply/li_preview/li_pay/li_save*@
+        @*form0/form1/form2/form3*@
+        //var data = getFormSubmitableFields($("form[id=main_form]"));
+        var dataApply = getFormSubmitableFieldsWithCheckbox($("div[id=form]"));
+        ajaxLoadMore('@Url.Action("Apply")',
+                dataApply,
+                function (retData) {
+                    if (retData.status) {
+                        ajaxLoadMore('@Url.Action("PreView")', dataApply, function (getHtml) {
+                            $('#form_tab').removeClass('active');
+                            $('#form_tab1').attr('class', 'active');
+
+                            $('#form').attr('class', 'tab-pane fade');
+                            $('#form1').attr('class', 'tab-pane fade active in');
+                            $("#form1").html(getHtml);
+                        });
+                    }
+                    else {
+                        blockAlert(retData.message, "提示訊息");
+                    }
+                });
+    }
+
+
+
+    //套表列印
+    function preview_pay() {
+        var dataApply = getFormSubmitableFieldsWithCheckbox($("div[id=form]"));
+        ajaxLoadMore('@Url.Action("Apply")',
+            dataApply,
+            function (retData) {
+                if (retData.status) {
+                    $.fileDownload('@Url.Action("PreviewApplyForm")',
+                        {
+                            httpMethod: 'post',
+                            data: dataApply,
+                            prepareCallback: function (url) {
+
+                            }
+                        });
+                } else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+    }
+
+
+
+    // 取檔名-可接受的附檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".DOC", ".DOCX", ".ODT", ".ODF", ".ODS", ".XLS", ".XLSX", ".PDF", ".PPT", ".PPTX", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF", ".ZIP");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.')).toUpperCase();
+
+        if (validExts.indexOf(fileExt) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            file.value = null;
+            $('input[name="' + file.name + '"]').val(null);
+            $("#" + file.name + "_TEXT").val("");
+            return false;
+        } else {
+            $("#" + file.name + "_TEXT").val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+    // 介接
+    function F_2A_1_WORDsearch() {
+        var dataApply = getFormDataToObject($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("GetInterfaceData")', dataApply, function (resp) {
+            if (resp.status) {
+                //介接成功，帶回頁面
+                console.log(resp.message);
+                //$("#F_2A_3_1_NAME").val(resp.data.製造廠名稱);
+                //$("#F_2A_3_2_ADDR").val(resp.data.製造廠地址);
+                //$("#F_1_DF").val(resp.data.藥品劑型);
+                $("#F_2A_1_DATE_AD").val(resp.data.發證日期);
+                $("#F_2A_1_DATE_AD_TW_AC").val(resp.data.發證日期);
+                var strDate = toTaiwanDate(resp.data.發證日期,'/')
+                $("#F_2A_1_DATE_AD_TW").val(strDate);
+                //$("#F_1_1").val(resp.data.處方說明);
+                if (resp.data.成分說明.length > 0) {
+                    changeItemDI(resp.data.成分說明);
+                }
+                if (resp.data.外銷品名.length > 0) {
+                    changeItemDRUG(resp.data.中文品名, resp.data.英文品名,resp.data.外銷品名);
+                }
+                if (resp.data.限制1 == '外銷專用' || resp.data.限制2 == '外銷專用' || resp.data.限制3 == '外銷專用' || resp.data.限制4 == '外銷專用') {
+                    $('#F_1_2').val('N');
+                    CG12_CHK();
+                }
+                blockMessage("已取回資料", "提示訊息");
+            }
+            else {
+                blockAlert(resp.message, "提示訊息");
+            }
+        });
+    }
+
+    //介接成分內容變更
+    function changeItemDI(data) {
+        //全刪全增
+        $("#GoodsDynamicGrid005003").parent().append("<div id='tempDiv'></div>");
+        $("#tempDiv").append("<h2 class='second-title'></h2>");
+        $("#tempDiv").append("<div id='goodsTable' class='table-responsive'></div>");
+        $("#tempDiv h2").append('<input data-val="true" data-val-required="IsNewOpen 欄位是必要項。" id="F11_IsNewOpen" name="F11.IsNewOpen" type="hidden" value="True">');
+        $("#tempDiv h2").append('<input data-val="true" data-val-required="IsReadOnly 欄位是必要項。" id="F11_IsReadOnly" name="F11.IsReadOnly" type="hidden" value="False">');
+        $("#tempDiv h2").append('<input data-val="true" data-val-required="IsDeleteOpen 欄位是必要項。" id="F11_IsDeleteOpen" name="F11.IsDeleteOpen" type="hidden" value="True">');
+        $("#tempDiv h2").append('<input id="F11_SourceModelName" name="F11.SourceModelName" type="hidden" value="F11">成分內容&nbsp;');
+        $("#tempDiv h2").append('<button type="button" class="btn btn-save" id="btnAdd" onclick="addGoodRow()">新增</button><br>');
+        $("#tempDiv div").append('<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table"></table>');
+        $("#tempDiv div table").append('<thead></thead>');
+        $("#tempDiv div table thead").append('<tr></tr>');
+        $("#tempDiv div table thead tr").append('<th width="5%">上下</th>');
+        $("#tempDiv div table thead tr").append('<th width="25%"><span style="color:red" sr-only="必填">＊</span>生藥名</th>');
+        $("#tempDiv div table thead tr").append('<th width="25%"><span style="color:red" sr-only="必填">＊</span>成分內容(中文)</th>');
+        $("#tempDiv div table thead tr").append('<th width="20%">份量</th>');
+        $("#tempDiv div table thead tr").append('<th width="20%">單位</th>');
+        $("#tempDiv div table thead tr").append('<th width="5%">刪除</th>');
+        $("#tempDiv div table").append('<tbody></tbody>');
+        for (var i = 0; i < data.length; i++) {
+            var innerText = '<tr style="border: none;">' +
+                '<td style="border: none;">' +
+                '<button type="button" id="F11_btnUp_1" class="btn btn-clear" onclick="UpGoodRow(' + (i + 1) + ')" name="F11.">上</button>' +
+                '<button type="button" id="F11_btnDown_1" class="btn btn-clear" onclick="DownGoodRow(' + (i + 1) + ')" name="F11.">下</button>' +
+                '</td>' +
+                '<td style="border: none;">' +
+                '<input data-val="true" data-val-number="欄位 SRL_NO 必須是數字。" id="F11_GoodsList_' + i + '__SRL_NO" name="F11.GoodsList[' + i + '].SRL_NO" type="hidden" value="' + (i + 1) + '">' +
+                '<input class="form-control" data-val="true" data-val-required="成分內容 生藥名 欄位是必要項。" id="F11_GoodsList_' + i + '__F11_SCI_NM" name="F11.GoodsList[' + i + '].F11_SCI_NM" style="" type="text" value="">' +
+                '</td>' +
+                '<td style="border: none;">' +
+                '<input class="form-control" data-val="true" data-val-required="成分內容 成分內容(中文) 欄位是必要項。" id="F11_GoodsList_' + i + '__F11_SCI_NAME" name="F11.GoodsList[' + i + '].F11_SCI_NAME" style="" type="text" value="' + data[i].成分內容 + '">' +
+                '</td>' +
+                '<td style="border: none;">' +
+                '<input class="form-control" id="F11_GoodsList_' + i + '__F11_QUANTITY" name="F11.GoodsList[' + i + '].F11_QUANTITY" style="" type="text" value="' + data[i].份量 + '">' +
+                '</td>' +
+                '<td style="border: none;">' +
+                '<input class="form-control" id="F11_GoodsList_' + i + '__F11_UNIT" name="F11.GoodsList[' + i + '].F11_UNIT" style="" type="text" value="' + data[i].單位 + '">' +
+                '</td>' +
+                '<td style="border: none;">' +
+                '<button type="button" id="F11_btnDelte_1" class="btn btn-clear" onclick="deleteGoodRow(' + (i + 1) + ')" name="F11.">刪除</button>' +
+                '</td>' +
+                '</tr>';
+
+            $("#tempDiv div table tbody").append(innerText);
+        }
+
+        $('#GoodsDynamicGrid005003').remove();
+        $("#tempDiv").attr("id", "GoodsDynamicGrid005003");
+
+    }
+
+    //介接外銷品名變更
+    function changeItemDRUG(d1,d2,data) {
+        $("#changeItemDRUG").html('');
+        var innerText = '';
+        innerText += '<tr id>'
+        innerText += '<td rowspan="2" align="center">'
+        innerText += '<button class="btn btn-save" type="button" onclick="pick_F1(\'0\')">選</button>'
+        innerText += '</td> '
+        innerText += '<td>中文品名</td>'
+        innerText += '<td id="DRUG_0">' + d1 + '</td>'
+        innerText += '</tr>'
+        innerText += '<tr>'
+        innerText += '<td>英文品名</td>'
+        innerText += '<td id="EDRUG_0">' + d2 + '</td>'
+        innerText += '</tr>'
+        for (var i = 0; i < data.length; i++) {
+            //innerText += '<br /><label class="radio-inline "><input type="radio" name="radioDRUG" onchange="radioDRUGChange()">外銷品名(中文):' + data[i].外銷中文品名 + ';外銷品名(英文):' + data[i].外銷英文品名 + '</label >';
+            innerText += '<tr>'
+            innerText += '<td rowspan="2" align="center">'
+            innerText += '<button class="btn btn-save" type="button" onclick="pick_F1(\'' + (i+1)+'\')">選</button>'
+            innerText += '</td> '
+            innerText += '<td>中文品名(外銷)</td>'
+            innerText += '<td id="DRUG_' + (i + 1) +'">' + data[i].外銷中文品名+'</td>'
+            innerText += '</tr>'
+            innerText += '<tr>'
+            innerText += '<td>英文品名(外銷)</td>'
+            innerText += '<td id="EDRUG_' + (i + 1) +'">' + data[i].外銷英文品名 +'</td>'
+            innerText += '</tr>'
+        }
+        $("#changeItemDRUG").append(innerText);
+    }
+
+    // 帶入藥品名稱
+    function pick_F1(i) {
+        var F1val = $('#F_1').val();
+        var V1 = $("#DRUG_" + i ).text();
+        var V2 = $("#EDRUG_" + i ).text();
+        var newF1val = "";
+        if (F1val=="") {
+            newF1val = V1 + ' ' + V2;
+        }
+        else {
+            newF1val = F1val + ', ' + V1 + ' ' + V2;
+        }
+
+        $('#F_1').val(newF1val);
+    }
+
+    function CGF_2A_2_COMM_CHK() {
+        if ($('#F_2A_2_COMM option:selected').val()=="Y") {
+            $('#F_2A_2_COMM_CHK').show();
+        }
+        else {
+            $('#F_2A_2_COMM_CHK').hide();
+            $('#F_2A_2').val('');
+            $('#F_2A_2_ADDR').val('');
+        }
+    }
+
+    function CG12_CHK() {
+        if ($('#F_1_2 option:selected').val() == "Y") {
+            // 2A顯示
+            $('#F_2A2_CHK').show();
+            // 2B隱藏
+            $('#F_1_2_CHK').hide();
+            // 2B清資料
+            $('#F_2B_2_CHK_A').removeAttr("checked");
+            $('#F_2B_2_CHK_B').removeAttr("checked");
+            $('#F_2B_2_CHK_C').removeAttr("checked");
+            $('#F_2B_2_CHK').val('');
+            //$('#F_2B_3_REMARKS').val('');
+            document.getElementById('F_2B_3').value = '';
+        }
+        else {
+            // 2A隱藏
+            $('#F_2A2_CHK').hide();
+           // 2A清資料
+            $('#F_2A_3_CHK_A').removeAttr("checked");
+            $('#F_2A_3_CHK_B').removeAttr("checked");
+            $('#F_2A_3_CHK_C').removeAttr("checked");
+            $('#F_2A_3_CHK').val('');
+            // 2A_2是否為委託製造？
+            $('#F_2A_2').val('');
+            $('#F_2A_2_ADDR').val('');
+
+            // 2B顯示
+            $('#F_1_2_CHK').show();
+
+        }
+    }
+</script>

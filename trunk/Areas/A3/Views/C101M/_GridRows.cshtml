@@ -1,0 +1,20 @@
+﻿@using EECOnline.Areas.A3.Models;
+@using EECOnline.Services;
+@model C101MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        <tr>
+            <td align="left">@item.apply_no_sub</td>
+            <td align="center">@item.user_name</td>
+            <td align="center">@item.hospital_name</td>
+            <td align="center">@item.createdatetime_Text</td>
+            <td align="center">@item.his_range1_Text ~ @item.his_range2_Text</td>
+            <td align="center">@item.price_Text</td>
+            <td align="center">@item.payed_Text</td>
+        </tr>
+    }
+}

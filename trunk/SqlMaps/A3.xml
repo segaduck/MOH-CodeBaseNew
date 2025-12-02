@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="A3"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<resultMaps>
+	</resultMaps>
+	<cacheModel id="WDASE-cache" implementation="MEMORY">
+		<flushInterval hours="1" />
+		<property name="Type" value="WEAK" />
+	</cacheModel>
+	<statements>
+
+		<select id="queryC101M" resultClass="EECOnline.Areas.A3.Models.C101MGridModel" parameterClass="EECOnline.Areas.A3.Models.C101MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+  a.apply_no_sub, a.user_idno, c.user_name,
+  a.hospital_code, a.hospital_name,
+  b.his_range1, b.his_range2,
+  a.payed, d.createdatetime,
+  SUM(a.price) AS price,
+  SUM(IIF(ISNULL(a.his_type,'')='',a.price,0)) AS price2
+FROM EEC_ApplyDetailPrice a
+LEFT JOIN EEC_ApplyDetail b ON a.apply_no_sub=b.apply_no_sub
+LEFT JOIN EEC_User c ON a.user_idno=c.user_idno
+LEFT JOIN EEC_Apply d ON a.apply_no=d.apply_no
+WHERE 1=1
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="apply_no_sub"><![CDATA[ AND a.apply_no_sub LIKE '%' + #apply_no_sub# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="HospitalText"><![CDATA[ AND a.hospital_name LIKE '%' + #HospitalText# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="PayStatus"><![CDATA[ AND a.payed = #PayStatus# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="ApplyDateS"><![CDATA[ AND CAST(d.createdatetime AS DATE) >= #ApplyDateS# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="ApplyDateE"><![CDATA[ AND CAST(d.createdatetime AS DATE) <= #ApplyDateE# ]]></isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+GROUP BY
+  a.apply_no_sub, a.user_idno, c.user_name,
+  a.hospital_code, a.hospital_name,
+  b.his_range1, b.his_range2,
+  a.payed, d.createdatetime
+ORDER BY a.apply_no_sub
+			]]>
+		</select>
+
+		<select id="queryC101M_ExportDat" resultClass="EECOnline.Areas.A3.Models.ExportDatGridModel" parameterClass="EECOnline.Areas.A3.Models.C101MExportDatModel" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+  a.apply_no, a.apply_no_sub, a.hospital_code,
+  CONVERT(NVARCHAR, SUM(a.price)) AS price,
+  c.payed_orderid, c.payed_sessionkey, c.payed_transdate, c.payed_approvecode
+FROM EEC_ApplyDetailPrice a
+LEFT JOIN EEC_Apply b ON a.apply_no=b.apply_no
+LEFT JOIN EEC_ApplyDetail c ON a.apply_no_sub=c.apply_no_sub
+WHERE 1=1
+  AND ISNULL(c.payed_orderid, '')<>''
+  AND ISNULL(c.payed_sessionkey ,'')<>''
+  AND a.ec_success_yn IN ('Y','成功')
+  AND a.payed_datetime >= (GETDATE()-14)
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="apply_no_sub"><![CDATA[ AND a.apply_no_sub LIKE '%' + #apply_no_sub# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="hospital_code"><![CDATA[ AND a.hospital_code = #hospital_code# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="ApplyDateS"><![CDATA[ AND CAST(b.createdatetime AS DATE) >= #ApplyDateS# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="ApplyDateE"><![CDATA[ AND CAST(b.createdatetime AS DATE) <= #ApplyDateE# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="PayStatus_forSQL"><![CDATA[ $PayStatus_forSQL$ ]]></isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+GROUP BY
+  a.apply_no, a.apply_no_sub, a.hospital_code, 
+  c.payed_orderid, c.payed_sessionkey, c.payed_transdate, c.payed_approvecode
+ORDER BY a.apply_no_sub
+			]]>
+		</select>
+
+		<select id="queryC102M" resultClass="EECOnline.Areas.A3.Models.C102MGridModel" parameterClass="EECOnline.Areas.A3.Models.C102MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT 
+	CAST(YEAR(b.createdatetime)      AS NVARCHAR) + '/' + CAST(MONTH(b.createdatetime) AS NVARCHAR) AS AccountingYM,
+	CAST(YEAR(b.createdatetime)-1911 AS NVARCHAR) + '/' + CAST(MONTH(b.createdatetime) AS NVARCHAR) AS AccountingYM_Text,
+	a.hospital_code, a.hospital_name,
+	SUM(a.price) AS price
+FROM EEC_ApplyDetailPrice a
+LEFT JOIN EEC_Apply b ON a.apply_no=b.apply_no
+WHERE 1=1
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="AccountingYM"><![CDATA[ AND CAST(YEAR(b.createdatetime) AS NVARCHAR) + '/' + CAST(MONTH(b.createdatetime) AS NVARCHAR) = #AccountingYM# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="PayStatus"><![CDATA[ AND a.payed = #PayStatus# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="HospitalText"><![CDATA[ AND a.hospital_name LIKE '%' + #HospitalText# + '%' ]]></isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+GROUP BY
+  CAST(YEAR(b.createdatetime)      AS NVARCHAR) + '/' + CAST(MONTH(b.createdatetime) AS NVARCHAR),
+  CAST(YEAR(b.createdatetime)-1911 AS NVARCHAR) + '/' + CAST(MONTH(b.createdatetime) AS NVARCHAR),
+  a.hospital_code, a.hospital_name
+ORDER BY 
+  a.hospital_code, a.hospital_name,
+  CAST(YEAR(b.createdatetime)-1911 AS NVARCHAR) + '/' + CAST(MONTH(b.createdatetime) AS NVARCHAR) DESC
+			]]>
+		</select>
+
+		<!--
+		<select id="queryC103M" resultClass="EECOnline.Areas.A3.Models.C103MGridModel" parameterClass="EECOnline.Areas.A3.Models.C103MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="AccountingYM"><![CDATA[ AND CAST(YEAR(b.createdatetime) AS NVARCHAR) + '/' + CAST(MONTH(b.createdatetime) AS NVARCHAR) = #AccountingYM# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="PayStatus"><![CDATA[ AND a.payed = #PayStatus# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="HisTypeText"><![CDATA[ AND a.his_type_name LIKE '%' + #HisTypeText# + '%' ]]></isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+
+			]]>
+		</select>
+		-->
+
+		<select id="queryC104M_1" resultClass="EECOnline.Areas.A3.Models.C104MForm1GridModel" parameterClass="EECOnline.Areas.A3.Models.C104MForm1Model" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+  a.apply_no, a.apply_no_sub,
+  a.hospital_code, a.hospital_name,
+  a.user_idno, b.user_name, b.user_birthday,
+  a.his_range1, a.his_range2,
+  a.his_types, c.createdatetime,
+  a.payed, SUM(d.price) AS price,
+  SUM(IIF(/*d.isprovide='N'*/d.provide_status='2' AND ISNULL(d.provide_bin,'')='',1,0)) AS NeedUploadNum
+FROM EEC_ApplyDetail a
+LEFT JOIN EEC_User b ON a.user_idno=b.user_idno
+LEFT JOIN EEC_Apply c ON a.apply_no=c.apply_no
+LEFT JOIN EEC_ApplyDetailPrice d ON a.apply_no_sub=d.apply_no_sub
+WHERE 1=1
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="HospitalText"><![CDATA[ AND a.hospital_name LIKE '%' + #HospitalText# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="ApplyIdno"><![CDATA[ AND a.user_idno LIKE '%' + #ApplyIdno# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="ApplyDateS"><![CDATA[ AND CAST(c.createdatetime AS DATE) >= #ApplyDateS# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="ApplyDateE"><![CDATA[ AND CAST(c.createdatetime AS DATE) <= #ApplyDateE# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="PayStatus"><![CDATA[ AND a.payed = #PayStatus# ]]></isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+GROUP BY
+  a.apply_no, a.apply_no_sub,
+  a.hospital_code, a.hospital_name,
+  a.user_idno, b.user_name, b.user_birthday,
+  a.his_range1, a.his_range2,
+  a.his_types, c.createdatetime,
+  a.payed
+ORDER BY c.createdatetime DESC
+			]]>
+		</select>
+
+		<select id="queryC104M_2" resultClass="EECOnline.Areas.A3.Models.C104MForm2GridModel" parameterClass="EECOnline.Areas.A3.Models.C104MForm2Model" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+  a.hospital_code, a.hospital_name,
+  $The_CommonType_SQL$
+  /*SUM(IIF(a.his_type_name='刷卡手續費', a.price, 0)) AS Other1,*/
+  /*SUM(IIF(a.his_type_name='平台手續費', a.price, 0)) AS Other2,*/
+  SUM(IIF(ISNULL(a.his_type,'') <> '', a.price, 0)) AS HisType,
+  SUM(a.price) AS SubSum,
+  COUNT(DISTINCT a.apply_no_sub) AS ApplyNum
+FROM EEC_ApplyDetailPrice a
+LEFT JOIN EEC_Apply b ON a.apply_no=b.apply_no
+WHERE 1=1
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="HospitalText"><![CDATA[ AND a.hospital_name LIKE '%' + #HospitalText# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="ApplyDateS"><![CDATA[ AND CAST(b.createdatetime AS DATE) >= #ApplyDateS# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="ApplyDateE"><![CDATA[ AND CAST(b.createdatetime AS DATE) <= #ApplyDateE# ]]></isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+GROUP BY
+  a.hospital_code, a.hospital_name
+ORDER BY a.hospital_name
+			]]>
+		</select>
+
+	</statements>
+</sqlMap>

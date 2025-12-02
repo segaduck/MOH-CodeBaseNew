@@ -1,0 +1,177 @@
+﻿@model ES.Areas.Admin.Models.MessageActionModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout3.cshtml";
+
+    ViewBag.Title = "最新消息管理";
+    ViewBag.FunctionTitle = "最新消息管理";
+
+    ViewBag.Script = @"
+function doQuery(page) {
+$('#ActionType').val('Query');
+$('#NowPage').val(page);
+}
+
+function doEdit1(id) {
+//if(confirm('確定要編輯消息嗎？')) {}
+$('#ActionType').val('Edit');
+$('#ActionId').val(id);
+$('#ActionForm').submit();
+}
+
+function doDelete(id, word) {
+//console.log(id); //console.log(word);
+if(confirm('確定要刪除['+word+']消息嗎？')) {
+$('#ActionType').val('Delete');
+$('#ActionId').val(id);
+$('#ActionForm').submit();
+}
+}
+
+$(function() {
+$('#StartTime').datepicker({dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0'});
+$('#EndTime').datepicker({dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0'});
+});
+";
+}
+
+@using (Html.BeginForm("Index", "Message", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 前台管理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Title)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Title, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">上線時間</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.StartTime, String.Format("{0:yyyy/MM/dd}", Model.StartTime), new { @class = "form-normal" }) ～
+                    @Html.TextBoxFor(m => m.EndTime, String.Format("{0:yyyy/MM/dd}", Model.EndTime), new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.NowPage)
+                @Html.HiddenFor(m => m.ActionType)
+                @Html.HiddenFor(m => m.ActionId)
+                <input type="submit" class="btn btn-blue" value="查詢" id="submit1" onclick="doQuery('1')" />
+                <input type="reset" class="btn btn-gray" value="重填" />
+                <a href="#" class="btn btn-save" onclick="document.location.href='@Url.Action("New", "Message")';">新增</a>
+            </div>
+        </div>
+
+        <hr />
+        <div class="table-pager">
+            @Html.HiddenFor(m => m.NowPage)
+            @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+        </div>
+        @if (ViewBag.List != null)
+        {
+            <div class="clearfix"></div>
+            <h2 class="second-title">查詢結果</h2>
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th width="5%">編輯</th>
+                            <th width="5%">項次</th>
+                            <th width="15%">標題</th>
+                            <th width="15%">起迄時間</th>
+                            <th width="15%">是否寄送</th>
+                            <th width="5%">刪除</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.List.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="6" style="text-align: center;">查無資料</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (var i = 0; i < ViewBag.List.Count; i++)
+                            {
+                                ES.Areas.Admin.Models.MessageModel item = ViewBag.List[i];
+                                string s_SendMailMark = (item.SendMailMark ? "是" : "");
+
+                                <tr>
+                                    <td align="center">
+                                        @*<input type="button" class="btn btn-blue" value="編輯" onclick="$('#ActionType').val('Edit');$('#ActionId').val('@item.MessageID');$('#ActionForm').submit();" />*@
+                                        @*<input type="button" class="btn btn-blue" value="編輯" onclick="doEdit1('@item.MessageID');" />*@
+                                        <input type="button" class="btn btn-blue" value="編輯" onclick="document.location.href='@Url.Action("Edit", "Message", new { id=@item.MessageID })';" />
+                                    </td>
+                                    <td align="center">@(i + 1)</td>
+                                    <td align="center">@Html.Raw(@item.Title)</td>
+                                    <td align="center">@(((DateTime)@item.StartTime).ToString("yyyy/MM/dd HH:mm")) ～ @(((DateTime)@item.EndTime).ToString("yyyy/MM/dd HH:mm"))</td>
+                                    <td align="center">@(s_SendMailMark)</td>
+                                    @*<td align="center"><input type="button" class="btn btn-warning" value="刪除" onclick="document.location.href='@Url.Action("Delete", "Message", new { id = @item.MessageID })';" /></td>*@
+                                    @*<input type="button" class="btn btn-warning" value="刪除" onclick="doDelete('@item.MessageID', '@item.Title');" />*@
+                                    @*<td align="center"><input type="button" class="btn btn-warning" value="刪除" onclick="doDelete('@item.MessageID', '@item.Title');" /></td>*@
+                                    <td align="center"><input type="button" class="btn btn-warning" value="刪除" onclick="deleteMsg(this)" data-id="@item.MessageID" data-title="@item.Title" /></td>
+                                    @*<td align="center">
+                                        @Html.ActionLink("刪除", "Delete", "Message",
+                                        new { id = @item.MessageID },
+                                        new { onclick = "return confirm('確定要刪除[" + @item.Title + "]消息嗎？')", @class = "btn btn-warning" })
+                                    </td>*@
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}
+<script type="text/javascript">
+    @*function doEdit2(id) {
+        $('#ActionType').val('Edit');
+        $('#ActionId').val(id);
+        $('#ActionForm').prop("action", "@Url.Action("Edit", "Message")");
+        $('#ActionForm').submit();
+    }*@
+
+    function deleteMsg(el) {
+        var id = $(el).attr('data-id');
+        var title = $(el).attr('data-title');
+        var res = confirm('確定要刪除[' + title + ']消息嗎？');
+        if (!res) { return; }
+
+        var data = { id: id };
+        var url = '@Url.Action("Delete", "Message")';
+        goBackPage(url, data, 2, 'POST')
+    }
+
+    function deleteMsgOld1(el) {
+        var id = $(el).attr('data-id');
+        var title = $(el).attr('data-title');
+
+        var res = confirm('確定要刪除[' + title + ']消息嗎？');
+        if (res) {
+            $.ajax({
+                url: '@Url.Action("Delete", "Message")',
+                method: 'POST',
+                data: { id: id }
+            })
+                .done(function (resp) {
+                    //debugger
+                    //var form = $('#ActionForm');
+                    //$('#ActionType').val('Query');
+                    //$('#NowPage').val('1');
+                    //form.submit();
+                    document.getElementById('submit1').click();
+
+                })
+                .fail(function (resp) { alert('刪除失敗'); });
+        }
+    }
+
+
+</script>

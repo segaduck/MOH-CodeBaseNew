@@ -1,0 +1,52 @@
+﻿@model ES.Models.MessageShowModel
+
+@{
+    ViewBag.Title = "最新消息";
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    string s_msgtype = "";
+    switch (@Model.MESSAGE_TYPE)
+    {
+        case "P":
+            s_msgtype = "<span class=\"newsTag-blue\">繳費公告</span>";
+            break;
+        case "I":
+            s_msgtype = "<span class=\"newsTag-red\">重要公告</span>";
+            break;
+        case "S":
+            s_msgtype = "<span class=\"newsTag-red\" style=\"color: orange\">停機公告</span>";
+            break;
+    }
+    string s_title = s_msgtype + Model.Title; //ES.Utils.CheckUtils.GetHtmlEncode();
+}
+
+<div class="container-fluid">
+    <!--bread -->
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 前台管理 / @ViewBag.Title
+    </div>
+    <!--news -->
+    <div class="col-sm-12 content">
+        <div class="index-note">
+            <h3 class="note-title note-titlebar-blue">@Html.Raw(ViewBag.Title)</h3>
+            <div class="newspage">
+                <h3 class="newstitle"><span class="newsTag-blue">@Html.DisplayNameFor(m => m.Title)</span>@Html.Raw(s_title)</h3>
+                <div class="up-info">
+                    <ul>
+                        <li>@Html.DisplayNameFor(m => m.UnitName)：@Model.UnitName</li>
+                        <li>起迄時間：@(((DateTime)Model.StartTime).ToString("yyyy/MM/dd HH:mm")) ～ @(((DateTime)@Model.EndTime).ToString("yyyy/MM/dd HH:mm"))</li>
+                    </ul>
+                </div>
+                <div class="news-content">
+                    @Html.Raw(ES.Utils.CheckUtils.GetHtmlEncode(Model.Content).Replace("  ", "&nbsp;&nbsp;").Replace("\n", "<br />"))
+                </div>
+                <div class="bottom-pager">
+                    <button class="btn btn-pager" onclick="window.history.go(-1);">返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+</div>   

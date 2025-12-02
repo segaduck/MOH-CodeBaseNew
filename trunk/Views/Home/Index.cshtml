@@ -1,0 +1,214 @@
+﻿@using EECOnline.Services;
+@using EECOnline.Models;
+@model HomeViewModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="flow-set">
+                    <h1 class="flow-title">線上申辦流程示意</h1>
+                    <ul class="flow-list">
+                        <li class="flow-card card-yellow hvr-wobble-vertical">
+                            <div class="card-icon">
+                                <img src="~/assests/images/icon-flow-01.svg" alt="1.憑證登入">
+                            </div>
+                            <div class="flow-group">
+                                <div class="number">1</div>
+                                <h2>憑證登入</h2>
+                                <div class="flow-info">使用自然人憑證、TW FidO或身分證字號＋健保卡</div>
+                            </div>
+                        </li>
+                        <li class="flow-card card-orange hvr-wobble-vertical">
+                            <div class="card-icon">
+                                <img src="~/assests/images/icon-flow-02.svg" alt="2.詳閱線上申請說明">
+                            </div>
+                            <div class="flow-group">
+                                <div class="number">2</div>
+                                <h2>詳閱線上申請說明</h2>
+                                <div class="flow-info"></div>
+                            </div>
+                        </li>
+                        <li class="flow-card card-green hvr-wobble-vertical">
+                            <div class="card-icon">
+                                <img src="~/assests/images/icon-flow-03.svg" alt="3.填寫申請資料">
+                            </div>
+                            <div class="flow-group">
+                                <div class="number">3</div>
+                                <h2>填寫申請資料</h2>
+                                <div class="flow-info">選擇醫院、日期區間、<br>病歷單張類型</div>
+                            </div>
+                        </li>
+                        <li class="flow-card card-greenBlue hvr-wobble-vertical">
+                            <div class="card-icon">
+                                <img src="~/assests/images/icon-flow-04.svg" alt="4.刷卡付費">
+                            </div>
+                            <div class="flow-group">
+                                <div class="number">4</div>
+                                <h2>刷卡付費</h2>
+                                <div class="flow-info">在時效內完成刷卡付費</div>
+                            </div>
+                        </li>
+                        <li class="flow-card card-purple hvr-wobble-vertical">
+                            <div class="card-icon">
+                                <img src="~/assests/images/icon-flow-05.svg" alt="5.線上取得電子病歷">
+                            </div>
+                            <div class="flow-group">
+                                <div class="number">5</div>
+                                <h2>線上取得電子病歷</h2>
+                                <div class="flow-info"></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="news-index">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="news-index">
+                    <h1>最新消息</h1>
+                    <div class="news-content" style="margin: unset;">
+                        <div class="table-responsive">
+                            <table class="table-news">
+                                <tbody>
+                                    @if (Model.News.Grid == null || Model.News.Grid.ToCount() <= 0)
+                                    {
+                                        <tr>
+                                            <td colspan="3" style="color: black; text-align: center;">- 無 -</td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        for (int i = 0; i < Model.News.Grid.Count; i++)
+                                        {
+                                            var item = Model.News.Grid[i];
+                                            <tr>
+                                                <td width="20%" style="text-align: center">@item.showdates_Text</td>
+                                                <td width="70%">
+                                                    <a href="@Url.Action("NewsDetail", "Home", new { NewsID = item.enews_id })">
+                                                        [@item.newstype_Text] @item.subject
+                                                    </a>
+                                                </td>
+                                                <td width="10%" style="text-align: right">
+                                                    @if (item.totop == "1")
+                                                    {
+                                                        <img src="~/images/bookmarks-fill.svg" style="position: relative; top: -1.3rem; width: 1.2rem; height: 1.2rem;" />
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<br />
+
+<script>
+
+    $(function () {
+
+        // 處理 objectFit 在 ie、edge 上的呈現
+        var $someImages = $('img.img-fluid');
+        objectFitImages($someImages);
+
+
+        $("#index_news").owlCarousel({
+            stagePadding: 24,
+            margin: 8,
+            loop: true,
+            merge: true,
+            dots: false,
+            lazyLoad: true,
+            nav: true,
+            navText: ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
+            responsiveClass: true,
+            responsive: {
+                0: {
+                    items: 2,
+                },
+                768: {
+                    items: 3,
+
+                },
+                992: {
+                    items: 4,
+                },
+            },
+        });
+
+        $("#index_links").owlCarousel({
+            stagePadding: 24,
+            margin: 8,
+            loop: true,
+            merge: true,
+            dots: false,
+            lazyLoad: true,
+            nav: true,
+            navText: ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
+            responsiveClass: true,
+            responsive: {
+                0: {
+                    items: 2,
+                },
+                768: {
+                    items: 3,
+
+                },
+                992: {
+                    items: 4,
+                },
+            },
+        });
+
+        $("#index_links_fixed").owlCarousel({
+            stagePadding: 24,
+            margin: 8,
+            loop: false,
+            rewindNav: false,
+            merge: true,
+            dots: false,
+            lazyLoad: true,
+            nav: false,
+            navText: ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
+            responsiveClass: true,
+            responsive: {
+                0: {
+                    items: 2,
+                    stagePadding: 8,
+                },
+                768: {
+                    items: 3,
+
+                },
+                992: {
+                    items: 4,
+                },
+            },
+        });
+    });
+
+
+    $(function () {
+        //鍵盤放開事件
+        $(".apply-tab-nav").keyup(function (e) {
+            if (e.keyCode == 13) { //Enter鍵
+                $(e.target).prev().prop("checked", true);
+            }
+        });
+    });
+
+</script>

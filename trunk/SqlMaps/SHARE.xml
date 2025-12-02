@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="SHARE"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <resultMaps>
+  </resultMaps>
+
+  <cacheModel id="WDASE-cache" implementation="MEMORY">
+    <flushInterval hours="1" />
+    <property name="Type" value="WEAK" />
+  </cacheModel>
+
+  <statements>
+
+    <!-- SHARE/ZIP_CO/Index 郵遞區號設定 -->
+    <select id="queryZIP_CO"
+        resultClass="EECOnline.Areas.SHARE.Models.ZIP_COGridModel"
+        parameterClass="EECOnline.Areas.SHARE.Models.ZIP_COFormModel"
+        cacheModel="WDASE-cache">
+      <![CDATA[
+       select ZIP_CO, (CITYNM+TOWNNM+ROADNM) as ZIP_NM
+       from   zipcode
+       where  1 = 1
+      ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="zip_co">
+            <![CDATA[
+              and zip_co like '%' + #zip_co# + '%' 
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="zip_nm">
+            <![CDATA[
+              and (CITYNM like '%' + #zip_nm# + '%' or 
+                  TOWNNM like '%' + #zip_nm# + '%' or
+                  ROADNM like '%' + #zip_nm# + '%')
+            ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[
+      order by zip_co
+      ]]>
+    </select>
+
+    <!-- SHARE/UNIT/Index 單位設定 -->
+    <select id="queryUNIT"
+        resultClass="EECOnline.Areas.SHARE.Models.UNITGridModel"
+        parameterClass="EECOnline.Areas.SHARE.Models.UNITFormModel"
+        cacheModel="WDASE-cache">
+      <![CDATA[
+       select unit_cd ,unit_nm
+       from   unit
+       where  1 = 1
+      ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="unit_cd">
+            <![CDATA[
+              and unit_cd = #unit_cd#
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="unit_nm">
+            <![CDATA[
+              and unit_nm like '%' + #unit_nm# + '%'
+            ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[
+      order by unit_cd
+      ]]>
+    </select>
+
+    <!-- SHARE/OPERAT/Index 承辦人 -->
+    <select id="queryOPERAT"
+        resultClass="EECOnline.Areas.SHARE.Models.GRPGridModel"
+        parameterClass="EECOnline.Areas.SHARE.Models.GRPFormModel"
+        cacheModel="WDASE-cache">
+      <![CDATA[
+       select userno ,username
+       from   amdburm
+       where  1 = 1
+      ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="userno">
+            <![CDATA[
+              and userno = #userno#
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="username">
+            <![CDATA[
+              and username like '%' + #username# + '%'
+            ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[
+      order by userno
+      ]]>
+    </select>
+
+    <!-- SHARE/GRP/Index 群組 -->
+    <select id="queryGRP"
+        resultClass="EECOnline.Areas.SHARE.Models.GRPGridModel"
+        parameterClass="EECOnline.Areas.SHARE.Models.GRPFormModel"
+        cacheModel="WDASE-cache">
+      <![CDATA[
+       select grp_id ,grpname
+       from amgrp am
+       join UNIT un on un.unit_cd = am.unit_cd
+       where  1 = 1
+      ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="grp_id">
+            <![CDATA[
+              and grp_id = #grp_id#
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="grpname">
+            <![CDATA[
+              and grpname like '%' + #grpname# + '%'
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="srv_city">
+            <![CDATA[
+              and un.unit_city = #srv_city#
+            ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[
+      order by grp_id
+      ]]>
+    </select>
+
+	  <!-- 取得郵遞區號狀態 -->
+	  <select id="getZipAll" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+		  <![CDATA[
+		SELECT TOP 1 SUBSTRING(ZIP_CO,1,1) + CITYNM CITYCODE,SUBSTRING(ZIP_CO,1,3)+TOWNNM TOWNCODE,ZIP_CO ZIPCO FROM ZIPCODE
+		WHERE ZIP_CO = #ZipCode#
+       ]]>
+	  </select>
+
+	  <!-- 取得郵遞區號狀態 -->
+	  <select id="getZip3All" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+		  <![CDATA[
+		SELECT TOP 1 SUBSTRING(ZIP_CO,1,1) + CITYNM CITYCODE,SUBSTRING(ZIP_CO,1,3)+TOWNNM TOWNCODE,ZIP_CO ZIPCO FROM ZIPCODE
+		WHERE SUBSTRING(ZIP_CO,1,3) = #ZipCode#
+       ]]>
+	  </select>
+
+    <!-- 取得三碼郵遞區號狀態 -->
+    <select id="queryZIP_CO_Three" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="EECOnline-cache">
+      <![CDATA[
+      SELECT TOP 1 SUBSTRING(ZIP_CO,1,1) + CITYNM CITYCODE,SUBSTRING(ZIP_CO,1,3)+TOWNNM TOWNCODE,SUBSTRING(ZIP_CO,1,3) ZIPCO FROM ZIPCODE
+		  WHERE SUBSTRING(ZIP_CO,1,3) = #ZipCode#
+       ]]>
+    </select>
+    
+  </statements>
+</sqlMap>

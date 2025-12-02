@@ -1,0 +1,689 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="A6"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<resultMaps>
+	</resultMaps>
+
+	<cacheModel id="WDASE-cache" implementation="MEMORY">
+		<flushInterval hours="1" />
+		<property name="Type" value="WEAK" />
+	</cacheModel>
+
+	<statements>
+
+		<!-- A6/C101M 查詢群組 -->
+		<select id="queryC101MGrid" resultClass="EECOnline.Areas.A6.Models.C101MGridModel" parameterClass="EECOnline.Areas.A6.Models.C101MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+      IF OBJECT_ID('TEMPDB..##RESULT') IS NOT NULL 
+	        BEGIN
+	        	DROP TABLE ##RESULT
+	        END
+	        
+	     CREATE TABLE ##RESULT
+	     (
+	       grp_id VARCHAR(MAX),
+	       grpname VARCHAR(MAX),
+           grp_status_nm VARCHAR(MAX),
+	       unit_nm VARCHAR(MAX),
+	     )
+          
+	     DECLARE @grp_id VARCHAR(MAX) 
+	     DECLARE @grpname VARCHAR(MAX)
+         DECLARE @grp_status_nm VARCHAR(MAX)
+	     DECLARE @unit_nm VARCHAR(MAX)
+
+		 /* 查詢條件 */
+		 DECLARE @WHERE_grpname VARCHAR(MAX) = #grpname#
+		 DECLARE @WHERE_unit_cd VARCHAR(MAX) = #unit_cd#
+         DECLARE @WHERE_grp_status VARCHAR(MAX) = #grp_status#
+		 DECLARE @WHERE VARCHAR(MAX) = ''
+		 DECLARE @SQL VARCHAR(MAX) = ''
+
+		   SET @WHERE = ' where 1 = 1'
+		   IF @WHERE_grpname <> ''
+			   BEGIN
+			   	 SET @WHERE = @WHERE + ' and grpname like ''%' + @WHERE_grpname + '%'''
+			   END
+		   IF @WHERE_grp_status <> ''
+			   BEGIN
+			   	 SET @WHERE = @WHERE + ' and grp_status = ''' + @WHERE_grp_status + ''''
+			   END		
+		　 IF @WHERE_UNIT_CD <> ''
+			BEGIN
+			   IF @WHERE_unit_cd in ('00','01')
+				   BEGIN
+				   	 SET @WHERE = @WHERE
+				   END
+			   ELSE	
+				   BEGIN
+				　	 IF (select unit_city_s from unit where unit_cd = @WHERE_UNIT_CD) is null
+					    BEGIN
+				   	      SET @WHERE = @WHERE + ' AND (select unit_city from unit where unit_cd = ut.unit_cd) = (select unit_city from unit where unit_cd = '''+ @WHERE_UNIT_CD +''')'
+					    END	
+					 ELSE
+					    BEGIN
+				   	      SET @WHERE = @WHERE + ' AND ut.unit_cd = '+@WHERE_UNIT_CD 
+					    END	
+				   END	
+            END
+		   SET @SQL = ' select grp_id ,grpname ,  '
+	     SET @SQL = @SQL + ' case grp_status when ''0'' then ''停用'''
+	     SET @SQL = @SQL + ' when ''1'' then ''使用'''
+	     SET @SQL = @SQL + ' end as grp_status_nm,'
+	     SET @SQL = @SQL + ' ut.unit_nm'
+	     SET @SQL = @SQL + ' from   amgrp'
+	     SET @SQL = @SQL + ' left join unit ut on  ut.unit_cd = amgrp.unit_cd '
+	     SET @SQL = @SQL +  @WHERE
+
+	       SET @SQL = 'DECLARE CUR CURSOR FOR ' + @SQL
+	       EXEC(@SQL) 
+		 
+         OPEN CUR														   
+           																   
+         FETCH NEXT FROM CUR INTO @grp_id ,@grpname ,@grp_status_nm ,@unit_nm 
+       
+         WHILE @@FETCH_STATUS = 0 
+         BEGIN         
+          
+	      INSERT INTO ##RESULT
+          VALUES
+          (
+           @grp_id ,@grpname ,@grp_status_nm ,@unit_nm 
+	      )
+         
+        FETCH NEXT FROM CUR INTO  @grp_id ,@grpname ,@grp_status_nm ,@unit_nm 
+         
+        END
+                
+        CLOSE CUR
+        DEALLOCATE CUR
+        
+        SELECT * 
+        FROM   ##RESULT
+	    order by ##RESULT.grpname
+            
+        DROP TABLE ##RESULT
+      ]]>
+		</select>
+
+		<!-- A6/C101M 查詢權限項目 -->
+		<select id="queryC101MSetFuncm" resultClass="EECOnline.Areas.A6.Models.C101MFuncmGridModel" parameterClass="EECOnline.Areas.A6.Models.C101MFuncmModel" cacheModel="WDASE-cache">
+			<![CDATA[
+        select #grp_id# grp_id,amfuncm.sysid, amfuncm.modules, amfuncm.submodules,
+               amfuncm.prgid,amfuncm.prgname,isnull(a.prg_q,0) as prg_q , isnull(a.prg_i,0) as prg_i ,
+               isnull(a.prg_u,0) as prg_u, isnull(a.prg_d,0) as prg_d,
+               isnull(a.prg_p,0) as prg_p
+         from  amgmapm a
+         right outer join amfuncm on a.submodules = amfuncm.submodules 
+                                     and a.modules = amfuncm.modules 
+                                     and a.prgid = amfuncm.prgid
+                                     and a.sysid = amfuncm.sysid
+       ]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="grp_id">
+						<![CDATA[
+	            and a.grp_id = #grp_id#
+             ]]>
+					</isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+        where amfuncm.prgid<>' '
+		   ]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="sysid">
+						<![CDATA[
+              and amfuncm.sysid = #sysid#
+             ]]>
+					</isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+        order by grp_id ,amfuncm.prgorder
+       ]]>
+		</select>
+
+		<!-- A6/C103M -->
+		<!-- A6/C103M 查詢帳號 -->
+		<select id="queryC103MGrid" resultClass="EECOnline.Areas.A6.Models.C103MGridModel" parameterClass="EECOnline.Areas.A6.Models.C103MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+       IF OBJECT_ID('TEMPDB..##RESULT') IS NOT NULL 
+	        BEGIN
+	        	DROP TABLE ##RESULT
+	        END
+	        
+	     CREATE TABLE ##RESULT
+	     (
+	       userno VARCHAR(MAX),
+	       username VARCHAR(MAX),
+         unit_cd VARCHAR(MAX),
+	       unit_nm VARCHAR(MAX),
+	       /*grp_id VARCHAR(MAX),
+	       grp_nm VARCHAR(MAX),*/
+	       logintype VARCHAR(MAX),
+	       authstatus_nm VARCHAR(MAX),
+	     )
+          
+	     DECLARE @userno VARCHAR(MAX) 
+	     DECLARE @username VARCHAR(MAX)
+       DECLARE @unit_cd VARCHAR(MAX)
+	     DECLARE @unit_nm VARCHAR(MAX)
+	     /*DECLARE @grp_id VARCHAR(MAX)
+	     DECLARE @grp_nm VARCHAR(MAX)*/
+	     DECLARE @LoginStatus VARCHAR(MAX) = ''   
+	     DECLARE @logintype VARCHAR(MAX) = ''   
+	     DECLARE @authstatus_nm VARCHAR(MAX) = ''   
+       
+	     DECLARE @ssokey VARCHAR(MAX)
+	     DECLARE @sso_yn VARCHAR(MAX)
+	     DECLARE @dockey VARCHAR(MAX)
+	     DECLARE @doc_yn VARCHAR(MAX)
+	     DECLARE @login_yn VARCHAR(MAX)
+
+		   /* 查詢條件 */
+		   DECLARE @WHERE_USERNO VARCHAR(MAX) = #userno#
+		   DECLARE @WHERE_UNITNM VARCHAR(MAX) = #unitnm#
+       DECLARE @WHERE_USERNAME VARCHAR(MAX) = #username#
+       DECLARE @WHERE_UNIT_CD VARCHAR(MAX) = #unit_cd#
+       DECLARE @WHERE_IS_DEAL_WITH VARCHAR(MAX) = #IsDealWith#
+		   DECLARE @WHERE VARCHAR(MAX) = ''
+		   DECLARE @SQL VARCHAR(MAX) = ''
+
+		   SET @WHERE = ' where 1 = 1'
+		   IF @WHERE_UNITNM <> ''
+			   BEGIN
+			   	 SET @WHERE = @WHERE + ' and ut.unit_nm like ''%' + @WHERE_UNITNM + '%'''
+			   END
+		   IF @WHERE_USERNO <> ''
+			   BEGIN
+			   	 SET @WHERE = @WHERE + ' and ad.userno like ''%' + @WHERE_USERNO+ '%'''
+			   END
+		   IF @WHERE_USERNAME <> ''
+			   BEGIN
+			   	 SET @WHERE = @WHERE + ' and ad.username like ''%' + @WHERE_USERNAME + '%'''
+			   END	
+		   IF @WHERE_UNIT_CD in ('00','01')
+			   BEGIN
+			   	 SET @WHERE = @WHERE
+			   END
+		   ELSE	IF @WHERE_UNIT_CD <> ''
+			   BEGIN
+			　	 IF (select unit_city_s from unit where unit_cd = @WHERE_UNIT_CD) is null
+				    BEGIN
+			   	      SET @WHERE = @WHERE + ' AND (select unit_city from unit where unit_cd = ad.unit_cd) = (select unit_city from unit where unit_cd = '''+ @WHERE_UNIT_CD +''')'
+				    END	
+				 ELSE
+				    BEGIN
+			   	      SET @WHERE = @WHERE + ' AND ad.unit_cd = ' + @WHERE_UNIT_CD 
+				    END	
+			   END	
+       IF @WHERE_IS_DEAL_WITH = '2'
+			   BEGIN
+			   	 SET @WHERE = @WHERE +  ' AND 1 = 0 '
+			   END
+		   SET @SQL = ' select distinct ad.userno ,ad.username , ad.unit_cd,ut.unit_nm /* ,ag.grp_id ,ag.grpname as grp_nm*/,  '
+	     SET @SQL = @SQL + ' ad.sso_yn ,ad.doc_yn ,ad.login_yn ,ad.ssokey ,ad.dockey ,'
+	     SET @SQL = @SQL + ' case ad.authstatus when ''1'' then ''使用'' when ''2'' then ''帳號須變更密碼'' else ''未啟用'' end as authstatus_nm'
+	     SET @SQL = @SQL + ' from  AMDBURM ad'
+	     SET @SQL = @SQL + ' left join   UNIT ut on ad.unit_cd = ut.unit_cd'
+	     SET @SQL = @SQL + ' left join   AMUROLE are on are.userno= ad.userno'
+	     /* SET @SQL = @SQL + ' left join   AMGRP ag on ag.grp_id = are.grp_id '*/
+	     SET @SQL = @SQL +  @WHERE
+
+	       SET @SQL = 'DECLARE CUR CURSOR FOR ' + @SQL
+	       EXEC(@SQL) 
+		 
+         OPEN CUR														   
+           																   
+         FETCH NEXT FROM CUR INTO @userno ,@username ,@unit_cd ,@unit_nm ,/*@grp_id ,
+	     					   @grp_nm ,*/@sso_yn ,@doc_yn ,@login_yn ,
+	     					   @ssokey ,@dockey,@authstatus_nm
+       
+         WHILE @@FETCH_STATUS = 0 
+         BEGIN
+          
+	        	/* 登入模式 */
+            IF @login_yn = '1'
+             	BEGIN
+             		SET @logintype = '系統登入'
+             	END
+             
+            IF @sso_yn = '1' and @logintype = ''
+             	BEGIN
+             		SET @logintype = '自然人憑證登入'
+             	END
+            ELSE IF @sso_yn = '1'
+             	BEGIN
+             		SET @logintype = @logintype +',自然人憑證登入'
+             	END
+            
+	          IF @sso_yn = '1' and @logintype = ''
+               BEGIN
+               	SET @logintype = '醫師憑證登入'
+               END
+            ELSE IF @doc_yn = '1'
+               BEGIN
+                SET @logintype = @logintype +',醫師憑證登入'
+               END
+          
+          
+          
+	      INSERT INTO ##RESULT
+        VALUES
+        (
+           @userno ,@username ,@unit_cd,@unit_nm ,/*@grp_id ,@grp_nm ,*/@logintype ,@authstatus_nm 
+	      )
+         
+        FETCH NEXT FROM CUR INTO  @userno ,@username ,@unit_cd ,@unit_nm ,/*@grp_id ,
+	     					                  @grp_nm ,*/@sso_yn ,@doc_yn ,@login_yn ,
+	     					                  @ssokey ,@dockey,@authstatus_nm
+         
+        END
+                
+        CLOSE CUR
+        DEALLOCATE CUR
+        
+        SELECT * 
+        FROM   ##RESULT
+	      order by ##RESULT.userno
+            
+        DROP TABLE ##RESULT
+              ]]>
+		</select>
+
+		<!-- A6/C103M 查詢帳號All 匯出Excel -->
+		<select id="queryC103MGridAll" resultClass="EECOnline.Areas.A6.Models.C103MGridAllModel" parameterClass="EECOnline.Areas.A6.Models.C103MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+       IF OBJECT_ID('TEMPDB..##RESULT') IS NOT NULL 
+	        BEGIN
+	        	DROP TABLE ##RESULT
+	        END
+	        
+	     CREATE TABLE ##RESULT
+	     (
+	       userno VARCHAR(MAX),
+	       username VARCHAR(MAX),
+         unit_cd VARCHAR(MAX),
+	       unit_nm VARCHAR(MAX),
+	       /*grp_id VARCHAR(MAX),*/
+	       logintype VARCHAR(MAX),
+	       authstatus_nm VARCHAR(MAX),
+         insert_unit_nm VARCHAR(MAX),
+         grp_nm VARCHAR(MAX),
+	     )
+          
+	     DECLARE @userno VARCHAR(MAX) 
+	     DECLARE @username VARCHAR(MAX)
+       DECLARE @unit_cd VARCHAR(MAX)
+	     DECLARE @unit_nm VARCHAR(MAX)
+	     /*DECLARE @grp_id VARCHAR(MAX)*/
+	     DECLARE @LoginStatus VARCHAR(MAX) = ''   
+	     DECLARE @logintype VARCHAR(MAX) = ''   
+	     DECLARE @authstatus_nm VARCHAR(MAX) = ''   
+       DECLARE @insert_unit_nm VARCHAR(MAX) 
+       DECLARE @grp_nm VARCHAR(MAX)
+       
+	     DECLARE @ssokey VARCHAR(MAX)
+	     DECLARE @sso_yn VARCHAR(MAX)
+	     DECLARE @dockey VARCHAR(MAX)
+	     DECLARE @doc_yn VARCHAR(MAX)
+	     DECLARE @login_yn VARCHAR(MAX)
+
+		   /* 查詢條件 */
+		   DECLARE @WHERE_USERNO VARCHAR(MAX) = #userno#
+		   DECLARE @WHERE_UNITNM VARCHAR(MAX) = #unitnm#
+       DECLARE @WHERE_USERNAME VARCHAR(MAX) = #username#
+       DECLARE @WHERE_UNIT_CD VARCHAR(MAX) = #unit_cd#
+       DECLARE @WHERE_IS_DEAL_WITH VARCHAR(MAX) = #IsDealWith#
+		   DECLARE @WHERE VARCHAR(MAX) = ''
+		   DECLARE @SQL VARCHAR(MAX) = ''
+
+		   SET @WHERE = ' where 1 = 1'
+		   IF @WHERE_UNITNM <> ''
+			   BEGIN
+			   	 SET @WHERE = @WHERE + ' and ut.unit_nm like ''%' + @WHERE_UNITNM + '%'''
+			   END
+		   IF @WHERE_USERNO <> ''
+			   BEGIN
+			   	 SET @WHERE = @WHERE + ' and ad.userno like ''%' + @WHERE_USERNO+ '%'''
+			   END
+		   IF @WHERE_USERNAME <> ''
+			   BEGIN
+			   	 SET @WHERE = @WHERE + ' and ad.username like ''%' + @WHERE_USERNAME + '%'''
+			   END	
+		   IF @WHERE_UNIT_CD in ('00','01')
+			   BEGIN
+			   	 SET @WHERE = @WHERE
+			   END
+		   ELSE	IF @WHERE_UNIT_CD <> ''
+			   BEGIN
+			　	 IF (select unit_city_s from unit where unit_cd = @WHERE_UNIT_CD) is null
+				    BEGIN
+			   	      SET @WHERE = @WHERE + ' AND (select unit_city from unit where unit_cd = ad.unit_cd) = (select unit_city from unit where unit_cd = '''+ @WHERE_UNIT_CD +''')'
+				    END	
+				 ELSE
+				    BEGIN
+			   	      SET @WHERE = @WHERE + ' AND ad.unit_cd = ' + @WHERE_UNIT_CD 
+				    END	
+			   END	
+       IF @WHERE_IS_DEAL_WITH = '2'
+			   BEGIN
+			   	 SET @WHERE = @WHERE +  ' AND 1 = 0 '
+			   END
+         
+		   SET @SQL = ' select distinct ad.userno, ad.username, ad.unit_cd, ut.unit_nm, /*ag.grp_id,*/ '
+	     SET @SQL = @SQL + ' ad.sso_yn, ad.doc_yn, ad.login_yn, ad.ssokey, ad.dockey,'
+	     SET @SQL = @SQL + ' case ad.authstatus when ''1'' then ''使用'' when ''2'' then ''帳號須變更密碼'' else ''未啟用'' end as authstatus_nm,'
+       SET @SQL = @SQL + ' ntnm.unit_nm as insert_unit_nm,'
+       
+       SET @SQL = @SQL + ' STUFF((SELECT '','' + CAST(ag.grpname AS NVARCHAR )'
+		   SET @SQL = @SQL + ' FROM AMGRP ag '
+	     SET @SQL = @SQL + ' JOIN AMUROLE ar ON ar.grp_id = ag.grp_id AND ar.userno = ad.userno '
+	     SET @SQL = @SQL + ' WHERE 1 = 1 '
+	     SET @SQL = @SQL + ' ORDER BY ad.userno '
+			 SET @SQL = @SQL + ' FOR XML PATH('''') ),1,1,'''') as grp_nm '
+       
+	     SET @SQL = @SQL + ' from  AMDBURM ad'
+	     SET @SQL = @SQL + ' left join  UNIT ut on ad.unit_cd = ut.unit_cd'
+	     SET @SQL = @SQL + ' left join  AMUROLE are on are.userno= ad.userno'
+	     /* SET @SQL = @SQL + ' left join  AMGRP ag on ag.grp_id = are.grp_id '*/
+       SET @SQL = @SQL + ' left join  AMDBURM_LOG adlog  on adlog.userno = ad.userno and adlog.modtype = ''I'' '
+		   SET @SQL = @SQL + ' left join  UNIT ntnm on ntnm.unit_cd = adlog.unit_cd '
+	     SET @SQL = @SQL +  @WHERE
+
+	       SET @SQL = 'DECLARE CUR CURSOR FOR ' + @SQL
+	       EXEC(@SQL) 
+		 
+         OPEN CUR														   
+           																   
+         FETCH NEXT FROM CUR INTO @userno, @username, @unit_cd, @unit_nm, /*@grp_id,*/
+                                  @sso_yn, @doc_yn, @login_yn, @ssokey, @dockey,
+                                  @authstatus_nm, @insert_unit_nm,  @grp_nm
+       
+         WHILE @@FETCH_STATUS = 0 
+         BEGIN
+          
+	        	/* 登入模式 */
+            IF @login_yn = '1'
+             	BEGIN
+             		SET @logintype = '系統登入'
+             	END
+             
+            IF @sso_yn = '1' and @logintype = ''
+             	BEGIN
+             		SET @logintype = '自然人憑證登入'
+             	END
+            ELSE IF @sso_yn = '1'
+             	BEGIN
+             		SET @logintype = @logintype + ',自然人憑證登入'
+             	END
+            
+	          IF @sso_yn = '1' and @logintype = ''
+               BEGIN
+               	SET @logintype = '醫師憑證登入'
+               END
+            ELSE IF @doc_yn = '1'
+               BEGIN
+                SET @logintype = @logintype + ',醫師憑證登入'
+               END
+          
+          
+          
+	      INSERT INTO ##RESULT
+        VALUES
+        (
+           @userno, @username, @unit_cd, @unit_nm, /*@grp_id,*/ @logintype, @authstatus_nm, @insert_unit_nm, @grp_nm
+	      )
+         
+        FETCH NEXT FROM CUR INTO  @userno, @username, @unit_cd, @unit_nm, /*@grp_id,*/
+                                  @sso_yn, @doc_yn, @login_yn, @ssokey, @dockey,
+                                  @authstatus_nm, @insert_unit_nm, @grp_nm
+         
+        END
+                
+        CLOSE CUR
+        DEALLOCATE CUR
+        
+        SELECT * 
+        FROM   ##RESULT
+	      order by ##RESULT.userno
+            
+        DROP TABLE ##RESULT
+              ]]>
+		</select>
+
+		<!-- A6/C103M 查詢群組權限一覽 匯出Excel -->
+		<select id="queryC103MGmapmGrid" resultClass="EECOnline.Areas.A6.Models.C103MGmapmGridModel" parameterClass="EECOnline.Areas.A6.Models.C103MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+        SELECT AG.grp_id, AG.grpname,
+               STUFF((SELECT ', ' + CAST(AF.prgid AS NVARCHAR )
+                      FROM amgmapm AGM
+                      RIGHT OUTER JOIN amfuncm AF ON AGM.submodules = AF.submodules 
+                                                 AND AGM.modules = AF.modules 
+                                                 AND AGM.prgid = AF.prgid
+                                                 AND AGM.sysid = AF.sysid
+                      WHERE 1 = 1 
+                      AND AGM.grp_id = AG.grp_id
+                      AND (AGM.prg_q <> '0' or AGM.prg_i <> '0' or AGM.prg_u <> '0' or AGM.prg_d <> '0' or AGM.prg_p <> '0')
+                      ORDER BY AF.sysid 
+                      FOR XML PATH('') ),1,1,'') 
+               AS prgname 
+        FROM AMGRP AG
+        ORDER BY grpname ,grp_id
+              ]]>
+		</select>
+
+
+		<!-- A6/C103M 查詢帳號明細 -->
+		<select id="queryC103MDetail" resultClass="EECOnline.Areas.A6.Models.C103MDetailModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+        IF OBJECT_ID('TEMPDB..##RESULT') IS NOT NULL 
+	      BEGIN
+	      	DROP TABLE ##RESULT
+	      END
+	      
+	      CREATE TABLE ##RESULT
+	      (
+	        userno VARCHAR(MAX),
+	        username VARCHAR(MAX),
+	        unit_cd VARCHAR(MAX),
+          idno  VARCHAR(MAX),
+	        email VARCHAR(MAX),
+	        modtime VARCHAR(MAX),
+	        authdates VARCHAR(MAX),
+	        authdatee VARCHAR(MAX),
+	        authstatus VARCHAR(MAX),
+	        /*loginstatus VARCHAR(MAX),*/
+	      )
+        
+	      DECLARE @userno VARCHAR(MAX)
+	      DECLARE @username VARCHAR(MAX)
+	      DECLARE @unit_cd VARCHAR(MAX)
+        DECLARE @idno VARCHAR(MAX)
+	      DECLARE @email VARCHAR(MAX)
+	      DECLARE @modtime VARCHAR(MAX)
+	      DECLARE @authdates VARCHAR(MAX)
+	      DECLARE @authdatee VARCHAR(MAX)
+	      DECLARE @authstatus VARCHAR(MAX)
+	      /*DECLARE @loginstatus VARCHAR(MAX) = ''*/
+        
+	      /*DECLARE @ssokey VARCHAR(MAX)
+	      DECLARE @sso_yn VARCHAR(MAX)
+	      DECLARE @dockey VARCHAR(MAX)
+	      DECLARE @doc_yn VARCHAR(MAX)
+	      DECLARE @login_yn VARCHAR(MAX)*/
+        
+	      DECLARE CUR CURSOR FOR 
+                              select ad.userno ,ad.username ,ad.unit_cd ,ad.idno ,
+                                	   /*ad.sso_yn ,ad.doc_yn ,ad.login_yn ,*/ad.authdates ,ad.authdatee ,
+	      	                           ad.authstatus ,substring(ad.modtime,1,7) ,ad.email
+                              from   AMDBURM ad
+                              left   join   AMUROLE are on are.userno= ad.userno
+                              where  ad.userno = #userno#
+          																   
+        OPEN CUR														   
+              																   
+        FETCH NEXT FROM CUR INTO @userno ,@username ,@unit_cd ,@idno ,
+	      						   /*@sso_yn ,@doc_yn ,@login_yn ,*/
+	      						   @authdates ,@authdatee ,@authstatus ,
+	      						   @modtime ,@email
+        
+            BEGIN
+        
+	      	/* 登入模式 */
+             /* IF @login_yn = '1'
+              		BEGIN
+	      				SET @LoginStatus = '1'
+              		END
+              	
+              	IF @sso_yn = '1' and @LoginStatus = ''
+              		BEGIN
+	      				    SET @LoginStatus = '2'
+              		END
+              	ELSE IF @sso_yn = '1'
+              		BEGIN
+	      				    SET @LoginStatus = @LoginStatus+',2'
+              		END
+        
+	      		    IF @sso_yn = '1' and @LoginStatus = ''
+                  		BEGIN
+	      		    		SET @LoginStatus = '3'
+                  		END
+                  	ELSE IF @doc_yn = '1'
+                  		BEGIN
+	      		    		SET @LoginStatus = @LoginStatus+',3'
+                  		END */
+        
+        
+        
+	      	INSERT INTO ##RESULT
+          VALUES
+          (
+            @userno ,@username ,@unit_cd ,@idno ,@email ,@modtime ,@authdates ,
+	          @authdatee ,@authstatus /*,@loginstatus */
+	        )
+              
+          END
+          
+          CLOSE CUR
+          DEALLOCATE CUR
+          
+          SELECT * 
+          FROM   ##RESULT
+          
+          DROP TABLE ##RESULT
+     ]]>
+		</select>
+
+		<!-- A6/C103M  -->
+		<select id="queryC103MGrp" resultClass="EECOnline.Areas.A6.Models.C103MGrpGridModel" parameterClass="EECOnline.Areas.A6.Models.C103MGrpModel" cacheModel="WDASE-cache">
+			<![CDATA[
+        select a.grpname,a.grp_id,
+        case when b.userno is null then '0' else '1' end IsCheck
+        from amgrp a
+        left join amurole b on b.grp_id = a.grp_id and b.userno = #userno#
+        where 1 = 1
+        ]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="unit_cd">
+						<![CDATA[
+              and a.unit_cd = #unit_cd#
+             ]]>
+					</isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+        order by a.grpname
+      ]]>
+		</select>
+
+		<!--Add-->
+		<!-- A8/C101M 查詢使用歷程 -->
+		<select id="queryC102MGrid" resultClass="EECOnline.Areas.A6.Models.C102MGridModel" parameterClass="EECOnline.Areas.A6.Models.C102MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+       SELECT control_name,
+              action_name,
+              funcm_name,
+              funcm_link,
+              visit_record.userno,
+              status,
+              use_type,
+              urlwhere,
+              note,
+              visit_record.modtime,
+              amurole.modusername AS usernotext
+       FROM   visit_record
+              LEFT JOIN amurole
+                     ON amurole.userno = visit_record.userno
+       WHERE  1 = 1
+              AND visit_record.status = 1 
+              AND visit_record.modtime >= DATEADD( day , -3 , getdate() )
+       ]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="apy_time_st">
+						<![CDATA[
+	            AND VISIT_RECORD.modtime >= #apy_time_st#
+              ]]>
+					</isNotEmpty>
+					<isNotEmpty prepend="" property="apy_time_ed">
+						<![CDATA[
+                AND VISIT_RECORD.modtime <= #apy_time_ed#
+            ]]>
+					</isNotEmpty>
+					<isNotEmpty prepend="" property="username">
+						<![CDATA[
+                AND VISIT_RECORD.userno like '%' + #username# + '%'
+            ]]>
+					</isNotEmpty>
+					<isNotEmpty prepend="" property="usernameText">
+						<![CDATA[
+                AND AMUROLE.modusername like '%' + #usernameText# + '%'
+            ]]>
+					</isNotEmpty>
+					<isNotEmpty prepend="" property="use_type">
+						<![CDATA[
+				AND VISIT_RECORD.use_type = #use_type#
+				]]>
+					</isNotEmpty>
+					<isNotEmpty prepend="" property="urlwhere">
+						<![CDATA[
+				AND VISIT_RECORD.urlwhere = #urlwhere#
+				]]>
+					</isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+      ORDER BY VISIT_RECORD.modtime desc
+      ]]>
+		</select>
+
+		<select id="queryC104M" resultClass="EECOnline.Areas.A6.Models.C104MGridModel" parameterClass="EECOnline.Areas.A6.Models.C104MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+	a.keyid, a.type_name, a.type_price,
+	a.type_date1, a.type_date2
+FROM EEC_CommonType a
+WHERE 1=1
+			]]>
+		</select>
+		
+		<select id="queryC104MDetail" resultClass="EECOnline.Areas.A6.Models.C104MDetailModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+	a.keyid, a.type_name, a.type_price,
+	a.type_date1, a.type_date2
+FROM EEC_CommonType a
+WHERE 1=1
+  AND a.keyid=#keyid#
+ORDER BY a.keyid
+			]]>
+		</select>
+		
+	</statements>
+</sqlMap>

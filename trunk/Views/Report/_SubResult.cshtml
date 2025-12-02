@@ -1,0 +1,71 @@
+﻿@using Turbo.ReportTK
+@using Turbo.Helpers
+@using log4net
+@model Report
+@{
+    /*不含報表表頭, 以及控制外框的結果頁, 供 Type=Compose 組合用*/
+    Layout = null;
+    ILog logger = LogManager.GetLogger("ReportResult");
+}
+@if (!string.IsNullOrEmpty(Model.View))
+{
+    /*使用指定的 layout partial view*/
+    logger.Info("Report('" + Model.Id + "') render with view: " + Model.View);
+    @Html.Partial(Model.View, Model)
+}
+else
+{
+    /*使用預設的 layout*/
+    <table class="table">
+
+        <thead>
+            @*報表表頭(名稱)*@
+            @Html.Partial("_ReportHeader", Model)
+
+            @*標題欄位顯示*@
+            @ReportLayoutHelper.Head(Model.Layout.Columns)
+
+        </thead>
+
+        @*報表結果清單*@
+        <tbody>
+            @if (Model.FirstRowAgg)
+            {
+                @*Aggregation 顯示於結果Grid的第一列*@
+                @Html.Partial("_GridAggregation", Model)
+            }
+
+            @Html.Partial("_GridContent", Model)
+        </tbody>
+
+        @*報表 Footer 區*@
+        <tfoot>
+            @*Aggregation 列輸出*@
+            @if (!Model.FirstRowAgg)
+            {
+                @Html.Partial("_GridAggregation", Model)
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Summary.View))
+            {
+                //使用指定的客制化 Summary View
+                @Html.Partial(Model.Summary.View, Model.SummaryResult)
+            }
+            else if (Model.Summary.Columns.Count > 0 && Model.SummaryResult != null)
+            {
+                // 使用制式 summary layout
+                <tr>
+                    @foreach (ReportColumn col in Model.Summary.Columns)
+                    {
+                        @*輸出欄位*@
+                        @Html.Raw(string.Format("<td align=\"{1}\" {2}>{0}</td>",
+                                            Model.SummaryResult[col.Id], col.Align,
+                                            (col.ColSpan > 1 ? ("colspan=\"" + col.ColSpan + "\"") : "")))
+                    }
+                </tr>
+            }
+        </tfoot>
+
+    </table>
+
+}

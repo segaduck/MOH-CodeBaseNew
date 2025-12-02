@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <g id="health_Institute_f" transform="translate(-897 -2071)">
+    <rect id="Rectangle_33775" data-name="Rectangle 33775" width="48" height="48" transform="translate(897 2071)" fill="#212529" opacity="0"/>
+    <g id="Page-1" transform="translate(901.463 2074)">
+      <g id="health-glyph" transform="translate(0.537 2)">
+        <g id="hospital-building-clinic-doctor">
+          <path id="Union_11" data-name="Union 11" d="M-871.232-2033.77H-900V-2060a.846.846,0,0,1,.846-.846h7.616v-9.308a.846.846,0,0,1,.846-.846h18.615a.846.846,0,0,1,.846.846v9.308h7.616a.846.846,0,0,1,.846.846v26.231Zm6.769-1.693v-3.384h-6.769v3.384Zm-22-14.384v14.384h10.154v-14.384a.846.846,0,0,0-.846-.846h-8.461A.846.846,0,0,0-886.462-2049.846Zm-11.846,14.384h6.77v-3.384h-6.77Zm33.845-5.077v-3.384h-6.769v3.384Zm-33.845,0h6.77v-3.384h-6.77Zm33.845-5.077V-2049h-6.769v3.384Zm-33.845,0h6.77V-2049h-6.77Zm33.845-5.077v-3.384h-6.769v3.384Zm-33.845,0h6.77v-3.384h-6.77Zm33.845-5.076v-3.385h-6.769v3.385Zm-22-3.385h3.385v3.385h3.385v-3.385h3.384v-3.384h-3.384v-3.385h-3.385v3.385h-3.385Zm-11.846,3.385h6.77v-3.385h-6.77Z" transform="translate(900 2071)"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

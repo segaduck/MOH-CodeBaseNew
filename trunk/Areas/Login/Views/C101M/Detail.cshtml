@@ -1,0 +1,108 @@
+﻿@using EECOnline.Areas.Login.Models;
+@model C101MDetailModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>登入 - 衛生福利部線上申辦維護系統</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=8,9,edge,chrome=1">
+    <meta charset="utf-8">
+    <meta name="google-site-verification" content="xO1rl3yyV9pA8bYEEbsrQHV6bsvYiN-OmygfyITWAyQ">
+    <meta name="description" content="衛生福利部｜人民申請案件線上申辦系統">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <meta name="copyright" content="Taiwan Power Company. All Rights Reserved.">
+    <meta name="robots" content="all">
+    <meta name="apple-touch-fullscreen" content="yes" />
+
+    @*CSS*@
+    @Styles.Render("~/Content/base_back.css")
+    @Styles.Render("~/Content/Login.css")
+    @Styles.Render("~/Content/jquery")
+    @Styles.Render("~/Content/bootstrap")
+
+    @*JS*@
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/Scripts/jquery-ui.js")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/globaljs")
+
+
+</head>
+<body>
+    <center>
+        <div class="dMain">
+            <div class="dHeader">
+                @*<div class="dHeaderLogo"></div>*@
+            </div>
+            <div>
+                <center>
+                    @using (Html.BeginForm("Index", "Login", new { ReturnUrl = Request.QueryString["ReturnUrl"] }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        <table class="formTable1">
+                            <tr>
+                                <th style="width: 25%;"><label for="Account">帳號</label></th>
+                                <td>
+                                    @Html.TextBoxFor(m => m.UserNo, new { @class = "form-control", maxlength = "20" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label for="idno">身分證字號</label></th>
+                                <td>
+                                    @Html.TextBoxFor(m => m.idno, new { @class = "form-control", maxlength = "10" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label for="email">信箱</label></th>
+                                <td>
+                                    @Html.TextBoxFor(m => m.email, new { @class = "form-control", maxlength = "100" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label for="code">驗證碼</label></th>
+                                <td>
+                                    @Html.TextBoxFor(m => m.ValidateCode, new { @class = "form-control", @style = "width: 150px;", @placeholder = "請輸入驗證碼", maxlength = "10" })
+                                    <img src="@Url.Action("GetValidateCode", "C101M")" id="vCode" alt="產生新驗證碼" title="產生新驗證碼" />
+                                    <a href="@Url.Action("VCodeAudio", "C101M")" target="frmPlayer" title="語音撥放驗證碼">
+                                        <img id="playCode" alt="撥放" src="~/images/speaker.svg" height="40" />
+                                    </a>
+                                    <iframe name="frmPlayer" style="display:none;" src=""></iframe>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="formButtomBar">
+                            <input type="submit" value="登入" />
+                            <input type="reset" value="重填" />
+                            <button type="button" class="btn btn-gray">忘記密碼</button>
+                        </div>
+                    }
+                </center>
+            </div>
+        </div>
+    </center>
+    <script type="text/javascript">
+    $('#vCode').on("load", function () {
+        unblockUI();
+    });
+    function reloadValidCode() {
+        blockUI();
+        $('#vCode').attr("src", '@Url.Action("GetValidateCode", "C101M")' + "?rand=" + new Date().getMilliseconds());
+    }
+    $(function () {
+        $('#vCode').on("click", function (e) {
+            reloadValidCode();
+        });
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+    </script>
+</body>
+</html>
+
+

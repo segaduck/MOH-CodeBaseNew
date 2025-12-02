@@ -1,0 +1,416 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="MaAPI"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <resultMaps>
+  </resultMaps>
+
+  <cacheModel id="WDASE-cache" implementation="MEMORY">
+    <flushInterval hours="1" />
+    <property name="Type" value="WEAK" />
+  </cacheModel>
+
+  <statements>
+    
+    <!-- MAAPI/案件編號 -->
+    <select id="queryMaAPIApply" resultClass="EECOnline.Models.MaAPIApplyGrid" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        IF OBJECT_ID('TEMPDB..##RESULT') IS NOT NULL
+        BEGIN
+        DROP TABLE ##RESULT
+        END
+
+        CREATE TABLE ##RESULT
+        (
+          apply_id VARCHAR(MAX),
+          service_name VARCHAR(MAX),
+        )
+
+        DECLARE @apply_id VARCHAR(MAX)
+        DECLARE @srv_cd VARCHAR(MAX)
+        DECLARE @apy_status VARCHAR(MAX)
+        DECLARE @service_name VARCHAR(MAX)
+        DECLARE @apy_not_deta_id VARCHAR(MAX)
+
+        /* 查詢條件 */
+        DECLARE @doc_id_no VARCHAR(MAX) = #doc_id_no#
+
+        DECLARE CUR CURSOR FOR
+
+        SELECT ap.apy_id, es.srv_cd, ap.apy_status, 'apply' + SUBSTRING(apy_id,9,6) AS service_name
+        FROM   apply ap
+        LEFT JOIN   ESERVICE es ON ap.srv_id = es.srv_id
+        LEFT JOIN   code cd ON cd.code_cd = es.srv_cd
+        WHERE  1 = 1
+        AND	(doc_id_no = @doc_id_no or @doc_id_no is null )
+        AND	(apy_status ='05' OR es.srv_cd = '001008')
+        ORDER BY ap.modtime DESC
+
+        OPEN CUR
+
+        FETCH NEXT FROM CUR INTO @apply_id, @srv_cd, @apy_status, @service_name
+
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+
+        IF @srv_cd = '001008'
+          BEGIN
+            SELECT @apy_not_deta_id = NULL
+            SELECT @apy_not_deta_id = (a08.apy_not_deta_id + '01')
+            FROM   APPLY_001008_BE a08
+            WHERE a08.apy_not_deta_id = @apply_id
+            AND a08.apy_status = '05'
+
+            IF @apy_not_deta_id IS NOT NULL
+              BEGIN
+                INSERT INTO ##RESULT
+                VALUES
+                (
+                @apy_not_deta_id, 'apply001003'
+                )
+              END
+
+            SELECT @apy_not_deta_id = NULL
+            SELECT @apy_not_deta_id = (a08.apy_not_deta_id + '02')
+            FROM APPLY_001008_AF a08
+            WHERE a08.apy_not_deta_id = @apply_id
+            AND a08.apy_status = '05'
+
+            IF @apy_not_deta_id IS NOT NULL
+              BEGIN
+                INSERT INTO ##RESULT
+                VALUES
+                (
+                @apy_not_deta_id, 'apply001001'
+                )
+              END
+          END
+        ELSE
+          BEGIN
+            INSERT INTO ##RESULT
+            VALUES
+            (
+            @apply_id, @service_name
+            )
+          END
+
+        FETCH NEXT FROM CUR INTO  @apply_id, @srv_cd, @apy_status, @service_name
+        END
+
+        CLOSE CUR
+        DEALLOCATE CUR
+
+        SELECT *
+        FROM   ##RESULT
+        ORDER BY ##RESULT.apply_id
+
+        DROP TABLE ##RESULT
+        ]]>
+    </select>
+
+    <!-- 送出申辦案件 Start-->
+    
+    <!-- MAAPI/001001_API  -->
+    <select id="queryApply_001001_API" resultClass="EECOnline.Models.Apply.Apply_001001PreviewModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ap.apy_id, ap.doc_id_no, ap.cer_ref_id, ap.apy_city, ap.cer_doc_no,
+               a01.apy_tel, a01.apy_bas_agency_id, a01.apy_zone_code,
+        		   a01.apy_prt_dept_1 AS apy_prt_dept_1_nm, a01.apy_bas_date
+        FROM APPLY ap
+        JOIN APPLY_001001 a01 ON a01.apy_not_deta_id = ap.apy_id
+        WHERE 1 = 1 
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+    <!-- MAAPI/001002_API  -->
+    <select id="queryApply_001002_API" resultClass="EECOnline.Models.Apply.Apply_001002PreviewModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT  ap.apy_id, ap.doc_id_no, ap.cer_ref_id, ap.cer_doc_no, 
+                a02.apy_tel, a02.apy_cause,
+	              a02.apy_close_sdate, a02.apy_close_edate
+        FROM APPLY ap
+        JOIN APPLY_001002 a02 ON a02.apy_not_deta_id = ap.apy_id
+        WHERE 1 = 1 
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+    <!-- MAAPI/001003_API  -->
+    <select id="queryApply_001003_API" resultClass="EECOnline.Models.Apply.Apply_001003PreviewModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT  ap.apy_id, ap.doc_id_no, ap.cer_ref_id, ap.cer_doc_no,
+                a03.apy_tel, a03.apy_cause, a03.apy_mechanism_date, a03.apy_mechanism_date2
+        FROM APPLY ap
+        JOIN APPLY_001003 a03 ON a03.apy_not_deta_id = ap.apy_id
+        WHERE 1 = 1 
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+    <!-- MAAPI/001004_API  -->
+    <select id="queryApply_001004_API" resultClass="EECOnline.Models.Apply.Apply_001004PreviewModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ap.apy_id, ap.doc_id_no, ap.cer_ref_id, ap.cer_doc_no,
+               a04.apy_tel, a04.apy_resume_date
+        FROM APPLY ap
+        JOIN APPLY_001004 a04 ON a04.apy_not_deta_id = ap.apy_id
+        WHERE 1 = 1 
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+    <!-- MAAPI/001005_API  -->
+    <select id="queryApply_001005_API" resultClass="EECOnline.Models.Apply.Apply_001005PreviewModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ap.apy_id, ap.doc_id_no, ap.cer_ref_id, ap.cer_doc_no, 
+               a05.apy_tel, a05.apy_reason
+        FROM APPLY ap
+        JOIN APPLY_001005 a05 ON a05.apy_not_deta_id = ap.apy_id
+        WHERE 1 = 1 
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+    <!-- MAAPI/001006_API  -->
+    <select id="queryApply_001006_API" resultClass="EECOnline.Models.Apply.Apply_001006PreviewModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ap.apy_id, ap.doc_id_no, ap.cer_ref_id, ap.cer_doc_no,
+			         a06.apy_tel, a06.apy_chg_date, a06.apy_chg_date, 
+			         i01.apy_change_back i01_apy_change_back,
+			         i02.apy_change_back i02_apy_change_back
+        FROM APPLY ap
+        JOIN APPLY_001006 a06 ON a06.apy_not_deta_id = ap.apy_id
+        LEFT JOIN apply_001006_item i01 ON i01.apy_not_deta_id = ap.apy_id and i01.apy_change_type = '01'
+			  LEFT JOIN apply_001006_item i02 ON i01.apy_not_deta_id = ap.apy_id and i01.apy_change_type = '02'
+        WHERE 1 = 1 
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+    <!-- MAAPI/001007_API  -->
+    <select id="queryApply_001007_API" resultClass="EECOnline.Models.Apply.Apply_001007PreviewModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ap.apy_id, ap.doc_id_no,ap.cer_doc_no, ap.cer_ref_id, ap.cer_doc_no,
+               a07.apy_tel
+        FROM APPLY ap
+        JOIN APPLY_001007 a07 ON a07.apy_not_deta_id = ap.apy_id
+        WHERE 1 = 1
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+
+    <!-- MAAPI/001008_01_API  -->
+    <select id="queryApply_001008_01_API" resultClass="EECOnline.Models.Apply.Apply_001008Preview1Model" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ap.doc_id_no, ap.apy_id + '01' AS apy_id, ap.cer_ref_id, ap.cer_doc_no,
+               a08.apy_tel_be, a08.apy_cause, a08.apy_Resign_date, a08.apy_close_date
+        FROM APPLY ap
+        JOIN APPLY_001008_BE a08 ON a08.apy_not_deta_id = ap.apy_id
+        WHERE 1 = 1 
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+    <!-- MAAPI/001008_02_API  -->
+    <select id="queryApply_001008_02_API" resultClass="EECOnline.Models.Apply.Apply_001008Preview2Model" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ap.doc_id_no, ap.apy_id + '02' AS apy_id, ap.cer_ref_id, ap.cer_doc_no,
+               a08.apy_city, a08.apy_tel_af, a08.apy_bas_agency_id_af, a08.apy_zone_code_af,
+               pd.dcd_name as apy_prt_dept_1_af_nm, a08.apy_bas_date 
+        FROM APPLY ap
+        JOIN APPLY_001008_AF a08 ON a08.apy_not_deta_id = ap.apy_id
+        LEFT JOIN ESYS_SEARCH206 pd ON a08.apy_prt_dept_1_af = pd.dcd_kind
+        WHERE 1 = 1 
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+    <!-- MAAPI/001009_API  -->
+    <select id="queryApply_001009_API" resultClass="EECOnline.Models.Apply.Apply_001009PreviewModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ap.apy_id, ap.doc_id_no, ap.cer_ref_id, ap.cer_doc_no,
+			         a09.apy_tel, a09.apy_chg_date, a09.apy_chg_date, 
+			         i01.apy_change_back i01_apy_change_back,
+			         i02.apy_change_back i02_apy_change_back
+        FROM APPLY ap
+        JOIN APPLY_001009 a09 ON a09.apy_not_deta_id = ap.apy_id
+        LEFT JOIN apply_001009_item i01 ON i01.apy_not_deta_id = ap.apy_id and i01.apy_change_type = '01'
+			  LEFT JOIN apply_001009_item i02 ON i01.apy_not_deta_id = ap.apy_id and i01.apy_change_type = '02'
+        WHERE 1 = 1 
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+    
+    
+    <!-- MAAPI/002003_API  -->
+    <select id="queryApply_002003_API" resultClass="EECOnline.Models.Apply.Apply_002003PreviewModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ap.apy_id, ap.bas_agency_id, 
+		           a23.apy_upd_sdate, a23.apy_upd_edate, a23.apy_cause
+        FROM APPLY ap
+        JOIN APPLY_002003 a23 ON a23.apy_not_deta_id = ap.apy_id
+        WHERE 1 = 1 
+        AND ap.bas_agency_id IS NOT NULL
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+    <!-- MAAPI/002004_API  -->
+    <select id="queryApply_002004_API" resultClass="EECOnline.Models.Apply.Apply_002004PreviewModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ap.apy_id, ap.bas_agency_id, a24.apy_resume_date
+        FROM APPLY ap
+        JOIN APPLY_002004 a24 ON a24.apy_not_deta_id = ap.apy_id
+        WHERE 1 = 1 
+        AND ap.bas_agency_id IS NOT NULL
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+
+    <!-- MAAPI/002005_API  -->
+    <select id="queryApply_002005_API" resultClass="EECOnline.Models.Apply.Apply_002005PreviewModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ap.apy_id, ap.bas_agency_id
+        FROM APPLY ap
+        WHERE 1 = 1 
+        AND ap.bas_agency_id IS NOT NULL
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+    <!-- MAAPI/002006_API  -->
+    <select id="queryApply_002006_API" resultClass="EECOnline.Models.Apply.Apply_002006PreviewModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT ap.apy_id, ap.bas_agency_id, 
+               a26.apy_chg_date, a26.apy_had_name_new, a26.apy_addr_new, a26.apy_zone_code, a26.apy_addr_new_ADDR, a26.apy_addr_new_ADDR2
+        FROM APPLY ap
+        JOIN APPLY_002006 a26 ON a26.apy_not_deta_id = ap.apy_id
+        WHERE 1 = 1 
+        AND ap.bas_agency_id IS NOT NULL
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  ap.apy_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+    <!-- MAAPI/002006_old_API  -->
+    <select id="queryApply_002006_old_API" resultClass="EECOnline.Models.Apply.Apply_002006_DSGridModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT apy_depart_id
+        FROM apply_002006_DS_OLD 
+        WHERE 1 = 1 
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  apy_not_deta_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+
+    <!-- MAAPI/002006_new_API  -->
+    <select id="queryApply_002006_new_API" resultClass="EECOnline.Models.Apply.Apply_002006_DSGridModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        SELECT apy_depart_id
+        FROM apply_002006_DS 
+        WHERE 1 = 1 
+       ]]>
+      <isParameterPresent>
+        <isNotEmpty prepend="" property="apy_id">
+          <![CDATA[
+	              AND  apy_not_deta_id = #apy_id#
+              ]]>
+        </isNotEmpty>
+      </isParameterPresent>
+    </select>
+    <!-- 送出申辦案件 End-->
+
+  </statements>
+</sqlMap>

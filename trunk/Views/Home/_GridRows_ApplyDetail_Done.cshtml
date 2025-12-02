@@ -1,0 +1,120 @@
+﻿@using EECOnline.Models;
+@using EECOnline.Services;
+@model HomeViewModel
+
+@if (Model.LoginApply == null || Model.LoginApply.ApplyDetail == null || Model.LoginApply.ApplyDetail.ToCount() <= 0)
+{
+}
+else
+{
+    for (int i = 0; i < Model.LoginApply.ApplyDetail.Count; i++)
+    {
+        var item = Model.LoginApply.ApplyDetail[i];
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].keyid)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].apply_no)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].apply_no_sub)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].user_idno)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].hospital_code)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].hospital_name)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].his_range1)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].his_range2)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].his_types)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].pay_deadline)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].payed)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].payed_datetime)
+        string strTypes = "";
+        int sumPrice = 0;
+        if (Model.LoginApply.ApplyDetail[i].ApplyDetailPrice.ToCount() > 0)
+        {
+            strTypes = string.Join("<br />",
+                Model.LoginApply.ApplyDetail[i].ApplyDetailPrice
+                .Where(x => x.his_type.TONotNullString() != "")
+                .OrderBy(x => x.keyid)
+                .Select(x => x.his_type_name + x.Get_Api_A1_Remark)
+                .ToList()
+            );
+            for (int j = 0; j < Model.LoginApply.ApplyDetail[i].ApplyDetailPrice.Count; j++)
+            {
+                var subItem = Model.LoginApply.ApplyDetail[i].ApplyDetailPrice[j];
+                sumPrice = sumPrice + (subItem.price ?? 0);
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].keyid)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].apply_no)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].apply_no_sub)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].user_idno)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].hospital_code)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].hospital_name)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].his_type)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].his_type_name)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].price)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].pay_deadline)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].payed)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].payed_datetime)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].isprovide)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].provide_datetime)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].provide_bin)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].provide_ext)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_date)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_dateText)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_note)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_dept)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_doctor)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_docType)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_system)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_fileName)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_success)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_success_yn)
+
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.keyid)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.master_keyid)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.PatientIdNo)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.PatientId)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.AccessionNum)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.HospitalId)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.StudyUid)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.Guid)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.TemplateId)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.CreatedDateTime)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.Modality)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.BodyPart)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.PerfrmdStartDate)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.HospitalName)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.PerfrmdItem)
+                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.VerificationDate)
+            }
+        }
+
+        <div class="table-responsive table-set" style="margin-left: 0rem;">
+            <table class="table table-blue">
+                <thead>
+                    <tr>
+                        <th width="10%">訂單編號</th>
+                        <th width="15%">申請日期</th>
+                        <th width="20%">醫院名稱</th>
+                        <th width="30%">病歷類型</th>
+                        <th width="10%">應付金額</th>
+                        <th width="15%">繳款狀態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@item.apply_no_sub</td>
+                        <td>@Model.LoginApply.createdatetime_Text_NoTime</td>
+                        <td>@item.hospital_name</td>
+                        <td>@Html.Raw(strTypes)</td>
+                        <td><div class="price">@sumPrice</div></td>
+                        <td>
+                            @if (item.payed == "Y")
+                            {
+                                <div class="timeMark">@item.payed_datetime_Text 已付款</div>
+                            }
+                            else
+                            {
+                                <span>@item.pay_deadline_Text 截止</span>
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+}

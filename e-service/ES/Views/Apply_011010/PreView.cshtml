@@ -1,0 +1,177 @@
+﻿@using ES.Models;
+@using ES.Services;
+@using ES.Models.ViewModels;
+@model Apply_011010FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel sc = new ShareCodeListModel();
+    ViewBag.SRV_NAME = "全國社會工作專業人員選拔推薦";
+    string s_UNITTYPE = "";
+    string s_UNITSUBTYPE = "";
+    string s_MERGEYN = "否";
+    string s_CNTTYPE = "";
+    if (Model.MERGEYN == "Y") { s_MERGEYN = "是"; }
+    if (Model.UNIT_TYPE == "1") { s_UNITTYPE = "1. 公部門〔直轄市、縣（市）政府（含社會局處、勞工局處、教育局處及衛生局等相關單位）及所屬之社會福利機構、本部等其他中央部會及其所屬社會福利機構、公立大專校院等〕"; }
+    if (Model.UNIT_TYPE == "2") { s_UNITTYPE = "2. 私部門〔各私立社會福利機構、長期照顧服務機構、團體、大專校院〕"; }
+    if (Model.UNIT_TYPE == "3") { s_UNITTYPE = "3. 公私立醫事機構"; }
+    if (Model.UNIT_SUBTYPE == "1") { s_UNITSUBTYPE = "身心障礙福利機構/團體"; }
+    if (Model.UNIT_SUBTYPE == "2") { s_UNITSUBTYPE = "老人及長期照顧福利機構/團體"; }
+    if (Model.UNIT_SUBTYPE == "3") { s_UNITSUBTYPE = "兒少、婦女及家庭福利機構/團體"; }
+    if (Model.UNIT_SUBTYPE == "4") { s_UNITSUBTYPE = "學校"; }
+    if (Model.UNIT_SUBTYPE == "5") { s_UNITSUBTYPE = "矯正機關"; }
+    if (Model.UNIT_SUBTYPE == "6") { s_UNITSUBTYPE = "社工師事務所及公會/協會/學會"; }
+    if (Model.UNIT_SUBTYPE == "7") { s_UNITSUBTYPE = "其他（非屬上述類別）"; }
+    //if (Model.CNT_TYPE == "1") { s_CNTTYPE = "總會/事務所統一推薦"; }
+    //if (Model.CNT_TYPE == "2") { s_CNTTYPE = "單位無分會/分部/分事務所"; }
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <h1 class="form-title title-bg-y">申辦表件預覽</h1>
+        <div class="form-set">
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">申辦項目</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">@Html.Raw(ViewBag.SRV_NAME)</p>
+                </div>
+                <label class="step-label col-sm-2" for="">申辦日期</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">@Model.APPLY_DATE_TW</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.UNIT_TYPE)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@s_UNITTYPE (@s_UNITSUBTYPE)</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_NAME)</label>
+                <div class="col-sm-4">@Model.UNIT_NAME</div>
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_DEPART)</label>
+                <div class="col-sm-4">@Model.UNIT_DEPART</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_TITLE)</label>
+                <div class="col-sm-4">@Model.UNIT_TITLE</div>
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_CNAME)</label>
+                <div class="col-sm-4">@Model.UNIT_CNAME</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_TEL)</label>
+                <div class="col-sm-4">@Model.UNIT_TEL</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+                <div class="col-sm-10">@Model.EMAIL</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>單位社工人員總數</label>
+                <div class="col-sm-10">@Model.CNT_D</div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <p>
+                        1.依「全國社會工作專業人員選拔及表揚要點」第五點第一款規定之推薦單位社工人員總數（含總會、分會、分事務所人數）。<br />
+                        2.推薦單位如有所屬分會、分事務所等，請統一由總會推薦；直轄市、縣(市)政府由社會局(處)統一推薦。
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>各獎項推薦人數</label>
+                <div class="col-sm-5">
+                    @Html.DisplayNameFor(m => m.CNT_E)：@Model.CNT_E<br />
+                    @Html.DisplayNameFor(m => m.CNT_F)：@Model.CNT_F
+                </div>
+                <div class="col-sm-5">
+                    @Html.DisplayNameFor(m => m.CNT_G)：@Model.CNT_G<br />
+                    @Html.DisplayNameFor(m => m.CNT_H)：@Model.CNT_H
+                </div>
+            </div>
+            <h2 class="second-title">佐證文件檔案上傳<span style="color:red">(總檔案大小5MB以下)</span></h2>
+            <div class="form-group">
+                @*<label class="step-label col-sm-2" for="">
+                        佐證文件採合併檔案
+                    </label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Html.Raw(s_MERGEYN)</p>
+                    </div>*@
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FILE_EXCEL)</label>
+                <div class="col-sm-10">
+                    @Html.ImageHoverForTurbo(m => m.FILE_EXCEL, Model.FILE_EXCEL_TEXT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FILE_PDF)</label>
+                <div class="col-sm-10">
+                    @Html.ImageHoverForTurbo(m => m.FILE_PDF, Model.FILE_PDF_TEXT)
+                </div>
+            </div>
+            @{
+                if (Model.SRVLIST != null)
+                {
+                    int index = 0;
+                    <h2 class="second-title">
+                        <span style="color:red;">*</span>推薦表(PDF檔)
+                        <p>
+                            <span style="color:red;">1.	受薦人排序應與彙整表相同。</span><br />
+                            <span style="color:red;">2.	每位推薦人限上傳兩份檔案(5MB以下)，其餘檔案恕不接收。</span>
+                        </p>
+                    </h2>
+                    foreach (var item in Model.SRVLIST)
+                    {
+                        <div id="RowTable">
+                            <div id="row1" data-group="Row">
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2" for="">序號</label>
+                                    <div class="col-sm-1">
+                                        <p class="form-control-static">@(Model.SRVLIST.Count) / @(index + 1)</p>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @Html.ImageHoverForTurbo(x => x.SRVLIST[index].FILE_3, item.FILE_3_TEXT, index)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        index++;
+                    }
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<!--form-->
+<div class="form-set">
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="doSave()">確認送出</button>
+        <button type="button" class="btn btn-clear" onclick="doback()">返回修改</button>
+    </div>
+
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('[data-hover!=\"\"]').hover();
+    });
+
+
+    // 送出
+    function doSave() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+
+    // 返回
+    function doback() {
+        $('#form_tab').attr('class', 'active');
+        $('#form').attr('class', 'tab-pane fade active in');
+        $('#form_tab1').removeClass('active');
+        $('#form1').attr('class', 'tab-pane fade');
+    }
+</script>

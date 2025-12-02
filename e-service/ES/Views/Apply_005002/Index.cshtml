@@ -1,0 +1,1457 @@
+﻿@model ES.Models.ViewModels.Apply_005002ViewModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "Index";
+}
+
+@Scripts.Render("~/Scripts/vue.js")
+@*@Scripts.Render("~/Scripts/vue.min.js")*@
+
+<div id="_005002" class="container">
+    <!-- bread  -->
+    <div class="breadlink"><i class="fas fa-home"></i><a href="@Url.Action("Index", "Login")">首頁</a> ／ <a href="@Url.Action("Index", "Service")">申辦服務</a> ／ <a href="#">外銷證明書</a></div>
+    <div class="clearfix"></div>
+    <div class="step_map" v-show="!(state.Apply.FLOW_CD)">
+        <ul>
+            <li v-bind:class="{active:route.isApplyForm}">填寫申報表件並上傳檔案</li>
+            <li v-bind:class="{active:route.isPreview}">預覽申辦表件</li>
+            <li v-bind:class="{active:route.isPayment}">繳費</li>
+            <li v-bind:class="{active:route.isComplete}">完成申報</li>
+        </ul>
+    </div>
+    <!--form-->
+    <fieldset v-bind:disabled="!isEditable">
+        <div class="col-sm-12" id="form_block" v-show="route.isApplyForm">
+            <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+            <div class="form-set">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">申辦項目</label>
+                        <div class="col-sm-4">
+                            <p class="form-control-static">外銷證明書</p>
+                        </div>
+                    </div>
+                    <div v-bind:class="errataDisableStyle">
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申請日期</label>
+                            <div class="col-sm-4">
+                                @{
+                                    string appDate = Model.Apply.APP_TIME.HasValue ? Model.Apply.APP_TIME.Value.ToString("yyyy/MM/dd") : DateTime.Now.ToString("yyyy/MM/dd");
+                                }
+                                <input type="text" class="form-control" value="@appDate" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">
+                                <span style="color:red;">*</span>申辦份數
+                            </label>
+                            <div class="col-sm-4" id="state.Pay.ount">
+                                <select class="form-control" v-model="state.Detail.MF_COPIES">
+                                    <option value="" selected>請選擇</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
+                            <label class="step-label col-sm-2" for="">繳費金額</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="state.Pay.mount" v-bind:value="payMoney" readonly />
+                            </div>
+                        </div>
+                        <h2 class="second-title">申請基本資料</h2>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>公司名稱</label>
+                            <div class="col-sm-10">
+                                <input type="text" v-model="state.Apply.NAME" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人</label>
+                            <div class="col-sm-4">
+                                <input type="text" v-model="state.Apply.CNT_NAME" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話</label>
+                            <div class="col-sm-10">
+                                <span>(</span>
+                                <input type="text" v-model="OptData.tel[0]" class="form-10 form-normal">
+                                <span>)</span>
+                                <input type="text" v-model="OptData.tel[1]" class="form-normal" value="">
+                                <span>#</span>
+                                <input type="text" v-model="OptData.tel[2]" class="form-10 form-normal">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">傳真</label>
+                            <div class="col-sm-10">
+                                <span>(</span>
+                                <input type="text" v-model="OptData.fax[0]" class="form-10 form-normal" value="">
+                                <span>)</span>
+                                <input type="text" v-model="OptData.fax[1]" class="form-normal" value="">
+                                <span>#</span>
+                                <input type="text" v-model="OptData.fax[2]" class="form-10 form-normal" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+                            <div class="col-sm-10">
+                                <input type="text" v-model="OptData.email[0]" class="form-normal" value=""> @@
+                                <select class="form-normal" v-model="OptData.email[1]" v-on:change="setEmail($event)">
+                                    <option v-for="opt in OptData.OptionsEmailDomain"
+                                            v-bind:value="opt.Value"
+                                            v-text="opt.Text"></option>
+                                </select>
+                                <input type="text" v-model="OptData.email[2]" class="form-normal" value="" v-bind:readonly="OptData.email[1]!='0'">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ref="LIC">
+                        <label class="step-label col-sm-2" for="">
+                            <span style="color:red;">*</span>藥品許可證字號(中文)
+                            <a href="javascript:void(0)" class="btn btn-save"
+                               v-bind:class="errataDisableStyle" v-on:click="getInterfaceData()">查詢</a>
+                        </label>
+                        <div class="col-sm-10">
+                            <select class="form-normal" v-model="state.Detail.LIC_CD">
+                                <option v-for="opt in OptData.OptionsLicCd" v-bind:value="opt.Value" v-text="opt.Text"></option>
+                            </select>
+                            <input type="text" v-model="state.Detail.LIC_NUM" class="form-normal" placeholder="" value="">
+                            <input type="text" readonly
+                                   v-model="getErrata('LIC').Note"
+                                   v-show="isShowErrata('LIC')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                        <div class="col-sm-10">
+                            1.	可搜尋藥品許可證字號後自動帶入許可證資料，亦可直接於下方欄位直接輸入。<br>
+                            2.	若非外銷專用許可證，請改為申請產銷證明書。
+                        </div>
+                    </div>
+                    <div class="form-group" ref="LIC_E">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥品許可證字號(英文)</label>
+                        <div class="col-sm-10">
+                            <input type="text" v-model="state.Detail.LIC_CD_E" class="form-normal col-sm-2" readonly>
+                            <input type="text" v-model="state.Detail.LIC_NUM_E" class="form-normal col-sm-3" readonly>
+                            <input type="text" readonly
+                                   v-model="getErrata('LIC_E').Note"
+                                   v-show="isShowErrata('LIC_E')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                    </div>
+                    <div class="form-group" ref="MF_CNT_NAME">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠名稱(中文)</label>
+                        <div class="col-sm-10">
+                            <input type="text" v-model="state.Detail.MF_CNT_NAME" class="form-control" placeholder="" value="">
+                            <input type="text" readonly
+                                   v-model="getErrata('MF_CNT_NAME').Note"
+                                   v-show="isShowErrata('MF_CNT_NAME')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+                    </div>
+                    <div class="form-group" ref="MF_CNT_NAME_E">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠名稱(英文)</label>
+                        <div class="col-sm-10">
+                            <input type="text"
+                                class="form-control" placeholder="" value=""
+                                v-on:change="checkEnNum($event, 'MF_CNT_NAME_E')"
+                                v-model="state.Detail.MF_CNT_NAME_E">
+                            <input type="text" readonly
+                                   v-model="getErrata('MF_CNT_NAME_E').Note"
+                                   v-show="isShowErrata('MF_CNT_NAME_E')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                    </div>
+                    <div class="form-group" ref="MF_ADDR">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠地址(中文)</label>
+                        <div class="col-sm-10">
+                            @*<input type="text" class="form-normal form-10" value="908">
+                                <select class="form-normal">
+                                    <option>屏東縣</option>
+                                </select>
+                                <select class="form-normal">
+                                    <option>長治鄉</option>
+                                </select>*@
+                            <input type="text" v-model="state.Detail.MF_ADDR" class="form-control form-50" value="">
+                            <input type="text" readonly
+                                   v-model="getErrata('MF_ADDR').Note"
+                                   v-show="isShowErrata('MF_ADDR')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            1.請依藥品許可證所載製造廠地址，以及郵遞區號、國名，英譯後輸入。<br>
+                            2.可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。
+                        </div>
+                    </div>
+                    <div class="form-group" ref="MF_ADDR_E">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠地址(英文)</label>
+                        <div class="col-sm-10">
+                            <input type="text"
+                                v-model="state.Detail.MF_ADDR_E"
+                                v-on:change="checkEnNum($event, 'MF_ADDR_E')"
+                                class="form-control" placeholder="請輸入制造廠地址" value="">
+                            <input type="text" readonly
+                                   v-model="getErrata('MF_ADDR_E').Note"
+                                   v-show="isShowErrata('MF_ADDR_E')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">1.	請依藥品許可證所載製造廠地址，以及郵遞區號、國名，英譯後輸入。<br>2.	建議可至中華郵政官網使用中文地址英譯功能，翻譯製造廠地址。</div>
+                    </div>
+                    <div class="form-group" ref="DRUG_NAME">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥品名稱(中文)</label>
+                        <div class="col-sm-4" ref="DRUG_NAME">
+                            <input type="text" v-model="state.Detail.DRUG_NAME" class="form-control" value="">
+                            <input type="text" readonly
+                                   v-model="getErrata('DRUG_NAME').Note"
+                                   v-show="isShowErrata('DRUG_NAME')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥品名稱(英文)</label>
+                        <div class="col-sm-4" ref="DRUG_NAME_E">
+                            <input type="text"
+                                v-model="state.Detail.DRUG_NAME_E"
+                                v-on:change="checkEnNum($event, 'DRUG_NAME_E')"
+                                class="form-control" value="">
+                            <input type="text" readonly
+                                   v-model="getErrata('DRUG_NAME_E').Note"
+                                   v-show="isShowErrata('DRUG_NAME_E')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">1.請依藥品許可證所載中、英文品名填寫。<br>2.可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+                    </div>
+
+                    <!-----------------------------------------------登載外銷品名------------------------------------------------>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">登載外銷品名</label>
+                        <div class="col-sm-10 form-control-static">
+                            <label style="font-weight: normal">
+                                <input type="checkbox" id="addProduct" checked="" v-model="OptData.isCheckAbroad">
+                                非必填欄位，可勾選是否登載外銷品名。
+                            </label>
+                        </div>
+                    </div>
+
+                    <fieldset v-show="state.Detail.DRUG_ABROAD_NAME || OptData.isCheckAbroad">
+                        <div class="form-group" id="choseProduct">
+                            <label class="step-label col-sm-2" for="">勾選外銷品名</label>
+                            <div class="col-sm-10">
+                                @*<input type="checkbox">1.OOO*@
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">請勾選欲申請之外銷品名。</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">外銷品名</label>
+                            <div class="col-sm-10">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>選取</th>
+                                        <th>外銷品名(中文)</th>
+                                        <th>外銷品名(英文)</th>
+                                    </tr>
+                                    <tr v-for="item in OptData.outputProd">
+                                        <td>
+                                            <a href="javascript:void(0)" v-on:click="setAbroadProd(item)">選取</a>
+                                        </td>
+                                        <td v-text="item['外銷中文品名']"></td>
+                                        <td v-text="item['外銷英文品名']"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="choseProduct1" ref="DRUG_ABROAD_NAME">
+                            <label class="step-label col-sm-2" for="">外銷品名(中文)</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" v-model="state.Detail.DRUG_ABROAD_NAME" />
+                                <input type="text" readonly
+                                       v-model="getErrata('DRUG_ABROAD_NAME').Note"
+                                       v-show="isShowErrata('DRUG_ABROAD_NAME')"
+                                       class="form-control"
+                                       placeholder="補正備註" />
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">1.	請依藥品許可證所載中、英文品名填寫。<br>2.	可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+                        </div>
+
+                        <div class="form-group" id="choseProduct2" ref="DRUG_ABROAD_NAME_E">
+                            <label class="step-label col-sm-2" for="">外銷品名(英文)</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control"
+                                    v-model="state.Detail.DRUG_ABROAD_NAME_E"
+                                    v-on:change="checkEnNum($event, 'DRUG_ABROAD_NAME_E')" />
+                                <input type="text" readonly
+                                       v-model="getErrata('DRUG_ABROAD_NAME_E').Note"
+                                       v-show="isShowErrata('DRUG_ABROAD_NAME_E')"
+                                       class="form-control"
+                                       placeholder="補正備註" />
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">1.	請依藥品許可證所載外銷品名填寫。<br>2.	可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-group" ref="DOSAGE_FORM">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型(中文)</label>
+                        <div class="col-sm-10">
+                            <input type="text" v-model="state.Detail.DOSAGE_FORM" class="form-control">
+                            <input type="text" readonly
+                                   v-model="getErrata('DOSAGE_FORM').Note"
+                                   v-show="isShowErrata('DOSAGE_FORM')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+                    </div>
+                    <div class="form-group" ref="DOSAGE_FORM_E">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型(英文)</label>
+                        <div class="col-sm-10">
+                            <input type="text"
+                                v-model="state.Detail.DOSAGE_FORM_E"
+                                v-on:change="checkEnNum($event, 'DOSAGE_FORM_E')" 
+                                class="form-control">
+                            <input type="text" readonly
+                                   v-model="getErrata('DOSAGE_FORM_E').Note"
+                                   v-show="isShowErrata('DOSAGE_FORM_E')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                    </div>
+                    <div class="form-group" ref="ISSUE_DATE">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>核准日期(中文)</label>
+                        <div class="col-sm-4">
+                            @*<input type="text" class="form-control">*@
+                            <div id="issue-date">
+                                @Html.DatePickerTWFor(x => x.Detail.ISSUE_DATE)
+                            </div>
+                            <input type="text" readonly
+                                   v-model="getErrata('ISSUE_DATE').Note"
+                                   v-show="isShowErrata('ISSUE_DATE')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>核准日期(英文)</label>
+                        <div class="col-sm-4">
+                            <div class="form-control-static" v-text="getDateText($data.state.Detail.ISSUE_DATE)"></div>
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">1.即藥品許可證所載發證日期。<br>2.可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">顯示有效日期</label>
+                        <div class="col-sm-10 form-control-static">
+                            <input type="checkbox" v-model="OptData.isShowExpirDate" v-on:change="changeExpirDate()" id="addDate" checked="">
+                            <span>非必填欄位，倘有需要刊載藥品許可證有效日期才勾選。</span>
+                        </div>
+                    </div>
+                    <div v-show="OptData.isShowExpirDate" ref="EXPIR_DATE">
+                        <div class="form-group" id="choseDate">
+                            <label class="step-label col-sm-2" for="">有效日期(中文)</label>
+                            <div class="col-sm-4">
+                                @*<input type="text" class="form-control" value="113-07-12">*@
+                                @*<tb-tw-date :value="" name=""  />*@
+                                @*<tb-tw-date :format="yyy-mm-dd" v-bind:value="" v-bind:name="" />
+                                    <tb-ad-date :format="yyy-mm-dd" v-bind:value="" v-bind:name="" />*@
+
+                                <div id="expir-date">
+                                    @Html.DatePickerTWFor(x => x.Detail.EXPIR_DATE)
+                                </div>
+
+                                <input type="text" readonly
+                                       v-model="getErrata('EXPIR_DATE').Note"
+                                       v-show="isShowErrata('EXPIR_DATE')"
+                                       class="form-control"
+                                       placeholder="補正備註" />
+
+                            </div>
+                            <label class="step-label col-sm-2" for="">有效日期(英文)</label>
+                            <div class="col-sm-4">
+                                @*<input type="text" class="form-control" value="113-07-12">*@
+                                <div class="form-control-static" v-text="getDateText(state.Detail.EXPIR_DATE)"></div>
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ref="MF_CONT">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>處方說明(中文)</label>
+                        <div class="col-sm-10">
+                            <input type="text" v-model="state.Detail.MF_CONT" class="form-control">
+                            <input type="text" readonly
+                                   v-model="getErrata('MF_CONT').Note"
+                                   v-show="isShowErrata('MF_CONT')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">1.	處方含量之說明，最後請以「：」結尾，例如「每公克中含有：」。<br>2.	可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+                    </div>
+                    <div class="form-group" ref="MF_CONT_E">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>處方說明(英文)</label>
+                        <div class="col-sm-10">
+                            <input type="text"
+                                   v-model="state.Detail.MF_CONT_E"
+                                   v-on:change="checkEnNum($event, 'MF_CONT_E')"
+                                   class="form-control">
+                            <input type="text" readonly
+                                   v-model="getErrata('MF_CONT_E').Note"
+                                   v-show="isShowErrata('MF_CONT_E')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                    </div>
+                    <div class="form-group" ref="INGREDIENT">
+                        <label class="step-label col-sm-2" for="">
+                            成分內容
+                            <a href="javascript:void(0)"
+                               class="btn btn-save"
+                               v-on:click="addRow('IngredientList')"
+                               v-bind:class="{disabled: !isShowErrata('INGREDIENT') && isErrataState }">新增</a>
+                        </label>
+                        <div class="col-sm-10">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>上下</th>
+                                        <th><span style="color:red;">*</span>成分內容(中文)</th>
+                                        <th><span style="color:red;">*</span>生藥名</th>
+                                        <th>份量</th>
+                                        <th>單位</th>
+                                        <th>刪除</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(item, index) in state.IngredientList">
+                                        <td>
+                                            <button type="button" class="btn btn-default btn-sm"
+                                                    v-on:click="swapArrayElements(state.IngredientList, index-1, index)"
+                                                    v-show="index > 0">
+                                                <span class="glyphicon glyphicon-chevron-up"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-default btn-sm"
+                                                    v-on:click="swapArrayElements(state.IngredientList, index, index+1)"
+                                                    v-show="index < state.IngredientList.length-1">
+                                                <span class="glyphicon glyphicon-chevron-down"></span>
+                                            </button>
+                                        </td>
+                                        <td><input type="text" v-model="item.DI_NAME" class="form-control" value=""></td>
+                                        <td><input type="text" v-model="item.DI_ENAME" class="form-control" value=""></td>
+                                        <td><input type="text" v-model="item.DI_CONT" class="form-control" value=""></td>
+                                        <td><input type="text" v-model="item.DI_UNIT" class="form-control" value=""></td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteRow(index, 'IngredientList')">
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <input type="text" readonly
+                                   v-model="getErrata('INGREDIENT').Note"
+                                   v-show="isShowErrata('INGREDIENT')"
+                                   class="form-control"
+                                   placeholder="補正備註" />
+                        </div>
+                    </div>
+                    <div class="form-group" v-bind:class="errataDisableStyle">
+                        <label class="step-label col-sm-2" for="">是否為濃縮製劑</label>
+                        <div class="col-sm-10 form-control-static">
+                            <input type="checkbox" v-model="OptData.isPcScale" class="form-normal" checked="">是<span style="padding-left:20px;" class="form-control-static">1.選擇「是」，會顯示「生藥與浸膏比例」及「賦形劑」填寫欄位。</span>
+                        </div>
+                    </div>
+                    <div v-show="OptData.isPcScale">
+                        <div class="form-group" ref="PC_SCALE">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>生藥與浸膏比例(中文)</label>
+                            <div class="col-sm-10">
+                                以上生藥製成浸膏<input type="text" v-model="state.Detail.PC_SCALE_1" class="form-normal form-10" value="" placeholder="輸入分量">
+                                <input type="text" v-model="state.Detail.PC_SCALE_1E" class="form-normal form-10" value="" placeholder="輸入單位">
+                                (生藥與浸膏比例<input type="text" v-model="state.Detail.PC_SCALE_21" class="form-normal form-10" value="" placeholder="輸入比例">
+                                :<input type="text" v-model="state.Detail.PC_SCALE_22" class="form-normal form-10" value="" placeholder="輸入比例">
+                                =<input type="text" v-model="state.Detail.PC_SCALE_23" class="form-normal form-10" value="" placeholder="輸入比例">
+                                :<input type="text" v-model="state.Detail.PC_SCALE_24" class="form-normal form-10" value="" placeholder="輸入比例">)
+
+                                <input type="text" readonly
+                                       v-model="getErrata('PC_SCALE').Note"
+                                       v-show="isShowErrata('PC_SCALE')"
+                                       class="form-control"
+                                       placeholder="補正備註" />
+
+                            </div>
+                            <label class="step-label col-sm-2" for=""></label>
+                            <div class="col-sm-10">
+                                <span>例如：以上生藥製成浸膏3.8g(生藥與浸膏比例29:3.8=7.6:1)</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>生藥與浸膏比例(英文)</label>
+                            <div class="col-sm-10">
+                                @*<input type="text" :value="fScaleEnText" class="form-control" value="Above raw herbs equivalent to 3.8g herbal extract.(Ratio of raw herbs and extract 29:3.8=7.6:1)">*@
+                                Above raw herbs equivalent to <input type="text" v-model="state.Detail.PC_SCALE_1" class="form-normal form-10" value="" placeholder="輸入分量" readonly>
+                                <input type="text" v-model="state.Detail.PC_SCALE_2E" class="form-normal form-10" value="" placeholder="輸入單位">
+                                (Ratio of raw herbs and extract <input type="text" v-model="state.Detail.PC_SCALE_21" class="form-normal form-10" value="" placeholder="輸入比例" readonly>
+                                :<input type="text" v-model="state.Detail.PC_SCALE_22" class="form-normal form-10" value="" placeholder="輸入比例" readonly>
+                                =<input type="text" v-model="state.Detail.PC_SCALE_23" class="form-normal form-10" value="" placeholder="輸入比例" readonly>
+                                :<input type="text" v-model="state.Detail.PC_SCALE_24" class="form-normal form-10" value="" placeholder="輸入比例" readonly>)
+                            </div>
+                        </div>
+                        <div class="form-group" ref="EXCIPIENT">
+                            <label class="step-label col-sm-2" for="">
+                                賦形劑
+                                <a href="javascript:void(0)"
+                                   class="btn btn-save"
+                                   v-on:click="addRow('ExcipientList')"
+                                   v-bind:class="{ disabled: !isShowErrata('EXCIPIENT') && isErrataState }">新增</a>
+                            </label>
+                            <div class="col-sm-10">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>上下</th>
+                                            <th><span style="color:red;">*</span>成分內容(中文)</th>
+                                            <th><span style="color:red;">*</span>生藥名</th>
+                                            <th>份量</th>
+                                            <th>單位</th>
+                                            <th>刪除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item, index) in state.ExcipientList">
+                                            <td>
+                                                <button type="button" class="btn btn-default btn-sm"
+                                                        v-on:click="swapArrayElements(state.ExcipientList, index-1, index)"
+                                                        v-show="index > 0">
+                                                    <span class="glyphicon glyphicon-chevron-up"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-sm"
+                                                        v-on:click="swapArrayElements(state.ExcipientList, index, index+1)"
+                                                        v-show="index < state.ExcipientList.length-1">
+                                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                                </button>
+                                            </td>
+                                            <td><input type="text" v-model="item.PC_NAME" class="form-control"></td>
+                                            <td><input type="text" v-model="item.PC_ENAME" class="form-control"></td>
+                                            <td><input type="text" v-model="item.PC_CONT" class="form-control"></td>
+                                            <td><input type="text" v-model="item.PC_UNIT" class="form-control"></td>
+                                            <td>
+                                                <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteRow(index, 'ExcipientList')">
+                                                    <span class="glyphicon glyphicon-remove"></span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <input type="text" readonly
+                                       v-model="getErrata('EXCIPIENT').Note"
+                                       v-show="isShowErrata('EXCIPIENT')"
+                                       class="form-control"
+                                       placeholder="補正備註" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" v-bind:class="errataDisableStyle">
+                        <label class="step-label col-sm-2" for="">登載效能、適應症</label>
+                        <div class="col-sm-10">
+                            <input type="checkbox" v-model="OptData.isShowAddA" id="addA" checked=""> 1. 效能
+                            <input type="checkbox" v-model="OptData.isShowAddB" id="addB" checked=""> 2. 適應症
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">請依藥品許可證所載適應症、效能勾選。</div>
+                    </div>
+
+                    <div v-show="OptData.isShowAddA">
+                        <div class="form-group" id="choseA1" ref="EFFICACY">
+                            <label class="step-label col-sm-2" for="">效能(中文)</label>
+                            <div class="col-sm-10">
+                                <input type="text" v-model="state.Detail.EFFICACY" class="form-control" value="">
+                                <input type="text" readonly
+                                       v-model="getErrata('EFFICACY').Note"
+                                       v-show="isShowErrata('EFFICACY')"
+                                       class="form-control"
+                                       placeholder="補正備註" />
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">1.	各效能之間以「、」隔開，最後請以「。」結尾。<br>2.	可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+                        </div>
+                        <div class="form-group" id="choseA2" ref="EFFICACY_E">
+                            <label class="step-label col-sm-2" for="">效能(英文)</label>
+                            <div class="col-sm-10">
+                                <input type="text"
+                                       v-model="state.Detail.EFFICACY_E"
+                                       v-on:change="checkEnNum($event, 'EFFICACY_E')"
+                                       class="form-control" value="">
+                                <input type="text" readonly
+                                       v-model="getErrata('EFFICACY_E').Note"
+                                       v-show="isShowErrata('EFFICACY_E')"
+                                       class="form-control"
+                                       placeholder="補正備註" />
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">各效能之間以「,」隔開，最後請以「.」結尾。</div>
+                        </div>
+                    </div>
+
+                    <div v-show="OptData.isShowAddB">
+                        <div class="form-group" id="choseB1" ref="INDIOCATION">
+                            <label class="step-label col-sm-2" for="">適應症(中文)</label>
+                            <div class="col-sm-10">
+                                <input type="text"
+                                       v-model="state.Detail.INDIOCATION"
+                                       class="form-control" value="">
+                                <input type="text" readonly
+                                       v-model="getErrata('INDIOCATION').Note"
+                                       v-show="isShowErrata('INDIOCATION')"
+                                       class="form-control"
+                                       placeholder="補正備註" />
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">1.	各病症之間以「、」隔開，最後請以「。」結尾。<br>2.	可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+                        </div>
+                        <div class="form-group" id="choseB2" ref="INDIOCATION_E">
+                            <label class="step-label col-sm-2" for="">適應症(英文)</label>
+                            <div class="col-sm-10">
+                                <input type="text"
+                                       v-model="state.Detail.INDIOCATION_E"
+                                       v-on:change="checkEnNum($event, 'INDIOCATION_E')"
+                                       class="form-control" value="">
+                                <input type="text" readonly
+                                       v-model="getErrata('INDIOCATION_E').Note"
+                                       v-on:change="checkEnNum($event, 'INDIOCATION')"
+                                       v-show="isShowErrata('INDIOCATION_E')"
+                                       class="form-control"
+                                       placeholder="補正備註" />
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">各病症之間以「,」隔開，最後請以「.」結尾。</div>
+                        </div>
+                    </div>
+
+                    <!--------------------------------------- 佐證文件檔案上傳 ------------------------------------->
+
+                    <h2 class="second-title">佐證文件檔案上傳</h2>
+                    <div class="form-group" v-bind:class="errataDisableStyle">
+                        <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" v-model="state.Detail.MERGE_YN" true-value="Y" name="optradio" checked="">是
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" v-model="state.Detail.MERGE_YN" false-value="N" name="optradio">否
+                            </label>
+                            <div> 若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否" </div>
+                        </div>
+                    </div>
+                    <form id="main_form" enctype="multipart/form-data">
+                        <div class="form-group" ref="UploadFile_1">
+                            <label class="step-label col-sm-2" for="">外銷專用藥品許可證(正面)</label>
+                            <div class="col-sm-10">
+                                @RenderFileField(1)
+                            </div>
+                        </div>
+                        <div class="form-group" ref="UploadFile_2">
+                            <label class="step-label col-sm-2" for="">外銷專用藥品許可證(反面)</label>
+                            <div class="col-sm-10">
+                                @RenderFileField(2)
+                            </div>
+                        </div>
+                        <div class="form-group" ref="UploadFile_3">
+                            <label class="step-label col-sm-2" for="">處方之中藥材中英文對照表</label>
+                            <div class="col-sm-10">
+                                @RenderFileField(3)
+                            </div>
+                        </div>
+                        <div class="btn-bar text-center">
+                            <!--<button type="submit" class="btn btn-save">存檔並預覽</button>-->
+                            <a type="button"
+                               v-on:click="nextAction('Preview')"
+                               href="javascript:void(0)"
+                               class="btn btn-save"
+                               v-if="state.Apply.FLOW_CD != '4' && state.Apply.FLOW_CD != '2'">
+                                存檔並預覽
+                            </a>
+
+                            <a type="button"
+                               v-on:click="nextAction('Resend')"
+                               href="javascript:void(0)"
+                               class="btn btn-save"
+                               v-else>存檔</a>
+
+                            <button type="reset" class="btn btn-clear">清除資料</button>
+
+                            @*<a type="button"
+                                v-on:click="nextAction('PreviewOnly')"
+                                href="javascript:void(0)"
+                                class="btn btn-save">預覽證明書</a>*@
+                        </div>
+                    </form>
+                    @*<input type="hidden" name="ModelJson" :value="modelJson" />*@
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <div id="preview_block" class="col-sm-12" v-show="route.isPreview">
+        <div class="row" v-html="Preview">@* 動態填入partial view. *@</div>
+        <div class="form-set">
+            <div class="btn-bar text-center">
+                <a type="button" v-on:click="transRoute('Payment')" href="javascript:void(0)" class="btn btn-save">確認送出</a>
+                <a type="button" v-on:click="transRoute('Apply')" href="javascript:void(0)" class="btn btn-clear">返回修改</a>
+                <a type="button" v-on:click="nextAction('PreviewSheet')" href="javascript:void(0)" class="btn btn-save">預覽證明書</a>
+                <!--<button type="submit" class="btn btn-save">確認送出</button>-->
+                <!--<button type="submit" class="btn btn-clear">返回修改</button>-->
+            </div>
+            <iframe v-if="OptData.sheetUrl" v-bind:src="OptData.sheetUrl" style="display:none"></iframe>
+        </div>
+    </div>
+
+    <div id="preview_block" class="col-sm-12" v-show="route.isPreviewOnly">
+        <div class="row" v-html="Preview">@* 動態填入partial view. *@</div>
+        <div class="form-set">
+            <div class="btn-bar text-center">
+                <a type="button" v-on:click="transRoute('Apply')" href="javascript:void(0)" class="btn btn-clear">返回修改</a>
+                <!--<button type="submit" class="btn btn-save">確認送出</button>-->
+                <!--<button type="submit" class="btn btn-clear">返回修改</button>-->
+            </div>
+        </div>
+    </div>
+
+    <div id="payment_block" class="col-sm-12" v-show="route.isPayment">
+        <h1 class="form-title  title-bg-y">選擇繳費方式</h1>
+        <div class="form-set">
+            <form class="form-horizontal" action="">
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">繳費方式</label>
+                    <div class="col-sm-10">
+                        <div>
+                            <label><input v-model="state.Apply.PAY_METHOD" name="PAY_METHOD" type="radio" value="B">現金</label>
+                        </div>
+                        <div>
+                            <label><input v-model="state.Apply.PAY_METHOD" name="PAY_METHOD" type="radio" value="D">匯票(抬頭：衛生福利部）</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申請時應繳費用</label>
+                    <div class="col-sm-10" style="margin-top:10px">
+                        <span v-text="payMoney"></span>元
+                    </div>
+                </div>
+                <div class="btn-bar text-center">
+                    <a type="button" v-on:click="nextAction('Complete')" href="javascript:void(0)" class="btn btn-save">確認送出</a>
+                    <a type="button" v-on:click="transRoute('Apply')" href="javascript:void(0)" class="btn btn-clear">返回修改</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="complete_block" class="col-sm-12" v-show="route.isComplete">
+        <div class="row">
+            <div class="col-sm-12">
+                <h1 class="form-title title-bg-y">完成申報</h1>
+            </div>
+        </div>
+        <div class="form-set">
+            <form class="form-horizontal" action="">
+                <div class="form-group">
+                    <div class="col-sm-12" style="margin-top:10px">
+                        <span v-text="state.Apply.CNT_NAME"></span>您好：<br>
+                        貴公司申請外銷證明書 (案號：<span v-text="state.Apply.APP_ID"></span>) 一案，「人民申請案線上申辦服務系統」已收件，尚待貴公司繳納規費，請提供申請者聯絡資訊、申請案類別、案件編號及規費金額等資料，連同欲繳納之匯票或現金，寄到「115204臺北市南港區忠孝東路六段488號 衛生福利部中醫藥司收」，敬請配合。
+                        <br><br><div style="float:right">衛生福利部　中醫藥司</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@*@Html.Partial("_Components")*@
+
+@* 外銷證明書 前台 *@
+<script>
+    var vm = new Vue({
+        el: 'div#_005002',
+        name: 'Apply_005002',
+        data: function () {
+            return {
+                state: {
+                    Apply: {},  // 申請資料
+                    Detail: {}, // 基本資料
+                    Pay: {},    // 繳費資料
+                    ErrataList: [],     // 補正資料
+                    DosageFormList: [], // 外銷品名
+                    IngredientList: [], // 成份內容
+                    ExcipientList: [],  // 賦型劑
+                    ApplyFile_1: {},
+                    ApplyFile_2: {},
+                    ApplyFile_3: {},
+                    NewFlowCd: ''
+                },
+                OptData: {
+                    tel: [],
+                    fax: [],
+                    email: [],
+                    isPcScale: false,       // 是否為濃縮製劑
+                    isShowExpirDate: false, // 是顯示有效日期
+                    isShowAddA: false,  // 效能
+                    isShowAddB: false,  // 適應症
+                    OptionsLicCd: [],
+                    OptionsEmailDomain: [],
+                    //isReadonly: '' == 'Y',
+                    modelJson: '',
+                    sheetUrl: '',
+                    outputProd: [],  // 外銷品名
+                    isCheckAbroad: false
+                },
+                route: {    // 跳頁顯示
+                    isApplyForm: true,
+                    isPreview: false,
+                    isPreviewOnly: false,
+                    isPayment: false,
+                    isComplete: false
+                },
+                Preview: '',
+                Payment: ''
+            };
+        },
+        computed: {
+            payMoney: function () {     // 應付金額
+                return ((this.state.Detail.MF_COPIES || 0) * 1500);
+            },
+            isEditable: function () {   // 是否可編輯
+                var result = true;
+                var flowcd = this.state.Apply.FLOW_CD || '-1';  // -1: 新建表單
+                var isOverDue = '@(Model.IsOverDue() ? "Y": "N")' == 'Y';  // 已過補件期限
+                switch (flowcd) {
+                    case "-1":
+                        result = true;
+                        break;
+                    case "0":
+                        result = false;
+                        break;
+                    case "2":
+                    case "4":
+                        result = !isOverDue;
+                        break;
+                    default:
+                        result = false;
+                        break;
+                }
+                return result;
+            },
+            isErrataState: function () {
+                var result = false;
+                switch (this.state.Apply.FLOW_CD) {
+                    case "2":
+                    case "4":
+                        result = true;
+                        break;
+                }
+                return result;
+            },
+            errataDisableStyle: function () {
+                var result = false;
+                switch (this.state.Apply.FLOW_CD) {
+                    case "2":
+                    case "4":
+                        result = true;
+                        break;
+                }
+                return { "disabled": result };
+            }
+        },
+        methods: {
+            getModelData: function () {
+                var self = this;
+                if ('@Model.APP_ID') {
+                    var url = '@Url.Action("ApplyPost", "Apply_005002", new { area = "", id = "GetApplyData" })';
+                    $.ajax({
+                        url: url,
+                        method: "POST",
+                        data: { APP_ID: "@Model.APP_ID" }
+                    }).done(function (data) {
+                        self.state = data;
+                        self.afterLoad(data);
+                    });
+                }
+            },
+            getLicData: function () {   // 帶入許可證字號資料
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005002", new { area = "", id = "GetLicData" })',
+                    method: 'POST',
+                    data: JSON.stringify(self.$data.state),
+                    contentType: 'application/json'
+                }).done(function (resp) {
+                    self.$data.state.Detail = resp;
+                });
+            },
+            getInterfaceData: function () {  // 藥品許可證編號
+                var self = this;
+                if (this.state.Detail.LIC_NUM) {
+                    ajaxLoadMore('@Url.Action("GetInterfaceData")', { PL_CD: this.state.Detail.LIC_CD, PL_Num: this.state.Detail.LIC_NUM }, function (resp) {
+                        if (resp && resp.status) {
+                            if (resp.message == '成功') {
+                                blockAlert('「輸入之藥品許可證非外銷專用，請改為申請產銷證明書。', '提示訊息');
+                            } else if (resp.message == '外銷專用') {
+                                //介接成功，帶回頁面
+                                // console.log(resp.message);
+                                var dtl = self.state.Detail;
+                                var data = resp.data || '';
+                                if (data) {
+                                    dtl.MF_CNT_NAME = data.製造廠名稱;
+                                    if (data.製造廠郵遞區號) {
+                                        if (data.data.製造廠地址) {
+                                            dtl.MF_ADDR = data.製造廠郵遞區號 + data.製造廠地址;
+                                        }
+                                    } else {
+                                        dtl.MF_ADDR = data.製造廠地址;
+                                    }
+                                    dtl.DRUG_NAME = data.中文品名;
+                                    dtl.DRUG_NAME_E = data.英文品名;
+                                    dtl.DOSAGE_FORM = data.藥品劑型;
+                                    $('#Detail_ISSUE_DATE_TW').val(data.發證日期);
+                                    $('#Detail_EXPIR_DATE_TW').val(data.有效日期);
+                                    dtl.ISSUE_DATE = moment(data.發證日期, 'YYYY/MM/DD').add('years', 1911);
+                                    dtl.EXPIR_DATE = moment(data.有效日期, 'YYYY/MM/DD').add('years', 1911);
+                                    dtl.MF_CONT = data.處方說明;
+                                }
+
+                                if (data['效能'] != "") {
+                                    self.state.Detail.EFFICACY = data['效能'];
+                                }
+
+                                if (data['適應症'] != "") {
+                                    self.state.Detail.INDIOCATION = data['適應症'];
+                                }
+
+                                if (data['成分說明'].length > 0) {
+                                    for (var i = 0; i < data['成分說明'].length; i++) {
+                                        var item = data['成分說明'][i];
+                                        self.state.IngredientList.push({
+                                            DI_NAME: item['成分內容'],
+                                            DI_ENAME: '',
+                                            DI_CONT: item['份量'],
+                                            DI_UNIT: item['單位']
+                                        });
+                                    }
+                                }
+
+                                if (data['外銷品名'].length > 0) {
+                                    self.OptData.outputProd = data['外銷品名'];
+                                }
+
+                                self.$forceUpdate();
+                                blockAlert("已取回資料", "提示訊息");
+                            }
+                        } else {
+                            blockAlert(resp.message, "提示訊息");
+                        }
+                    });
+                } else {
+                    blockAlert("請輸入藥品許可證字號", "提示訊息");
+                }
+            },
+            setAbroadProd: function (item) {
+                this.$set(this.state.Detail, 'DRUG_ABROAD_NAME', item['外銷中文品名']);
+                this.$set(this.state.Detail, 'DRUG_ABROAD_NAME_E', item['外銷英文品名']);
+            },
+            addRow: function (type) {
+                switch (type) {
+                    case 'IngredientList':
+                        this.state.IngredientList.push({});
+                        break;
+                    case 'ExcipientList':
+                        this.state.ExcipientList.push({});
+                        break;
+                }
+            },
+            deleteRow(index, type) {    @* 刪除多筆資料列 *@
+                switch (type) {
+                    case 'IngredientList':
+                        this.state.IngredientList.splice(index, 1);
+                        break;
+                    case 'ExcipientList':
+                        this.state.ExcipientList.splice(index, 1);
+                        break;
+                }
+            },
+            nextAction: function (name) {
+                var self = this;
+                this.beforeSave();
+                var form = new FormData($('#main_form')[0]);
+                var modelJson = JSON.stringify(this.$data.state);
+                form.append("ModelJson", modelJson);
+                var url = null;
+                switch (name) {
+                    case "Preview":
+                    case "PreviewOnly":
+                        url = '@Url.Action("ApplyPost", "Apply_005002", new { area = "", id = "Preview", APP_ID = Model.APP_ID })';
+                        break;
+                    case "PreviewSheet":
+                        url = '@Url.Action("ApplyPost", "Apply_005002", new { area = "", id = "PreviewSheet" })';
+                        break;
+                    case "Payment":
+                        url = '@Url.Action("ApplyPost", "Apply_005002", new { area = "", id = "Payment" })';
+                        break;
+                    case "Complete":
+                        url = '@Url.Action("ApplyPost", "Apply_005002", new { area = "", id = "Complete" })';
+                        break;
+                    case "Resend":
+                        url = '@Url.Action("ApplyPost", "Apply_005002", new { area = "", id = "Resend" })';  // 重新上傳
+                        break;
+                }
+
+                blockUI();
+
+                $.ajax({
+                    url: url,
+                    data: form,
+                    contentType: false,
+                    processData: false,
+                    method: 'POST',
+                }).done(function (resp) {
+                    var isPass = true;
+                    switch (name) {
+                        case "Preview":
+                        case "PreviewOnly":
+                            if (resp && resp.status) {
+                                self.Preview = resp.data;
+                                if (resp.fileList) {
+                                    self.state.ApplyFile_1.FILENAME = resp.fileList[0]; // fileList[3]
+                                    self.state.ApplyFile_2.FILENAME = resp.fileList[1];
+                                    self.state.ApplyFile_3.FILENAME = resp.fileList[2];
+                                }
+                            } else if (resp && resp.msg) {
+                                var result = '';
+                                resp.msg.forEach(function (item) {
+                                    if (item.msg) {
+                                        result += item.msg + '\n';
+                                    }
+                                });
+                                if (result) {
+                                    isPass = false;
+                                    blockMessage(result);
+                                }
+                            }
+                            break;
+                        case "PreviewSheet":
+                            self.OptData.sheetUrl = resp;
+                            isPass = false;
+                            break;
+                        case "Payment":
+                            break;
+                        case "Complete":
+                            if (resp && resp.data) {
+                                self.state.Apply.APP_ID = resp.data;
+                            }
+                            break;
+                        case "Resend":
+                            if (resp && resp.status) {
+                                blockAlert('儲存成功, 即將返回案件進度查詢頁!', null, function () {
+                                    window.location = '@Url.Action("Index", "History", new { area = "" })';
+                                });
+                            } else {
+                                blockAlert('儲存失敗!', null, function () { });
+                            }
+                            break;
+                    }
+
+                    if (isPass) {
+                        self.transRoute(name);
+                    }
+
+                    unblockUI();
+
+                }).fail(function () {
+                    unblockUI();
+                });
+            },
+            asyncAction: function (type) {
+                var self = this;
+                var url = '';
+                var data = '';
+                var action = null;
+
+                switch (type) {
+                    case "MOHW_CASE_NO":  // 取得文號
+                        url = '/AJAX/GetMOHW_CASE_NO';
+                        data = {
+                            "UNIT_CD": this.state.Apply.UNIT_CD,
+                            "APP_ID": this.state.Apply.APP_ID
+                        };
+                        action = function (retData) {
+                            self.Apply.MOHW_CASE_NO = retData.message;
+                        }
+                        break;
+                    case "LIC_CD_OPTIONS":
+                        url = '/AJAX/GetCodeList/';
+                        data = { Code: 'F5_LIC_CD', id : "" }
+                        ajaxLoadMore(url, data,
+                            function (resp) {
+                                if (resp) {
+                                    self.OptData.OptionsLicCd = resp;
+                                } else {
+                                    console.log('查無清單');
+                                }
+                            });
+                        break;
+                    case "EMAIL_DOMAIN":
+                        url = '@Url.Action("ApplyPost", "Apply_005002", new { area = "", id = "EmailDomain" })';
+                        data = { }
+                        ajaxLoadMore(url, data,
+                            function (resp) {
+                                if (resp) {
+                                    self.OptData.OptionsEmailDomain = resp;
+                                } else {
+                                    console.log('查無清單');
+                                }
+                            });
+                        break;
+                };
+
+                if (action) {
+                    ajaxLoadMore(url, data,
+                        function (resp) {
+                            if (resp.status) {
+                                action();
+                            } else {
+                                blockAlert(retData.message, "提示訊息");
+                            }
+                        });
+                }
+
+            },
+            previewSheet: function () {
+                this.beforeSave();
+                var url = '@Url.Action("ApplyPost", "Apply_005002", new { area = "", id = "PreviewSheet"  })';
+                this.OptData.modelJson = JSON.stringify(this.$data.state);
+            },
+            transRoute: function (name) {
+                if (name) {
+                    for (prop in this.route) { this.route[prop] = false; }
+                    switch (name) {
+                        case 'Apply':
+                            this.route.isApplyForm = true;
+                            break;
+                        case 'PreviewOnly':
+                            this.route.isPreviewOnly = true;
+                            break;
+                        case 'Preview':
+                            this.route.isPreview = true;
+                            break;
+                        case 'Payment':
+                            this.route.isPayment = true;
+                            break;
+                        case 'Complete':
+                            this.route.isComplete = true;
+                            break;
+                        case 'Resend':
+                            this.route.isApplyForm = true;  // 重新上傳
+                            break;
+                    }
+                }
+            },
+            isShowErrata: function (name) {
+                var target = this.getErrata(name);
+                return (target.IsSel || target.Note) && this.isEditable;    // 有勾選補正 or 備註有填寫即顯示輸入欄位
+            },
+            getErrata: function (name) {
+                var itemArr = this.state.ErrataList.filter(function (it) {
+                    return it.Name === name;
+                });
+                var item = null;
+                if (itemArr.length == 0) {
+                    item = { Name: name, IsSel: false, Note: '' };
+                    this.state.ErrataList.push(item);
+                } else {
+                    item = itemArr[0];
+                }
+                return item;
+            },
+            getDateText: function (date) {  // date: moment object
+                var res = '';
+                if (date && date.format) {
+                    res = date.format('YYYY/MM/DD');
+                }
+                return res;
+            },
+            afterLoad: function (data) {
+                var self = this;
+                this.OptData.tel = (data.Apply.TEL || '-#').split(/[-#]/);
+                this.OptData.fax = (data.Apply.FAX || '-#').split(/[-#]/);
+
+                var arr = (data.Detail.EMAIL || '').split('@@');
+                if (arr) {
+                    this.$set(this.OptData.email, 0, arr[0]);
+                    if (arr[1][0] == '0') {
+                        this.$set(this.OptData.email, 1, '0');
+                        this.$set(this.OptData.email, 2, arr[1].substring(1));
+                    } else {
+                        this.$set(this.OptData.email, 1, arr[1]);
+                    }
+                }
+
+                if (this.isShowErrata('EXPIR_DATE')) {
+                    this.OptData.isShowExpirDate = true;    // 是否顯示有效日期
+                }
+
+                if (data.Detail.PC_SCALE_1 || this.isShowErrata('PC_SCALE')) {
+                    this.OptData.isPcScale = true;  // 是否顯示濃縮製劑
+                }
+
+                if (data.Detail.EFFICACY || this.isShowErrata('EFFICACY') || this.isShowErrata('EFFICACY_E')) {
+                    this.OptData.isShowAddA = true;
+                }
+
+                if (data.Detail.INDIOCATION || this.isShowErrata('INDIOCATION') || this.isShowErrata('INDIOCATION_E')) {
+                    this.OptData.isShowAddB = true;
+                }
+
+                // 開放須補正欄位可輸入, 不須補正欄位則不可編輯
+                if (this.isEditable) {
+                    this.setupErrata();
+                }
+            },
+            beforeSave: function () {
+                var self = this;
+
+                if (self.state.Detail.ISSUE_DATE && self.state.Detail.ISSUE_DATE.format) {
+                    self.state.Detail.ISSUE_DATE = self.state.Detail.ISSUE_DATE.format('YYYY/MM/DD');
+                }
+
+                if (self.state.Detail.EXPIR_DATE && self.state.Detail.EXPIR_DATE.format) {
+                    self.state.Detail.EXPIR_DATE = self.state.Detail.EXPIR_DATE.format('YYYY/MM/DD');
+                }
+
+                var optd = this.$data.OptData;
+                this.state.Detail.EMAIL = (optd.email[0] || '') + '@@' + (optd.email[1] || '') + (optd.email[2] || '');
+                this.state.Apply.TEL = (optd.tel[0] || '') + '-' + (optd.tel[1] || '') + '#' + (optd.tel[2] || '');
+                this.state.Apply.FAX = (optd.fax[0] || '') + '-' + (optd.fax[1] || '') + '#' + (optd.fax[2] || '')
+
+                if (this.state.Detail.EMAIL == '@@') {
+                    this.state.Detail.EMAIL = null;
+                }
+
+                if (!this.OptData.isCheckAbroad) {
+                    this.state.Detail.DRUG_ABROAD_NAME = '';
+                    this.state.Detail.DRUG_ABROAD_NAME_E = '';
+                }
+            },
+            swapArrayElements: function (arr, indexA, indexB) { // 陣列元素交換
+                var rows = [arr[indexA], arr[indexB]];
+                arr.splice(indexA, 2, rows[1], rows[0]);
+            },
+            setEmail: function (e) {
+                var val = e.target.value;
+                if (val && val !== '0') {
+                    this.OptData.email[2] = '';
+                }
+            },
+            setupErrata: function () {
+                var self = this;
+                var inputSelector = 'input, select, button, a';
+                this.$nextTick(function () {
+                    $('.disabled').find(inputSelector).attr('disabled', true);
+                    self.state.ErrataList.forEach(function (item) {
+                        var els = $(self.$refs[item.Name]).find(inputSelector);
+                        if (item.IsSel) {
+                            $(els).attr('disabled', false);
+                            $(els).css('background-color', 'pink');
+                        } else {
+                            $(els).attr('disabled', true);
+                        }
+                    });
+                });
+            },
+            changeExpirDate: function () {  // 20210224: 取消有效日期時須清空日期欄位
+                if (!this.OptData.isShowExpirDate) {
+                    this.state.Detail.EXPIR_DATE = null;
+                    this.$nextTick(function () {
+                        $('div#expir-date .date input').val('');
+                    });
+                }
+            },
+            checkEnNum: function (e, field) {
+                var val = e.target.value;
+                if (val) {
+                    var zhvalue = val.replace(/[^\u4E00-\u9FA5]/g, '');
+                    if (zhvalue) {
+                        alert('英文欄位不可輸入中文');
+                        this.state.Detail[field] = '';
+                    }
+                }
+            }
+        },
+        mounted: function () {
+            var self = this;
+            this.asyncAction('LIC_CD_OPTIONS');
+            this.asyncAction('EMAIL_DOMAIN');
+            this.getModelData();
+            this.$nextTick(function () {
+                $('div#issue-date').on('dp.change', '.date', function (e) {
+                    self.state.Detail.ISSUE_DATE = e.date;
+                    self.$forceUpdate();
+                });
+
+                $('div#expir-date').on('dp.change', '.date', function (e) {
+                    self.state.Detail.EXPIR_DATE = e.date;
+                    self.$forceUpdate();
+                });
+
+                $('#Detail_ISSUE_DATE_TW').on('blur', function (e) {
+                    var twDate = $('#Detail_ISSUE_DATE_TW').val();
+                    self.state.Detail.ISSUE_DATE = moment(twDate, 'YYYY/MM/DD').add('years', 1911);
+                    self.$forceUpdate();
+                });
+
+                $('#Detail_EXPIR_DATE_TW').on('blur', function (e) {
+                    var twDate = $('#Detail_EXPIR_DATE_TW').val();
+                    self.state.Detail.EXPIR_DATE = moment(twDate, 'YYYY/MM/DD').add('years', 1911);
+                    self.$forceUpdate();
+                });
+            });
+        },
+        watch: {
+            'state.Detail.LIC_CD': function (newVal) {
+                this.state.Detail.LIC_CD_E = newVal;  // 藥品許可證字號中英文同步輸入
+            },
+            'state.Detail.LIC_NUM': function (newVal) {
+                this.state.Detail.LIC_NUM_E = newVal;  // 藥品許可證字號中英文同步輸入
+            }
+        }
+    });
+</script>
+
+@helper RenderDownloadField(string url, string filename)
+{
+    bool isImg = true;
+    bool isPdf = true;
+    if (!string.IsNullOrEmpty(filename))
+    {
+        var fileExt = Path.GetExtension(filename).ToLower();
+        string shortFilename = Path.GetFileName(filename);
+        byte[] ba = System.Text.Encoding.UTF8.GetBytes(filename); ;
+        string base64filename = Convert.ToBase64String(ba);
+        string urlAttch = Url.Action("DownloadFileFromPath", "File", new { area = "", filepath = base64filename });
+        string urlInline = Url.Action("DownloadFileFromPath", "File", new { area = "", filepath = base64filename, downloadtype = "inline" });
+
+        switch (fileExt)
+        {
+            case ".jpg":
+            case ".jpeg":
+            case ".bmp":
+            case ".png":
+            case ".gif":
+                isImg = true;
+                isPdf = false;
+                break;
+            case ".pdf":
+                isImg = false;
+                isPdf = true;
+                break;
+            default:
+                isImg = false;
+                isPdf = false;
+                break;
+        }
+
+        if (isImg)
+        {
+            <a href="@urlAttch" class="col-sm-3" download>@shortFilename</a>
+            <div class="col-sm-2">
+                <a href="@urlInline" target="_blank">
+                    <img src="@urlInline" style="width:100px" />
+                </a>
+            </div>
+        }
+        else if (isPdf)
+        {
+            <div class="col-sm-10 form-inline form-control-static">
+                <a href="@urlAttch" class="form-control-static" download>@shortFilename</a>
+                <a href="@urlInline" class="btn btn-default">預覽</a>
+            </div>
+        }
+        else
+        {
+            <div class="col-sm-3 form-control-static">
+                <a href="@urlAttch" class="form-control-static" target="_blank" download>@shortFilename</a>
+            </div>
+        }
+    }
+}
+
+@helper RenderFileField(int i)
+{
+    string fileName = null;
+
+    switch (i)
+    {
+        case 1:
+            fileName = Model.ApplyFile_1.FILENAME;
+            break;
+        case 2:
+            fileName = Model.ApplyFile_2.FILENAME;
+            break;
+        case 3:
+            fileName = Model.ApplyFile_3.FILENAME;
+            break;
+    }
+
+    var flowcd = Model.Apply.FLOW_CD;
+    if (string.IsNullOrEmpty(flowcd))
+    {
+        flowcd = "-1";
+    }
+
+    string url = Url.Action("DownloadFile", "Apply_005002", new { area = "", APP_ID = Model.Apply.APP_ID, FILE_NO = i });
+
+    switch (flowcd)
+    {
+        case "-1":
+            <input type="file" name="UploadFile_@(i)" class="form-control">
+            break;
+        case "2":
+        case "4":
+            if (!Model.IsOverDue())
+            {
+                <input type="file" name="UploadFile_@(i)" class="form-control">
+                <input type="text" readonly
+                       v-model="getErrata('UploadFile_@(i)').Note"
+                       v-show="isShowErrata('UploadFile_@(i)')"
+                       class="form-control"
+                       placeholder="補件備註" />
+            }
+            else
+            {
+                @RenderDownloadField(url, fileName);
+            }
+            break;
+        default:
+            @RenderDownloadField(url, fileName);
+            break;
+    }
+
+}
+

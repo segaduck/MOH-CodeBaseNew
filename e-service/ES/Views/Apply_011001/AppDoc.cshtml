@@ -1,0 +1,102 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_011001DetailModel
+@{
+    Layout = null;
+}
+@Html.HiddenFor(m => m.IsNew)
+@Html.HiddenFor(m => m.APP_ID)
+    @if (Model.APPSTATUS == "1")
+    {
+        <div class="tab-content" id="myTabContent2">
+            <h1 class="form-title  title-bg-y">補件</h1>
+            <div class="form-set">
+                <table width="100%">
+                    @Html.Raw(Model.MAILBODY)
+                </table>
+            </div>
+        </div>
+    }
+    @Html.FrontControlForTurbo(Model, Model.IsNew)
+
+    @if (Model.APPSTATUS == "1")
+    {
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="doSave()">存檔</button>
+            <button type="button" class="btn btn-clear" onclick="doBack()">返回</button>
+        </div>
+    }
+    else
+    {
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-clear" onclick="doBack()">返回</button>
+        </div>
+    }
+    <script>
+
+        $(document).ready(function () {
+            document.getElementById("FID_MERGEYN").innerHTML += '<div class="col-sm-2"></div><div class="col-sm-10">若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"</div>'
+            // 取得補件欄位字串
+            var FieldStr = $('#FieldStr').val();
+            if (FieldStr != "" || FieldStr != undefined) {
+                var FieldLst = FieldStr.split(',');
+                FieldLst.forEach(function (i) {
+                    console.log(i);
+                    if (i.substring(0, 4) == "FILE") {
+                        var t = i.substring(i.lastIndexOf('_'))
+                        console.log(t);
+                        //$('#FILE' + t).find('input[type="file"]').each(function () {
+                        $('#FILE' + t).removeAttr("style")
+                        //})
+                    }
+                    else if (i.substring(0, 3) == "ALL") {
+                        var t = i.substring(i.lastIndexOf('_'))
+                        $('form[id="main_form"]').find('input[readonly="readonly"]').each(function () {
+                            $(this).removeAttr("readonly")
+                        })
+                        $('form[id="main_form"]').find('input[disabled="disabled"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('div[disabled="disabled"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('input[type="radio"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('select').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('div.date').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('input[style="pointer-events:none;background:#DDDDDD"]').each(function () {
+                            $(this).removeAttr("style")
+                        })
+                        $('form[id="main_form"]').find('div[style="pointer-events:none;background:#DDDDDD"]').each(function () {
+                            $(this).removeAttr("style")
+                        })
+                        $('form[id="main_form"]').find('select[style="pointer-events:none;background:#DDDDDD"]').each(function () {
+                            $(this).removeAttr("style")
+                        })
+                        $('form[id="main_form"]').find('button[class="btn btn-info"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                    }
+                });
+            }
+
+        });
+
+        // 存檔
+        function doSave() {
+            blockUI();
+            var form = $("form[id=main_form]");
+            form.attr('action', '@Url.Action("SaveAppDoc")').submit();
+        }
+
+        // 返回
+        function doBack() {
+            location.href = '@Url.Action("Index","History")';
+        }
+
+    </script>

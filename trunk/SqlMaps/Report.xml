@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="Report"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <resultMaps>
+  </resultMaps>
+  <statements>
+
+    <select id="reportEEC_HTML_ReportTo_PDF" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="WDASE-cache">
+        <![CDATA[
+SELECT a.Report_HTML
+FROM EEC_ApplyDetailPrice_ApiData a
+WHERE 1=1
+  AND a.master_keyid=#Key#
+        ]]>
+    </select>
+
+    <select id="reportCkEEC_HTML_ReportTo_PDF" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+SELECT '1' Report_HTML
+
+        ]]>
+    </select>
+	  
+    <!-- 結束行(這行放在最下面, 不要刪) -->
+  </statements>
+</sqlMap>

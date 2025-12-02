@@ -1,0 +1,89 @@
+﻿@using EECOnline.Models;
+@using EECOnline.Services;
+@model HomeViewModel
+
+@if (Model.SearchApply == null || Model.SearchApply.SearchGrid1 == null || Model.SearchApply.SearchGrid1.ToCount() <= 0)
+{
+    <tr>
+        <td colspan="8">- 無 -</td>
+    </tr>
+}
+else
+{
+    for (int i = 0; i < Model.SearchApply.SearchGrid1.Count; i++)
+    {
+        var item = Model.SearchApply.SearchGrid1[i];
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].keyid)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].apply_no)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].apply_no_sub)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].user_idno)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].hospital_code)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].hospital_name)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].his_range1)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].his_range2)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].his_types)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].pay_deadline)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].payed)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].payed_datetime)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].price_sum)
+        @Html.HiddenFor(x => x.SearchApply.SearchGrid1[i].createdatetime)
+
+        var theDeadline = DateTime.ParseExact(item.pay_deadline, "yyyy/MM/dd HH:mm:ss", null);
+        var strBtnDisplay = "管理訂單";
+        if (item.payed != "Y") { strBtnDisplay = "我要繳費"; }
+        var strPayStatus = "尚未繳費";
+        if (DateTime.Now > theDeadline && item.payed != "Y") { strPayStatus = "訂單已取消"; }
+
+        <tr>
+            <td>@item.apply_no_sub</td>
+            <td>@item.hospital_name</td>
+            <td>@Html.Raw(item.his_types_Text)</td>
+            <td>@item.createdatetime_Text</td>
+            <td><div class="price">@item.price_sum</div></td>
+            <td>
+                @if (item.payed == "Y")
+                {
+                    <div class="text-success"><i class="fas fa-check-circle"></i> 已繳費</div>
+                }
+                else
+                {
+                    <div class="text-danger"><i class="fas fa-question-circle"></i> @strPayStatus</div>
+                }
+            </td>
+            <td>
+                @if (item.payed == "Y")
+                {
+                    <span>@item.payed_datetime_Text</span>
+                }
+                else
+                {
+                    <span class="text-primary">繳款期限至 @item.pay_deadline_Text</span>
+                }
+            </td>
+            <td>
+                @if (DateTime.Now > theDeadline && item.payed != "Y")
+                {
+                    <span>已過付費時效</span>
+                }
+                else
+                {
+                    <a class="btn btn-view" onclick="OnSearchGridDetail('1', '@item.apply_no_sub')">@strBtnDisplay</a>
+
+                    <br />
+                    if (item.payed == "Y")
+                    {
+                        //<a class="btn btn-view" style="margin-top: 0.5rem; color: white; background-color: red;"
+                        //   onclick="blockAlert('已繳費訂單，不可刪除！')">刪除訂單</a>
+                        
+
+                    }
+                    else
+                    {
+                        <a class="btn btn-view" style="margin-top: 0.5rem; color: white; background-color: red;"
+                           onclick="OnSearchGridDelete('1', '@item.apply_no_sub')">刪除訂單</a>
+                    }
+                }
+            </td>
+        </tr>
+    }
+}

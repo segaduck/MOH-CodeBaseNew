@@ -1,0 +1,178 @@
+﻿@model ES.Models.ViewModels.Apply_005014ViewModel
+@using ES.Utils
+@{
+    ViewBag.Title = "_FileUpload";
+    // 檔案上傳
+}
+
+@RenderFileList2()
+
+@helper RenderFileList2()
+{
+    <div id="_erratafileupload">
+        <h2 class="second-title">佐證文件檔案上傳<span style="color:red">(單一檔案上限為5MB,僅准上傳PDF、JPG、BMP、PNG、TIF等檔案格式)</span></h2>
+         <div class="form-group">
+            <div class="col-sm-12" for="">
+                以下6項佐證文件，<span style="color:red;">*</span>號為必上傳文件。<br />
+                <span style="color:red;">*</span>1.申請書(需蓋公司大小章)<br />
+                <span style="color:red;">*</span>2.商業登記證明文件影本或其他證明文件<br />
+                <span style="color:red;">*</span>3.切結書(須註明產品用途及蓋公司大小章)<br />
+                4.產品資訊說明(含產品使用方式及最後處理方式)<br />
+                5.進口報單影本<br />
+                6.其他證明文件
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+            <div class="col-sm-10">
+                <label class="radio-inline ">
+                    @*<input type="radio" name="optradio" checked="">是*@
+                    @Html.RadioButtonFor(x => x.Detail.IS_MERGE_FILE, "Y") 是
+                </label>
+                <label class="radio-inline ">
+                    @*<input type="radio" name="optradio">否*@
+                    @Html.RadioButtonFor(x => x.Detail.IS_MERGE_FILE, "N") 否
+                </label>
+            </div>
+        </div>
+        @if (Model.FileList != null && Model.FileList.Count > 0)
+        {
+            for (int i = 0; i < Model.FileList.Count; i++)
+            {
+                var item = Model.FileList[i];
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">其他證明文件 @(i + 1)</label>
+                    <div class="col-sm-10 form-control-static">
+                        @if (string.IsNullOrEmpty(Model.FileList[i].FILE_E))
+                        {
+                            string base64file = DataUtils.ToBase64String(item.FILE_NAME);
+                            string url = Url.Action("DownloadFileFromPath", "File", new { area = "", filepath = base64file });
+
+                            <input type="hidden" name="FileList[@(i)].FILE_NAME" class="form-control errata-input-disabled" />
+                            <a href="@url" download>@item.FILE_NAME</a>
+                        }
+                        else
+                        {
+                            <input type="file" name="FileList[@(i)].PostFile" class="form-control errata-input" />
+                            <input type="text" name="FileList[@(i)].FILE_E" value="@Model.FileList[i].FILE_E" class="form-control errata-msg" readonly />
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+}
+
+@helper RenderFileList()
+{
+    <div id="_erratafileupload">
+        <h2 class="second-title">佐證文件檔案上傳<button type="button" class="btn btn-save" v-on:click="add()">新增</button></h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+            <div class="col-sm-10">
+                <label class="radio-inline ">
+                    @*<input type="radio" name="optradio" checked="">是*@
+                    @Html.RadioButtonFor(x => x.Detail.IS_MERGE_FILE, "Y") 是
+                </label>
+                <label class="radio-inline ">
+                    @*<input type="radio" name="optradio">否*@
+                    @Html.RadioButtonFor(x => x.Detail.IS_MERGE_FILE, "N") 否
+                </label>
+                <div> 若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否" </div>
+            </div>
+        </div>
+
+        @*<div class="form-group">
+                <label class="step-label col-sm-2" for="">其他證明文件 1</label>
+                <div class="col-sm-10">
+                    <div class="form-inline">
+                        <input type="file" class="form-control" name="UploadFiles" />
+                    </div>
+                </div>
+            </div>*@
+
+        <div class="form-group" v-for="(item, index) in itemList">
+            <label class="step-label col-sm-2" for="">其他證明文件 {{index + 1}}</label>
+            <div class="col-sm-10 form-control-static">
+                <div class="form-inline">
+                    @*<input type="file" class="form-control" v-bind:id="item.id" name="UploadFiles" />*@
+                    <input type="file" v-on:change="onLoadFile($event, item)" />
+                    <div class="errata-msg" v-show="hasValue(item.FILE_E)">{{item.FILE_E}}</div>
+                    @*<button type="button" class="btn btn-danger" v-on:click="remove(item)">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>*@
+                </div>
+            </div>
+            @*{{ item.FILENAME }}*@
+            @*{{ item.Base64 }}*@
+        </div>
+        <input type="hidden" name="FileListJson" v-bind:value="fileListJson" /> @* 陣列存成json再送至後端 *@
+    </div>
+
+    <script>
+        var vm = new Vue({
+            name: 'ErrataFileUpload',
+            data: function () {
+                return {
+                    itemList: []
+                }
+            },
+            computed: {
+                fileListJson: function () {
+                    return JSON.stringify(this.itemList);
+                }
+            },
+            methods: {
+                getFileList: function () {
+                    var self = this;
+                    $.ajax({
+                        url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "CaseFileList", APP_ID = Model.APP_ID })',
+                        method: 'POST',
+                    }).done(function (resp) {
+                        this.itemList = resp;
+                    });
+                },
+                add: function () {
+                    var id = new Date().getTime().toString(); @* 唯一值 *@
+                    var item = {
+                        FILENAME: '',
+                        Base64: '',
+                        id: id
+                    }
+                    this.itemList.push(item);
+                },
+                remove: function (item) {
+                    this.itemList = this.itemList.filter(function (elm) {
+                        return elm.id !== item.id;
+                    });
+                },
+                onLoadFile: function (e, item) {
+                    var file = e.target.files[0];
+
+                    const reader = new FileReader();
+                    reader.addEventListener("load", function () {
+                        item.FILENAME = file.name;
+                        item.Base64 = reader.result; // convert file to base64 string
+                    }, false);
+
+                    if (file) {
+                        reader.readAsDataURL(file);
+                    }
+                },
+                hasValue: function (value) {
+                    var res = true;
+                    if (value) {
+                        res = true;
+                    } else {
+                        res = false;
+                    }
+                    return res;
+                }
+            },
+            mounted: function () {
+                this.getFileList();
+            }
+        });
+        vm.$mount('#_erratafileupload');
+    </script>
+}

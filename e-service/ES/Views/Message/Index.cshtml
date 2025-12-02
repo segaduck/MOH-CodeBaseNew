@@ -1,0 +1,116 @@
+﻿@using ES.Services;
+@model ES.Models.MessageActionModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "最新消息"; //"歷史消息查詢";
+    //ViewBag.lihead = "Message";
+
+    ViewBag.Script = @"
+        function doQuery(page) {
+            $('#NowPage').val(page);
+        }
+
+    ";
+}
+<script>
+    $('#lihead_Message').addClass("navMark-orange");
+</script>
+<div class="container-fluid">
+    @using (Html.BeginForm("Index", "Message", FormMethod.Post, new { id = "ActionForm", @class = "form-inline" }))
+    {
+    <!--bread -->
+        <div class="col-sm-12">
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> > <a href="@(Url.Action("Index", "Message"))">最新消息</a></div>
+        </div>
+    <!--news -->
+        <div class="col-sm-12">
+            <div class="index-note">
+                <h3 class="note-title note-titlebar-blue">最新消息</h3>
+                <!-- news search bar -->
+                <div class="searchBar">
+
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+
+                    <div class="form-group">
+                        <label for="title"><i class="fas fa-search"></i> 標題</label>
+                        @Html.TextBoxFor(m => m.Title, new { @class = "form-control", placeholder = "", maxlength = "32" })&nbsp;&nbsp;<a href="#" onclick="$('#Title').val('暫停服務');">暫停服務</a>&nbsp;&nbsp;<a href="#" onclick="$('#Title').val('繳費');">繳費</a>
+                    </div>
+                    <br />
+                    <br />
+                    <div class="form-group">
+                        <label for="time">發布時間</label>
+                        @Html.DatePickerTWFor(x => x.StartTime, new { size = "10" }) ~
+                        @Html.DatePickerTWFor(x => x.EndTime, new { size = "10" })
+                    </div>
+                    <br />
+                    <br />
+                    <div class="form-group">
+                        <label class="main-label col-sm-3" for="">公告種類</label>
+                        <div class="col-sm-9">
+                            <label class="radio-inline ">@Html.RadioButtonFor(x => x.MESSAGE_TYPE, "") 全部</label>
+                            <label class="radio-inline ">@Html.RadioButtonFor(x => x.MESSAGE_TYPE, "G") 重大政策</label>
+                            <label class="radio-inline ">@Html.RadioButtonFor(x => x.MESSAGE_TYPE, "I") 重要公告</label>
+                            <label class="radio-inline ">@Html.RadioButtonFor(x => x.MESSAGE_TYPE, "P") 繳費公告</label>
+                            <label class="radio-inline ">@Html.RadioButtonFor(x => x.MESSAGE_TYPE, "S") 停機公告</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-search">搜尋</button>
+
+                </div>
+                <div class="up-pager">
+                    @Html.HiddenFor(m => m.NowPage)
+                    @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+                </div>
+                <div class="table-responsive">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-newsList table">
+                        <thead>
+                            <tr>
+                                <th>更新日期</th>
+                                <th>標題</th>
+                            </tr>
+                          
+                        </thead>
+                        <tbody>
+                            @foreach (Dictionary<string, object> item in ViewBag.List)
+                            {
+                                <tr>
+                                    <td width="22%">
+                                        @(((DateTime)@item["TIME_S"]).ToString("yyyy/MM/dd"))
+                                    </td>
+                                    <td width="78%">
+                                        <a href="@Url.Action("Show", "Message", new { id=@item["MSG_ID"]})">
+                                            @switch (@item["MESSAGE_TYPE"].ToString())
+                                            {
+                                                case "P":
+                                                    <span class="newsTag-blue">繳費公告</span>
+                                                    break;
+                                                case "I":
+                                                    <span class="newsTag-red">重要公告</span>
+                                                    break;
+                                                case "S":
+                                                    <span class="newsTag-red" style="color:orange">停機公告</span>
+                                                    break;
+                                                case "G":
+                                                    <span class="newsTag-blue" style="color:orange">重大政策</span>
+                                                    break;
+
+                                            }
+                                            @Html.Raw(@item["TITLE"])
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="down-pager">
+                    @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+                </div>
+            </div>
+        </div>
+
+    }
+    <div class="clearfix"></div>
+
+</div>

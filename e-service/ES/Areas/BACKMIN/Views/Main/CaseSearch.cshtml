@@ -1,0 +1,85 @@
+﻿@using ES.DataLayers
+@using ES.Areas.Admin.Models
+@using ES.Commons
+@using System.Web
+@using System.Data
+@model MainModel
+
+@using (Html.BeginForm("CaseSearchQuery", "Main", FormMethod.Post, new { id = "main_form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+{
+
+    <div class="container-fluid"> 
+        <!--bread -->
+        <div class="col-sm-12">
+            <div class="breadlink"><i class="fa fa-home"></i><a href='@Url.Action("Index", "Main")'>首頁</a> ></div>
+        </div>
+
+        <div class="col-sm-12 content">
+            <!-- H1 title -->
+            <h1 class="main-title"><i class="fas fa-edit"></i>申辦情形統計</h1>
+            <div class="form-blue">
+                <form class="form-horizontal" action="">
+                    <div class="form-group">
+                        <label class="main-label col-sm-2" for="">申辦時間起</label>
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                @Html.DatePickerTWFor(x => x.START_DATE_AC, new { size = "10" })
+                            </div>
+                        </div>
+                        <label class="main-label col-sm-2" for="">申辦時間訖</label>
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                @Html.DatePickerTWFor(x => x.END_DATE_AC, new { size = "10" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btnbar">
+                        <button type="submit" class="btn btn-blue"><i class="fas fa-search space-right"></i>查詢</button>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="clearfix"></div>
+            <h2 class="second-title">查詢結果</h2>
+            @if (Model.CaseList.Rows.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                        <thead>
+                            <tr>
+                                <th>申請年月</th>
+                                <th>筆數</th>
+                                <th>明細</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (DataRow row in Model.CaseList.Rows)
+                            {
+                                <tr>
+                                    <td width="10%"><div align="center"> @Html.Raw(@row.ItemArray[0].ToString()) </div></td>
+                                    <td width="15%"><div align="center">@Html.Raw(@row.ItemArray[1].ToString())筆</div></td>
+                                    <td width="15%"><div align="center"><a href="@Url.Action("CaseSearchDetail","Main",new { ym=@row.ItemArray[0].ToString() })">看明細</a></div></td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                    @*<div class="table-pager">
+                            第 <select class="form-normal">
+                                <option>1</option>
+                            </select> 頁，每頁顯示 <input type="number" class="form-normal form-10" value="20"> 筆，共12筆 <a href="#">下一頁</a><a href="#">最末頁</a><a href="#">前往</a>
+                        </div>*@
+                </div>
+            }
+            else
+            {
+                <div>
+                    查無資料
+                </div>
+            }
+        </div>
+    </div>
+}
+ 

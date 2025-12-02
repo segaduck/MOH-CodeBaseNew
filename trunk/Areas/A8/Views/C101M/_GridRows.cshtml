@@ -1,0 +1,50 @@
+﻿@using EECOnline.Areas.A8.Models;
+@model C101MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        <tr>
+            <td align="center">
+                <div>@(item.control_name)</div>
+            </td>
+            <td align="center">
+                @if (item.urlwhere != null)
+                {
+                    <div>@((Urlwhere_Enum)Enum.Parse(typeof(Urlwhere_Enum), item.urlwhere.ToString(), false))</div>
+                }
+                else
+                {
+                    <div></div>
+                }
+            </td>
+            <td align="center">
+                @if (item.urlwhere != null)
+                {
+                    <div>@((Use_type_Enum)Enum.Parse(typeof(Use_type_Enum), item.use_type.ToString(), false))</div>
+                }
+                else
+                {
+                    <div></div>
+                }
+            </td>
+            <td align="center">
+                <div>@(item.funcm_name)</div>
+            </td>
+            <td align="center">
+                <div>@(item.funcm_link)</div>
+            </td>
+            <td align="center">
+                <div>@(item.userno)</div>
+            </td>
+            <td align="center">
+                <div>@(item.usernotext)</div>
+            </td>
+            <td align="center">
+                <div>@(item.modtimeTW)</div>
+            </td>
+        </tr>
+    }
+}

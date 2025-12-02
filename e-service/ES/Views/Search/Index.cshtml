@@ -1,0 +1,52 @@
+﻿@model ES.Models.SearchModel
+@{
+    ViewBag.Title = "案件搜尋";
+    ViewBag.Script = @"
+        function doQuery(page) {
+            $('#NowPage').val(page);
+        }
+    ";
+}
+
+<center>
+@using (Html.BeginForm("Index", "Search", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <table class="formTable1" style="width: 400px;">
+        <tr>
+            <th style="width: 100px;">@Html.DisplayNameFor(m => m.Name)</th>
+            <td>
+                @Html.TextBoxFor(m => m.Name)
+                @Html.ValidationMessageFor(m => m.Name)
+            </td>
+        </tr>
+    </table>
+    <div class="formButtomBar">
+        @Html.HiddenFor(m => m.NowPage)
+        <input type="submit" value="查詢" onclick="doQuery(1);" />
+        <input type="button" value="清除" onclick="$('#Name').val('');" />
+    </div>
+}
+</center>
+<hr />
+@if (ViewBag.List != null)
+{
+    <div>
+        @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+    </div>
+    <table class="gridTable1">
+        <tr>
+            <th style="width: 200px;">類別</th>
+            <th>案件名稱</th>
+        </tr>
+        @foreach (Dictionary<string, object> item in ViewBag.List)
+        {
+            <tr>
+                <td>@item["CATE_NAME"]</td>
+                <td><a href="@Url.Action("Notice", "Service", new { id = item["SRV_ID"] })">@item["NAME"]</a></td>
+            </tr>
+        }
+</table>
+}

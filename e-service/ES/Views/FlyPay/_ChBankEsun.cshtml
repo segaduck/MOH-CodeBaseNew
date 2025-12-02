@@ -1,0 +1,40 @@
+﻿@model ES.Models.FlyPayModel
+@{
+    ViewBag.Title = "信用卡繳費";
+}
+
+<form id="fmChBank" method="post" action="@Html.Raw(Model.es.postUrl)">
+    <input type="hidden" name="MID" id="MID" value="@Model.es.MID">
+    <input type="hidden" name="CID" id="CID" value="@Model.es.CID" />
+    <input type="hidden" name="ONO" id="ONO" value="@Model.es.ONO" />
+    <input type="hidden" name="TA" id="TA" value="@Model.es.TA" />
+    <input type="hidden" name="TT" id="TT" value="@Model.es.TT" />
+    <input type="hidden" name="U" id="U" value="@Model.es.U" />
+    <input type="hidden" name="TXNNO" id="TXNNO" value="@Model.es.TXNNO" />
+    <input type="hidden" name="M" id="M" value="@Model.es.M" />
+    <div class="payment">
+        The amount payable is NT @(Model.amountall)
+        <br />應繳費金額為新台幣@(Model.amountall)元<br />
+        @if (Model.amountall < 28000)
+        {
+            <p>您已預訂集檢所名額，請於<span style="color:red">「三分鐘內」</span>完成繳費並取得訂房識別碼；逾期取得訂房識別碼將釋放預定名額。</p>
+        }
+        <br /><br />  點擊[Pay Now/ 確認付款]按鈕將前往信用卡刷卡頁面。
+    </div>
+    <div class="btnbar">
+        <button type="submit" style="width:40%;align-items:center" class="n--btn btn--3d--primary btn--block btn--md mt-1"><i class="fas fa-credit-card"></i> Pay Now<br />確認付款</button>
+    </div>
+    <div>
+        @if (Model.payBasic != null && Model.payBasic.isUsing == "Y")
+        {
+            if (Model.amountall < 28000)
+            {
+                <p style="color:red;">提醒：本中心因應國人入境需要，將保留集中檢疫場所訂單最終調派、修改之權利!!</p><br />
+            }
+            else
+            {
+                <p style="color:red;">提醒：經刷卡繳費完成後，如無法入住將不予退費。</p><br />
+            }
+        }
+    </div>
+</form>

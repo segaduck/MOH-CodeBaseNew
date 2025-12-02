@@ -1,0 +1,31 @@
+﻿@using EECOnline.Areas.A7.Models;
+@model C103MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        @Html.HiddenFor(m => m.Grid[i].con_id);
+        var item = Model.Grid[i];
+        <tr>
+            <td align="center">
+                @item.row_id
+            </td>
+            <td align="center">
+                @item.con_name
+            </td>
+            <td align="center">
+                @item.title
+            </td>
+            @*<td align="center">
+                @item.body
+            </td>*@
+            <td align="center">
+                @item.status
+            </td>
+            <td align="center">
+                <button type="button" class="btn btn-blue" onclick="doModify('@item.con_id')">編輯</button>
+            </td>
+        </tr>
+    }
+}

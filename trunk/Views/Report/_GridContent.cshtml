@@ -1,0 +1,105 @@
+﻿@using Turbo.ReportTK
+@using Turbo.Helpers
+@using System.Collections
+@using log4net
+@model Report
+@{
+    Layout = null;
+    ILog logger = LogManager.GetLogger("ReportResult");
+}
+@*報表 Grid 內容顯示*@
+@if (Model == null || Model.Results == null || Model.Results.Count == 0)
+{
+    @Html.Raw(string.Format("<tr><td colspan=\"{0}\">查無符合資料</td></tr>", Model.Layout.Columns.Count))
+}
+else
+{
+    /*(merge=samevalue) rowspan 計數*/
+    Hashtable rowspanColumns = new Hashtable();
+
+    int begin = 0;
+    int end = Model.Results.Count;
+    if (Model.PageRows > 0 && Model.PageIdx > 0)
+    {
+        begin = Model.PageRows * (Model.PageIdx - 1);
+        end = begin + Model.PageRows;
+    }
+    else if (Model.PageGroup != null && Model.PageGroup.Count() > 0)
+    {
+        begin = Model.PageIdx;
+    }
+    for (int i = begin; i < Model.Results.Count && i < end; i++)
+    {
+        Hashtable row = Model.Results[i];
+        int cIdx = 0;
+
+        // 若有設定 PageGroup 則當資料列的 GroupValue 不相等時, 即停止輸出
+        if (Model.PageGroup != null && Model.CurrentPageGroup != Report.NON_GROUP)
+        {
+            string groupValue = ReportService.GetGroupValue(Model.PageGroup, row);
+            if (groupValue != Model.CurrentPageGroup)
+            {
+                break;
+            }
+            Model.PageIdx++;
+        }
+
+        @Html.Raw("<tr class=\"grid\">")
+        foreach (ReportColumn col in Model.Layout.Columns)
+        {
+            /*(merge=samevalue) rowspan 處理*/
+            string rowspanStr = string.Empty;
+            if (col.Merge != null && col.Merge.StartsWith("samevalue"))
+            {
+                int rowspan;
+                if (rowspanColumns[col.Id] != null)
+                {
+                    rowspan = (int)rowspanColumns[col.Id];
+                    if (rowspan > 1)
+                    {
+                        //row span 還沒結束, 這個欄位在此列不用輸出
+                        rowspan--;
+                        rowspanColumns[col.Id] = rowspan;
+                        continue;
+                    }
+                }
+                rowspan = ReportLayoutHelper.SameValueRows(Model.Results, i, end, col);
+                if (rowspan > 1)
+                {
+                    rowspanColumns[col.Id] = rowspan;
+                    rowspanStr = "rowspan=\"" + rowspan + "\"";
+                }
+            }
+
+            @*欄位數值及格式顯式判斷*@
+string colValue = Convert.ToString(row[col.Id]);
+decimal colDecValue;
+if (!string.IsNullOrEmpty(col.Format)
+    && Decimal.TryParse(colValue, out colDecValue))
+{
+    if (colDecValue == 0 && !col.ShowZero)
+    {
+        colValue = "";
+    }
+    else
+    {
+        string placeholder = "{0:" + col.Format + "}";
+        colValue = String.Format(placeholder, colDecValue);
+    }
+}
+
+            @*輸出欄位*@
+            @Html.Raw(string.Format("<td align=\"{1}\" {2} {3}>{0}</td>",
+                                                 colValue, col.Align, rowspanStr,
+                                                 (cIdx == 0 ? "" : "style=\"page-break-inside:avoid;\"")
+                                                 ))
+
+            cIdx++;
+
+        }
+        @Html.Raw("</tr>")
+    }
+
+}
+
+

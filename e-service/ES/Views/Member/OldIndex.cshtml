@@ -1,0 +1,153 @@
+﻿@using ES.Models;
+@model LoginViewModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+}
+@if (sm.UserInfo == null)
+{
+    <div class="ad-bg" style="background:url(../Images/banner-AD-web.jpg) top left no-repeat;">
+        <div class="container-fluid">
+            <!-- AD -->
+            <div class="col-sm-8">
+                <div class="ad-board"></div>
+            </div>
+            <!-- login -->
+            <div class="col-sm-4">
+                <div class="index-login">
+
+                    <ul class="nav nav-tabs nav-justified">
+                        <li class="active"><a data-toggle="tab" href="#login1">會員登入</a></li>
+                        <li><a data-toggle="tab" href="#login2">憑證登入</a></li>
+                    </ul>
+
+
+                    <div class="tab-content">
+                        <div id="login1" class="tab-pane fade in active">
+                            @using (Html.BeginForm("Index", "Login", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", @id = "main_form_User" }))
+                            {
+                                <div class="form-group">
+                                    <label class="control-label col-sm-3" for="UserNo">帳號</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(m => m.Form.UserNo, new { @class = "form-control", placeholder = "請輸入您的帳號", maxlength = "32" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-sm-3" for="UserPwd">密碼</label>
+                                    <div class="col-sm-9">
+                                        @Html.PasswordFor(m => m.Form.UserPwd, new { @class = "form-control", placeholder = "請輸入您的密碼", maxlength = "32" })
+                                    </div>
+                                </div>
+                                <div class="form-group" style="text-align:right;">
+                                    <a href="@(Url.Action("New", "Login"))" class="btn btn-cancel">加入會員</a>
+                                    <a href="@(Url.Action("Forget", "Login"))" class="btn btn-cancel">忘記密碼</a>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-3 col-sm-9">
+                                        <button type="button" onclick="doUserLogin()" class="btn btn-primary btn-group-justified">登入</button>
+                                    </div>
+                                </div>
+
+                            }
+                        </div>
+                        <div id="login2" class="tab-pane fade">
+                            @using (Html.BeginForm("Index", "Login", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", @id = "main_form_ID" }))
+                            {
+                                if (sm.UserInfo == null)
+                                {
+                                    <div class="form-group">
+                                        <label class="control-label" for="pin">醫事人員卡PIN碼</label>
+                                        <input type="text" class="form-control" id="pin" placeholder="請輸入您的PIN碼">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="text-center" for="code">請插入醫事人員卡後按確認</label>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary btn-group-justified">確認</button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-3 col-sm-9">
+                                            <button type="button" onclick="doLogOut('2')" class="btn btn-primary btn-group-justified">登出</button>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="clearfix"></div>
+
+<div class="container-fluid">
+    <!-- <div class="col-sm-12">
+     bread
+          <div class="breadlink"><i class="fas fa-home"></i><a href="#">首頁</a> > <a href="#">資料建檔/查詢</a> > <a href="#">給付申請人</a></div>
+    </div> -->
+    <!-- quick link -->
+    <ul class="quickLink">
+        <li><a href="#"><img src="~/Images/quickLink-pic01.svg" alt="醫事人員"><div class="quickLink-title">醫事人員</div></a></li>
+        <li><a href="#"><img src="~/Images/quickLink-pic02.svg" alt="社工相關"><div class="quickLink-title">社工相關</div></a></li>
+        <li><a href="#"><img src="~/Images/quickLink-pic03.svg" alt="中醫藥相關"><div class="quickLink-title">中醫藥相關</div></a></li>
+        <li><a href="#"><img src="~/Images/quickLink-pic04.svg" alt="線上捐款"><div class="quickLink-title">線上捐款</div></a></li>
+        <li><a href="#"><img src="~/Images/quickLink-pic05.svg" alt="補助相關"><div class="quickLink-title">補助相關</div></a></li>
+        <li><a href="#"><img src="~/Images/quickLink-pic06.svg" alt="生醫、器官與儀器"><div class="quickLink-title">生醫、器官與儀器</div></a></li>
+    </ul>
+
+    <div class="clearfix"></div>
+
+</div>
+
+<script type="text/javascript">
+
+    // 一般登入
+    function doUserLogin() {
+        var data = getFormDataToObject($("form[id=main_form_User]"));
+        ajaxLoadMore('@Url.Action("UserLogin", "Login")', data, function (retData) {
+            if (retData.status) {
+                blockMessage(retData.message, "提示訊息", function () {
+                    var url = '@Url.Action("Index", "Login")';
+                    location.href = url;
+                });
+            }
+            else {
+                blockAlert(retData.message);
+            }
+        });
+    }
+
+    // 憑證登入
+    function doIDLogin() {
+        var data = getFormDataToObject($("form[id=main_form_User]"));
+        ajaxLoadMore('@Url.Action("UserLogin", "Login")', data, function (retData) {
+            if (retData.status) {
+                blockMessage(retData.message, "提示訊息", function () {
+                    var url = '@Url.Action("Index", "Login")';
+                    location.href = url;
+                });
+            }
+            else {
+                blockAlert(retData.message);
+            }
+        });
+        var form = $("form[id=main_form_ID]");
+        form.attr('action', '@Url.Action("IDLogin", "Login")').submit();
+    }
+
+    // 登出
+    function doIDLogin(i) {
+        if (i == '1') var form = $("form[id=main_form_User]");
+        else var form = $("form[id=main_form_ID]");
+
+        form.attr('action', '@Url.Action("Logout")').submit();
+    }
+
+</script>

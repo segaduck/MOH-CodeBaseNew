@@ -1,0 +1,17 @@
+﻿@using Turbo.ReportTK
+@using Turbo.Helpers
+@model Report
+<div>
+    @if ("ReportSelect".Equals(Model.Type) && Model.Query.ReportSelect != null)
+    {
+        <table>
+            <tr>
+                <th>@(Model.Query.ReportSelect.Name)</th>
+                <td>@ReportQueryHelper.RadioGroupReportSelList(Model.Query.ReportSelect.Id, Model.Query.SubReports)</td>
+            </tr>
+        </table>
+    }
+    @*引用 Shared Report Query Condition 表單 partial view*@
+    @Html.Partial("_ReportQueryForm", Model.Query.Conditions)
+
+</div>

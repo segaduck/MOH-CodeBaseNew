@@ -1,0 +1,66 @@
+﻿@using CTCB.Crypto;
+@model ES.Models.FlyPayModel
+@{
+    /**/
+    ViewBag.Title = "防疫旅館繳費";
+    Layout = "~/Views/Shared/_FlyPaySPRLayout.cshtml";
+}
+
+<!-- Tab panes -->
+<div class="col-md-12">
+    <div class="form-section">
+        @if (ViewBag.CloseMsg == null)
+        {
+            <div class="spr-form-heading">
+                <h2>Online Payment for Staying in COVID-19 Government Quarantine Facility</h2>
+            </div>
+
+            <div class="txt-cnt">
+                <div class="para-g">
+                    <p>Sorry, this transaction was unsuccessful. Try again and confirm that the correct information has been entered.</p>
+                    <p>很抱歉，此筆交易未成功.再試一次並確認已輸入正確資訊。</p>
+                </div>
+
+                <div class="form-remark remark-danger">
+                    <div class="in-bk-mid form-remark-img">
+                        <div class="remind-people-v3"></div>
+                    </div>
+                    <div class="in-bk-mid form-remark-txt">
+                        <p>
+                            <font class="re-mark">
+                                @if (ViewBag.ErrorMsg != null)
+                                {
+                                    @Convert.ToString(ViewBag.ErrorMsg)
+                                }
+                            </font>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="txt-cnt">
+                <div class="form-remark remark-danger">
+                    <div class="in-bk-mid form-remark-img">
+                        <div class="remind-people-v3"></div>
+                    </div>
+                    <div class="in-bk-mid form-remark-txt">
+                        <p>
+                            <font class="re-mark">
+                                @Convert.ToString(ViewBag.CloseMsg)
+                            </font>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="form-group mb-0">
+            <button type="button" class="n--btn btn--3d--dark btn--lg v-close-btn btn--icon btn--icon--lg" onclick="window.open('about:blank','_self').close();">
+                <i class="tu-f-cross"></i>
+                <font>關閉視窗 CLOSE</font>
+            </button>
+        </div>
+    </div>
+</div>
+

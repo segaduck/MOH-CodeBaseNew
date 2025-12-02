@@ -1,0 +1,261 @@
+﻿@using ES.Utils;
+@model ES.Areas.Admin.Models.CaseQueryModel
+@{
+                /**/
+
+                ViewBag.Title = "案件處理";
+                ViewBag.FunctionTitle = "案件處理";
+}
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            $('#sel_FLOWCD').val('@this.Model.FLOW_CD');
+            msgShowOff($('#sel_FLOWCD').val());
+
+            $('#MailSendDate').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        });
+
+        var alt0 = "1.證書影本：\n2.費用，金額：\n3.護照影本：\n4.及格證書影本：";
+        var alt1 = "依據本部公告之「民眾申請案件處理期限表」醫事人員或公共衛生師無懲戒紀錄申請處理期限為8日（日曆天，即包含例假日），由於尚未收到台端補件資料(費用)，故先行結案，俟補件資料(規費)收到後，再予以續辦,造成台端不便,敬請見諒。";
+        var alt2 = "依據本部公告之「民眾申請案件處理期限表」醫事人員或公共衛生師證書補(換)發申請處理期限為5日（日曆天，即包含例假日），由於尚未收到台端補件資料(費用)，故先行結案，俟補件資料(規費)收件後，再予以續辦,造成台端不便,敬請見諒。";
+        function msgShowOff(val) {
+            var app_id = "@Html.Raw(this.Model.APP_ID.Substring(8, 6))";
+            switch (val) {
+                case "02":
+                    $('#msgtitle').text("補件通知備註");
+                    if (app_id == "001008") {
+                        $('#recommTex').val(alt0);
+                    } else {
+                        $('#recommTex').val("請寄給 [EMAIL] 信箱");
+                    }
+                    $('#msg').show();
+                    break;
+                case "09":
+                    $('#msgtitle').text("通知備註");
+                    if (app_id == "001037") {
+                        $('#recommTex').val(alt1);
+                    } else if (app_id == "001005") {
+                        $('#recommTex').val(alt2);
+                    } else {
+                        $('#recommTex').val("");
+                    }
+                    $('#msg').show();
+                    break;
+                case "20":
+                    $('#msgtitle').text("退件原因");
+                    if (app_id == "001037") {
+                        $('#recommTex').val(alt1);
+                    } else if (app_id == "001005") {
+                        $('#recommTex').val(alt2);
+                    } else {
+                        $('#recommTex').val("");
+                    }
+                    $('#msg').show();
+                    break;
+                case "12":
+                    $('#msg').hide();
+                    $('#msg_complete').show();
+                    break;
+                default:
+                    $('#msg').hide();
+                    $('#msg_complete').hide();
+                    break;
+            }
+        }
+
+        function showAPPLYDATA(applyId) {
+            window.open('@Url.Action("Index", "Home", new { area = "" })' + "Form/Preview/" + applyId, '', 'width=800,height=600,menubar=yes,scrollbars=yes,resizable=yes');
+        }
+
+        function printDATA1(srv_id,applyId) {
+            //window.open('@Url.Action("Index", "Home", new { area = "" })' + "FormRpt/Apply" + srv_id + "/" + applyId, '', 'width=800,height=600,menubar=yes,scrollbars=yes,resizable=yes');
+            document.location.href= '@Url.Action("Index", "Home", new { area = "" })' + "FormRpt/Apply" + srv_id + "/" + applyId;
+        }
+</script>
+
+@using (Html.BeginForm("Edit2", "Case", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    @Html.HiddenFor(m => m.ActionType)
+    @Html.HiddenFor(m => m.APP_TIME)
+    @Html.HiddenFor(m => m.UNIT_CD)
+    @Html.HiddenFor(m => m.SRV_ID)
+    <table class="formTable1">
+        <caption>
+            申辦案件內容
+        </caption>
+        <tr>
+            <th style="width: 140px;">
+                申辦編號
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.APP_ID)
+                @Html.DisplayFor(m => m.APP_ID)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                申辦項目
+            </th>
+            <td>
+                @Html.Raw(this.Model.SRV_NAME)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                申請人姓名
+            </th>
+            <td>
+                @Html.DisplayFor(m => m.NAME)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                申請人身分證號/統編
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.IDN)
+                @Html.DisplayFor(m => m.IDN)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                處理起算日
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.APP_STR_DATE)
+                @Html.Raw(this.Model.APP_STR_DATE.HasValue ? this.Model.APP_STR_DATE.Value.ToString("yyyy/MM/dd") : "")
+            </td>
+        </tr>
+        <tr>
+            <th>
+                繳費時機
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.PAY_POINT)
+                @Html.HiddenFor(m => m.PAY_A_FEE)
+                @Html.HiddenFor(m => m.PAY_C_FEE)
+                @Html.HiddenFor(m => m.PAY_A_PAID)
+                @{
+                    switch (this.Model.PAY_POINT)
+                    {
+                        case "A":
+                            @Html.Raw("不需繳費")
+                            break;
+                        case "B":
+                            @Html.Raw("申請時繳費：金額<font color=red>" + this.Model.PAY_A_FEE + "</font>元整")
+                            break;
+                        case "C":
+                            @Html.Raw("申請時繳費：金額<font color=red>" + this.Model.PAY_C_FEE + "</font>元整")
+                            break;
+                        case "D":
+                            @Html.Raw("申請時繳費：金額<font color=red>" + this.Model.PAY_A_FEE + "</font>元整<br />")
+                            @Html.Raw("審核後繳費：金額<font color=red>" + this.Model.PAY_C_FEE + "</font>元整")
+                            break;
+                    }
+                }
+            </td>
+        </tr>
+        <tr>
+            <th>
+                繳費方式
+            </th>
+            <td>
+                @Html.Raw(WebUtils.GetPay_Method(this.Model.PAY_METHOD))
+            </td>
+        </tr>
+        <tr>
+            <th>
+                公文文號
+            </th>
+            <td>
+                @Html.Raw(this.Model.MOHW_CASE_NO)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                承辦人員
+            </th>
+            <td>
+                @Html.Raw(this.Model.ACC_NAME)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                案件進度
+            </th>
+            <td>
+                @*@Html.Raw(WebUtils.GetFLOWCDName(this.Model.UNIT_CD.Value, this.Model.FLOW_CD))*@
+                @Model.CASE_STATUS
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table class="formTable1">
+        <caption>
+            案件進度修改
+        </caption>
+        <tr>
+            <th style="width: 140px;">
+                案件狀態
+            </th>
+            <td>
+                @Html.HiddenFor(m => m.FLOW_CD)
+                <select id="sel_FLOWCD" onchange="$('#FLOW_CD').val(this.value);msgShowOff(this.value);">
+                    @{
+                        foreach (ES.Areas.Admin.Models.Map map in WebUtils.GetFLOWCDAll(this.Model.UNIT_CD.Value))
+                        {
+                            @Html.Raw("<option value='" + map.GetString("FLOW_CD") + "'>" + map.GetString("FLOW_CD") + " / " + map.GetString("FLOW_NAME") + "</option>");
+                        }
+                    }
+                </select>
+                <br />
+            </td>
+        </tr>
+        <tr id="msg" style="display: none">
+            <th>
+                <span id="msgtitle"></span>
+            </th>
+            <td>
+                <textarea id="recommTex" name="recommTex" rows="5" cols="20" style="height: 80px;
+                    width: 180px;"></textarea>
+
+            </td>
+        </tr>
+        <tr id="msg_complete" style="display: none">
+            <th>
+            </th>
+            <td>
+                郵寄日期：<input id="MailSendDate" name="MailSendDate" type="text" /><br /><br />
+                掛號條碼：<input id="RegisteredNum" name="RegisteredNum" type="text" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.CheckBoxFor(m => m.CASE_BACK_MK)
+                案件狀態是否選取退件
+                @Html.CheckBoxFor(m => m.PAY_BACK_MK)
+                是否退款
+            </td>
+        </tr>
+    </table>
+    <br />
+    <div class="formButtomBar">
+        <input type="submit" value="存檔" onclick="$('#ActionType').val('SAVE')" />
+        @if (Model.SRV_ID.StartsWith("001"))
+        {
+            <input type="submit" value="退回重新分文" onclick="$('#ActionType').val('DISPATCH')" />
+        }
+        <input type="button" value="案件內容" onclick="showAPPLYDATA('@this.Model.APP_ID')" />
+        @if (Model.SRV_ID.StartsWith("001") || Model.SRV_ID.StartsWith("00500"))
+        {
+            <input type="button" value="列印申請表" onclick="printDATA1('@this.Model.SRV_ID','@this.Model.APP_ID')" />
+        }
+        @{
+            if (this.Model.SRV_ID.Equals("001037") || this.Model.SRV_ID.Equals("001008"))
+            {
+                <input type="submit" value="列印證明書" onclick="$('#ActionType').val('D')" />
+            }
+        }
+        <input type="button" value="返回" onclick="document.location.href='@Url.Action("Index", "Case")';" />
+    </div>
+}

@@ -1,0 +1,198 @@
+﻿@using ES.Utils;
+@using CTCB.Crypto;
+@model ES.Areas.Admin.Models.FlyPayModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "航班乘客資料";
+    ViewBag.FunctionTitle = "航班乘客資料";
+    string s_GRANTDATE = "";
+    if (Model.detail.GRANTDATE != null && Model.detail.GRANTDATE.HasValue) { s_GRANTDATE = Model.detail.GRANTDATE.Value.ToString("yyyy/MM/dd"); }
+    bool flag_CanEdit = false;
+    if (Model.QRY_CanEdit) { flag_CanEdit = true; }
+}
+@using (Html.BeginForm("EditBasic", "FlyPay", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    @Html.HiddenFor(m => m.QRY_PAY_STATUSList)
+    @Html.HiddenFor(m => m.QRY_CanEdit)
+    @Html.HiddenFor(m => m.detail.FLY_ID)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 帳務管理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <h2 class="second-title">航班乘客資料</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">姓名</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @Html.TextBoxFor(m => m.detail.FIRSTNAME, new { @class = "form-control" })
+                    &nbsp;&nbsp;
+                    @Html.TextBoxFor(m => m.detail.MIDDLENAME, new { @class = "form-control" })
+                    &nbsp;&nbsp;
+                    @Html.TextBoxFor(m => m.detail.LASTNAME, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">生日</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @Html.TextBoxFor(m => m.detail.BIRTH, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">證件號碼</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @Html.TextBoxFor(m => m.detail.MAINDOCNO, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">抵達時間</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @Html.TextBoxFor(m => m.detail.FLIGHTDATE, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">春節專案流水號</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @Html.TextBoxFor(m => m.detail.SPRCODE, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">地區(春節專案)</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.SECTION)
+                    <span>(北:1, 中:2, 南:3)</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">新增時間</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @if (Model.detail.ADD_TIME != null)
+                    {
+                        @(Model.detail.ADD_TIME.Value.ToString("yyyy/MM/dd HH:mm:ss"))
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">刷卡日期及金額</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @if (Model.detail.PAYDATE != null)
+                {
+                        @(Model.detail.PAYDATE.Value.ToString("yyyy/MM/dd HH:mm:ss"))
+                        <span>&nbsp; &nbsp; &nbsp; &nbsp;</span>
+                        if (Model.detail.MAINDOCNO.Contains("TURBO"))
+                        {
+                            <span>1</span>
+                        }
+                        else
+                        {
+                            @(Model.detail.PAYMONEY)
+                        }
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">繳費狀態</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.STATUS)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">繳費編號</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.PAYRESULT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">銀行繳費編號</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.XID)
+                </div>
+            </div>
+            @if (!string.IsNullOrEmpty(Model.detail.PAYRETURN))
+                {
+                    Decrypt dec = new Decrypt();
+                    dec.Key = DataUtils.GetConfig("FLYPAY_VISA_KEY");
+                    dec.EncRes = Model.detail.PAYRETURN;
+                    Model.detail.AUTHCODE = dec.AuthCode;
+                    if (!string.IsNullOrEmpty(Model.detail.AUTHCODE))
+                    {
+                    <div class="form-group">
+                        <label class="main-label col-sm-2" for="">中信授權碼</label>
+                        <div class="col-sm-10" style="margin:10px auto;">
+                            @(Model.detail.AUTHCODE)
+                        </div>
+                    </div>
+                }
+            }
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">銀聯繳費編號</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.QID)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">授權碼</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.TRACENO)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">撥款日期</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(s_GRANTDATE)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">防疫所別</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @Html.TextBoxFor(m => m.detail.PLACE, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">識別碼</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.GUID)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">驗證碼</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.ADD_ACC)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">出境國家</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.FLYCONTRY)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">轉機國家</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.FLYCONTRYTR)
+                </div>
+            </div>
+            <div class="btnbar">
+                <input type="button" value="存檔" class="btn btn-save" onclick="doSave()" />
+                <input type="button" value="收回驗證碼" class="btn btn-orange" onclick="doReSave()" />
+                <input type="button" value="返回" class="btn btn-gray" onclick="document.location.href='@Url.Action("Index", "FlyPay")';" />
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$('#txt_PAYDATE').datetimepicker({ dateFormat: 'yy/mm/dd', timeFormat: 'HH:mm', showSecond: false, changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '2000:+1' });
+        $('#txt_PAYDATE').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+3' });
+        //$('#txt_GRANTDATE').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+    });
+
+    function doSave() {
+        $('#ActionType').val('SAVE')
+        $("#ActionForm").attr("action", "@(Url.Action("EditBasic", "FlyPay"))").submit();
+    }
+
+    function doReSave() {
+        $("#ActionForm").attr("action", "@(Url.Action("RESAVE", "FlyPay"))").submit();
+    }
+</script>

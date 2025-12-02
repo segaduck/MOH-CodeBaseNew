@@ -1,0 +1,180 @@
+﻿@using EECOnline.Commons
+@using EECOnline.Services
+@using System
+@model EECOnline.Models.DynamicOtherFileGrid
+
+<div id="Sample_fileGrid" class="form-row form-group" hidden>
+    <label class="form-label col-sm-2" for=""><button type="button" class="btn btn-blueLight">刪除</button>其他證明文件</label>
+    <div class="col-sm-10">
+        <div class="custom-file">
+            @* @Html.TextBoxFor(m => m.fileGrid[9999].File, new { @class = "custom-file-input", @type = "file", @onchange = "fileChange(this)" })*@
+            <input type="file" class="custom-file-input" name="Upload.fileGrid[9999].File" id="Upload_fileGrid_9999__File" onchange="fileChange(this)">
+            <label id="Upload_fileGrid_9999__File_label" class="custom-file-label">選取檔案</label>
+            @*@Html.HiddenFor(m => m.fileGrid[9999].FileName)*@
+            <input type="text" name="Upload.fileGrid[9999].FileName" id="Upload_fileGrid_9999__FileName" hidden>
+        </div>
+    </div>
+</div>
+
+<label class="form-label col-sm-2" for=""><button type="button" class="btn btn-blue" onclick="addFile()">新增</button>其他證明文件</label>
+<div id="OItem_1" class="col-sm-10 ">
+    <div class="custom-file">
+        @*@Html.TextBoxFor(m => m.fileGrid[0].File, new { @class = "custom-file-input", @type = "file", @onchange = "fileChange(this)" })*@
+        <input type="file" class="custom-file-input" name="Upload.fileGrid[0].File" id="Upload_fileGrid_0__File" onchange="fileChange(this)">
+        <label id="Upload_fileGrid_0__File_label" class="custom-file-label">選取檔案</label>
+        @* @Html.HiddenFor(m => m.fileGrid[0].FileName)*@
+        <input type="text" name="Upload.fileGrid[0].FileName" id="Upload_fileGrid_0__FileName" hidden>
+    </div>
+</div>
+
+@*@if (Model.fileGrid.ToCount() > 0)
+    {
+        for (int i = 0; i < Model.fileGrid.Count; i++)
+        {
+            var num = i.TONotNullString();
+            <div class="form-row form-group">
+                <label class="form-label col-sm-2">
+                    @if (i == 0)
+                    {<button type="button" class="btn btn-save" onclick="addFile()">新增</button>}
+                    else
+                    {<button type="button" class="btn btn-save" onclick="deleteFile(@i)">刪除</button>}
+                </label>
+                <div class="col-sm-10">
+                    <div class="custom-file">
+                        <input class="custom-file-input" id="OTHERFILE_@num" name="OTHERFILE_@(num)" onchange="doGetOTHERFILE_@(num)Nam(this)" style="" type="file" value="">
+                        <label id="OTHERFILE_@(num)_label" class="custom-file-label">選取檔案</label>
+                    </div>
+                    <div style="display:none"><input id="OTHERFILE_@(num)_CHECK" name="OTHERFILE_@(num)_CHECK" type="text" value=""></div>
+                </div>
+            </div>
+
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('#OTHERFILE_@(num)_CHECK').val("");
+                });
+
+                function doGetOTHERFILE_@(num)Nam(file) {
+                    var validExts = new Array('.DOC', '.DOCX', '.ODT', '.ODF', '.ODS', '.XLS', '.XLSX', '.PDF', '.PPT', '.PPTX', '.JPG', '.BMP', '.PNG', '.GIF', '.TIF', '.ZIP');
+                    var fileExt = file.value; fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+                    var blOverSize = false;
+                    var errMsg = '';
+                    if (blOverSize) { errMsg += '檔案大小不可超過MB\n'; }
+                    if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+                        errMsg += '檔案類型錯誤，可接受的副檔名有：' + validExts.toString() + '\n';
+                    }
+                    if (errMsg != '') {
+                        blockAlert(errMsg); $('input[name="' + file.name + '"]').val(null); $('#OTHERFILE_@(num)_CHECK').val("");
+                        return false;
+                    }
+                    else {
+                        $('#OTHERFILE_@(num)_CHECK').val("Y");
+                        $('#' + file.name + '_TEXT').val(file.files.item(0).name);
+                        return true;
+                    }
+                }
+                    $('#OTHERFILE_@(num)').on('change', function () {
+                    var fileName = $(this).val().split('\\').pop();
+                    $(this).siblings('#OTHERFILE_@(num)_label').addClass('selected').html(fileName);
+                });
+            </script>
+        }
+    }*@
+
+<script type="text/javascript">
+
+    //動態新增檔案
+    function addFile() {
+        var addItem = $("#Sample_fileGrid").clone();
+        var maxItem = $("[id^='OItem_']").length;
+        addItem.removeAttr("hidden");
+        addItem.attr("id", "OItem_" + (maxItem + 1));
+        if (maxItem==1) {
+            $("#OItem_" + maxItem).parent().after(addItem);
+        }
+        else {
+            $("#OItem_" + maxItem).after(addItem);
+        }
+        $("#OItem_" + (maxItem + 1) + " button").attr("onClick", "delFile('OItem_" + (maxItem + 1) + "')");
+        $("[name^='Upload.fileGrid[9999]']").each(function () {
+            console.log($(this).parent().parent().parent().attr("id"));
+            if ($(this).parent().parent().parent().attr("id") == "OItem_" + (maxItem + 1)) {
+                $(this).attr("name", "Upload.fileGrid[" + (maxItem) + "].File");
+                $(this).attr("id", "Upload_fileGrid_" + (maxItem) + "__File");
+                $(this).parent().find('label').attr("id", "Upload_fileGrid_" + (maxItem) + "__File_label");
+                $(this).parent().find('input[type="text"]').attr("name", "Upload.fileGrid[" + (maxItem) + "].FileName");
+            }
+        });
+    }
+
+    //動態刪除檔案
+    function delFile(item) {
+        //刪除
+        $("#" + item).remove();
+        //重新編號 divItem重新編碼
+        var itemNum = 1;
+        $('div').each(function () {
+            if ($(this).attr("id") != undefined) {
+                if ($(this).attr("id").substr(0, 6) == "OItem_") {
+                    $(this).attr("id", "OItem_" + itemNum);
+                    itemNum++;
+                }
+            }
+        });
+        //內部欄位變更編碼
+        $("[id^='Upload_fileGrid_']").each(function () {
+            if ($(this).parent().parent().parent().attr("id").split("_")[0] == "OItem") {
+                var itemNum = $(this).parent().parent().parent().attr("id").split("_")[1] - 1;
+                $(this).attr("name", "Upload.fileGrid[" + itemNum + "].File");
+                $(this).attr("id", "Upload_fileGrid_" + itemNum + "__File");
+                $(this).parent().find('label').attr("id", "Upload_fileGrid_" + (itemNum) + "__File_label");
+                $(this).parent().find('input[type="hidden"]').attr("name", "Upload.fileGrid[" + (itemNum) + "].FileName");
+            }
+        });
+        //button傳遞參數變動
+        $('button').each(function () {
+            if ($(this).text() == "刪除") {
+                var itemName = $(this).parent().parent().attr("id").split("_")[0];
+                var itemNum = $(this).parent().parent().attr("id").split("_")[1];
+                if (itemName == "OItem") {
+                    $(this).removeAttr("onClick");
+                    $(this).attr("onClick", "delFile('OItem_" + itemNum + "')");
+                }
+            }
+        });
+    }
+
+    function fileChange(sender) {
+        // 可接受的附檔名
+        var validExts = new Array(".doc",
+            ".docx",
+            ".odt",
+            ".odf",
+            ".ods",
+            ".xls",
+            ".xlsx",
+            ".pdf",
+            ".ppt",
+            ".pptx",
+            ".jpg",
+            ".bmp",
+            ".png",
+            ".gif",
+            ".tif"@*,
+            ".zip"*@);
+
+        var fileExt = sender.value;
+        fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+        if (validExts.indexOf(fileExt) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            sender.value = null;
+            $("input[name='" + sender.name + "Name']").val('');
+            $("#" + sender.id + "_label").html('選取檔案');
+            return false;
+        } else {
+            $("input[name='" + sender.name + "Name']").val(sender.files.item(0).name);
+            $("#" + sender.id + "_label").html(sender.files.item(0).name);
+            return true;
+        }
+    }
+
+</script>

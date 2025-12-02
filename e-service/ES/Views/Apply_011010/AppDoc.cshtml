@@ -1,0 +1,367 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_011010AppDocModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+    bool ReadOnly = !Model.FieldStr.Contains("ALL");
+    ViewBag.SRV_NAME = "全國社會工作專業人員選拔推薦";
+}
+
+@using (Html.BeginForm("Apply", "Apply_011010", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.APP_ID)
+    @Html.HiddenFor(m => m.MERGEYN)
+    @Html.HiddenFor(m => m.FieldStr)
+    @Html.HiddenFor(m => m.APPSTATUS)
+    @Html.HiddenFor(m => m.FLOW_CD)
+
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink">
+                <i class="fas fa-home"></i>
+                <a href="@(Url.Action("Index", "Login"))">首頁</a> ／
+                <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／
+                <a href="#">@Html.Raw(ViewBag.SRV_NAME)</a>
+            </div>
+            <div class="clearfix"></div>
+            @if (Model.APPSTATUS == "1")
+            {
+                <div class="tab-content" id="myTabContent">
+                    <h1 class="form-title  title-bg-y">補件</h1>
+                    <div class="form-set">
+                        <table width="100%">
+                            @Html.Raw(Model.MAILBODY)
+                        </table>
+                    </div>
+                </div>
+            }
+            <div class="tab-content" id="myTabContent">
+                <div id="form" class="tab-pane fade active in">
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                    <div class="form-set">
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦項目</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">@Html.Raw(ViewBag.SRV_NAME)</p>
+                            </div>
+                            <label class="step-label col-sm-2" for="">申辦日期</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">@Model.APPLY_DATE_TW</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_TYPE)</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline "><input type="radio" name="RadioUnitType" value="1" @(Model.UNIT_TYPE == "1" ? "checked" : "") onchange="RadioChange()" @(ReadOnly ? "disabled" : "")>1.	公部門〔直轄市、縣（市）政府（含社會局處、勞工局處、教育局處及衛生局等相關單位）及所屬之社會福利機構、本部等其他中央部會及其所屬社會福利機構、公立大專校院等〕</label>
+                                <label class="radio-inline "><input type="radio" name="RadioUnitType" value="2" @(Model.UNIT_TYPE == "2" ? "checked" : "") onchange="RadioChange()" @(ReadOnly ? "disabled" : "")>2.	私部門〔各私立社會福利機構、長期照顧服務機構、團體、大專校院〕</label>
+                                <br />
+                                @Html.DropDownListFor(m => m.UNIT_SUBTYPE, sc.GetUnitSubTypeList, new { @class = "form-normal", disabled = "disabled" })
+                                <br />
+                                <label class="radio-inline "><input type="radio" name="RadioUnitType" value="3" @(Model.UNIT_TYPE == "3" ? "checked" : "") onchange="RadioChange()" @(ReadOnly ? "disabled" : "")>3.	公私立醫事機構</label>
+                            </div>
+                            @Html.HiddenFor(m => m.UNIT_TYPE)
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_NAME)</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.UNIT_NAME, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_DEPART)</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.UNIT_DEPART, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_TITLE)</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.UNIT_TITLE, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_CNAME)</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.UNIT_CNAME, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.UNIT_TEL)</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.UNIT_TEL, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.EMAIL_0, new { @class = "form-normal", @readonly = "readonly" })
+                                @("@")
+                                @Html.DropDownListFor(m => m.EMAIL_1, sc.GetMailDomainList, new { @class = "form-normal", onchange = "doEmailChange()", disabled = "disabled" })
+                                @Html.TextBoxFor(m => m.EMAIL_2, new { @class = "form-normal", @readonly = "readonly" })
+                                @Html.HiddenFor(m => m.EMAIL_3)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>單位社工人員總數</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.CNT_D, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <p>
+                                    1.依「全國社會工作專業人員選拔及表揚要點」第五點第一款規定之推薦單位社工人員總數（含總會、分會、分事務所人數）。<br />
+                                    2.推薦單位如有所屬分會、分事務所等，請統一由總會推薦；直轄市、縣(市)政府由社會局(處)統一推薦。
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>各獎項推薦人數</label>
+                            <div class="col-sm-5">
+                                @Html.DisplayNameFor(m => m.CNT_E)
+                                @Html.TextBoxFor(m => m.CNT_E, new { @class = "form-normal", @readonly = "readonly" })
+                                <br />
+                                @Html.DisplayNameFor(m => m.CNT_F)
+                                @Html.TextBoxFor(m => m.CNT_F, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DisplayNameFor(m => m.CNT_G)
+                                @Html.TextBoxFor(m => m.CNT_G, new { @class = "form-normal", @readonly = "readonly" })
+                                <br />
+                                @Html.DisplayNameFor(m => m.CNT_H)
+                                @Html.TextBoxFor(m => m.CNT_H, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+
+                        <h2 class="second-title">佐證文件檔案上傳<span style="color:red">(總檔案大小5MB以下)</span></h2>
+                        <div class="form-group">
+                        </div>
+
+                        <div class="form-group" id="FILE_0">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>彙整表(EXCEL檔)</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FILE_EXCEL, Model.FILE_EXCEL_TEXT, "N")
+                                @Html.TextBoxFor(m => m.FILE_EXCEL, new { @id = "FILE_EXCEL", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)", disabled = "disabled" })
+                                @Html.HiddenFor(m => m.FILE_EXCEL_TEXT)
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="FILE_1">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>檢核表(PDF檔)</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FILE_PDF, Model.FILE_PDF_TEXT, "N")
+                                @Html.TextBoxFor(m => m.FILE_PDF, new { @id = "FILE_PDF", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam_PDF(this)", disabled = "disabled" })
+                                @Html.HiddenFor(m => m.FILE_PDF_TEXT)
+                            </div>
+                        </div>
+                        <h2 class="second-title">
+                            <span style="color:red;">*</span>推薦表(PDF檔)
+                            <p>
+                                <span style="color:red;">1.	受薦人排序應與彙整表相同。</span><br />
+                                <span style="color:red;">2.	每位推薦人限上傳兩份檔案(5MB以下)，其餘檔案恕不接收。</span>
+                            </p>
+                        </h2>
+                        <div id="RowTable">
+                            @{
+                                var i = 0;
+                                foreach (var item in Model.SRVLIST)
+                                {
+                                    var rowid = "row_" + (i + 1).ToString();
+                                    <div id="@rowid" data-group="Row">
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">序號</label>
+                                            <div class="col-sm-1">
+                                                <p id="SEQ_NO" class="form-control-static">@(i + 1)</p>
+                                                @Html.HiddenFor(m => m.SRVLIST[i].SEQ_NO)
+                                            </div>
+                                            <div class="col-sm-9" id="SRVLIST1">
+                                                @if (Model.FILE.Where(x => x.BATCH_INDEX == (i + 1)).ToList().Count() > 0)
+                                                {
+                                                    @Html.FileDLForTurbo(x => x.SRVLIST[(i)].FILE_3_TEXT,
+                                                                    Model.FILE.Where(x => x.BATCH_INDEX == (i + 1)).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+                                                                    Model.FILE.Where(x => x.BATCH_INDEX == (i + 1)).ToList().FirstOrDefault().APP_ID + "," +
+                                                                    Model.FILE.Where(x => x.BATCH_INDEX == (i + 1)).ToList().FirstOrDefault().FILE_NO + "," +
+                                                                    Model.FILE.Where(x => x.BATCH_INDEX == (i + 1)).ToList().FirstOrDefault().SRC_NO + "," + (i + 1).ToString(), "N")
+                                                }
+                                                @Html.TextBoxFor(m => m.SRVLIST[i].FILE_3, new { @id = "FILE_3", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam_PDF(this)", disabled = "disabled" })
+                                                @Html.HiddenFor(m => m.SRVLIST[i].FILE_3_TEXT)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    i++;
+                                }
+                            }
+                        </div>
+                        <div class="btn-bar text-center">
+                            @if (Model.APPSTATUS == "1")
+                            {
+                                <button type="button" class="btn btn-save" onclick="doSave()">存檔</button>
+                            }
+                            <button type="button" class="btn btn-clear" onclick="doBack()">返回</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        // 取得補件欄位字串
+        var FieldStr = $('#FieldStr').val();
+        if ($('#APPSTATUS').val() == "1") {
+            if (FieldStr != "" || FieldStr != undefined) {
+                var FieldLst = FieldStr.split(',');
+                FieldLst.forEach(function (i) {
+                    if (i.substring(0, 7) == "SRVLIST") {
+                        var t = i.substring(7, 9)
+                        var q = i.substring(10, 11)
+                        $('#row' + t + ' #SRVLIST' + q).find('input[readonly="readonly"]').each(function () {
+                            $(this).removeAttr("readonly")
+                        })
+                        $('#row' + t + ' #SRVLIST' + q).find('input[type="file"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('#row' + t + ' #SRVLIST' + q).find('input[type="checkbox"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('#row' + t + ' #SRVLIST' + q).find('div.date').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                    }
+                    else if (i.substring(0, 4) == "FILE") {
+                        var t = i.substring(i.lastIndexOf('_'))
+                        $('#FILE' + t).find('input[type="file"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                    }
+                    else if (i.substring(0, 3) == "ALL") {
+                        var t = i.substring(i.lastIndexOf('_'))
+                        $('form[id="main_form"]').find('input[readonly="readonly"]').each(function () {
+                            $(this).removeAttr("readonly")
+                        })
+                        $('form[id="main_form"]').find('input[disabled="disabled"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('div[disabled="disabled"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('input[type="radio"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('input[type="checkbox"]').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('select').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                        $('form[id="main_form"]').find('div.date').each(function () {
+                            $(this).removeAttr("disabled")
+                        })
+                    }
+                });
+            }
+        }
+
+        // 信箱
+        var ADM_MAIL = $('#EMAIL_1').val();
+        if (ADM_MAIL == 0) $('#EMAIL_2').removeAttr("readonly");
+        else {
+            if (ADM_MAIL == 1) $('#EMAIL_3').val('gmail.com');
+            if (ADM_MAIL == 2) $('#EMAIL_3').val('yahoo.com.tw');
+            if (ADM_MAIL == 3) $('#EMAIL_3').val('outlook.com');
+            $('#EMAIL_2').attr("readonly", "readonly");
+            $('#EMAIL_2').val('')
+        }
+        if ($('#EMAIL_0').prop("readonly")) { $('#EMAIL_2').prop("readonly", true) }
+        // 是否合併檔案
+        $("#MERGEYN").val('N');
+        //$("input[name=RMERGEYN]").val($("#MERGEYN").val()).attr('checked', true);
+    });
+
+    // MAIL 選自訂
+    function doEmailChange() {
+        var ADM_MAIL = $('#EMAIL_1').val();
+        if (ADM_MAIL == 0) $('#EMAIL_2').removeAttr("readonly");
+        else {
+            if (ADM_MAIL == 1) $('#EMAIL_3').val('gmail.com');
+            if (ADM_MAIL == 2) $('#EMAIL_3').val('yahoo.com.tw');
+            if (ADM_MAIL == 3) $('#EMAIL_3').val('outlook.com');
+            $('#EMAIL_2').attr("readonly", "readonly");
+            $('#EMAIL_2').val('')
+        }
+    }
+
+    //// 單位社工人員總數類型切換
+    //function DropDownListChange() {
+    //    var type_num = $("#CNT_TYPE").val();
+    //    var CNT_A = document.getElementById("CNT_A");
+    //    var CNT_B = document.getElementById("CNT_B");
+    //    var CNT_D = document.getElementById("CNT_D");
+
+    //    CNT_A.disabled = false;
+    //    CNT_B.disabled = false;
+    //    CNT_D.disabled = false;
+
+    //    if (type_num == "1") {
+    //        $("#CNT_D").val("");
+    //        CNT_D.disabled = true;
+    //    } else if (type_num == "2") {
+    //        $("#CNT_A").val("");
+    //        $("#CNT_B").val("");
+    //        CNT_A.disabled = true;
+    //        CNT_B.disabled = true;
+    //    }
+    //}
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".XLS", ".XLSX");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            $("#" + file.name + "_TEXT").val('');
+            return false;
+        }
+        else {
+            $('input[type="hidden"][name="' + file.name + '_TEXT"]').val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+    // 取檔名
+    function doGetFileNam_PDF(file) {
+        var validExts = new Array(".PDF");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            $("#" + file.name + "_TEXT").val('');
+            return false;
+        }
+        else {
+            $('input[type="hidden"][name="' + file.name + '_TEXT"]').val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+    // 存檔
+    function doSave() {
+        blockUI();
+        $("#EMAIL_1").prop("disabled", false);
+
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("SaveAppDoc")').submit();
+    }
+
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index","History")';
+    }
+
+</script>

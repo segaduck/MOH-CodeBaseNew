@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "首頁";
+}
+<div style="float: left; width: 160px;">
+    <div class="homeUnitTop" style="background-image: url(@Url.Action("Index", "Home")Images/default/home_unit_1.png);"></div>
+    
+    <div class="homeUnitBottom">
+        <ul style="list-style-type: square; margin-left: -20px; *margin-left: 20px;">
+            @foreach (Dictionary<string, object> item in ViewBag.List1)
+            {
+                <li><a href="@Url.Action("Notice", "Service", new { id = item["SRV_ID"] })">@item["NAME"]</a></li>
+            }
+        </ul>
+    </div>
+</div>
+
+<div style="float: left; width: 160px;">
+    <div class="homeUnitTop" style="background-image: url(@Url.Action("Index", "Home")Images/default/home_unit_5.png);"></div>
+    <div class="homeUnitBottomA">
+        <ul style="list-style-type: square; margin-left: -20px; *margin-left: 20px;">
+            @foreach (Dictionary<string, object> item in ViewBag.List5)
+            {
+                <li><a href="@Url.Action("Notice", "Service", new { id = item["SRV_ID"] })">@item["NAME"]</a></li>
+            }
+        </ul>
+    </div>
+    <div class="homeUnitTop" style="background-image: url(@Url.Action("Index", "Home")Images/default/home_unit_nc.jpg);"></div>
+    
+    <div class="homeUnitBottomB">
+        <ul style="list-style-type: square; margin-left: -20px; *margin-left: 20px;">
+            @foreach (Dictionary<string, object> item in ViewBag.List8)
+            {
+                <li><a href="@Url.Action("Notice", "Service", new { id = item["SRV_ID"] })">@item["NAME"]</a></li>
+            }
+        </ul>
+    </div>
+</div>
+
+<div style="float: left; width: 160px;">
+    <div class="homeUnitTop" style="background-image: url(@Url.Action("Index", "Home")Images/default/home_unit_ss.png);"></div>
+    <div class="homeUnitBottomA">
+        <ul style="list-style-type: square; margin-left: -20px; *margin-left: 20px;">
+            @foreach (Dictionary<string, object> item in ViewBag.List7)
+            {
+                <li><a href="@Url.Action("Notice", "Service", new { id = item["SRV_ID"] })">@item["NAME"]</a></li>
+            }
+        </ul>
+    </div>
+
+    <div class="homeUnitTop" style="background-image: url(@Url.Action("Index", "Home")Images/default/home_unit_6.png);"></div>
+    <div class="homeUnitBottomB">
+        <ul style="list-style-type: square; margin-left: -20px; *margin-left: 20px;">
+            @foreach (Dictionary<string, object> item in ViewBag.List6)
+            {
+                <li><a href="@Url.Action("Notice", "Service", new { id = item["SRV_ID"] })">@item["NAME"]</a></li>
+            }
+        </ul>
+    </div>
+</div>
+
+<div style="float: left; width: 265px;">
+    <div>
+        <table class="gridTable1">
+            <caption>熱門申辦</caption>
+            @foreach (Dictionary<string, object> item in ViewBag.ListH)
+            {
+                <tr>
+                    <td><a href="@Url.Action("Notice", "Service", new { id = item["SRV_ID"] })">@item["NAME"]</a></td>
+                </tr>
+            }
+            <tr>
+                <td style="text-align: right;">@Html.ActionLink("更多申辦...", "Index", "Service")</td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table class="gridTable1">
+            <caption>最新消息</caption>
+            @foreach (Dictionary<string, object> item in ViewBag.ListM)
+            {
+                <tr>
+                    <td><a href="@Url.Action("Show", "Message", new { id = @item["MSG_ID"] })">@Html.Raw(@item["TITLE"])</a></td>
+                </tr>
+            }
+            <tr>
+                <td style="text-align: right;">@Html.ActionLink("更多消息...", "Index", "Message")</td>
+            </tr>
+        </table>
+    </div>
+</div>

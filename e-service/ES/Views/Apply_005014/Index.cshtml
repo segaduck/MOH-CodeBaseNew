@@ -1,0 +1,244 @@
+﻿@model ES.Models.ViewModels.Apply_005014ViewModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "Index";
+    if (string.IsNullOrEmpty(Model.Apply.FLOW_CD))
+    {
+        Model.Apply.FLOW_CD = "0";
+    }
+}
+
+@Scripts.Render("~/Scripts/vue.js")
+
+<style type="text/css">
+    input[type=file] { padding-top: 2px; }
+    .errata-input input, .errata-input select, input[type=file].errata-input { background-color: pink; }
+</style>
+
+@switch(Model.Apply.FLOW_CD)
+{
+    case "0":
+    case "2":
+        @RenderEdit()
+        break;
+    default:
+        @RenderReadonly()
+        break;
+}
+
+
+@helper RenderReadonly()
+{
+    <fieldset disabled>
+        @RenderEdit()
+    </fieldset>
+}
+
+@helper RenderEdit()
+{
+    <div id="005014">
+        <div class="container" id="form-block">
+            <div class="col-sm-12">
+                <div class="breadlink"><i class="fas fa-home"></i><a href="@Url.Action("Index", "Login")">首頁</a> ／ <a href="@Url.Action("Index", "Service")">申辦服務</a> ／ <a href="#">貨品進口專案申請</a></div>
+                <div class="clearfix"></div>
+                <div class="form-set">
+                    @*<form class="form-horizontal" action="/action_page.php">*@
+                    @Html.Partial("_CaseStatusFlow")
+
+                    @if (Model.Apply != null && Model.Apply.FLOW_CD == "2") // 通知補件
+                    {
+                        <div style="color:red">粉紅色欄位為通知補件欄位，請確認!</div>
+                    }
+
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+
+                    @using (Html.BeginForm("ApplyPost", "Apply_005014", FormMethod.Post, new { id = "main_form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+                    {
+                        @Html.Partial("_CaseBase")
+                        @Html.Partial("_ApplyItems")
+                        @Html.Partial("_ApplyItems2")
+
+                        if (Model.IsErrata())
+                        {
+                            @Html.Partial("_ErrataFileUpload")
+                        }
+                        else
+                        {
+                            if (string.IsNullOrEmpty(Model.Apply.APP_ID))
+                            {
+                                @Html.Partial("_FileUpload")
+                            }
+                            else
+                            {
+                                @Html.Partial("_FilePreview")
+                            }
+                        }
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">聲明</label>
+                            <div class="col-sm-10">
+                                <input type="checkbox" id="chkDeclare" class="form-normal" />1.本公司已確認線上所申請內容與實際申請貨品相符。
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="btn-bar text-center">
+                    <!--<button type="submit" class="btn btn-save">存檔並預覽</button>-->
+                    @if (Model.Apply.FLOW_CD == "2")
+                    {
+                        <button type="submit" class="btn btn-save" onclick="save()">存檔</button>
+                        <button type="reset" class="btn btn-clear">清除資料</button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-save" onclick="preview()">存檔並預覽</button>
+                        <button type="reset" class="btn btn-clear">清除資料</button>
+                        @*<a type="button" href="javascript:void(0)" class="btn btn-save" onclick="preview_print()">套印申請書</a>
+                        <a type="button" href="javascript:void(0)" class="btn btn-save" onclick="preview_print2A()">套印一般切結書</a>
+                        <a type="button" href="javascript:void(0)" class="btn btn-save" onclick="preview_print2B()">套印萃取物切結書</a>*@
+                    }
+                </div>
+                <div>
+                </div>
+            </div>
+        </div>
+
+        <div id="preview-block"> @* 預覽區塊 *@ </div>
+    </div>
+
+    <script>
+        function preview() {
+            var chk = document.getElementById('chkDeclare');
+            if (chk.checked) {
+            } else {
+                alert("請勾選聲明!");
+                return false;
+            }
+            var applyitem = $('input[name="applyitem"]:checked').val();
+            $.ajax({
+                url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "Preview" })?applyitem='+applyitem,
+                type: 'POST',
+                cache: false,
+                data: new FormData($('#main_form')[0]),
+                processData: false,
+                contentType: false
+            }).done(function (res) {
+                if (res && res.status) {
+                    // 檢核通過
+                    $('#preview-block').html(res.data);
+                    $('#preview-block').css('display', 'block');
+                    $('#form-block').css('display', 'none');
+                } else {
+                    // 檢核不通過
+                    if (res && res.data) {
+                        $('#005014 div.err-msg').remove();
+                        var hasError = false;
+                        res.data.forEach(function (item) {
+                            if (item.msg) {
+                                var text = $('<div class="col-sm-12 err-msg" style="background-color:#ff99ab">' + item.msg + '</div>');
+                                $('#' + item.key).after(text);
+                                hasError = true;
+                            }
+                        });
+                        if (hasError) {
+                            blockAlert("欄位輸入檢核未通過，請按頁面上提示修正後再重新上傳!", null, function () { });
+                        }
+                    }
+                }
+            });
+        }
+
+        function save() {
+           
+            blockUI();
+            $.ajax({
+                url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "Save" })',
+                type: 'POST',
+                cache: false,
+                data: new FormData($('#main_form')[0]),
+                processData: false,
+                contentType: false
+            }).done(function (res) {
+                if (res && res.status) {
+                    // 檢核通過
+                    window.location = '@Url.Action("Apply", "Apply_005014", new { id = "Complete" })';
+                } else {
+                    // 檢核不通過
+                    if (res && res.data) {
+                        $('#005014 div.err-msg').remove();
+                        var hasError = false;
+                        res.data.forEach(function (item) {
+                            if (item.msg) {
+                                var text = $('<div class="col-sm-12 err-msg" style="background-color:#ff99ab">' + item.msg + '</div>');
+                                $('#' + item.key).after(text);
+                                hasError = true;
+                            }
+                        });
+                        if (hasError) {
+                            blockAlert("欄位輸入檢核未通過，請按頁面上提示修正後再重新上傳!", null, function () { });
+                        }
+                    }
+                }
+                unblockUI();
+
+            }).fail(function () {
+                unblockUI();
+            });
+        }
+
+        function cancel() {
+            $('#preview-block').css('display', 'none');
+            $('#form-block').css('display', 'block');
+        }
+
+        $(function () {
+            $('.decimal-only').decimalOnly();
+        })
+
+        // 申辦表件的”起運國家連動其他兩個“出口國”，申請人不用再重新選擇出口國的國家。
+        $(function () {
+            $('select#Detail_TRANSFER_COUNTRY').on('change', function (e) {
+                var val = $(e.target).val();
+                $('select#Detail_AFF1_EXPORT_COUNTRY').val(val);
+                $('select#Detail_AFF2_EXPORT_COUNTRY').val(val);
+            });
+        })
+
+        //套印申請書
+        function preview_print() {
+        var data = getFormDataToObject($("form[id=main_form]"));
+        $.fileDownload('@Url.Action("PreviewApplyForm1")', {
+            httpMethod: 'post',
+            data: data,
+            prepareCallback: function (url) {
+
+            }
+        });
+        }
+        //套印一般切結書
+        function preview_print2A() {
+            var data = getFormDataToObject($("form[id=main_form]"));
+            $.fileDownload('@Url.Action("PreviewApplyForm2A")', {
+                httpMethod: 'post',
+                data: data,
+                prepareCallback: function (url) {
+
+                }
+            });
+        }
+        //套印萃取物切結書
+        function preview_print2B() {
+            var data = getFormDataToObject($("form[id=main_form]"));
+            $.fileDownload('@Url.Action("PreviewApplyForm2B")', {
+                httpMethod: 'post',
+                data: data,
+                prepareCallback: function (url) {
+
+                }
+            });
+        }
+    </script>
+
+
+}
+

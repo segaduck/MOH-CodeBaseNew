@@ -1,0 +1,73 @@
+﻿@using EECOnline.Services;
+@using EECOnline.Models;
+@model HomeViewModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    var tmpHospStr = "";
+    if (Model.SuccessPage != null) { tmpHospStr = Model.SuccessPage.hospital_name; }
+}
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="board board-blue">
+                    <div class=" ">
+                        <h1 class="board-title">刷卡成功</h1>
+                        <div class="board-inn" style="margin-bottom: 1.5rem;">
+                            <h2>繳費確認</h2>
+                            <p>
+                                您已完成 <span class="highlight">@tmpHospStr</span> 線上申辦刷卡繳費，<br>
+                                您申請病歷之醫院在完成病歷製檔後，<br>
+                                系統將會寄發通知至您所登錄的電子郵件信箱，<br>
+                                再請您至本平台讀取與下載。謝謝。
+                            </p>
+                            <div style="text-align: center; color: red; margin-bottom: 2rem;">
+                                <strong>
+                                    請注意：您所申請之病歷檔案，經申請醫院端製檔完成提供下載與查閱後，將不受理取消退費之要求，謝謝。<br />
+                                    電子病歷一經線上繳費付款完成即進入病歷檔案產製階段，因此歉難受理退費，謝謝。
+                                </strong>
+                            </div>
+                            <div class="btnBar">
+                                <button class="btn btn-cancel" onclick="window.location.href='@Url.Action("Index", "Home")';">返回首頁</button>
+                            </div>
+                        </div>
+                        @*
+                            <div class="table-responsive" style="margin-top: 1.5rem; margin-bottom: 1rem; padding-left: 1rem; padding-right: 1rem;">
+                                <table class="table table-blue">
+                                    <thead>
+                                        <tr>
+                                            <th>訂單編號</th>
+                                            <th>申請日期</th>
+                                            <th>醫院名稱</th>
+                                            <th>病歷類型</th>
+                                            <th>應付金額</th>
+                                            <th>繳款狀態</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>@Model.SuccessPage.apply_no_sub</td>
+                                            <td>@Model.SuccessPage.createdatetime_Text</td>
+                                            <td>@Model.SuccessPage.hospital_name</td>
+                                            <td>@Model.SuccessPage.his_types_Text</td>
+                                            <td><div class="price"></div>@Model.SuccessPage.p</td>
+                                            <td><div class="text-success">已繳費</div>@Model.SuccessPage.payed_datetime_Text</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        *@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+
+    $(function () {
+    });
+
+</script>

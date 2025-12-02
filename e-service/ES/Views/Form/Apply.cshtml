@@ -1,0 +1,105 @@
+﻿@{
+    ViewBag.Title = "線上申辦";
+    ViewBag.Script = @"
+        function changeDDL(value, subId, action) {
+            if(value == '') {
+                $('#'+subId).empty();
+                $('#'+subId).append($('<option></option>').val('').text('--請選擇--'));
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: '" + @Url.Action("GetCodeList", "AJAX") + @"/' + value,
+                    data: { Code: action },
+                    dataType: 'json',
+                    cache: false,
+                    async: false,
+                    success: function (res) {
+                        if (res.length > 0) {
+                            $('#'+subId).empty();
+                            $.each(res, function (i, item) {
+                                $('#'+subId).append($('<option></option>').val(item.Value).text(item.Text));
+                            });
+                        }
+                    }
+                });
+            }
+        }
+    ";
+}
+
+@section scripts {
+    <script src="@Url.Action("Index", "Home")Scripts/Form/base.js?time=@Html.Raw(DateTime.Now.ToString("HHmmss"))" type="text/javascript"></script>
+    @if (ViewBag.Dict["SRV_SCRIPT"].Length < 100)
+    {
+        <script src="@Url.Action("Index", "Home")Scripts/Form/@Html.Raw(ViewBag.Dict["SRV_ID"] + ".js?time=" + DateTime.Now.ToString("HHmmss"))" type="text/javascript"></script>
+    }
+    else
+    {
+        <script src="@Url.Action("FormJS", "Form")/@Html.Raw(ViewBag.Dict["SRV_ID"] + "?time=" + DateTime.Now.ToString("HHmmss"))" type="text/javascript"></script>
+    }
+}
+@using (Html.BeginForm("Preview", "Form", FormMethod.Post, new { id = "ActionForm", target = "Preview", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <br />
+    <div>．<span id="SRV_NAME">@ViewBag.Dict["NAME"]</span></div>
+    @ViewBag.Dict["SRV_DESC"]
+    <hr />
+    <div style="float: right; color: #AAAAAA;">
+    <span style="color: #B22222;">填表</span> <span>→ 預覽填表資料 → </span>
+    @if (!@ViewBag.Dict["PAY_POINT"].Equals("A"))
+    {
+        <span>選擇繳費方式 → </span>
+    }
+    <span>完成申辦手續</span>
+    </div>
+    if (ViewBag.List != null && ViewBag.List.Count > 0)
+    {
+    <div>
+        <br />
+        <table class="gridTable1">
+            <caption>最近相同案件申請紀錄</caption>
+            <tr>
+                <th>申請編號 / 申辦項目</th>
+                <th style="width: 180px;">申辦說明</th>
+                <th style="width: 150px;">繳費說明</th>
+            </tr>
+            @foreach (Dictionary<string, object> item in ViewBag.List)
+            {
+                <tr>
+                    <td>
+                        <a href="@Url.Action("Show", "History", new { id = @item["APP_ID"] })"><u style="color: #FC5905;">@item["APP_ID"]</u></a><br />
+                        @item["SRV_NAME"]<br />
+                    </td>
+                    <td>
+                        處理進度：@item["FLOW_NAME"]<br />
+                        申辦日期：@Html.GetDateTime(item["APP_TIME"], "yyyy/MM/dd")<br />
+                        完成日期：@Html.GetDateTime(item["APP_ACT_DATE"], "yyyy/MM/dd")<br />
+                    </td>
+                    <td>
+                        繳費金額：@item["PAY_MONEY"]<br />
+                        繳費狀態：@item["PAY_STATUS"]<br />
+                        繳費日期：@Html.GetDateTime(item["PAY_ACT_TIME"], "yyyy/MM/dd")<br />
+                    </td>
+                </tr>
+            }
+        </table>
+        <span style="color: Red;">提示：若未繳費欲使用信用卡繳費或列印繳費單，可點選申請編號處理，請勿重複申請。</span>
+        <br /><br />
+    </div>
+    }
+    
+   
+    @Html.Action("ApplyMember1", "Form")
+    @Html.Action("ApplyForm1", "Form", new { id = @ViewBag.ServiceId })
+    <div class="formButtomBar">
+        @Html.Hidden("DocumentId", (string)@ViewBag.DocumentId)
+        @Html.Hidden("SRV_ID", (string)@ViewBag.Dict["SRV_ID"])
+        <input type="button" value="下一步" onclick="doSubmit();" />
+        @if (((string)@ViewBag.Dict["SRV_ID"]) == "005001" || ((string)@ViewBag.Dict["SRV_ID"]) == "005002" || ((string)@ViewBag.Dict["SRV_ID"]) == "005003" || ((string)@ViewBag.Dict["SRV_ID"]) == "005004" || ((string)@ViewBag.Dict["SRV_ID"]) == "005005")
+        {
+            <input type="button" value="返回" onclick="window.history.go(-1);" />
+        }
+        
+    </div>
+}

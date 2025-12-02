@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.chtd.com.tw" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.chtd.com.tw" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.chtd.com.tw">
+      <s:element name="GetSessionTransactionKey">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ConnectionAccount" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ConnectionPwd" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ClientIP" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ROCID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="info" type="tns:ArrayOfPaymentInfo" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfPaymentInfo">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="PaymentInfo" nillable="true" type="tns:PaymentInfo" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="PaymentInfo">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:WSBase">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="DepartmentID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="SOID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="InfoNO" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Amount" type="s:int" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="WSBase" />
+      <s:complexType name="SessionKeyResult">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:WSBase">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="SessionKey" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="InfoNO" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="SessionKeyResponse">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:WSBase">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="ResultInfo" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="SessionTransactionKey" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="SessionKeyResults" type="tns:ArrayOfSessionKeyResult" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfSessionKeyResult">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="SessionKeyResult" nillable="true" type="tns:SessionKeyResult" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetSessionTransactionKeyResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetSessionTransactionKeyResult" type="tns:SessionKeyResponse" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetSessionTransactionKeySoapIn">
+    <wsdl:part name="parameters" element="tns:GetSessionTransactionKey" />
+  </wsdl:message>
+  <wsdl:message name="GetSessionTransactionKeySoapOut">
+    <wsdl:part name="parameters" element="tns:GetSessionTransactionKeyResponse" />
+  </wsdl:message>
+  <wsdl:portType name="TransactionServiceSoap">
+    <wsdl:operation name="GetSessionTransactionKey">
+      <wsdl:input message="tns:GetSessionTransactionKeySoapIn" />
+      <wsdl:output message="tns:GetSessionTransactionKeySoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="TransactionServiceSoap" type="tns:TransactionServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetSessionTransactionKey">
+      <soap:operation soapAction="http://www.chtd.com.tw/GetSessionTransactionKey" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="TransactionServiceSoap12" type="tns:TransactionServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetSessionTransactionKey">
+      <soap12:operation soapAction="http://www.chtd.com.tw/GetSessionTransactionKey" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="TransactionService">
+    <wsdl:port name="TransactionServiceSoap" binding="tns:TransactionServiceSoap">
+      <soap:address location="https://ep.cp.gov.tw/payment/webservices/TransactionService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="TransactionServiceSoap12" binding="tns:TransactionServiceSoap12">
+      <soap12:address location="https://ep.cp.gov.tw/payment/webservices/TransactionService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

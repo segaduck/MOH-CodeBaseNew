@@ -1,0 +1,38 @@
+﻿@using System.Web.Razor.Parser
+@using ES.Models
+@model ES.Models.ViewModels.Apply_005004FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+}
+
+<h1 class="form-title  title-bg-y">選擇繳費方式</h1>
+<div class="form-set">
+    <form class="form-horizontal" method="post">
+        @Html.PayForTurbo("005004")
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="send_pay()">確認送出</button>
+            <button type="button" class="btn btn-clear" onclick="back_pay()">返回修改</button>
+        </div>
+        @*@Html.HiddenValueForTurbo(Model)*@
+    </form>
+</div>
+
+<script>
+    @*function send() {
+        //var data = getFormDataToObject($("form[id=main_form]"));
+        if ($("input[name='PAY_METHOD']:checked").val() == undefined) {
+            blockAlert("請選擇繳費方式!", "提示訊息");
+        } else {
+            var form = $("form[id=main_form]");
+            form.attr('action', '@Url.Action("Save")').submit();
+        }
+    }
+
+    function back() {
+        //var data = getFormDataToObject($("form[id=main_form]"));
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("ApplyBack")').submit();
+    }*@
+</script>

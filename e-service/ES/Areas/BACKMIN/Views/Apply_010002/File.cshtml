@@ -1,0 +1,194 @@
+﻿@using ES.Services;
+@using ES.Areas.Admin.Models;
+@model Apply_010002ViewModel
+
+@{
+    ViewBag.SRV_NAME = "低收入戶及中低收入戶之體外受精(俗稱試管嬰兒)補助方案";
+}
+
+<!--2-->
+<div class='panel panel-info'>
+    <div class='panel-heading'>
+        <h2 class='panel-title' data-toggle='collapse' data-parent='#ApplyData' href='#ApplyData'>
+            <a>上傳應附檔案(點擊展開)</a>
+        </h2>
+    </div>
+    <div id='ApplyData' class='panel-collapse collapse'>
+        <div class='panel-body'>
+            <div class="form-blue">
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">佐證文件採合併檔案</label>
+                    <div class="col-sm-10">
+                        <label class="radio-inline "><input type="radio" name="MERGEYN" value="Y" @(Model.Form.MERGEYN == "Y" ? "checked" : "") onchange="RadioChange()" disabled>是</label>
+                        <label class="radio-inline "><input type="radio" name="MERGEYN" value="N" @(Model.Form.MERGEYN != "Y" ? "checked" : "") onchange="RadioChange()" disabled>否</label>
+                        <br />
+                        若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"
+                    </div>
+                </div>
+                @if ("Y".Equals(Model.Form.MYDATA_GET1))
+                {
+                    <div class="form-group">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <label style="color:#00AA00;font-weight:bold;margin-top:5px;margin-bottom:8px;">國民身分證及中低收入戶或低收入戶證明文件-同意自「個人化資料自主運用(MyData)平臺」取得資料(需使用自然人憑證驗證身分)</label>
+                            <br />
+                            <table id="tblMYDATA_IDCN" class="myDataTable">
+                                <caption>個人戶籍資料</caption>
+                                <tbody></tbody>
+                            </table>
+                            <table id="tblMYDATA_LOWREC" class="myDataTable">
+                                <caption>低收入戶及中低收入戶證明</caption>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.FileList.FILE_IDCNF)</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.Form.FileList.FILE_IDCNF, Model.Form.FileList.FILE_IDCNF_TEXT)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.FileList.FILE_IDCNB)</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.Form.FileList.FILE_IDCNB, Model.Form.FileList.FILE_IDCNB_TEXT)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.FileList.FILE_LOWREC)</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.Form.FileList.FILE_LOWREC, Model.Form.FileList.FILE_LOWREC_TEXT)
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.FileList.FILE_DISEASE)</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE_DISEASE, Model.Form.FileList.FILE_DISEASE_TEXT)
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="btnbar">
+                    <button type="button" class="btn btn-blue" onclick="GetZip('@Model.Form.FileList.APP_ID')" >檔案打包下載</button>
+                    <button type="button" class="btn btn-blue" onclick="preview_print()">套印申請表</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<pre style="display:none" id="MYDATA_IDCN">@Html.Raw(Model.Form.MYDATA_IDCN)</pre>
+<pre style="display:none" id="MYDATA_LOWREC">@Html.Raw(Model.Form.MYDATA_LOWREC)</pre>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        initMyData();
+    });
+
+    /* MyData 證明資料顯示內容處理 */
+    function initMyData() {
+        var idcnJson = $("#MYDATA_IDCN").text();
+        var lowrecJson = $("#MYDATA_LOWREC").text();
+
+        if (idcnJson) {
+            var tbl = $("#tblMYDATA_IDCN tbody");
+            try {
+                var idcn = $.parseJSON(idcnJson);
+
+                if (idcn.code && idcn.code.length > 0) {
+                    // 可能是查無資料或異常
+                    tbl.append($("<tr><th>" + idcn.code + " " + idcn.text + "</th></tr>"));
+                }
+                else {
+
+                    var householdAddressFull;
+                    if (idcn.householdAddress && idcn.householdAddress != "undefined") {
+                        householdAddressFull = idcn.householdAddress.from_site_id
+                                + idcn.householdAddress.village
+                                + idcn.householdAddress.neighbor
+                                + idcn.householdAddress.neighbor_char
+                                + idcn.householdAddress.street_doorplate;
+                    }
+
+                    tbl.append($("<tr><th>統號</th><td>" + idcn.person_id + "</td></tr>"));
+                    tbl.append($("<tr><th>姓名</th><td>" + idcn.person_name + "</td></tr>"));
+                    tbl.append($("<tr><th>出生日期</th><td>" + idcn.birth_yyymmdd + "</td></tr>"));
+                    tbl.append($("<tr><th>出生地</th><td>" + idcn.birth_place_code + "</td></tr>"));
+                    tbl.append($("<tr><th>戶籍地址</th><td>" + householdAddressFull + "</td></tr>"));
+                    tbl.append($("<tr><th>戶號</th><td>" + idcn.household_id + "</td></tr>"));
+                    tbl.append($("<tr><th>婚姻狀況</th><td>" + idcn.marriage_code + "</td></tr>"));
+                    tbl.append($("<tr><th>父親統號</th><td>" + idcn.father_id + "</td></tr>"));
+                    tbl.append($("<tr><th>父親姓名</th><td>" + idcn.father_name + "</td></tr>"));
+                    tbl.append($("<tr><th>母親統號</th><td>" + idcn.mother_id + "</td></tr>"));
+                    tbl.append($("<tr><th>母親姓名</th><td>" + idcn.mother_name + "</td></tr>"));
+                }
+
+            }
+            catch (e) {
+                tbl.append($("<tr><th>解析Json異常：" + e + "</th></tr>"));
+            }
+        }
+
+        if (lowrecJson) {
+            var tbl = $("#tblMYDATA_LOWREC tbody");
+            try {
+                var lowrec = $.parseJSON(lowrecJson);
+
+                if (lowrec.code && lowrec.code.length > 0) {
+                    // 可能是查無資料或異常
+                    tbl.append($("<tr><th>" + lowrec.code + " " + lowrec.text + "</th></tr>"));
+                }
+                else {
+                    tbl.append($("<tr><th>案號</th><td>" + lowrec.app_no + "</td></tr>"));
+                    tbl.append($("<tr><th>證明表頭</th><td>" + lowrec.lic_title + "</td></tr>"));
+                    tbl.append($("<tr><th>身份別</th><td>" + lowrec.low_type + "</td></tr>"));
+                    tbl.append($("<tr><th>核定日期</th><td>" + lowrec.chk_date + "</td></tr>"));
+                    tbl.append($("<tr><th>有效年月</th><td>" + lowrec.until_date + "</td></tr>"));
+                    tbl.append($("<tr><th>公文文號</th><td>" + lowrec.doc_no_s + "</td></tr>"));
+                    tbl.append($("<tr><th>戶長姓名</th><td>" + lowrec.cname + "</td></tr>"));
+                    tbl.append($("<tr><th>戶籍地址</th><td>" + lowrec.risaddr + "</td></tr>"));
+                    tbl.append($("<tr><th>通訊地址</th><td>" + lowrec.addr + "</td></tr>"));
+                }
+            }
+            catch (e) {
+                tbl.append($("<tr><th>解析Json異常：" + e + "</th></tr>"));
+            }
+        }
+    }
+    
+</script>
+<style>
+    .myDataTable {
+        border-collapse: collapse;
+        width: 90%;
+        margin-bottom: 15px;
+    }
+    .myDataTable caption {
+        display: table-caption;
+        text-align: left;
+        font-weight: bold;
+        background-color: #669;
+        color: #FFF;
+        padding: 5px;
+    }
+    .myDataTable th {
+        width: 18%;
+    }
+    .myDataTable th, .myDataTable td {
+        padding: 5px;
+        border: 1px solid #999;
+        background-color: #DFF;
+    }
+</style>

@@ -1,0 +1,306 @@
+﻿@using Turbo.ReportTK
+@using System.IO;
+@using log4net
+@model Report
+@{
+    Layout = null;
+    ILog logger = LogManager.GetLogger("ReportResult");
+
+    string waterMark = string.Empty;
+    if(!string.IsNullOrEmpty(Model.WaterMark))
+    {
+        // WaterMark 的 style 設定
+        waterMark = string.Format("background-image:url({0}); display: block;", Url.Content( Model.WaterMark ) );
+    }
+
+    // 載入(內嵌) 列印版面的 CSS 樣式檔內容 
+    string printCss = File.ReadAllText(Server.MapPath(@"~/css/print.css"));
+    string fonts = Model.Font;
+    if (!string.IsNullOrEmpty(Model.FontEn))
+    {
+        // 將中文字體的 "英文名稱" 並列在 "中文名稱" 前面, 以確保 PDF 轉換時能正確引用
+        fonts = Model.FontEn + ", " + fonts;
+    }
+    // 若 report/font 有設定, 則置換樣式檔中的顯示字型
+    printCss = printCss.Replace("font-family:", "font-family: " + fonts + ", ");
+
+    string baseUrl = System.Configuration.ConfigurationManager.AppSettings["ReportBaseUrl"];
+    if (string.IsNullOrEmpty(baseUrl))
+    {
+        baseUrl = string.Format("{0}://{1}:{2}{3}", Request.Url.Scheme, Request.Url.Host, Request.Url.Port, Request.ApplicationPath);
+    }
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>@(Model.Id)@(Model.Name)</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="author" content="東柏資訊股份有限公司">
+    <meta name="copyright" content="本網頁著作權屬勞動部勞動力發展署所有">
+    <base href="@(baseUrl)"/>
+    
+    <style>
+            @Html.Raw(printCss)
+    </style>
+    <style>
+        .@(Model.Id) th, .@(Model.Id) td 
+        {
+            font-size: @(Model.FontSize)pt;
+        } 
+    </style>
+
+    @if (Model.ShowBtnBar)
+        {
+            @Scripts.Render("~/bundles/jquery")
+
+            <script>
+                var actEXCEL = "@Url.Content("~/Report/XLS")";
+                var actEXCEL = "@Url.Content("~/Report/ODS")";
+            var actPDF = "@Url.Content("~/Report/PDF")";
+            var actWORD = "@Url.Content("~/Report/WORD")";
+
+            $(document).ready(function () {
+                $("div.print-btn #btnCancelPrint").on("click", function () {
+                    window.close();
+                });
+
+                $("div.print-btn #btnPrintBody").on("click", function () {
+                    window.print();
+                });
+
+                $("div.print-btn #btnExportToEXCEL").on("click", function () {
+                    $("form[name=exportForm]")
+                        .attr("action", actEXCEL)
+                        .submit();
+                });
+                $("div.print-btn #btnExportToODS").on("click", function () {
+                    $("form[name=exportForm]")
+                        .attr("action", actODS)
+                        .submit();
+                });
+                $("div.print-btn #btnExportToPDF").on("click", function () {
+                    $("form[name=exportForm]")
+                        .attr("action", actPDF)
+                        .submit();
+                });
+                $("div.print-btn #btnExportToWORD").on("click", function () {
+                    $("form[name=exportForm]")
+                        .attr("action", actWORD)
+                        .submit();
+                });
+            });
+        </script>
+    }
+</head>
+@{ 
+    //設定寬高，才可顯示浮水印
+    var height = (string.IsNullOrEmpty(Model.PaperSize) ? "height:29.7cm;" : "height:21cm;");
+    }
+<body class="report print-container" @*style="@(waterMark)"*@>
+
+@if (Model.ShowBtnBar && Model.Results.Count > 0)
+{
+    <div class="print-btn">
+        <button type="button" id="btnPrintBody">列印</button>
+        @if (Model.BtnExcel)
+        {
+            <button type="button" id="btnExportToEXCEL">匯出 Excel</button>
+            <button type="button" id="btnExportToODS">匯出 ODS</button>
+        }
+        @if (Model.BtnWord)
+        {
+            <button type="button" id="btnExportToWORD">轉存 Word</button>
+        }
+        @if (Model.BtnPDF)
+        {
+            <button type="button" id="btnExportToPDF">轉存 PDF</button>
+        }
+        <button type="button" id="btnCancelPrint">關閉</button>
+    </div>
+}
+    
+    @if ("Compose".Equals(Model.Type))
+    {
+        // Compose 報表, 仍需要主報表頭
+        <table class="table">
+
+            <thead>
+                @*報表表頭(名稱)*@
+                @Html.Partial("_ReportHeader", Model)
+
+                @*查詢條件顯示*@
+                @if (Model.ShowParms)
+                {
+                    <tr>
+                        <td class="report-parms">
+                            @ReportLayoutHelper.DisplayConditions(Model.Query.Conditions, Model.QueryParmTexts)
+                        </td>
+                    </tr>
+                }
+                @if (Model.ShowDate)
+                {
+                    <tr>
+                        <td class="report-date">
+                            列印日期: @(HelperUtil.TransToTwYear(System.DateTime.Now))
+                        </td>
+                    </tr>
+                }
+
+            </thead>
+        </table>
+
+        // Compose 報表, 組合多個 SubReport
+        foreach (SubReport item in Model.Query.SubReports)
+        {
+            <!-- @(item.Id) @(item.Name) -->
+            @Html.Action("SubReport", "Report",
+                new { RptId = item.Id, Parms = Model.QueryParms,
+                    ParmTexts = Model.QueryParmTexts })
+        }
+    }
+    else if (!string.IsNullOrEmpty(Model.Sql) && Model.Results.Count == 0)
+    {
+        <div class="mark-red">
+            查無資料! <a href="javascript:history.go(-1)">返回前頁</a>
+        </div>
+    }
+    else
+    {
+        @* 一般報表 *@
+        if (!string.IsNullOrEmpty(Model.View))
+        {
+            /*使用指定的 layout partial view*/
+            logger.Info("Report('" + Model.Id + "') render with view: " + Model.View);
+            @Html.Partial(Model.View, Model)
+        }
+        else
+        {
+            /*使用預設的 layout*/
+
+            int pageCount = -1;
+            bool hasPageGroup = false;
+            Model.CurrentPageGroup = null;
+
+            if (Model.PageRows > 0)
+            {
+                // 如果有設定 PageRows 則計算總頁數
+                pageCount = (int)(Model.Results.Count / Model.PageRows);
+                if (pageCount * Model.PageRows < Model.Results.Count)
+                {
+                    pageCount++;
+                }
+            }
+            else if(Model.PageGroupList != null && Model.PageGroupList.Count > 0)
+            {
+                // 如果有設定 PageGroup 則每一個 PageGroupList 值, 
+                // 產生一頁(一個 <table>)
+                pageCount = Model.PageGroupList.Count;
+                hasPageGroup = true;
+                Model.PageIdx = 0;
+            }
+
+            int loopCount = (pageCount < 0) ? 1 : pageCount;
+            Model.PageCount = loopCount;
+
+            for (int p = 1; p <= loopCount; p++)
+            {
+                if(hasPageGroup)
+                {
+                    Model.CurrentPageGroup = Model.PageGroupList[p - 1].Value;
+                }
+                else
+                {
+                    Model.PageIdx = p;
+                }
+                <div style="@(waterMark)@(height);width:100%;background-repeat:no-repeat;background-position:center;">
+                <table class="table @(p<loopCount?"page":"") @(Model.Id)" id="page@(p)">
+
+                    <thead>
+                        @*報表表頭(名稱)*@
+                        @Html.Partial("_ReportHeader", Model)
+                        
+
+                        @*查詢條件顯示*@
+                        @if (Model.ShowParms)
+                        {
+                            <tr>
+                                <td class="report-parms" colspan="@(Model.Layout.Columns.Count)">
+                                    @*查詢條件: @(Model.QueryParms.Count <= 2 ? "無(最多 " + Model.QueryParms["MAX_ROWS"] + " 筆)" : "")*@
+                                    @ReportLayoutHelper.DisplayConditions(Model.Query.Conditions, Model.QueryParmTexts)
+                                </td>
+                            </tr>
+                        }
+                        @if (Model.ShowDate)
+                        {
+                            <tr>
+                                <td class="report-date" colspan="@(Model.Layout.Columns.Count)">
+                                    列印日期: @(HelperUtil.TransToTwYear(System.DateTime.Now))
+                                </td>
+                            </tr>
+                        }
+
+                        @*標題欄位顯示*@
+                        @ReportLayoutHelper.Head(Model.Layout.Columns)
+
+                    </thead>
+
+                    @*報表結果清單*@
+                    <tbody>
+                        @if (Model.FirstRowAgg)
+                        {
+                            @*Aggregation 顯示於結果Grid的第一列*@
+                            @Html.Partial("_GridAggregation", Model)
+                        }
+
+                        @Html.Partial("_GridContent", Model)
+                    </tbody>
+
+                    @*報表 Summary*@
+                    @if (p == loopCount) //最後一頁時輸出
+                    {
+                        <tfoot>
+                            @*Aggregation 列輸出*@
+                            @if (!Model.FirstRowAgg)
+                            {
+                                @Html.Partial("_GridAggregation", Model)
+                            }
+                            <tr><td colspan="@Model.Layout.Columns.Count" style="border:0; height:10px;">&nbsp;</td></tr>
+
+                            @if (!string.IsNullOrEmpty(Model.Summary.View))
+                            {
+                                //使用指定的客制化 Summary View
+                                @Html.Partial(Model.Summary.View, Model.SummaryResult)
+                            }
+                            else if (Model.Summary.Columns.Count > 0 && Model.SummaryResult != null)
+                            {
+                                // 使用制式 summary layout
+                                <tr>
+                                    @foreach (ReportColumn col in Model.Summary.Columns)
+                                {
+                                        @*輸出欄位*@
+                                        @Html.Raw(string.Format("<td align=\"{1}\" {2}>{0}</td>",
+                                            Model.SummaryResult[col.Id], col.Align,
+                                            (col.ColSpan > 1 ? ("colspan=\"" + col.ColSpan + "\"") : "")))
+                                    }
+                                </tr>
+                            }
+                        </tfoot>
+                    }
+                </table>
+
+                @Html.Partial("_ReportFooter", Model)
+            </div>
+            }
+
+        } /*預設的 layout end*/
+    }
+    <form name="exportForm" action="" method="post" style="display: none;">
+        @Html.Hidden("RptId", Model.Id)
+        @foreach (string key in Model.QueryParms.Keys)
+        {
+            @Html.Hidden(key, Model.QueryParms[key])
+        }
+    </form>
+</body>
+</html>

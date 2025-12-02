@@ -1,0 +1,196 @@
+﻿@using ES.DataLayers
+@using ES.Areas.Admin.Models
+@using ES.Commons
+@using System.Web
+@using System.Data
+@model MainModel
+
+@using (Html.BeginForm("CaseSearchDetail", "Main", FormMethod.Post, new { id = "main_form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+{
+
+    <script type="text/javascript">
+        function ShowNowYear() {
+            var now = new Date();
+            var year = now.getFullYear();
+            document.write(year);
+        }
+    </script>
+    <style>
+        .onoffswitch {
+            position: relative;
+            width: 90px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .onoffswitch-checkbox {
+            display: none;
+        }
+
+        .onoffswitch-label {
+            display: block;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid #999999;
+            border-radius: 20px;
+        }
+
+        .onoffswitch-inner {
+            display: block;
+            width: 200%;
+            margin-left: -100%;
+            transition: margin 0.3s ease-in 0s;
+        }
+
+            .onoffswitch-inner:before, .onoffswitch-inner:after {
+                display: block;
+                float: left;
+                width: 50%;
+                height: 30px;
+                padding: 0;
+                line-height: 30px;
+                font-size: 14px;
+                color: white;
+                font-family: Trebuchet, Arial, sans-serif;
+                font-weight: bold;
+                box-sizing: border-box;
+            }
+
+            .onoffswitch-inner:before {
+                content: "局部遮罩";
+                padding-left: 10px;
+                background-color: #34A7C1;
+                color: #FFFFFF;
+            }
+
+            .onoffswitch-inner:after {
+                content: "完全顯示";
+                padding-right: 10px;
+                background-color: #EEEEEE;
+                color: #999999;
+                text-align: right;
+            }
+
+        .onoffswitch-switch {
+            display: block;
+            width: 18px;
+            margin: 6px;
+            background: #FFFFFF;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 66px;
+            border: 2px solid #999999;
+            border-radius: 20px;
+            transition: all 0.3s ease-in 0s;
+        }
+
+        .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+            margin-left: 0;
+        }
+
+        .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+            right: 0px;
+        }
+    </style>
+
+    <div class="container-fluid">
+        <!--bread -->
+        <div class="col-sm-12">
+            <div class="breadlink"><i class="fa fa-home"></i><a href='@Url.Action("Index", "Main")'>首頁</a> ></div>
+        </div>
+
+        <div class="col-sm-12 content">
+            <!-- H1 title -->
+            <div>
+                <h1 class="main-title"><i class="fas fa-edit"></i>申請明細</h1>
+                <div class="onoffswitch" style="position: absolute;top:28px;left:200px;width:100px">
+                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+                    <label class="onoffswitch-label" for="myonoffswitch">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th>身分證字號</th>
+                            <th>姓名</th>
+                            <th>申辦類別</th>
+                            <th>申辦時間</th>
+                            <th>目前狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (DataRow row in Model.CaseList.Rows)
+                        {
+                            <tr>
+                                <td width="20%" align="center">@Html.Raw(row.ItemArray[2].ToString())</td>
+                                <td width="20%" align="center">@Html.Raw(row.ItemArray[3].ToString())</td>
+                                <td width="20%" align="center">@Html.Raw(row.ItemArray[4].ToString())</td>
+                                <td width="20%" align="center">@Html.Raw(HelperUtil.DateTimeToTwString(Convert.ToDateTime(row.ItemArray[5])))</td>
+                                <td width="20%" align="center">@Html.Raw(row.ItemArray[6].ToString())</td>
+                                <td hidden>@Html.Raw(row.ItemArray[2].ToString())</td>
+                                <td hidden>@Html.Raw(row.ItemArray[3].ToString())</td>
+                            </tr>
+                        } 
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function myFunction() {
+            var x = document.getElementById("leftNavs");
+            if (x.className === "leftnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "leftnav";
+            }
+        }
+
+        $(function () {
+            if ($("#myonoffswitch").attr('checked')) {
+                mask();
+            }
+            else {
+                unmask();
+            }
+        })
+        $("#myonoffswitch").change(function () {
+            if (this.checked) {
+                mask();
+            }
+            else {
+                unmask();
+            }
+        });
+
+        function mask() {
+            $('table > tbody > tr').each(function () {
+                var ID = $.trim($(this).find("td:eq(0)").text());
+                var name = $.trim($(this).find("td:eq(1)").text());
+                $(this).find("td:eq(0)").text(ID.substring(0, 4) + '***' + ID.substring(7, 10));
+                if (name.length > 2) {
+                    $(this).find("td:eq(1)").text(name.substring(0, 1) + '*' + name.substring(2, name.length))
+                }
+                else {
+                    $(this).find("td:eq(1)").text(name.substring(0, 1) + '*')
+                }
+            });
+        }
+        function unmask() {
+            $('table > tbody > tr').each(function () {
+                $(this).find("td:eq(0)").text($(this).find("td:eq(5)").text())
+                $(this).find("td:eq(1)").text($(this).find("td:eq(6)").text())
+            });
+        }
+    </script>
+
+
+}

@@ -1,0 +1,78 @@
+﻿@{
+    Layout = null;
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.SRV_NAME = "衛生福利部訴願案件";
+
+    
+    string s_msg_T1A = @"衛生福利部訴願案件
+(一)	依據電子簽章法之規定，您在本項服務所提供之電子文件及所為之電子簽章，在功能上等同於實體文件及簽章，將推定已由您本人親自簽名或蓋章，並具有法律效力。
+(二)	申請資料填寫要項：
+1.	訴願人之姓名、出生年月日、住、居所、身分證明文件字號。如係法人或其他設有管理人或代表人之團體，其名稱、事務所或營業所及管理人或代表人之姓名、出生年月日、住、居所。
+2.	有訴願代理人者，其姓名、出生年月日、住、居所、身分證明文件字號。
+3.	原行政處分機關。
+4.	訴願請求事項。
+5.	訴願之事實及理由。
+6.	收受或知悉行政處分之年、月、日。
+7.	受理訴願之機關。
+8.	證據。其為文書者，應添具繕本或影本。
+9.	年、月、日。
+(三)	您留下的地址日後若有變更，請主動告知本部法規會，以免因文書無法送達，影響您的權益。
+";
+    string s_msg_T1 = string.Format(s_msg_T1A);
+}
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@Html.Raw(ViewBag.SRV_NAME)</a></div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            <ul>
+                <li id="Apply_Tab" class="active">填寫申辦表件並上傳檔案</li>
+                <li id="PreView_Tab">預覽申辦表件</li>
+                <li>完成申辦</li>
+            </ul>
+        </div>
+
+        <div class="form-set">
+            <h1 class="form-title title-bg-y">@Html.Raw(ViewBag.SRV_NAME)說明事項</h1>
+            @*class="form-group"*@
+            <div class="form-group service-main index-note">
+                <div class="tab-content">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <p class="member-note">
+                                建議您仔細閱讀以下事項，備齊相關文件再申請喔。<br />
+                            </p>
+                            <textarea class="form-control" rows="15" readonly="readonly" >@Html.Raw(s_msg_T1)</textarea>
+                            <p class="member-note">本人已閱讀以上條款，本次申請資料均由本人提供，資料屬實並無違反相關法令，如填寫假資料或有違規情事，願接受相關罰則。</p>
+                            <p class="member-note">如果您已經了解並接受，請按「同意」，進行下一個步驟填寫資料</p>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="btn-bar text-center">
+                        <button type="button" class="btn btn-save" onclick="doCheck()">同意</button>
+                        <button type="button" class="btn btn-clear" onclick="doBack()">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<script>
+
+    //同意
+    function doCheck() {
+        var agree1 = { "agree": 1 }
+        location.href = '@Url.Action("APPLY", "APPLY_040001")?' + $.param(agree1);
+    }
+
+    // 取消
+    function doBack() {
+        location.href = '@Url.Action("Index", "Service")';
+    }
+
+</script>

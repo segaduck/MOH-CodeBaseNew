@@ -1,0 +1,106 @@
+﻿@using EECOnline.Areas.A1.Models;
+@using EECOnline.Models;
+@model C101MFormModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+}
+
+<div class="col-sm-12 content">
+    <!-- H1 title -->
+    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@sm.LastActionFunc.prgname</h1>
+
+    <div class="form-blue">
+        @using (Html.BeginForm("Index", "C101M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+        {
+            var button = new Dictionary<string, string>();
+            button.Add("search", "doSearch()");
+            button.Add("reset_fuc", "doReset_fuc()");
+            button.Add("new", "doNew()");
+            //button.Add("print", "doPrint(" + Model.IsDealWith + ")");
+
+            @Html.ControlForTurbo(Model);
+            @Html.ButtonForTurbo(button)
+        }
+    </div>
+    <div class="clearfix"></div>
+    <h2 class="second-title">查詢結果</h2>
+    <div class="table-pager">
+        @Html.Partial("_PagingLink", Model)
+    </div>
+    <div class="table-responsive">
+        @if (Model.Grid != null)
+        {
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>醫院代碼</th>
+                        <th>醫院名稱</th>
+                        <th>城市</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="rows">
+                    @Html.Partial("_GridRows")
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //隱藏hidden下邊線
+        $('input[type="hidden"]').parent().css({ "border-style": 'none' })
+    })
+
+    /// 查詢
+    function doSearch() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Index")').submit();
+    }
+
+     /// 新增
+    function doNew() {
+        var url = '@(Url.Action("New", "C101M", new { area = "A1" }))';
+        var title = '建立醫院資料';
+        popupWindow({ 'width': -1 }, url, title, null, function (retData, doc) {
+            if (retData != null) { if (retData.redirectUrl != "") { RedirectAfterPopup(retData.redirectUrl) } }
+        })
+    }
+
+    /// 修改
+    function doModify(userno) {
+        var data = {
+            "userno": userno,
+        }
+        var url = '@Url.Action("Modify", "C101M")?' + $.param(data);
+        var title = '編輯醫院資料';
+        popupWindow({ 'width': -1 }, url, title, null, function (retData, doc) {
+            if (retData != null) { if (retData.redirectUrl != "") { RedirectAfterPopup(retData.redirectUrl) } }
+        })
+    }
+
+    /// 重填
+    function doReset_fuc() {
+        $('#city').val('');
+        $('#text').val('');
+        $('#code').val('');
+    }
+
+    /// 取得醫院授權碼
+    function fetchValidateCode(code) {
+        $.post('/A1/C101M/GetValidateCode', { code: code }, function (response) {
+            if (response.success) {
+                alert(response.message);
+                location.reload();
+            } else {
+                alert(response.message);
+            }
+        });
+    }
+
+</script>

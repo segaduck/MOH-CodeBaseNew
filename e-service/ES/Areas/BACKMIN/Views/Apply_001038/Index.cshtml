@@ -1,0 +1,150 @@
+﻿@using ES.Areas.Admin.Models;
+@model Apply_001038FormModel
+
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ES.Models.ShareCodeListModel sc = new ES.Models.ShareCodeListModel();
+}
+
+@using (Html.BeginForm("Index", "Apply_001038", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件分文及處理 / 案件處理 / @Model.SRV_ID_NAME
+    </div>
+    <div class="col-sm-12 content">
+        <!-- H1 title -->
+        <h1 class="main-title"><i class="fas fa-edit"></i>案件審理作業</h1>
+        <div class="table-responsive">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th colspan="2">基本資料檔</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="20%"><div align="center">申辦項目：</div></td>
+                        <td width="80%"><div align="left">@(Model.SRV_ID_NAME)</div></td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">申辦日期：</div></td>
+                        <td>@Model.APP_TIME_AD</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">預計完成日：</div></td>
+                        <td>@Model.APP_EXT_DATE_AD</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">案件承辦人姓名：</div></td>
+                        <td>@Model.PRO_ACC_NAME</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">案件編號：</div></td>
+                        <td>@Model.APP_ID</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">系統狀態：</div></td>
+                        <td>@Model.APP_STATUS</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        @Html.ControlForTurbo(Model, Model.IsNew)
+
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="doSave()">存檔</button>
+            <button type="button" class="btn btn-gray" onclick="doBack()">返回</button>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+
+    // 送出
+    function doSave() {
+       var ValStr = "";
+        if ($('#FLOW_CD option:selected').val() =="") {
+            blockAlert("請選擇案件狀態 !", "提示訊息");
+        }
+        else {
+            var data = getFormDataToObject($("form[id=main_form]"));
+
+            ajaxLoadMore('@Url.Action("Save")', data, function (retData) {
+                if (retData.status) {
+                    blockMessage(retData.message, "提示訊息", function () {
+                        location.href = '@Url.Action("Index", "Case")'
+                    });
+                }
+                else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+        }
+    }
+
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index", "Case")'
+    }
+
+    $(document).ready(function () {
+        $('input:radio[name="IM_EXPORT"]').click(function () { doImExportChange(); });
+        doImExportChange();
+
+        doDocCheck($("#DOC_TYP_01_SHOW"));
+        doDocCheck($("#DOC_TYP_02_SHOW"));
+        doDocCheck($("#DOC_TYP_03_SHOW"));
+        doDocCheck($("#DOC_TYP_04_SHOW"));
+        doDocCheck($("#DOC_TYP_05_SHOW"));
+        doDocCheck($("#DOC_TYP_06_SHOW"));
+        //doDocCheck($("#DOC_TYP_07_SHOW"));
+        //doDocCheck($("#DOC_TYP_08_SHOW"));
+        //doDocCheck($("#DOC_TYP_09_SHOW"));
+        //doDocCheck($("#DOC_TYP_10_SHOW"));
+        //doDocCheck($("#DOC_TYP_11_SHOW"));
+        //doDocCheck($("#DOC_TYP_12_SHOW"));
+        //doDocCheck($("#DOC_TYP_13_SHOW"));
+        //doDocCheck($("#DOC_TYP_14_SHOW"));
+        //doDocCheck($("#DOC_TYP_15_SHOW"));
+        //doDocCheck($("#DOC_TYP_16_SHOW"));
+        //doDocCheck($("#DOC_TYP_17_SHOW"));
+        //doDocCheck($("#DOC_TYP_18_SHOW"));
+        //doDocCheck($("#DOC_TYP_19_SHOW"));
+        //doDocCheck($("#DOC_TYP_20_SHOW"));
+        //doDocCheck($("#DOC_TYP_21_SHOW"));
+        //doDocCheck($("#DOC_TYP_22_SHOW"));
+        //doDocCheck($("#DOC_TYP_23_SHOW"));
+    });
+
+    function doImExportChange() {
+        var IM_EXPORT = $('input:radio:checked[name="IM_EXPORT"]').val();
+        var IMPORT = $("#IMPORT");
+        var EXPORT = $("#EXPORT");
+
+        IMPORT.attr("style", "display:none");
+        EXPORT.attr("style", "display:none");
+        if (IM_EXPORT == "0") {
+            IMPORT.removeAttr("style");
+        }
+        if (IM_EXPORT == "1") {
+            EXPORT.removeAttr("style");
+        }
+    }
+
+    function doDocCheck(typ) {
+        var Codc = $("#" + typ.attr('id').replace('TYP', 'COD').replace('_SHOW', ''));
+        var Txtc = $("#" + typ.attr('id').replace('TYP', 'TXT').replace('_SHOW', ''));
+        var Filec = $("#" + typ.attr('id').replace('TYP', 'FILE').replace('_SHOW', ''));
+        if (typ.prop("checked")) {
+            Codc.removeAttr("disabled");
+            Txtc.removeAttr("disabled");
+            Filec.removeAttr("disabled");
+        }
+        else {
+            Codc.attr("disabled", "disabled");
+            Txtc.attr("disabled", "disabled");
+            Filec.attr("disabled", "disabled");
+        }
+    }
+</script>

@@ -1,0 +1,20 @@
+# Docker data files (runtime generated)
+docker-data/
+
+# NuGet packages (backed up separately)
+e-service/packages/*
+!e-service/packages/package.txt
+
+# Database files
+*.mdf
+*.ldf
+*.bak
+
+# SQL Server log files
+*.xel
+
+# Large font files
+*.ttf
+
+# Large binary files
+*.nupkg

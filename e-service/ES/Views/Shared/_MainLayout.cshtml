@@ -1,0 +1,269 @@
+﻿@using ES.Models;
+@using Newtonsoft.Json;
+@using ES.Utils;
+@{
+    SessionModel sm = SessionModel.Get();
+    bool isStop = DataUtils.GetConfig("WEB_LOCK") == "Y" ? true : false;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C07Y0RT4RH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-C07Y0RT4RH');
+    </script>
+    <title>衛生福利部｜線上申辦服務系統</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=8,9,edge,chrome=1">
+    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="xO1rl3yyV9pA8bYEEbsrQHV6bsvYiN-OmygfyITWAyQ">
+    <meta name="description" content="衛生福利部｜線上申辦服務系統">
+    <meta name="keywords" content="衛生福利部,線上,申辦,線上申辦,資訊,系統,">
+    <meta name="author" content="東柏資訊">
+    <meta name="copyright" content="本網頁著作權屬衛生福利部所有">
+    <meta name="robots" content="all">
+    <meta name="apple-touch-fullscreen" content="yes" />
+    @*<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">*@
+    @*@Styles.Render("~/Content/font-awesome")*@
+    <style id="antiClickjack" type="text/css">
+        html {
+            display: none;
+        }
+
+        body {
+            display: none !important;
+            background-color: #ffffff;
+        }
+    </style>
+    <script type="text/javascript">
+        //解決不支援 X-Frame-Options設定，需額外判斷
+        //if (top != self) { top.location = self.location; }
+        if (self === top || self == top) {
+            var antiClickjack = document.getElementById("antiClickjack");
+            if (antiClickjack) { antiClickjack.parentNode.removeChild(antiClickjack); }
+            document.documentElement.style.display = 'block';
+        }
+        else { top.location = self.location; }
+        if (parent.document.frames != undefined && parent.document.frames.length != 0) {
+            top.location.replace(self.location);
+        }
+    </script>
+
+    @Scripts.Render("~/bundles/jquery")
+
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/HiPKICerts")
+    @Scripts.Render("~/bundles/HCAAPISVI")
+    @Scripts.Render("~/Scripts/jquery-confirm.min.js")
+    @Scripts.Render("~/Scripts/jquery.fileDownload.js")
+    @Scripts.Render("~/Scripts/vue.js")
+
+    @Styles.Render("~/Content/fontawesome/css")
+    @Styles.Render("~/Content/base2/css")
+    @Styles.Render("~/Content/jquery-confirm.min.css")
+    @*<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>*@
+
+
+
+    <script type="text/javascript">
+           @* 前一個頁面最後錯誤或結果訊息 *@
+        var lastErrorMessage = '@Html.Raw(sm.LastErrorMessage)';
+        var lastResultMessage = '@Html.Raw(sm.LastResultMessage)';
+        var redirectUrl = '@Html.Raw(sm.RedirectUrlAfterBlock)';
+
+        function RedirectAfterPopup(redirectUrlPost) {
+            if ((redirectUrlPost != undefined) && (redirectUrlPost != "")) { redirectUrl = redirectUrlPost; }
+            if (redirectUrl.length > 0) {
+                @*有指定 RedirectUrlAfterBlock, 進行重導動作 *@
+                var form = $("form[name=RedirAfterBlockResult]");
+                var p = redirectUrl.indexOf("?");
+                if (p > 0) {
+                    var parms = redirectUrl.substring(p + 1).split("&");
+                    redirectUrl = redirectUrl.substring(0, p);
+                    for (var i = 0; i < parms.length; i++) {
+                        var ptoken = parms[i].split("=");
+                        if (ptoken.length == 2) {
+                            var input = document.createElement("input");
+                            $(input).attr("type", "hidden");
+                            $(input).attr("name", ptoken[0]);
+                            $(input).attr("value", ptoken[1]);
+
+                            form.append(input);
+                        }
+                        else {
+                            debugTrace("RedirectUrlAfterBlock: parameter syntax error '" + parms[i] + "'");
+                        }
+                    }
+                }
+                form.attr("action", redirectUrl);
+                form.submit();
+            }
+            else {
+                //20180530 加入使用 HTTP Get 方式導向指定網址
+                redirectUrl = "@Html.Raw(sm.RedirectUrlAfterBlockViaGet)";
+                if (redirectUrl.length > 0) location.href = redirectUrl;
+            }
+        }
+
+        $(document).ready(function () {
+
+            @* blockUI 引用的 loading image *@
+            globalSetting.processingImg = "@Url.Content("~/images/processing.gif")";
+
+            @* 前一個頁面最後錯誤或結果訊息 popup 處理*@
+            if (lastErrorMessage) {
+                blockAlert(lastErrorMessage, "系統提醒", function () {
+                    RedirectAfterPopup()
+                });
+            }
+            else if (lastResultMessage) {
+                blockMessage(lastResultMessage, null, function () {
+                    RedirectAfterPopup()
+                });
+            }
+            else {
+                @* 前一個表單 Post 後的 Validation Summary 訊息顯示 *@
+                var IsValid = '@(ViewData.ModelState.IsValid)';
+                var validationMsg = $("#ValidationSummary").html();
+                if (IsValid == 'False' && validationMsg) {
+                    blockAlert(validationMsg, "表單檢核訊息");
+                }
+            }
+        });
+
+        function uPkiLogin() {
+            //$("#CertLoginSubmit").prop("disabled", true);
+            //$("#CertLoginSubmit").prop("value", "登入中...");
+            $("#uPkiFrame").prop("src", "@Url.Action("LoginHCA", "Login")");
+        }
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            //20180902 加入可拖放對話盒設定
+            $(".modal-dialog").draggable({ handle: ".modal-header", "cursor": "move" });
+
+            // 更改enter為tab
+            $("input").not($(":button")).keypress(function (evt) {
+                if (evt.keyCode == 13) {
+                    if ($(this).attr("type") !== 'submit') {
+                        var fields = $(this).parents('form:eq(0),body').find('button, input, textarea, select');
+                        var index = fields.index(this);
+                        if (index > -1 && (index + 1) < fields.length) {
+                            fields.eq(index + 1).focus();
+                        }
+                        $(this).blur();
+                        return false;
+                    }
+                }
+            });
+
+            $('.dropdown-toggle').click(function (e) {
+                e.stopPropagation();
+                //var a = $(this).parent();
+                //console.log($(this).parent().attr("class"));
+
+                if ($(this).parent().attr("class") == "open dropdown" || $(this).parent().attr("class") == "dropdown open") {
+                    $(this).parent().removeClass("dropdown open").removeClass("open dropdown").addClass("dropdown");
+                } else {
+                    $(this).parent().removeClass("dropdown").addClass("dropdown open");
+                }
+            });
+
+            $('.navbar-toggle').click(function (e) {
+                e.stopPropagation();
+                //var a = $(this).parent();
+                //console.log($(this).parent().attr("class"));
+
+                if ($(this).parent().next().attr("class") == "collapse navbar-collapse in") {
+                    $(this).parent().next().removeClass("collapse navbar-collapse in").addClass("collapse navbar-collapse");
+                } else {
+                    $(this).parent().next().removeClass("collapse navbar-collapse").addClass("collapse navbar-collapse in");
+                }
+            });
+        });
+
+        // 全域下載
+        function doDownLoadFILE(FILENAME, APP_ID, FILE_NO, SRC_NO) {
+            var downLoadUrl = '@Url.Action("DownLoadsFILE", "Ajax", new { area = "" })';
+            var parms = {
+                "FILENAME": FILENAME,
+                "APP_ID": APP_ID,
+                "FILE_NO": FILE_NO,
+                "SRC_NO": SRC_NO
+            };
+
+            ajaxDownloadFile(downLoadUrl, parms, true, FILENAME);
+        }
+
+        // 預覽下載
+        function doFrontDownLoadFILE(FILENAME) {
+            var downLoadUrl = '@Url.Action("DownLoadsFrontFILE", "Ajax",new { area = ""})';
+            var parms = {
+                "FILENAME": FILENAME
+            };
+
+            ajaxDownloadFile(downLoadUrl, parms, true, FILENAME);
+        }
+
+        //檔案變更時，帶入preView Label
+        //function fileChange(file, prefix) {
+        //    $("#" + file.name).val(file.files.item(0).name);
+        //}
+
+    </script>
+</head>
+<body>
+
+    @if (isStop)
+    {
+        @RenderSection("Scripts", required: false)
+        <main>
+            <div class="container-fluid">
+                <img src="~/Images/announcement.png" style="max-width:90%;max-height:auto;" />
+            </div>
+            <script>
+                $(document).ready(function () {
+                    document.getElementById("mainbody").innerHTML = "";
+                });
+            </script>
+            <div class="main" id="mainbody">
+                @RenderBody()
+            </div>
+        </main>
+    }
+    else
+    {
+        <main>
+            <a name="gotop"></a>
+            @Html.Partial("_MainHeader")
+            <!-- page body start -->
+            @RenderBody()
+            <!-- page body end -->
+            <!-- DatePicker start -->
+            @Html.Partial("_DatePickerTW")
+            @*@Html.Partial("_DatePickerAC")*@
+            <!-- DatePicker end -->
+            @Html.Partial("_CommonDialog")
+            @* Validation Summary *@
+            <div class="hide" id="ValidationSummary">@Html.ValidationSummary()</div>
+            <form name="RedirAfterBlockResult" action="" method="POST"></form>
+            @Html.Partial("_Footer")
+        </main>
+    }
+
+    @*Loading Mask*@
+    <div id="loadingMask" style="display:none;text-align:center;padding-top:10px;">
+        <img src="~/images/processing.gif" width="90px" /><br />
+        <div style="text-align:center;height:42px;color:burlywood">處理中...</div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+﻿@model ES.Models.SearchModel
+@{
+    Layout = null;
+}
+@using (Html.BeginForm("Index", "Search"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    @Html.TextBoxFor(m => m.Name, new { id = "SearchName", style="width: 160px;" })
+    @Html.HiddenFor(m => m.NowPage, new { id = "SearchNowPage" })
+    <input type="submit" value="查詢" />
+    <div>@Html.ValidationMessageFor(m => m.Name)</div>
+}

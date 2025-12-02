@@ -1,0 +1,313 @@
+﻿@model ES.Models.ViewModels.Apply_005014ViewModel
+@using ES.Models.ViewModels
+@using ES.Models
+@using System.Linq.Expressions
+
+@{
+    ViewBag.Title = "_CaseBase";
+    // 前台 申辦表件填寫
+
+    ShareCodeListModel options = new ShareCodeListModel();
+    DateTime now = DateTime.Now;
+    bool isErrata = Model.IsErrata();
+    bool isNew = (Model.Apply == null || string.IsNullOrEmpty(Model.Apply.APP_ID));
+
+    // 新增時預設代入公司名稱及統一編號
+    SessionModel sess = SessionModel.Get();
+    if (string.IsNullOrEmpty(Model.Apply.NAME))
+    {
+        Model.Apply.NAME = sess.UserInfo.Member.NAME;
+    }
+    if (string.IsNullOrEmpty(Model.Apply.IDN))
+    {
+        Model.Apply.IDN = sess.UserInfo.Member.IDN;
+    }
+    if (string.IsNullOrEmpty(Model.Apply.MOBILE))
+    {
+        Model.Apply.MOBILE = sess.UserInfo.Member.MOBILE;
+    }
+}
+
+<div class="form-group">
+    <label class="step-label col-sm-2" for="">申辦項目</label>
+    <div class="col-sm-10">
+        <p class="form-control-static">貨品進口專案申請</p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="step-label col-sm-2" for="">申辦日期</label>
+    <div class="col-sm-4">
+        @Html.HiddenFor(x => x.Apply.APP_ID)
+        @Html.HiddenFor(x => x.Apply.FLOW_CD)
+        @if (string.IsNullOrEmpty(Model.Apply.APP_ID))
+        {
+            @now.ToString("yyyy/MM/dd")
+        }
+        else if (Model.Apply.APP_TIME.HasValue)
+        {
+            @Model.Apply.APP_TIME.Value.ToString("yyyy/MM/dd")
+        }
+    </div>
+</div>
+
+<fieldset @(Html.Raw(isErrata && !isNew ? "disabled" : ""))>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>公司名稱</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(x => x.Apply.NAME, new { @class = "form-control", placeholder = "" })
+        </div>
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>統一編號Unified code</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(x => x.Apply.IDN, new { @class = "form-control", placeholder = "" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>承辦人姓名</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(x => x.Apply.CNT_NAME, new { @class = "form-control", placeholder = "" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>連絡電話</label>
+        <div class="col-sm-10">
+            <span>(</span>
+            @Html.TextBoxFor(x => x.CNT_TEL_Zip, new { @class = "form-10 form-normal" })
+            <span>)</span>
+            @Html.TextBoxFor(x => x.CNT_TEL_Phone, new { @class = "form-normal" })
+            <span>#</span>
+            @Html.TextBoxFor(x => x.CNT_TEL_Num, new { @class = "form-10 form-normal" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>行動電話</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(x => x.Apply.MOBILE, new { @class = "form-control", @maxlength = "10" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(x => x.EMAIL_1, new { @class = "form-normal" }) @@
+            @Html.DropDownListFor(x => x.EMAIL_2, options.GetMailDomainList1, new { @class = "form-normal" })
+            @Html.TextBoxFor(x => x.EMAIL_3, new { @class = "form-normal" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>地址Address</label>
+        <div class="col-sm-10">
+            <div class="form-inline">
+                @Html.AddrForTurbo(
+                    m => m.Apply.ADDR_ZIP,
+                    m => m.Apply.ADDR_ZIP_ADDR,
+                    m => m.Apply.ADDR_ZIP_DETAIL, false, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+</fieldset>
+<fieldset @(Html.Raw(!isErrata && !isNew ? "disabled" : ""))>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>生產國別Country of origin</label>
+        <div class="col-sm-4">
+            @IsErrata(
+            Html.DropDownListFor(x => x.Detail.PRODUCTION_COUNTRY, options.Port2List, new { @class = "form-control" }),
+            x => x.Detail.PRODUCTION_COUNTRY_E,
+            isErrata, isNew
+        )
+        </div>
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>賣方國家Country of seller</label>
+        <div class="col-sm-4">
+            @IsErrata(
+            Html.DropDownListFor(x => x.Detail.SELL_COUNTRY, options.Port2List, new { @class = "form-control" }),
+            x => x.Detail.SELL_COUNTRY_E,
+            isErrata, isNew
+        )
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>起運國家Shipping port</label>
+        <div class="col-sm-4">
+            @IsErrata(
+            Html.DropDownListFor(x => x.Detail.TRANSFER_COUNTRY, options.Port2List, new { @class = "form-control" }),
+            x => x.Detail.TRANSFER_COUNTRY_E,
+            isErrata, isNew
+        )
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">備註1 Remarks</label>
+        <div class="col-sm-10">
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.CheckBoxFor(x => x.Detail.Remark.checkboxR1, new { @class = "form-normal", @onchange = "remark1Changed()" })1、申請H01免查驗(報單影本，報單號碼：
+                </label>
+                @Html.TextBoxFor(x => x.Detail.Remark.REMARK1_ITEM1_COMMENT, new { @class = "form-normal", @placeholder = "請輸入報單號碼" }))
+                <br />
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(x => x.Detail.Remark.REMARK1_ITEM2, "1", new { @class = "form-normal", @onchange = "remark1Changed()" })中藥用
+                </label>
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(x => x.Detail.Remark.REMARK1_ITEM2, "2", new { @class = "form-normal", @onchange = "remark1Changed()" })非中藥材用途:
+                </label>
+                @Html.TextBoxFor(x => x.Detail.Remark.REMARK1_ITEM2_COMMENT, new { @class = "form-normal", @placeholder = "請輸入非中藥材用途" })
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">備註2 Remarks</label>
+        <div class="col-sm-10" style="margin-top:10px">
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.CheckBoxFor(x => x.Detail.Remark.checkboxR2, new { @class = "form-normal" })2、自用原料藥：(1)藥品許可證影本(2)原料之檢驗規格、方法、檢驗成績書(載明批號、檢驗日期及認定人員之簽名)
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">備註3 Remarks</label>
+        <div class="col-sm-10" style="margin-top:10px">
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.CheckBoxFor(x => x.Detail.Remark.checkboxR3, new { @class = "form-normal", @onchange = "remark3Changed()" })
+                    3、非中藥用途貨品進口：
+                </label>
+            </div>
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.RadioButtonFor(x => x.Detail.Remark.REMARK3_2, "1", new { @class = "form-normal", @onchange = "remark3Changed()" })食品:
+                </label>
+                @Html.TextBoxFor(x => x.Detail.Remark.REMARK3_2_COMMENT, new { @class = "form-normal", @placeholder = "請輸入用途" })
+            </div>
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.RadioButtonFor(x => x.Detail.Remark.REMARK3_2, "2", new { @class = "form-normal", @onchange = "remark3Changed()" })研發:
+                </label>
+                @Html.TextBoxFor(x => x.Detail.Remark.REMARK3_3_COMMENT, new { @class = "form-normal", @placeholder = "請輸入用途" })
+            </div>
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.RadioButtonFor(x => x.Detail.Remark.REMARK3_2, "3", new { @class = "form-normal", @onchange = "remark3Changed()" })試製:
+                </label>
+                @Html.TextBoxFor(x => x.Detail.Remark.REMARK3_4_COMMENT, new { @class = "form-normal", @placeholder = "請輸入用途" })
+            </div>
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.RadioButtonFor(x => x.Detail.Remark.REMARK3_2, "4", new { @class = "form-normal", @onchange = "remark3Changed()" })其他:
+                </label>
+                @Html.TextBoxFor(x => x.Detail.Remark.REMARK3_5_COMMENT, new { @class = "form-normal", @placeholder = "請輸入用途" })
+            </div>
+            @Html.TextBoxFor(x => x.Detail.Remark.REMARK1_E, new { @class = "form-control", @readonly = "readonly" })
+        </div>
+    </div>
+</fieldset>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        remark1Changed();
+        remark3Changed();
+        isErrataRemark(@(isErrata),@(isNew));
+    });
+    function isErrataRemark(iserrata,isnew) {
+        if(!iserrata && !isnew){
+            // isErrata 補件
+            // isNew 新增
+            // all disabled
+        }else{
+            if($('#Detail_Remark_REMARK1_E').val() != ""){
+                $("#Detail_Remark_checkboxR1").removeAttr('disabled');
+                $("#Detail_Remark_REMARK1_ITEM1_COMMENT").removeAttr('disabled');
+                $("#Detail_Remark_REMARK1_ITEM2").removeAttr('disabled');
+                $("#Detail_Remark_REMARK1_ITEM2_COMMENT").removeAttr('disabled');
+                $("#Detail_Remark_checkboxR2").removeAttr('disabled');
+                $("#Detail_Remark_checkboxR3").removeAttr('disabled');
+                $("#Detail_Remark_REMARK3_2").removeAttr('disabled');
+                $("#Detail_Remark_REMARK3_2_COMMENT").removeAttr('disabled');
+                $("#Detail_Remark_REMARK3_3_COMMENT").removeAttr('disabled');
+                $("#Detail_Remark_REMARK3_4_COMMENT").removeAttr('disabled');
+            }else{
+                $("#Detail_Remark_checkboxR1").attr('disabled',true);
+                $("#Detail_Remark_REMARK1_ITEM1_COMMENT").attr('disabled',true);
+                $("#Detail_Remark_REMARK1_ITEM2").attr('disabled',true);
+                $("#Detail_Remark_REMARK1_ITEM2_COMMENT").attr('disabled',true);
+                $("#Detail_Remark_checkboxR2").attr('disabled',true);
+                $("#Detail_Remark_checkboxR3").attr('disabled',true);
+                $("#Detail_Remark_REMARK3_2").attr('disabled',true);
+                $("#Detail_Remark_REMARK3_2_COMMENT").attr('disabled',true);
+                $("#Detail_Remark_REMARK3_3_COMMENT").attr('disabled',true);
+                $("#Detail_Remark_REMARK3_4_COMMENT").attr('disabled',true);
+            }
+        }
+    }
+    function remark1Changed() {
+        var re1 = $('#Detail_Remark_checkboxR1').is(':checked');
+        var re1item2 = $('input[name="Detail.Remark.REMARK1_ITEM2"]:checked').val();
+        // 備註1=checked 中藥用
+        if (re1 && re1item2 == '1') {
+            // 非中藥材用途 清空
+            $('#Detail_Remark_REMARK1_ITEM2_COMMENT').val('');
+        } else if (!re1) {
+            // 取消 勾選
+            $('#Detail_Remark_REMARK1_ITEM1_COMMENT').val('');
+            $('#Detail_Remark_REMARK1_ITEM2_COMMENT').val('');
+        }
+    }
+    function remark3Changed() {
+
+        var re3 = $('#Detail_Remark_checkboxR3').is(':checked');
+        var re32 = $('input[name="Detail.Remark.REMARK3_2"]:checked').val();
+
+        // 備註3 勾選
+        if (re3 && re32 == "1") {
+            // 食品 REMARK3_2_COMMENT
+            $('#Detail_Remark_REMARK3_3_COMMENT').val('');
+            $('#Detail_Remark_REMARK3_4_COMMENT').val('');
+            $('#Detail_Remark_REMARK3_5_COMMENT').val('');
+        } else if (re3 && re32 == "2") {
+            // 研發 REMARK3_3_COMMENT
+            $('#Detail_Remark_REMARK3_2_COMMENT').val('');
+            $('#Detail_Remark_REMARK3_4_COMMENT').val('');
+            $('#Detail_Remark_REMARK3_5_COMMENT').val('');
+        } else if (re3 && re32 == "3") {
+            // 試製 REMARK3_4_COMMENT
+            $('#Detail_Remark_REMARK3_2_COMMENT').val('');
+            $('#Detail_Remark_REMARK3_3_COMMENT').val('');
+            $('#Detail_Remark_REMARK3_5_COMMENT').val('');
+        } else if (re3 && re32 == "4") {
+            // 其他 REMARK3_5_COMMENT
+            $('#Detail_Remark_REMARK3_2_COMMENT').val('');
+            $('#Detail_Remark_REMARK3_3_COMMENT').val('');
+            $('#Detail_Remark_REMARK3_4_COMMENT').val('');
+        } else if (!re3) {
+            $('#Detail_Remark_REMARK3_2').val('');
+            $('#Detail_Remark_REMARK3_2_COMMENT').val('');
+            $('#Detail_Remark_REMARK3_3_COMMENT').val('');
+            $('#Detail_Remark_REMARK3_4_COMMENT').val('');
+            $('#Detail_Remark_REMARK3_5_COMMENT').val('');
+        }
+    }
+</script>
+@helper IsErrata(MvcHtmlString html, Expression<Func<Apply_005014ViewModel, string>> exp, bool isErrata, bool isNew)
+{
+    string msg = exp.Compile().Invoke(Model);
+    if (string.IsNullOrEmpty(msg) && !isNew)
+    {
+        <fieldset disabled> @html </fieldset>
+    }
+    else
+    {
+        if (isErrata)
+        {
+            <div class="errata-input">@html</div>
+            @Html.TextBoxFor(exp, new { @class = "form-control" }, true)
+        }
+        else if (isNew)
+        {
+            @html
+        }
+        else
+        {
+            <div class="errata-input">@html</div>
+        }
+    }
+}
+

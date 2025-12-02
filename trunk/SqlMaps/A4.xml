@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="A4"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<resultMaps>
+	</resultMaps>
+	<cacheModel id="WDASE-cache" implementation="MEMORY">
+		<flushInterval hours="1" />
+		<property name="Type" value="WEAK" />
+	</cacheModel>
+	<statements>
+
+		<select id="queryC101M" resultClass="EECOnline.Areas.A4.Models.C101MGridModel" parameterClass="EECOnline.Areas.A4.Models.C101MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+	a.his_type_name AS TypeName,
+	COUNT(DISTINCT a.apply_no_sub) AS SubNoCount
+FROM EEC_ApplyDetailPrice a
+WHERE 1=1
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="payed"><![CDATA[ AND a.payed = #payed# ]]></isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+GROUP BY a.his_type_name
+			]]>
+		</select>
+
+		<select id="queryC103M" resultClass="EECOnline.Areas.A4.Models.C103MGridModel" parameterClass="EECOnline.Areas.A4.Models.C103MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT c.TEXT AS LoginTypeText, COUNT(DISTINCT a.apply_no_sub) AS CountNum
+FROM EEC_ApplyDetail a
+LEFT JOIN EEC_Apply b ON a.apply_no=b.apply_no
+RIGHT JOIN CODE1 c ON b.login_type=c.CODE
+WHERE 1=1
+  AND c.ITEM='LoginType'
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="login_type"><![CDATA[ AND c.CODE = #login_type# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="payed"><![CDATA[ AND a.payed = #payed# ]]></isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+GROUP BY c.CODE, c.TEXT
+ORDER BY c.CODE
+			]]>
+		</select>
+
+	</statements>
+</sqlMap>

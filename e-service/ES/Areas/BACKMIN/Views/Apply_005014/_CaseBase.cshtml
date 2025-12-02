@@ -1,0 +1,232 @@
+﻿@model ES.Areas.BACKMIN.Models.Apply_005014ViewModel
+@using ES.Areas.BACKMIN.Models
+@using ES.Models
+@using System.Linq.Expressions
+
+@{
+    ViewBag.Title = "_CaseBase";
+    // 前台 申辦表件填寫
+
+    ShareCodeListModel options = new ShareCodeListModel();
+    DateTime now = DateTime.Now;
+}
+
+<div id="_casebase">
+    <div class="form-group">
+        <label class="main-label col-sm-2" for="">申辦項目</label>
+        <div class="col-sm-4"><input type="text" class="form-control" value="貨品進口專案申請"></div>
+    </div>
+    <div class="form-group">
+        <label class="main-label col-sm-2" for="">申辦日期</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-normal" value="@Model.Apply.APP_TIME.Value.ToString("yyyy/MM/dd")" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="main-label col-sm-2" for="">案件編號</label>
+        <div class="col-sm-4"><input type="text" class="form-control" value="@Model.Apply.APP_ID"></div>
+        @Html.HiddenFor(x => x.Apply.APP_ID)
+    </div>
+    <div class="form-group">
+        <label class="main-label col-sm-2" for="">系統狀態</label>
+        <div class="col-sm-10">
+            <div class="form-control-static">@CaseStatus()</div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="main-label col-sm-2" for="">公司名稱</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(x => x.Apply.NAME, new { @class = "form-control", placeholder = "" })
+            @Html.HiddenFor(x => x.Apply.CHR_NAME)
+        </div>
+        <label class="main-label col-sm-2" for="">統一編號</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(x => x.Apply.IDN, new { @class = "form-control", placeholder = "" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="main-label col-sm-2" for="">承辦人姓名</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(x => x.Apply.CNT_NAME, new { @class = "form-normal", placeholder = "" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="main-label col-sm-2" for="">連絡電話</label>
+        <div class="col-sm-10">
+            <span>(</span>
+            @Html.TextBoxFor(x => x.CNT_TEL_Zip, new { @class = "form-10 form-normal" })
+            <span>)</span>
+            @Html.TextBoxFor(x => x.CNT_TEL_Phone, new { @class = "form-normal" })
+            <span>#</span>
+            @Html.TextBoxFor(x => x.CNT_TEL_Num, new { @class = "form-10 form-normal" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="main-label col-sm-2" for="">行動電話</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(x => x.Apply.MOBILE, new { @class = "form-normal", placeholder = "" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="main-label col-sm-2" for="">E-MAIL</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(x => x.EMAIL_1, new { @class = "form-normal" })
+            @Html.DropDownListFor(x => x.EMAIL_2, options.GetMailDomainList1, new { @class = "form-normal" })
+            @Html.TextBoxFor(x => x.EMAIL_3, new { @class = "form-normal" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="main-label col-sm-2" for="">地址</label>
+        <div class="col-sm-10">
+            <div class="form-inline">
+                @Html.AddrForTurbo(
+                    m => m.Apply.ADDR_ZIP,
+                    m => m.Apply.ADDR_ZIP_ADDR,
+                    m => m.Apply.ADDR_ZIP_DETAIL, false, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        @CreateField(
+            "生產國別",
+            Html.DropDownListFor(x => x.Detail.PRODUCTION_COUNTRY, options.CountryList, new { @class = "form-control" }),
+            Html.TextBoxFor(x => x.Detail.PRODUCTION_COUNTRY_E, new { @class = "errata-msg form-control", placeholder = "補件備註" }, false))
+
+        @CreateField(
+            "賣方國家",
+            Html.DropDownListFor(x => x.Detail.SELL_COUNTRY, options.CountryList, new { @class = "form-control" }),
+            Html.TextBoxFor(x => x.Detail.SELL_COUNTRY_E, new { @class = "errata-msg form-control", placeholder = "補件備註" }, false))
+    </div>
+    <div class="form-group">
+        @CreateField(
+            "起運國家",
+            Html.DropDownListFor(x => x.Detail.TRANSFER_COUNTRY, options.CountryList, new { @class = "form-control" }),
+            Html.TextBoxFor(x => x.Detail.TRANSFER_COUNTRY_E, new { @class = "errata-msg form-control", placeholder = "補件備註" }, false))
+    </div>
+    <div class="form-group">
+        <label class="main-label col-sm-2" for="">
+            <input type="checkbox" id="remarkCheck" /> 備註1 Remarks
+        </label>
+        <div class="col-sm-10">
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.CheckBoxFor(x => x.Detail.Remark.checkboxR1, new { @class = "form-normal", @onchange = "remark1Changed()" })
+                    1、申請H01免查驗(報單影本，報單號碼：
+                </label>
+                @Html.TextBoxFor(x => x.Detail.Remark.REMARK1_ITEM1_COMMENT, new { @class = "form-normal", @placeholder = "請輸入報單號碼" })
+                <span>)</span><br>
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(x => x.Detail.Remark.REMARK1_ITEM2, "1", new { @class = "form-normal", @onchange = "remark1Changed()" })中藥用
+                </label>
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(x => x.Detail.Remark.REMARK1_ITEM2, "2", new { @class = "form-normal", @onchange = "remark1Changed()" })非中藥材用途:
+                </label>
+                @Html.TextBoxFor(x => x.Detail.Remark.REMARK1_ITEM2_COMMENT, new { @class = "form-normal", @placeholder = "請輸入非中藥材用途" })
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="main-label col-sm-2">@*<input type="checkbox" v-on:change="toggle($event, 'REMARK2_E')" />*@ 備註2 Remarks</label>
+        <div class="col-sm-10" style="margin-top:10px">
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.CheckBoxFor(x => x.Detail.Remark.checkboxR2, new { @class = "form-normal" })
+                    2、自用原料藥：(1)藥品許可證影本(2)原料之檢驗規格、方法、檢驗成績書(載明批號、檢驗日期及認定人員之簽名)
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="main-label col-sm-2">@*<input type="checkbox" v-on:change="toggle($event, 'REMARK3_E')" />*@備註3 Remarks</label>
+        <div class="col-sm-10" style="margin-top:10px">
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.CheckBoxFor(x => x.Detail.Remark.checkboxR3, new { @class = "form-normal", @onchange = "remark3Changed()" })
+                    3、非中藥用途貨品進口：
+                </label>
+            </div>
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.RadioButtonFor(x => x.Detail.Remark.REMARK3_2, "1", new { @class = "form-normal", @onchange = "remark3Changed()" })食品:
+                </label>
+                @Html.TextBoxFor(x => x.Detail.Remark.REMARK3_2_COMMENT, new { @class = "form-normal", @placeholder = "請輸入用途" })
+            </div>
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.RadioButtonFor(x => x.Detail.Remark.REMARK3_2, "2", new { @class = "form-normal", @onchange = "remark3Changed()" })研發:
+                </label>
+                @Html.TextBoxFor(x => x.Detail.Remark.REMARK3_3_COMMENT, new { @class = "form-normal", @placeholder = "請輸入用途" })
+            </div>
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.RadioButtonFor(x => x.Detail.Remark.REMARK3_2, "3", new { @class = "form-normal", @onchange = "remark3Changed()" })試製:
+                </label>
+                @Html.TextBoxFor(x => x.Detail.Remark.REMARK3_4_COMMENT, new { @class = "form-normal", @placeholder = "請輸入用途" })
+            </div>
+            <div class="col-sm-12">
+                <label style="font-weight: normal">
+                    @Html.RadioButtonFor(x => x.Detail.Remark.REMARK3_2, "4", new { @class = "form-normal", @onchange = "remark3Changed()" })其他:
+                </label>
+                @Html.TextBoxFor(x => x.Detail.Remark.REMARK3_5_COMMENT, new { @class = "form-normal", @placeholder = "請輸入用途" })
+            </div>
+            @Html.TextBoxFor(x => x.Detail.Remark.REMARK1_E, new { @class = "form-control  errata-msg", @placeholder = "補件備註" })
+        </div>
+    </div>
+</div>
+
+@helper CreateField(string name, MvcHtmlString mainField, MvcHtmlString errataField)
+{
+string guid = Guid.NewGuid().ToString();
+    <label class="main-label col-sm-2">
+        <input type="checkbox" onchange="toggle(this, '@guid')" /> @name
+    </label>
+    <div class="col-sm-4" id="@guid">
+        @mainField
+        @errataField
+    </div>
+}
+
+<script>
+    function toggle(e, guid) {
+        var sel = $(e).prop('checked');
+        if (sel) {
+            $('#' + guid).find('.errata-msg').show();
+        } else {
+            $('#' + guid).find('.errata-msg').hide();
+        }
+    }
+    $(function () {
+        $('#_casebase .errata-msg').hide();
+        // 備註的checkbox
+        $('#remarkCheck').change(function () {
+            if (this.checked) {
+                $("#Detail_Remark_REMARK1_E").show();
+            } else {
+                $("#Detail_Remark_REMARK1_E").hide();
+            }
+        })
+    })
+</script>
+
+@helper CaseStatus()
+{
+switch (Model.Apply.FLOW_CD)
+{
+    case "1":
+            <span>收件</span>
+        break;
+    case "2":
+            <span>通知補件</span>
+        break;
+    case "3":
+            <span>補件收件</span>
+        break;
+    case "10":
+            <span>處理中</span>
+        break;
+    case "20":
+            <span>收件不收案</span>
+        break;
+}
+}

@@ -1,0 +1,106 @@
+﻿@model ES.Areas.Admin.Models.MemberQueryModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "管理帳號列表";
+    ViewBag.FunctionTitle = "管理帳號列表";
+
+    ViewBag.Script = @"
+function doQuery(page) {
+$('#ActionType').val('Q');
+}
+function doResetPwd(id) {
+var r = confirm('確定要重設[' + id + ']的密碼嗎？');
+if (r == true) {
+$('#ActionType').val('R');
+$('#ActionId').val(id);
+$('#ActionForm').submit();
+}
+}
+function doReset() {
+$('#QueryType').prop('selectedIndex', 0);
+$('#QueryId').val('');
+}
+";
+}
+<script type="text/javascript">
+
+
+</script>
+
+@using (Html.BeginForm("Reset", "Account", FormMethod.Post, new { id = "ActionForm" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 帳號管理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue">
+            <div class="form-group clearfix">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QueryType)</label>
+                <div class="col-sm-4">
+                    @Html.DropDownListFor(m => m.QueryType, (List<SelectListItem>)@ViewBag.QueryTypeList, new { @class = "form-control" })
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QueryId)</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.QueryId, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.QueryId)
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.ActionType)
+                @Html.HiddenFor(m => m.ActionId)
+                <button type="submit" class="btn btn-blue" onclick="doQuery('1')"><i class="fas fa-search space-right"></i>查詢</button>
+                <a href="#" class="btn btn-gray" onclick="doReset()">重填</a>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+        @if (ViewBag.List != null)
+        {
+            <h2 class="second-title">查詢結果</h2>
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th width="5%">編輯</th>
+                            <th width="5%">項次</th>
+                            <th width="15%">身份證字號／統一編號</th>
+                            <th width="15%">帳號</th>
+                            <th width="25%">電子郵件</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.List.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="5" style="text-align: center;">查無資料</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (var i = 0; i < ViewBag.List.Count; i++)
+                            {
+                                ES.Areas.Admin.Models.MemberBaseModel item = ViewBag.List[i];
+                                <tr>
+                                    <td>
+                                        <div align="center">
+                                            <a href="#" class="btn btn-blue" onclick="doResetPwd('@item.Account');">重設密碼</a>
+                                        </div>
+                                    </td>
+                                    <td><div align="center">@(i + 1)</div></td>
+                                    <td><div align="center">@item.Identity</div></td>
+                                    <td><div align="center">@item.Account</div></td>
+                                    <td><div align="center">@item.Mail</div></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}

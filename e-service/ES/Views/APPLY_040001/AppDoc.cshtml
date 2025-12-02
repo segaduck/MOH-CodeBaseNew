@@ -1,0 +1,322 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_040001AppDocModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+    ViewBag.Title = "衛生福利部訴願案件";
+}
+@using (Html.BeginForm("Apply", "Apply_040001", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.APP_ID)
+    <div class="container">
+        <div class="col-sm-12">
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@ViewBag.Title</a></div>
+            <div class="clearfix"></div>
+            <div id="form" class="tab-pane fade active in">
+                <div class="form-set">
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                    @*訴願人*@
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.NAME)</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.NAME, new { @class = "form-normal", @readonly = true })
+                        </div>
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.BIRTHDAY_STR)</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.BIRTHDAY_STR, new { @class = "form-normal", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.IDN)</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.IDN, new { @class = "form-normal", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.EMAIL)</label>
+                        <div class="col-sm-10">
+                            @Html.EmailForTurbo(m => m.EMAIL, IsReadOnly: true)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.H_TEL)</label>
+                        <div class="col-sm-10">
+                            @Html.TelForTurbo(m => m.H_TEL, IsReadOnly: true)
+                            <span>連絡電話、行動電話請擇一填寫</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.MOBILE)</label>
+                        <div class="col-sm-10">
+                            @Html.TextBoxFor(m => m.MOBILE, new { @class = "form-normal", MaxLength = 10, @readonly = "readonly" })
+                            <span>連絡電話、行動電話請擇一填寫</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.C_ZIPCODE)</label>
+                        <div class="col-sm-10 form-inline">
+                            @Html.TextBoxFor(m => m.C_ZIPCODE, new { @id = "C_ZIPCODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = "readonly" })
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.C_ZIPCODE_TEXT, new { @id = "C_ZIPCODE_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                @*<span class="input-group-btn">
+                                    <button type="button" class="btn btn-info" onclick="doACC_ADDRSelect('1')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </span>*@
+                            </div>
+                            @Html.TextBoxFor(m => m.C_ADDR, new { @class = "form-normal form-50", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    @*代表人*@
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CHR_NAME)</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.CHR_NAME, new { @class = "form-normal", @readonly = "readonly" })
+                        </div>
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CHR_BIRTH_STR)</label>
+                        <div class="col-sm-4">
+                            @Html.DatePickerTWFor(m => m.CHR_BIRTH_STR, new { @class = "form-normal", @readonly = "readonly" }, isReadOnly: true)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CHR_IDN)</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.CHR_IDN, new { @class = "form-normal", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CHR_TEL)</label>
+                        <div class="col-sm-10">
+                            @Html.TelForTurbo(m => m.CHR_TEL, IsReadOnly: true)
+                            <span>連絡電話、行動電話請擇一填寫</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CHR_MOBILE)</label>
+                        <div class="col-sm-10">
+                            @Html.TextBoxFor(m => m.CHR_MOBILE, new { @class = "form-normal", MaxLength = 10, @readonly = "readonly" })
+                            <span>連絡電話、行動電話請擇一填寫</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CHR_ZIPCODE)</label>
+                        <div class="col-sm-10 form-inline">
+                            @Html.TextBoxFor(m => m.CHR_ZIPCODE, new { @id = "CHR_ZIPCODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = "readonly" })
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.CHR_ZIPCODE_TEXT, new { @id = "CHR_ZIPCODE_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                @*<span class="input-group-btn">
+                                    <button type="button" class="btn btn-info" onclick="doACC_ADDRSelect('2')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </span>*@
+                            </div>
+                            @Html.TextBoxFor(m => m.CHR_ADDR, new { @class = "form-normal form-50", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    @*代理人*@
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_NAME)</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.R_NAME, new { @class = "form-normal", @readonly = "readonly" })
+                        </div>
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_BIRTH_STR)</label>
+                        <div class="col-sm-4">
+                            @Html.DatePickerTWFor(m => m.R_BIRTH_STR, new { @class = "form-normal", @readonly = "readonly" }, isReadOnly: true)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_IDN)</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.R_IDN, new { @class = "form-normal", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_TEL)</label>
+                        <div class="col-sm-10">
+                            @Html.TelForTurbo(m => m.R_TEL, IsReadOnly: true)
+                            <span>連絡電話、行動電話請擇一填寫</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_MOBILE)</label>
+                        <div class="col-sm-10">
+                            @Html.TextBoxFor(m => m.R_MOBILE, new { @class = "form-normal", MaxLength = 10, @readonly = "readonly" })
+                            <span>連絡電話、行動電話請擇一填寫</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.R_ZIPCODE)</label>
+                        <div class="col-sm-10 form-inline">
+                            @Html.TextBoxFor(m => m.R_ZIPCODE, new { @id = "R_ZIPCODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = "readonly" })
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.R_ZIPCODE_TEXT, new { @id = "R_ZIPCODE_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                @*<span class="input-group-btn">
+                                    <button type="button" class="btn btn-info" onclick="doACC_ADDRSelect('3')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </span>*@
+                            </div>
+                            @Html.TextBoxFor(m => m.R_ADDR, new { @class = "form-normal form-50", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <!--申請說明-->
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.ORG_NAME)</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.ORG_NAME, new { @maxlength = "60", @size = "36", @class = "form-normal", @readonly = "readonly" })
+                        </div>
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.ORG_DATE)</label>
+                        <div class="col-sm-4">
+                            @Html.DatePickerTWFor(m => m.ORG_DATE, new { @class = "form-normal", @readonly = "readonly" }, isReadOnly: true)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2"><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.ORG_MEMO)</label>
+                        <div class="col-sm-10">
+                            @Html.TextAreaFor(m => m.ORG_MEMO, new { @class = "form-control", @maxlength = "300", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2"><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.ORG_FACT)</label>
+                        <div class="col-sm-10">
+                            @Html.TextAreaFor(m => m.ORG_FACT, new { @class = "form-control", @maxlength = "300", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <h2 class="second-title">佐證文件檔案上傳</h2>
+                    @{
+                        if (Model.SRVLIST != null)
+                        {
+                            int index = 0;
+                            foreach (var item in Model.SRVLIST)
+                            {
+                                <div id="RowTable">
+                                    <div id="row1" data-group="Row">
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">序號</label>
+                                            <div class="col-sm-1">
+                                                <p class="form-control-static">@(index + 1)</p>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                @Html.ImageHoverForTurbo(x => x.SRVLIST[index].FILE_1, item.FILE_1_TEXT, index)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                index++;
+                            }
+                        }
+                    }
+                    <div class="btn-bar text-center">
+                        <button type="button" class="btn btn-clear" onclick="doBack()">返回</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        // 訴願人地址
+        $('#C_ZIPCODE').on('blur', doACC_ADDRNameGet1); doACC_ADDRNameGet1();
+        // 代表人地址
+        $('#CHR_ZIPCODE').on('blue', doACC_ADDRNameGet2); doACC_ADDRNameGet2();
+        // 代理人地址
+        $('#R_ZIPCODE').on('blue', doACC_ADDRNameGet3); doACC_ADDRNameGet3();
+    });
+
+    // 訴願人地址
+    function loadDialogACC_ADDRCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    console.log(data);
+                    console.log(resp);
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doACC_ADDRSelect(casetype) {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    if (casetype == "1") {
+                        //訴願人
+                        $('#C_ZIPCODE').val(retData.Id);
+                        $('#C_ZIPCODE_TEXT').val(retData.Name);
+                    } else if (casetype == "2") {
+                        //代表人
+                        $('#CHR_ZIPCODE').val(retData.Id);
+                        $('#CHR_ZIPCODE_TEXT').val(retData.Name);
+                    } else if (casetype == "3") {
+                        //代理人
+                        $('#R_ZIPCODE').val(retData.Id);
+                        $('#R_ZIPCODE_TEXT').val(retData.Name);
+                    }
+                }
+            });
+    }
+
+    function doACC_ADDRNameGet1() {
+        var code = $('#C_ZIPCODE');
+        var code_text = $('#C_ZIPCODE_TEXT');
+        var data = null;
+        data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#C_ZIPCODE_TEXT'),
+            'add': $('#C_ZIPCODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            loadDialogACC_ADDRCodeMapName(data);
+        }
+    }
+
+    function doACC_ADDRNameGet2() {
+        var code = $('#CHR_ZIPCODE');
+        var code_text = $('#CHR_ZIPCODE_TEXT');
+        var data = null;
+        data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#CHR_ZIPCODE_TEXT'),
+            'add': $('#CHR_ZIPCODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            loadDialogACC_ADDRCodeMapName(data);
+        }
+    }
+
+    function doACC_ADDRNameGet3() {
+        var code = $('#R_ZIPCODE');
+        var code_text = $('#R_ZIPCODE_TEXT');
+        var data = null;
+        data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#R_ZIPCODE_TEXT'),
+            'add': $('#R_ZIPCODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            loadDialogACC_ADDRCodeMapName(data);
+        }
+    }
+
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index","History")';
+    }
+</script>

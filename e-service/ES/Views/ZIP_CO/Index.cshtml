@@ -1,0 +1,93 @@
+﻿@using ES.Models.Share;
+@model ZIP_COFormModel
+
+@{
+    Layout = "~/Views/Shared/_LayoutForShare.cshtml";
+}
+
+@using (Html.BeginForm("Index", "ZIP_CO", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-inline" }))
+{
+    @Html.HiddenFor(m => m.NowPage)
+    <div class="container-fluid">
+        <div class="col-sm-12">
+            <div class="index-note">
+                <!-- news search bar -->
+                <div class="row searchBar">
+                    <div class="mask-search">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="col-sm-4 form-group form-group-n">
+                        <label for="title"><i class="fas fa-search"></i> 郵遞區號</label>
+                        @Html.TextBoxFor(m => m.ZIP_CO, new { @class = "form-control", placeholder = "請輸入郵遞區號", size = "20", maxlength = "32" })
+                    </div>
+                    <div class="col-sm-4 form-group form-group-n">
+                        <label for="title"> 縣市名稱</label>
+                        @Html.TextBoxFor(m => m.CITYNM, new { @class = "form-control", placeholder = "請輸入縣市名稱", size = "20", maxlength = "32" })
+                    </div>
+                    <div class="col-sm-4 form-group form-group-n">
+                        <label for="title"> 鄉鎮市區名稱</label>
+                        @Html.TextBoxFor(m => m.TOWNNM, new { @class = "form-control", placeholder = "請輸入鄉鎮市區名稱", size = "20", maxlength = "32" })
+                    </div>
+                    <div class="col-sm-12 form-group form-group-n">
+                        <label for="title"> 街道名稱</label>
+                        @Html.TextBoxFor(m => m.ROADNM, new { @class="form-control", placeholder="請輸入街道名稱", size="60", maxlength="32"})
+                    </div>
+                    @* <div class="col-sm-12 form-group">
+                      &nbsp;
+                    </div> *@
+                    <div class="col-sm-12 up-pager" style="text-align:center; background-color:transparent;">
+                        <button type="submit" class="btn btn-search modal-btn-search">搜尋</button>
+                    </div>
+                </div>
+             
+                <div class="up-pager">
+                    @Html.ShowGridPage(Model.NowPage, Model.TotalPage, Model.TotalCount)
+                </div>
+                <div class="table-responsive n-table-rwd">
+                    <table style="width:100%" border="0" cellspacing="0" cellpadding="0" class="table-download table">
+                        <thead>
+                            <tr>
+                                <th class="choose"></th>
+                                <th align="center">郵遞區號</th>
+                                <th align="center">郵遞區號名稱</th>
+                                <th align="center">街道名稱</th>
+                                <th align="center">說明</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rows">
+                            @Html.Partial("_GridRows")
+                        </tbody>
+                    </table>
+                </div>
+                <div class="up-pager">
+                    @Html.ShowGridPage(Model.NowPage, Model.TotalPage, Model.TotalCount)
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    // 分頁
+    function doQuery(page) {
+        $('#NowPage').val(page);
+        $('#main_form').prop("action", "@Url.Action("Index", "ZIP_CO")");
+        $('#main_form').submit();
+    }
+
+    /// 查詢
+    function doSearch() {
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Index")').submit();
+    }
+
+    /// 選
+    function doSelect(id, name) {
+
+        var data = {
+            "Id": id,
+            "Name": name,
+        }
+        parent.closeWindow(data);
+    }
+</script>

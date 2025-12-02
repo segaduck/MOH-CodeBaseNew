@@ -1,0 +1,105 @@
+﻿@using ES.Models.ViewModels;
+@model Apply_011003FormModel
+@{
+    Layout = null;
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.SRV_NAME = "社會工作實務經驗年資審查";
+
+
+    string s_msg_T1A = @"
+社會工作實務經驗年資審查證明僅限本人申請，並僅供向考選部申請社會工作師考試部分科目免試使用。請您仔細閱讀以下說明，並備齊相關文件後提出申請。
+
+＊僅限線上申請，其中服務證明正本必須提供彩色檔。相關申請規定請參考社會救助及社工司【最新消息】公告本部本年度受理「社會工作實務經驗年資審查」申請日期、方式及相關事項（網址：https://dep.mohw.gov.tw/DOSAASW/lp-530-103.html）。
+
+＊線上申請，您需要準備的必要文件：
+1.身分證正面影本(電子檔，PDF或JPG皆可)
+2.身分證反面影本(電子檔，PDF或JPG皆可)
+3.最近一年內半身脫帽照片(電子檔，PDF或JPG皆可。生活照片不合規定)。
+4.學歷證明擇一：
+(1)考選部公告「102 年起專技人員社會工作師考試應考資格第5條審議通過並公告名單」學校畢業證書/學歷證明影本(電子檔，PDF或JPG皆可。執國外學歷者，應繳驗經我國駐外使領館或外交部指定機關(構)認證之畢業證書及中文譯本)。
+(2)報考專門職業及技術人員高等考試社會工作師考試之考試通知書影本。
+(3)經教育部承認之國外專科以上社會工作相關科、系、組、所、學位學程畢業證書影本。
+5.服務證明正本彩色檔(電子檔，PDF或JPG皆可，格式可下載)：應載明姓名、出生年月日、國民身分證統一編號、工作職稱、工作性質與內容及服務起訖年月日，並須加蓋機關(構)、團體印信及負責人簽名章。負責人簽名章，得以勞工保險被保險人投保明細表影本替代之。
+6.(改過姓名者需附)戶籍謄本或戶口名簿(電子檔，PDF或JPG皆可)
+
+【服務證明為團體或私立機構開具者，以下為必要文件】
+7.勞工保險被保險人投保明細表影本(電子檔，PDF或JPG皆可)：請向勞工保險局或暨所屬各地辦事處申請。檢附之服務證明文件係由公立機關(構)開立者免附。
+8.服務單位立案或法人登記證書影本(電子檔，PDF或JPG皆可)，檢附之服務證明文件係由公立機關(構)開立者免附。
+9.服務單位章程影本(電子檔，PDF或JPG皆可)，檢附之服務證明文件係由公立機關(構)開立者免附。
+
+【申請種類為專門職業及技術人員高等考試社會工作師考試規則第六條第二款者，必要文件】
+10.外國社會工作師或相當資格證明文件(電子檔，PDF或JPG皆可)：繳驗外國社會工作師資格證書申請社會工作實務經驗證明者，應附繳外交部派駐該國使領館、辦事處或外交部授權機構驗證之中文譯本。
+
+【申請種類為專門職業及技術人員高等考試社會工作師考試規則第六條第三款者，必要文件】
+11.教學證明文件(電子檔，PDF或JPG皆可)：應檢附曾任公立或立案之私立專科以上學校教學之證明文件。
+
+【其他因個別狀況需自行列舉者】
+12.服務單位認可有案證明文件(電子檔，PDF或JPG皆可)
+13.其他（申請人自行列舉）(電子檔，PDF或JPG皆可)
+
+＊您若提出文件不符或有欠缺，應自本部通知之當日起5日內補正。
+
+本人已閱讀以上資訊，本次申請資料均由本人提供，所填資料及證明文件均確實無訛。如有偽造、變造或記載不實者，願自負法律責任。申請後，如因資料不全致無法審理，由本人自行負責。
+";
+    string s_msg_T1 = string.Format(s_msg_T1A);
+}
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@Html.Raw(ViewBag.SRV_NAME)</a></div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            <ul>
+                <li id="Apply_Tab" class="active">填寫申報表件並上傳檔案</li>
+                <li id="PreView_Tab">預覽申辦表件</li>
+                <li id="Pay_Tab">繳費</li>
+                <li>完成申報</li>
+            </ul>
+        </div>
+
+        <div class="form-set">
+            <h1 class="form-title title-bg-y">@Html.Raw(ViewBag.SRV_NAME)說明事項</h1>
+            @*class="form-group"*@
+            <div class="form-group service-main index-note">
+                <div class="tab-content">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <p class="member-note">
+                                建議您仔細閱讀以下事項，備齊相關文件再申請喔。<br />
+                            </p>
+                            <textarea class="form-control" rows="15">@Html.Raw(s_msg_T1)</textarea>
+                            <p class="member-note">本人已閱讀以上條款，本次申請資料均由本人提供，資料屬實並無違反相關法令，如填寫假資料或有違規情事，願接受相關罰則。</p>
+                            <p class="member-note">如果您已經了解並接受，請按「同意」，進行下一個步驟填寫資料</p>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="btn-bar text-center">
+                        @if (ViewBag.CanApply == "Y")
+                        {
+                            <button type="button" class="btn btn-save" onclick="doCheck()">同意</button>
+                        }
+                        <button type="button" class="btn btn-clear" onclick="doBack()">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<script>
+
+    //同意
+    function doCheck() {
+        var agree1 = { "agree": 1 }
+        location.href = '@Url.Action("APPLY", "APPLY_011003")?' + $.param(agree1);
+    }
+
+    // 取消
+    function doBack() {
+        location.href = '@Url.Action("Index", "Service")';
+    }
+
+</script>

@@ -1,0 +1,128 @@
+﻿@model ES.Areas.Admin.Models.LoginModel
+@{
+    ViewBag.Title = "登入";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title - 衛生福利部線上申辦維護系統</title>
+    @Styles.Render("~/Content/themes/redmond/css")
+    @Styles.Render("~/Content/login.css")
+    @Styles.Render("~/style/base.css")
+    @Styles.Render("~/style/bootstrap.css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryval")
+    <style id="antiClickjack" type="text/css">
+        html { display: none; }
+        body {
+            display: none !important;
+            background-color: #ffffff;
+        }
+    </style>
+    <script type="text/javascript">
+        //解決不支援 X-Frame-Options設定，需額外判斷
+        //if (top != self) { top.location = self.location; }
+        if (self === top || self == top) {
+            var antiClickjack = document.getElementById("antiClickjack");
+            if (antiClickjack) { antiClickjack.parentNode.removeChild(antiClickjack); }
+            document.documentElement.style.display = 'block';
+        }
+        else { top.location = self.location; }
+        if (parent.document.frames != undefined && parent.document.frames.length != 0) {
+            top.location.replace(self.location);
+        }
+    </script>
+    <script src="@Url.Content("/Scripts/public.js")" type="text/javascript"></script>
+    <script language="javascript" type="text/javascript">
+        $(document).ready(function () {
+            reloadValidCode();
+        });
+        function reloadValidCode() {
+            if ($('#imgChgNum1').length) { blockUI(); } else { unblockUI(); }
+            $('#imgChgNum1').attr("src", '@Url.Action("GetValidateCode", "Login")' + "?rand=" + new Date().getMilliseconds());
+        }
+        $(function () {
+            $('#imgChgNum1').on("click", function (e) {
+                reloadValidCode();
+            });
+            $('#imgChgNum2').on("click", function (e) {
+                reloadValidCode();
+            });
+            $('#imgChgNum1').on("load", function () {
+                unblockUI();
+            });
+            $('#imgChgNum2').on("load", function () {
+                unblockUI();
+            });
+            //$('[data-toggle="tooltip"]').tooltip()
+        });
+
+        function showMessage() {
+            var message = "@Html.Raw(@ViewBag.tempMessage)";
+
+            if (message != "") {
+                jAlert(message);
+            }
+        }
+        @Html.Raw(@ViewBag.Script)
+    </script>
+</head>
+<body onload="showMessage();">
+    <center>
+        <div class="dMain">
+            <div class="dHeader">
+                <div class="dHeaderLogo"></div>
+            </div>
+            <div>
+                <center>
+                    @using (Html.BeginForm("Index", "Login", new { ReturnUrl = Request.QueryString["ReturnUrl"] }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        <table class="formTable1">
+                            <tr>
+                                <th style="width: 25%;"><label for="Account">帳號</label></th>
+                                <td>
+                                    @Html.TextBoxFor(m => m.Account, new { style = "width: 400px;", maxlength = "20" })
+                                    <span class="formErrorMessage">@Html.ValidationMessageFor(m => m.Account)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label for="Password">密碼</label></th>
+                                <td>
+                                    @Html.PasswordFor(m => m.Password, new { style = "width: 400px;;", maxlength = "20" })
+                                    <span class="formErrorMessage">@Html.ValidationMessageFor(m => m.Password)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><label for="code">驗證碼</label></th>
+                                <td>
+                                    @Html.TextBoxFor(m => m.ValidateCode, new { @style = "width: 150px;", @placeholder = "請輸入驗證碼", maxlength = "10" })
+                                    <img src="@Url.Action("GetValidateCode", "Login")" id="imgChgNum1" alt="產生新驗證碼" title="產生新驗證碼" />
+                                    <a href="#" class="btn" id="imgChgNum2"><i class="fas fa-sync-alt"></i></a>
+                                    @*<span style="color:red">點擊圖片可更換驗證碼</span>*@
+                                    <noscript> 不支援javascript時，請按鍵盤上的F5鍵以重新產生驗證碼。 </noscript>
+                                </td>
+                            </tr>
+                        </table>
+                            <div class="formButtomBar">
+                                <input type="submit" value="登入" />
+                                <input type="reset" value="重填" />
+                            </div>
+                    }
+                </center>
+            </div>
+            <div class="dFooter2">
+                <div>衛生福利部版權所有 Ministry of Health and Welfare, Exective Yuan R.O.C. (Taiwan) All rights reserved.</div>
+            </div>
+        </div>
+    </center>
+</body>
+</html>
+
+

@@ -1,0 +1,57 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_005003FormModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    //ShareCodeListModel dropdown = new ShareCodeListModel();
+    ViewBag.SRV_NAME = "WHO格式之產銷證明書(英文)";
+}
+
+@using (Html.BeginForm("Apply", "Apply_005003", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink">
+                <i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@Html.Raw(ViewBag.SRV_NAME)</a>
+            </div>
+            <div class="clearfix"></div>
+            @*li_apply/li_preview/li_pay/li_save*@
+            @*form0/form1/form2/form3*@
+            <div class="step_map">
+                <ul>
+                    <li id="form_tab" class="active">填寫申報表件並上傳檔案</li>
+                    <li id="form_tab1">預覽申辦表件</li>
+                    <li id="form_tab2">繳費</li>
+                    <li id="form_tab3">完成申報</li>
+                </ul>
+            </div>
+            <div class="tab-content" id="myTabContent">
+                <div id="form" class="tab-pane fade active in">@Html.Partial("Apply")</div>
+                <div id="form1" class="tab-pane fade">@Html.Partial("PreView1")</div>
+                <div id="form2" class="tab-pane fade">@Html.Partial("Pay")</div>
+                @*<div id="form3" class="tab-pane fade">@Html.Partial("Save")</div>*@
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        //$('#TAX_ORG_CITY_CODE').on('blur', doTAX_ORG_CITYNameGet);
+        //doTAX_ORG_CITYNameGet();
+        //$("#RADIOYN").val("N");
+        //PLChange();
+        //CalculationVal();
+    });
+
+    //2A.1藥品許可證字號 查詢按鈕
+    function search() {
+        alert("2A.1藥品許可證字號-查詢");//按鈕-test
+    }
+
+    //明細頁面返回
+    //function Detail_back() { }
+
+</script>

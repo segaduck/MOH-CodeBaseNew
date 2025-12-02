@@ -1,0 +1,130 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model ES.Areas.Admin.Models.StatisticsFileModel
+<link href="../../../../Content/Report/TableStyle.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Sdate').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#Fdate').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+    });
+
+    function showdetail(val1, val2, val3, val4) {
+        $('#SC_ID').val(val1);
+        $('#SNAME').val(val2);
+        $('#UNAME').val(val3);
+        $('#COUNTER').val(val4);
+        $('#ActionForm_Detail').submit();
+    }
+</script>
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "書表下載統計";
+    ViewBag.FunctionTitle = "書表下載統計";
+}
+@using (Html.BeginForm("StatisticsFile", "Report", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 統計分析 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">統計區間</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Sdate, new { @class = "form-normal" })&nbsp;&nbsp;至&nbsp;&nbsp;@Html.TextBoxFor(m => m.Fdate, new { @class = "form-normal" })
+                    @Html.ValidationMessageFor(m => m.Fdate)
+                </div>
+            </div>
+            <div class="btnbar">
+                <input type="submit" id="Button_1" value="書表下載統計" onclick="$('#Fdate').validate();$('#Fdate').valid()" class="btn btn-print" />
+            </div>
+        </div>
+    </div>
+}
+@using (Html.BeginForm("StatisticsFileDetail", "Report", FormMethod.Post, new { id = "ActionForm_Detail" }))
+{
+    <div class="col-sm-12 content">
+        @Html.HiddenFor(m => m.Sdate)
+        @Html.HiddenFor(m => m.Fdate)
+        <input id="SC_ID" name="SC_ID" type="hidden" value="" />
+        <input id="SNAME" name="SNAME" type="hidden" value="" />
+        <input id="UNAME" name="UNAME" type="hidden" value="" />
+        <input id="COUNTER" name="COUNTER" type="hidden" value="" />
+        @if (ViewBag.List != null)
+        {
+            <div class="clearfix"></div>
+            <h2 class="second-title">
+                統計區間：
+                @Html.Raw(this.Model.Sdate)
+                到
+                @Html.Raw(this.Model.Fdate)
+            </h2><span>請點選「分類」查看個別案件表格下載次數統計</span>
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th>項次</th>
+                            <th>分類</th>
+                            <th>處理機關</th>
+                            <th>總下載次數</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            List<Map> li = ViewBag.List;
+                            if (li.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="4" align="center">
+                                        此範圍無資料可統計
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                int i = 0;
+                                int count = 0;
+                                foreach (Map m in li)
+                                {
+                                    i++;
+                                    <tr>
+                                        <td align="center">
+                                            @i.
+                                        </td>
+                                        <td align="center">
+                                            <a href="#" onclick="showdetail('@m.GetString("SC_ID")','@m.GetString("SNAME")','@m.GetString("UNAME")','@m.GetString("COUNTER")'); return false;">
+                                                <span>@m.GetString("SNAME")</span>
+                                            </a>
+                                        </td>
+                                        <td align="center">
+                                            @m.GetString("UNAME")
+                                        </td>
+                                        <td align="right">
+                                            @m.GetString("COUNTER")
+                                        </td>
+                                    </tr>
+                                    count += int.Parse(m.GetString("COUNTER"));
+                                }
+                                i++;
+                                <tr>
+                                    <td align="center"></td>
+                                    <td align="center">
+                                        合計
+                                    </td>
+                                    <td align="center"></td>
+                                    <td align="right">
+                                        @count
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}

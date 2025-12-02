@@ -1,0 +1,77 @@
+﻿@{
+    Layout = null;
+}
+<div id="detail1">
+<div style="font-size: 1.2em; font-weight: bold; color: #0099FF;">
+    @ViewBag.Dict["NAME"]
+</div>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+        <thead>
+            <tr>
+                <th style="width: 50px;">動作</th>
+                <th width="50%">案件名稱</th>
+                <th>通知規則</th>
+                <th>通知次數</th>
+                <th>通知主管</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (ViewBag.List.Count == 0)
+            {
+                <tr>
+                    <td colspan="4" style="text-align: center;">查無資料</td>
+                </tr>
+            }
+            @foreach (Dictionary<string, object> item in ViewBag.List)
+            {
+                <tr>
+                    <td>
+                        @if (Convert.IsDBNull(item["SRV_RULE_ID"]))
+                        {
+                            <input class="btn btn-save" type="button" value="新增" onclick="document.location.href='@Url.Action("New", "ServiceRule", new { id = @item["SRV_ID"] })';" />
+                        }
+                        else
+                        {
+                            <input class="btn btn-save" type="button" value="修改" onclick="document.location.href='@Url.Action("Edit", "ServiceRule", new { id = @item["SRV_ID"] })';" />
+                            <input class="btn btn-warning" type="button" value="刪除" onclick="jConfirm('確定要刪除稽催設定嗎？', function(){document.location.href='@Url.Action("Delete", "ServiceRule", new { id = @item["SRV_ID"] + "," + @item["SC_ID"] })';});" />
+                        }
+                    </td>
+                    <td>@item["NAME"]</td>
+                    @if (Convert.IsDBNull(item["SRV_RULE_ID"]))
+                {
+                        <td colspan="3" style="color: #CCCCCC;">(使用預設稽催設定)</td>
+                    }
+                    else
+                    {
+                        <td>
+                            @if (item["RULE_A_MK"].Equals("Y"))
+                            {
+                                <span>未分文通知</span><br />
+                            }
+                            @if (item["RULE_B_MK"].Equals("Y"))
+                            {
+                                <span>未處理通知</span><br />
+                            }
+                            @if (item["RULE_C_MK"].Equals("Y"))
+                            {
+                                <span>已逾限通知</span><br />
+                            }
+                        </td>
+                        <td>@item["NOTIFY_COUNT"]</td>
+                        <td>
+                            @if (item["HEAD_MK"].Equals("Y"))
+                            {
+                                <img src="@Url.Action("Index", "Home", new { Area = "" }, null)Images/icon/tick-icone-7522-16.png" alt="是" title="是" />
+                            }
+                            else
+                            {
+                                <img src="@Url.Action("Index", "Home", new { Area = "" }, null)Images/icon/cross-icone-5804-16.png" alt="否" title="否" />
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+<br />
+</div>

@@ -1,0 +1,44 @@
+﻿@using System.Web.Razor.Parser
+@using ES.Models
+@model ES.Models.ViewModels.Apply_010001CheckModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink"><i class="fas fa-home"></i><a href="#">首頁</a> ／ <a href="#">申辦服務</a> ／ <a href="#">檔案應用申請</a></div>
+        <div class="clearfix"></div>
+        <!--form-->
+        <div class="form-set">
+            <h1 class="form-title title-bg-y">檔案應用申請</h1>
+            <div class="form-group service-main index-note">
+                <div class="tab-content">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            @if (Model.status == "Y")
+                            {
+                                <p class="form-control-static">您好：</p>
+                                <p class="form-control-static">已完成電子郵件回覆連結確認，將儘速辦理您的申請案件，謝謝。</p>
+                            }
+                            else
+                            {
+                                <p class="form-control-static">您好：</p>
+                                <p class="form-control-static">此連結已失效，請重新申請。</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-set">
+            <form class="form-horizontal">
+                <div class="form-group">
+
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</div>

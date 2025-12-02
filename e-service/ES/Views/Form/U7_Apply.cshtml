@@ -1,0 +1,94 @@
+﻿@{
+    ViewBag.Title = "線上申辦";
+    ViewBag.Script = @"
+        function changeDDL(value, subId, action) {
+            if(value == '') {
+                $('#'+subId).empty();
+                $('#'+subId).append($('<option></option>').val('').text('--請選擇--'));
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: '" + @Url.Action("GetCodeList", "AJAX") + @"/' + value,
+                    data: { Code: action },
+                    dataType: 'json',
+                    cache: false,
+                    async: false,
+                    success: function (res) {
+                        if (res.length > 0) {
+                            $('#'+subId).empty();
+                            $.each(res, function (i, item) {
+                                $('#'+subId).append($('<option></option>').val(item.Value).text(item.Text));
+                            });
+                        }
+                    }
+                });
+            }
+        }
+    ";
+}
+
+@section scripts {
+    <script src="@Url.Action("Index", "Home")Scripts/Form/base.js?time=@Html.Raw(DateTime.Now.ToString("HHmmss"))" type="text/javascript"></script>
+    @if (ViewBag.Dict["SRV_SCRIPT"].Length < 100)
+    {
+        <script src="@Url.Action("Index", "Home")Scripts/Form/@Html.Raw(ViewBag.Dict["SRV_ID"] + ".js?time=" + DateTime.Now.ToString("HHmmss"))" type="text/javascript"></script>
+    }
+    else
+    {
+        <script src="@Url.Action("FormJS", "Form")/@Html.Raw(ViewBag.Dict["SRV_ID"] + "?time=" + DateTime.Now.ToString("HHmmss"))" type="text/javascript"></script>
+    }
+}
+@using (Html.BeginForm("Preview", "Form", FormMethod.Post, new { id = "ActionForm", target = "Preview", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <br />
+    <div>．<span id="SRV_NAME">@ViewBag.Dict["NAME"]</span></div>
+    @ViewBag.Dict["SRV_DESC"]
+    <hr />
+    <div style="float: right; color: #AAAAAA;">
+    <span style="color: #B22222;">填表</span> <span>→ 預覽填表資料 → </span>
+    @if (!@ViewBag.Dict["PAY_POINT"].Equals("A"))
+    {
+        <span>選擇捐款方式 → </span>
+    }
+    <span>完成捐款手續</span>
+    </div>
+    if (ViewBag.List != null && ViewBag.List.Count > 0)
+    {
+    <div>
+        <br />
+        <table class="gridTable1">
+            <caption>最近信用卡線上捐款紀錄</caption>
+            <tr>
+                <th>申請編號 / 捐款項目</th>
+                <th style="width: 150px;">捐款說明</th>
+            </tr>
+            @foreach (Dictionary<string, object> item in ViewBag.List)
+            {
+                <tr>
+                    <td>
+                        <a href="@Url.Action("Show", "History", new { id = @item["APP_ID"] })"><u style="color: #FC5905;">@item["APP_ID"]</u></a><br />
+                        @item["SRV_NAME"]<br />
+                    </td>
+                    <td>
+                        捐款金額：@item["PAY_MONEY"]<br />
+                        捐款狀態：@(item["PAY_STATUS"].Equals("已繳費") ? "已捐款" : "捐款未確認")<br />
+                        捐款日期：@Html.GetDateTime(item["PAY_ACT_TIME"], "yyyy/MM/dd")<br />
+                    </td>
+                </tr>
+            }
+        </table>
+        <span style="color: Red;">提示：若捐款未確認，欲使用信用卡重新捐款，可點選「申請編號」>「信用卡重新捐款」即可，不需重新填寫捐款資料。</span>
+        <br /><br />
+    </div>
+    }
+    
+    
+    @Html.Action("ApplyMember1", "Form")
+    @Html.Action("ApplyForm1", "Form", new { id = @ViewBag.ServiceId })
+    <div class="formButtomBar">
+        @Html.Hidden("SRV_ID", (string)@ViewBag.Dict["SRV_ID"])
+        <input type="button" value="下一步" onclick="doSubmit();" />
+        <input type="button" value="返回" onclick="window.history.go(-1);" />
+    </div>
+}

@@ -1,0 +1,110 @@
+﻿@using ES.Commons
+@using ES.Services
+@using ES.Models
+@using ES.Models.ViewModels
+@using ES.Models.Entities
+@model ES.Models.GoodsDynamicGrid<APPLY_012001_APPFILModel>
+@{
+    ShareCodeListModel sc = new ShareCodeListModel();
+    var IsDisabled = Model.IsReadOnly ? "pointer-events:none;background:#DDDDDD" : "";
+}
+<div id="GoodsDynamicGird012001">
+    <h1 class="form-title  title-bg-y">
+        @Html.HiddenFor(m => m.IsNewOpen)
+        @Html.HiddenFor(m => m.IsReadOnly)
+        @Html.HiddenFor(m => m.IsDeleteOpen)
+        @Html.HiddenFor(m => m.SourceModelName)
+        申請檔案
+        @if (Model.IsNewOpen && !Model.IsReadOnly)
+        {
+            <button type="button" class="btn btn-save" id="btnAdd" onclick="addGoodRow()">新增</button>
+        }
+        <br />
+    </h1>
+    <div class="form-set">
+        @if (Model.GoodsList.ToCount() != 0)
+        {
+            for (int i = 0; i < Model.GoodsList.Count; i++)
+            {
+                var item = Model.GoodsList[i];
+                <div class="form-group form-inline">
+                    <label class="step-label col-sm-2" for=""><button type="button" id="btnDelte_1" class="btn btn-clear" onclick="deleteGoodRow(@(i))">刪除</button>序號</label>
+                    <div class="col-sm-10">
+                        <p id="SEQ_NO" class="form-control-static">@(i + 1)</p>
+                        @Html.HiddenFor(m => m.GoodsList[i].SEQ_NO)
+                    </div>
+                </div>
+                <div class="form-group form-inline">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>檔號或文號</label>
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(m => m.GoodsList[i].FILENUM, new { @class = "form-control", style = IsDisabled })
+                    </div>
+                </div>
+                <div class="form-group form-inline">
+                    <label class="step-label col-sm-2" for="">檔案名稱或內容要旨</label>
+                    <div class="col-sm-10">
+                        @Html.TextAreaFor(m => m.GoodsList[i].FILENAME, new { @class = "form-control", placeholder = "限填寫200字", cols = "80", rows = "3", style = IsDisabled })
+                    </div>
+                </div>
+                <div class="form-group form-inline">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>件數</label>
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(m => m.GoodsList[i].NUMCNT, new { @class = "form-control", style = IsDisabled })
+                    </div>
+                </div>
+                <div class="form-group form-inline">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請項目</label>
+                    <div class="col-sm-10" style="margin-top:10px">
+                        @Html.CheckBoxListFor(m => m.GoodsList[i].CHECKNO_ChekLst, sc.CHECKNO_checkbox_list, new { onchange = "doCHECKNOLstGetVal($(this))", style = IsDisabled })
+                        @Html.HiddenFor(m => m.GoodsList[i].CHECKNO_Lst)
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script>
+        $(document).ready(function () {
+        });
+
+        // 新增一列
+        function addGoodRow() {
+            var url = "@Url.Action("addGoodRow012001", "AJAX",new { area = "" })";
+            var parms = getDivDataJson("#GoodsDynamicGird012001");
+
+            ajaxLoadMore(url, parms , function (data) {
+                $("#GoodsDynamicGird012001").html(data);
+                $("#GoodsDynamicGird012001 :input").each(function (i, obj) {
+                    $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                    $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                })
+                $("#GoodsDynamicGird012001 input:checkbox").each(function (i, obj) {
+                    $("input:checkbox[name='" + obj.name + "']").attr("name", '@(Model.SourceModelNameFull)' + obj.name.replaceAll('@(Model.SourceModelNameFull)',''));
+                    $("input:checkbox[id='" + obj.id + "']").attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                })
+            });
+        }
+
+        // 刪除此列
+    function deleteGoodRow(idx) {
+            var url = "@Url.Action("deleteGoodRow012001", "AJAX",new { area = "" })";
+            var parms = getDivDataJson("#GoodsDynamicGird012001");
+            parms["idx"] = idx;
+
+            ajaxLoadMore(url, parms , function (data) {
+                 $("#GoodsDynamicGird012001").html(data);
+                 $("#GoodsDynamicGird012001 :input").each(function (i, obj) {
+                     $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                     $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                })
+                  $("#GoodsDynamicGird012001 input:checkbox").each(function (i, obj) {
+                    $("input:checkbox[name='" + obj.name + "']").attr("name", '@(Model.SourceModelNameFull)' + obj.name.replaceAll('@(Model.SourceModelNameFull)',''));
+                    $("input:checkbox[id='" + obj.id + "']").attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                })
+             });
+    }
+
+
+
+</script>

@@ -1,0 +1,71 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_001008FormModel
+
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<style>
+    .table-responsive {
+        overflow-x: inherit;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/utility.js"></script>@*20210108 fix 補加js 引用,修正進行信用卡刷卡時發生checkid function undefine 問題*@
+@using (Html.BeginForm("Apply", "Apply_001008", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">醫事人員或公共衛生師請領英文證明書
+</a></div>
+            <div class="clearfix"></div>
+            <div class="step_map">
+                <ul>
+                    <li id="apply_tab" class="active">填寫申報表件並上傳檔案</li>
+                    <li id="preview_tab">預覽申辦表件</li>
+                    <li id="pay_tab">繳費</li>
+                    <li id="save_tab">完成申報</li>
+                </ul>
+            </div>
+            <div class="tab-content" id="myTabContent">
+                <!--form-->
+                @*填寫申報表件並上傳檔案*@
+                <div id="ApplyForm" class="tab-pane fade active in">
+                    @Html.Partial("Apply")
+                </div>
+                @*預覽申辦表件*@
+                <div id="PreViewForm" class="tab-pane fade">
+
+                </div>
+                @*繳費*@
+                <div id="PayForm" class="tab-pane fade">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        //debugger;
+        var flowMode = '@Model.FlowMode';
+
+        //$('#apply_tab').removeClass('active');
+        //$('#preview_tab').removeClass('active');
+        //$('#pay_tab').removeClass('active');
+
+        //if (flowMode == "1") {
+        //    $('#apply').attr('class', 'active');
+        //} else if (flowMode == "2") {
+        //    $('#preview').attr('class', 'active');
+        //} else if (flowMode == "3") {
+        //    $('#pay').attr('class', 'active');
+        //}
+    });
+</script>
+

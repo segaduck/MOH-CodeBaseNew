@@ -1,0 +1,94 @@
+﻿@model ES.Areas.Admin.Models.ServiceBatchModel
+@{
+    Layout = null;
+
+    AjaxOptions ajaxOpts = new AjaxOptions
+    {
+        HttpMethod = "Post",
+        OnSuccess = "doServiceActionSuccess"
+    };
+    
+    System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+    sb.Append("<option value='ServiceHelp'>操作輔助說明管理</option>");
+    sb.Append("<option value='ServiceNotice'>申請須知管理</option>");
+    sb.Append("<option value='ServiceFile'>書表下載管理</option>");
+    sb.Append("<option value='ServiceAgreement'>同意書管理</option>");
+}
+<div id="detail1">
+<div style="font-size: 1.2em; font-weight: bold; color: #0099FF;">
+    @ViewBag.Dict["NAME"]
+</div>
+<input type="button" value="修改分類" onclick="doCategoryAction('E', @ViewBag.Dict["SC_ID"]);" class="btn btn-save"/>
+@if (ViewBag.Dict["LEVEL"] == 1)
+{
+<input type="button" value="新增下層分類" onclick="doCategoryAction('N', @ViewBag.Dict["SC_ID"]);" class="btn btn-save"/>
+}
+@if (ViewBag.Dict["CATE_COUNT"] == 0 && ViewBag.Dict["SRV_COUNT"] == 0)
+{
+<input type="button" value="刪除分類" onclick="doCategoryAction('D', @ViewBag.Dict["SC_ID"]);" class="btn btn-warning"/>
+}
+@using (Ajax.BeginForm("ServiceBatchUpdate", "Service", ajaxOpts, new { id = "ServiceForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Type)
+    @Html.HiddenFor(m => m.ServiceId)
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+        <thead>
+            <tr>
+                <th style="width: 20px; text-align: center;"><input type="checkbox" onclick="checkAll(this, 'actionId');" /></th>
+                <th style="width: 28px;">申辦</th>
+                <th style="width: 28px;">上線</th>
+                <th>案件名稱</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (ViewBag.List.Count == 0)
+            {
+                <tr>
+                    <td colspan="4" style="text-align: center;">查無資料</td>
+                </tr>
+            }
+            @foreach (Dictionary<string, object> item in ViewBag.List)
+            {
+                <tr>
+                    <td style="text-align: center;">
+                        <input type="checkbox" name="ActionId" value="@item["SRV_ID"],@item["NAME"]" />
+                    </td>
+                    <td style="text-align: center;">
+                        @if (item["ONLINE_N_MK"].Equals("Y"))
+                        {
+                            <img src="@Url.Action("Index", "Home", new { Area = "" }, null)Images/icon/tick-icone-7522-16.png" alt="是" title="是" />
+                        }
+                        else
+                        {
+                            <img src="@Url.Action("Index", "Home", new { Area = "" }, null)Images/icon/cross-icone-5804-16.png" alt="否" title="否" />
+                        }
+                    </td>
+                    <td style="text-align: center;">
+                        @if (item["ONLINE_S_MK"].Equals("Y"))
+                        {
+                            <img src="@Url.Action("Index", "Home", new { Area = "" }, null)Images/icon/tick-icone-7522-16.png" alt="是" title="是" />
+                        }
+                        else
+                        {
+                            <img src="@Url.Action("Index", "Home", new { Area = "" }, null)Images/icon/cross-icone-5804-16.png" alt="否" title="否" />
+                        }
+                    </td>
+                    <td>
+                        <a href="@Url.Action("ServiceEdit", "Service", new { id = @item["SRV_ID"] })" style="text-decoration: underline;">@item["NAME"]</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<input type="button" value="新增案件" class="btn btn-save" onclick="document.location.href='@Url.Action("ServiceNew", "Service", new { id = @ViewBag.Dict["SC_ID"] })';" />
+<input type="button" value="案件上線" class="btn btn-save" onclick="doAction('U');" />
+<input type="button" value="案件下線" class="btn btn-save" onclick="doAction('L');" />
+<input type="button" value="開放申辦" class="btn btn-save" onclick="doAction('O');" />
+<input type="button" value="關閉申辦" class="btn btn-save" onclick="doAction('C');" />
+<input type="button" value="案件刪除" class="btn btn-warning" onclick="doAction('D');" />
+<div style="color: #FFF;">@ViewBag.Dict["LEVEL"] / @ViewBag.Dict["CATE_COUNT"] / @ViewBag.Dict["SRV_COUNT"]</div>
+<br />
+</div>

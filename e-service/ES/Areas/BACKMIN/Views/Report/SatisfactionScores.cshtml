@@ -1,0 +1,64 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model ES.Areas.Admin.Models.SatisfactionScoresModel
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Sdate').datepicker({ dateFormat: 'yy/mm', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '100:-1911', defaultDate: '-1911y' });
+        $('#Fdate').datepicker({ dateFormat: 'yy/mm', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '100:-1911', defaultDate: '-1911y' });
+        var selval = '@this.Model.Rbl_Table';
+        $("input[name='Rbl']").each(function () {
+            if (this.value == selval) {
+                $(this).attr("checked", true);
+            }
+        });
+    });
+</script>
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "滿意度報表";
+    ViewBag.FunctionTitle = "滿意度報表";
+}
+@using (Html.BeginForm("GetExcel", "Report", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 統計分析 / @ViewBag.Title
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">統計類型</label>
+                <div class="col-sm-10">
+                    @Html.HiddenFor(m => m.Rbl_Table)
+                    <input id="Rbl_0" type="radio" name="Rbl" value="y" />
+                    <label for="Rbl_0">
+                        線上
+                    </label>
+                    <input id="Rbl_1" type="radio" name="Rbl" value="n" />
+                    <label for="Rbl_1">
+                        非線上
+                    </label>
+                    <input id="Rbl_2" type="radio" name="Rbl" value="all" />
+                    <label for="Rbl_2">
+                        全部
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">統計區間</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Sdate, new { @class = "form-normal" })&nbsp;&nbsp;至&nbsp;&nbsp;@Html.TextBoxFor(m => m.Fdate, new { @class = "form-normal" })
+                    @Html.ValidationMessageFor(m => m.Fdate)
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.Table_Type)
+                <input type="submit" id="Button_1" value="案件處理情形統計表" onclick="$('#Table_Type').val(1)" class="btn btn-print" />
+                <input type="submit" id="Button_2" value="滿意度統計表" onclick="$('#Table_Type').val(2)" class="btn btn-print" />
+            </div>
+        </div>
+    </div>
+}

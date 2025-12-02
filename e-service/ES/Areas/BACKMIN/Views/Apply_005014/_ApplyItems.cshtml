@@ -1,0 +1,335 @@
+﻿@model ES.Areas.BACKMIN.Models.Apply_005014ViewModel
+@using ES.Models
+@{
+    ViewBag.Title = "_ApplyItems";
+    // 申請項目
+}
+
+@*<h2>_ApplyItems</h2>*@
+<div id="_applyitems">
+    <h2 class="second-title">申請項目
+        @*<button type="button" class="btn btn-save" v-on:click="newItem()">新增</button>*@
+    </h2>
+    <div v-for="(item, index) in itemList">
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">項目Item</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">
+                    <input type="hidden" v-model="item.ITEM" /> {{index + 1}}
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2">
+                <input type="checkbox" v-on:change="toggle($event, 'ITEM_TYPE_E')" />
+                <span style="color:red;">*</span>類型Type
+            </label>
+            <div class="col-sm-10">
+                <fieldset v-bind:class="getStyle(item.ITEM_TYPE_E)">
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'ITEM_TYPE')"></div>
+                    <label class="radio-inline">
+                        <input type="radio" value="3" v-model="item.ITEM_TYPE">中藥材作為食品使用者(例如:靈芝)
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" value="1" v-model="item.ITEM_TYPE">中藥材萃取物作為食品原料者
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" value="2" v-model="item.ITEM_TYPE">其他
+                    </label>
+                </fieldset>
+                <input type="text" v-model="item.ITEM_TYPE_E" ref="ITEM_TYPE_E" class="form-control errata-msg" placeholder="補件備註" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2">
+                <input type="checkbox" v-on:change="toggle($event, 'PORCTYPE_E')" />
+                <span style="color:red;">*</span>產品類型PORCTYPE
+            </label>
+            <div class="col-sm-10">
+                <fieldset v-bind:class="getStyle(item.PORCTYPE_E)">
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'PORCTYPE')"></div>
+                    <label class="radio-inline">
+                        <input type="radio" value="0" v-model="item.PORCTYPE">中藥材
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" value="1" v-model="item.PORCTYPE">中藥製劑
+                    </label>
+                </fieldset>
+                <input type="text" v-model="item.PORCTYPE_E" ref="PORCTYPE_E" class="form-control errata-msg" placeholder="補件備註" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2">
+                <input type="checkbox" v-on:change="toggle($event, 'COMMODTYPE_E')" /><span style="color:red;">*</span>劑型
+            </label>
+            <div class="col-sm-4">
+                <fieldset v-bind:class="getStyle(item.COMMODTYPE_E)">
+                    <select class="form-control" v-model="item.COMMODTYPE">
+                        <option v-for="opt in $data.DrugFormoptions" v-bind:value="opt.Value">{{opt.Text}}</option>
+                    </select>
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'COMMODTYPE')"></div>
+                </fieldset>
+                <input type="text" v-model="item.COMMODTYPE_E" ref="COMMODTYPE_E" class="form-control errata-msg" placeholder="補件備註" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2">
+                <input type="checkbox" v-on:change="toggle($event, 'COMMODITIES_E')" />
+                <span style="color:red;">*</span>貨名Commodities
+            </label>
+            <div class="col-sm-10">
+                <fieldset v-bind:class="getStyle(item.COMMODITIES_E)">
+                    <input type="text" class="form-control" id="" v-model="item.COMMODITIES">
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'COMMODITIES')"></div>
+                </fieldset>
+                <input type="text" v-model="item.COMMODITIES_E" ref="COMMODITIES_E" class="form-control errata-msg" placeholder="補件備註" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2">
+                <input type="checkbox" v-on:change="toggle($event, 'QTY_E')" /><span style="color:red;">*</span>申請數量Q'ty
+            </label>
+            <div class="col-sm-4">
+                <fieldset v-bind:class="getStyle(item.QTY_E)">
+                    <input type="text" class="form-control decimal-only" id="" value="10" v-model.number="item.QTY">
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'QTY')"></div>
+                </fieldset>
+                <input type="text" v-model="item.QTY_E" ref="QTY_E" class="form-control errata-msg" placeholder="補件備註" />
+            </div>
+            <label class="main-label col-sm-2">
+                <input type="checkbox" v-on:change="toggle($event, 'UNIT_E')" /><span style="color:red;">*</span>申請數量單位Unit
+            </label>
+            <div class="col-sm-4">
+                <fieldset v-bind:class="getStyle(item.UNIT_E)">
+                    <select class="form-control" v-model="item.UNIT">
+                        <option v-for="opt in $data.options" v-bind:value="opt.Value">{{opt.Text}}</option>
+                    </select>
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'UNIT')"></div>
+                </fieldset>
+                <input type="text" v-model="item.UNIT_E" ref="UNIT_E" class="form-control errata-msg" placeholder="補件備註" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2">
+                <input type="checkbox" v-on:change="toggle($event, 'SPECQTY_E')" /><span style="color:red;">*</span>規格數量Q'ty
+            </label>
+            <div class="col-sm-4">
+                <fieldset v-bind:class="getStyle(item.SPECQTY_E)">
+                    <input type="text" class="form-control decimal-only" id="" value="10" v-model.number="item.SPECQTY">
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'SPECQTY')"></div>
+                </fieldset>
+                <input type="text" v-model="item.SPECQTY_E" ref="SPECQTY_E" class="form-control errata-msg" placeholder="補件備註" />
+            </div>
+            <label class="main-label col-sm-2">
+                <input type="checkbox" v-on:change="toggle($event, 'SPECUNIT_E')" /><span style="color:red;">*</span>規格數量單位Unit
+            </label>
+            <div class="col-sm-4">
+                <fieldset v-bind:class="getStyle(item.SPECUNIT_E)">
+                    <select class="form-control" v-model="item.SPECUNIT">
+                        <option v-for="opt in $data.Packunitoptions" v-bind:value="opt.Value">{{opt.Text}}</option>
+                    </select>
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'SPECUNIT')"></div>
+                </fieldset>
+                <input type="text" v-model="item.SPECUNIT_E" ref="SPECUNIT_E" class="form-control errata-msg" placeholder="補件備註" />
+            </div>
+        </div>
+        <h2 class="second-title">
+            一般切結書
+        </h2>
+        <div class="form-group">
+            <label class="main-label col-sm-2">
+                <input type="checkbox" v-on:change="toggle($event, 'AFF1_EXPORT_COUNTRY_E')" /><span style="color:red;">*</span>出口國
+            </label>
+            <div class="col-sm-10">
+                <fieldset v-bind:class="getStyle(item.AFF1_EXPORT_COUNTRY_E)">
+                    <select class="form-control" v-model="item.AFF1_EXPORT_COUNTRY">
+                        <option v-for="opt in $data.Countryoptions" v-bind:value="opt.Value">{{opt.Text}}</option>
+                    </select>
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'AFF1_EXPORT_COUNTRY')"></div>
+                </fieldset>
+                <input type="text" v-model="item.AFF1_EXPORT_COUNTRY_E" ref="AFF1_EXPORT_COUNTRY_E" class="form-control errata-msg" placeholder="補件備註" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2">
+                <input type="checkbox" v-on:change="toggle($event, 'AFF1_SHEET_NO_E')" />報單號碼
+            </label>
+            <div class="col-sm-10">
+                <fieldset v-bind:class="getStyle(item.AFF1_SHEET_NO_E)">
+                    <input type="text" class="form-control decimal-only" id="" value="10" v-model.number="item.AFF1_SHEET_NO">
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'AFF1_SHEET_NO')"></div>
+                </fieldset>
+                <input type="text" v-model="item.AFF1_SHEET_NO_E" ref="AFF1_SHEET_NO_E" class="form-control errata-msg" placeholder="補件備註" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2">
+                <input type="checkbox" v-on:change="toggle($event, 'AFF1_IMPORT_COUNTRY_E')" /><span style="color:red;">*</span>進口關
+            </label>
+            <div class="col-sm-10">
+                <fieldset v-bind:class="getStyle(item.AFF1_IMPORT_COUNTRY_E)">
+                    <select class="form-control" v-model="item.AFF1_IMPORT_COUNTRY">
+                        <option v-for="opt in $data.Importoptions" v-bind:value="opt.Value">{{opt.Text}}</option>
+                    </select>
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'AFF1_IMPORT_COUNTRY')"></div>
+                </fieldset>
+                <input type="text" v-model="item.AFF1_IMPORT_COUNTRY_E" ref="AFF1_IMPORT_COUNTRY_E" class="form-control errata-msg" placeholder="補件備註" />
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" :value="applyItemJson" name="ApplyItemsJson" />  @* 送回至server用 *@
+    @*{{applyItemJson}}*@
+</div>
+
+
+<script>
+    var vm = new Vue({
+        name: 'ApplyItems',
+        data: function () {
+            return {
+                itemList: [],
+                options: [],
+                Countryoptions: [],
+                DrugFormoptions: [],
+                Packunitoptions: [],
+                Importoptions: []
+            };
+        },
+        computed: {
+            applyItemJson: function () {
+                return JSON.stringify(this.itemList);
+            }
+        },
+        methods: {
+            newItem: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "NewApplyItem" })',
+                    method: 'POST'
+                }).done(function (resp) {
+                    if (resp) {
+                        self.itemList.push(resp);
+                        self.bindEvent();
+                    }
+                });
+            },
+            getApplyList: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "ApplyItemList", APP_ID = Model.APP_ID })',
+                    method: 'POST',
+                    data: { APP_ID: '@Model.APP_ID' }
+                }).done(function (resp) {
+                    self.itemList = resp;
+                    self.bindEvent();
+
+                    // 不顯示訊息待checkbox勾選後才顯示
+                    self.$nextTick(function () {
+                        $(self.$el).find('.errata-msg').hide();
+                    });
+                });
+            },
+              @*getOptions: function () {
+                  var self = this;
+                  $.ajax({
+                      url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "GoodsUnitList" })',
+                      method: 'POST'
+                  }).done(function (resp) {
+                      self.$data.options = resp;
+                  });
+              },*@
+            getOptions: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "Vw_PACKList" })',
+                    method: 'POST'
+                }).done(function (resp) {
+                    self.$data.options = resp;
+                });
+            },
+            getCountryOptions: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "CountryList"})',
+                    method: 'POST'
+                }).done(function (resp) {
+                    self.$data.Countryoptions = resp;
+                });
+            },
+            getImportOptions: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "ImportList" })',
+                    method: 'POST'
+                }).done(function (resp) {
+                    self.$data.Importoptions = resp;
+                });
+            },
+            getVw_DrugFormOptions: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "Vw_DrugFormList" })',
+                    method: 'POST'
+                }).done(function (resp) {
+                    self.$data.DrugFormoptions = resp;
+                });
+            },
+            getVw_PackUnitOptions: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "Vw_PackUnitList"})',
+                    method: 'POST'
+                }).done(function (resp) {
+                    self.$data.Packunitoptions = resp;
+                });
+            },
+            bindEvent: function () {
+                var self = this;
+                this.$nextTick(function () {
+                    $(self.$el).find('.decimal-only').decimalOnly();
+                });
+            },
+            getItemId: function (item, prop) {
+                return item.ID + '_' + prop;  @* 唯一值 + 欄位名稱 *@
+            },
+            hasValue: function (value) {
+                var res = true;
+                if (value) {
+                    res = true;
+                } else {
+                    res = false;  // todo
+                }
+                return res;
+            },
+            getStyle: function (value) {
+                var res = '';
+                if (this.hasValue(value)) {
+                    res = 'errata-input';
+                }
+                return res;
+            },
+            toggle: function (e, ref) {
+                var self = this;
+                this.$nextTick(function () {
+                    var sel = e.target.checked;
+                    if (sel) {
+                        $(self.$refs[ref]).show();
+                    } else {
+                        $(self.$refs[ref]).hide();
+                    }
+                });
+            },
+        },
+        mounted: function () {
+            this.getOptions();
+            this.getApplyList();
+            this.getCountryOptions();
+            this.getVw_DrugFormOptions();
+            this.getVw_PackUnitOptions();
+            this.getImportOptions();
+        }
+    });
+    vm.$mount('#_applyitems');
+</script>
+

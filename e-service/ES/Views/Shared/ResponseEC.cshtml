@@ -1,0 +1,24 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model SuccessECModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<center>
+    <br />
+    您已關閉信用卡繳費畫面。
+    <br /><br /><br />
+    編號：@Html.Raw(Model.OrderID)
+    <br />
+    訊息: @Html.Raw(Model.ErrorMessage)
+    <br />
+    <div id="dt"></div>
+</center>
+<script type="text/javascript">
+    window.onload = function () {
+        var now = new Date();
+        $('#dt').text(now.toLocaleString());
+    };
+</script>
+

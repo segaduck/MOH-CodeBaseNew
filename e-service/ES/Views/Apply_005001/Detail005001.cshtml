@@ -1,0 +1,587 @@
+﻿@using ES.Models
+@model ES.Models.ViewModels.Apply_005001ViewModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+}
+@using (Html.BeginForm("DocSave", "Apply_005001", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">產銷證明書</a></div>
+            <div class="clearfix"></div>
+        <div class="tab-content" id="myTabContent">
+                <div id="form" class="tab-pane fade active in">
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                    <div class="form-set">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">申辦項目</label>
+                                <div class="col-sm-4">
+                                    <p class="form-control-static">產銷證明書</p>
+                                    @Html.HiddenFor(m => m.FormBack.APP_ID)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">申請日期</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">@Model.FormBack.APP_TIME_TW</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申辦份數</label>
+                                <div class="col-sm-4">
+                                    <p class="form-control-static">@Model.FormBack.PAYCOUNT</p>
+                                </div>
+                                <label class="step-label col-sm-2" for="">繳費金額</label>
+                                <div class="col-sm-4">
+                                    <p class="form-control-static">@Model.FormBack.PAYAMOUNT</p>
+                                </div>
+                            </div>
+                            <h2 class="second-title">申請基本資料</h2>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>公司名稱</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">@Model.FormBack.NAME</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人</label>
+                                <div class="col-sm-4">
+                                    <p class="form-control-static">@Model.FormBack.CNT_NAME</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">@Model.FormBack.TEL</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">傳真</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">@Model.FormBack.FAX</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">@Model.FormBack.EMAIL</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">
+                                    <span style="color: red;">*</span>藥商許可執照字號(中文)
+                                </label>
+                                <div class="col-sm-4">
+                                    @Html.HiddenFor(m => m.FormBack.PL_CD_TEXT)
+                                    @Html.DropDownListFor(m => m.FormBack.PL_CD, dropdown.PList, new { @class = "form-control", onchange = "PLChange()", @disabled = "disabled" })
+                                </div>
+                                <label class="step-label col-sm-1" for="" style="text-align: right">第</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.FormBack.PL_Num, new { @class = "form-control", placeholder = "請輸入數字", maxlength = "10", @readonly = "readonly" })
+                                </div>
+                                <label class="step-label col-sm-1" for="">號</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥商許可執照字號(英文)</label>
+                                <div class="col-sm-4">
+                                    @Html.HiddenFor(m => m.FormBack.PL_CD_E_TEXT)
+                                    @Html.DropDownListFor(m => m.FormBack.PL_CD_E, dropdown.PList_E, new { @class = "form-control", onchange = "PLENChange()", @disabled = "disabled" })
+                                </div>
+                                <label class="step-label col-sm-1" for="" style="text-align: right">第</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.FormBack.PL_Num_E, new { @class = "form-control", placeholder = "請輸入數字", maxlength = "10", @readonly = "readonly" })
+                                </div>
+                                <label class="step-label col-sm-1" for="">號</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠名稱(中文)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.MF_CNT_NAME, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠名稱(英文)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.MF_CNT_NAME_E, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span> 製造廠地址(中文)</label>
+                                <div class="col-sm-10 form-inline">
+                                    @Html.TextBoxFor(m => m.FormBack.TAX_ORG_CITY_CODE, new { @id = "TAX_ORG_CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = "readonly" })
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.FormBack.TAX_ORG_CITY_TEXT, new { @id = "TAX_ORG_CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-info"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(m => m.FormBack.TAX_ORG_CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠地址(英文)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.MF_ADDR_E, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥品名稱(中文)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.DRUG_NAME, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">藥品名稱(英文)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.DRUG_NAME_E, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">登載外銷品名</label>
+                                <div class="col-sm-10" id="DIV_DRUG_ABROAD_NAME">
+                                    @Html.CheckBoxFor(m => m.FormBack.IS_DRUG_ABROAD_CHECK, new { @id = "addProduct", @onclick = "addProductFun()", @disabled = "disabled" })
+                                </div>
+                            </div>
+                            <div class="form-group" id="choseProduct">
+                                <label class="step-label col-sm-2" for="">勾選外銷品名</label>
+                                <div class="col-sm-10">
+                                </div>
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-10">請勾選欲申請之外銷品名。</div>
+                            </div>
+                            <div class="form-group" id="choseProduct1">
+                                <label class="step-label col-sm-2" for="">外銷品名(中文)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.DRUG_ABROAD_NAME, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group" id="choseProduct2">
+                                <label class="step-label col-sm-2" for="">外銷品名(英文)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.DRUG_ABROAD_NAME_E, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型(中文)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.DOSAGE_FORM, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型(英文)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.DOSAGE_FORM_E, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2"><span style="color:red;">*</span>核准日期(中文)</label>
+                                <div class="col-sm-4">
+                                    @Html.DatePickerTWFor(m => m.FormBack.ISSUE_DATE, new { size = "10", @disabled = "disabled", @readonly = "readonly" })
+                                </div>
+                                <label class="step-label col-sm-2">核准日期(英文)</label>
+                                <div class="col-sm-4">
+                                    @Html.DatePickerTWFor(m => m.FormBack.ISSUE_DATE, new { size = "10", @disabled = "disabled", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">顯示有效日期</label>
+                                <div class="col-sm-10" id="DIV_EXPIR_DATE_CHECK">
+                                    @Html.CheckBoxFor(m => m.FormBack.IS_EXPIR_DATE_CHECK, new { @id = "addDate", @onclick = "addDateFun()", @disabled = "disabled" })
+                                </div>
+                            </div>
+                            <div class="form-group" id="choseDate">
+                                <label class="step-label col-sm-2" for="">有效日期(中文)</label>
+                                <div class="col-sm-4">
+                                    @Html.DatePickerTWFor(m => m.FormBack.EXPIR_DATE, new { size = "10", @disabled = "disabled", @readonly = "readonly" })
+                                </div>
+                                <label class="step-label col-sm-2" for="">有效日期(英文)</label>
+                                <div class="col-sm-4">
+                                    @Html.DatePickerTWFor(m => m.FormBack.EXPIR_DATE, new { size = "10", @disabled = "disabled", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>處方說明(中文)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.MF_CONT, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>處方說明(英文)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.MF_CONT_E, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.EditorFor(m => m.DI, "GoodsDynamicGrid005001")
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">是否為濃縮製劑</label>
+                                <div class="col-sm-10" id="DIV_Concentrate_CHECK">
+                                    @Html.CheckBoxFor(m => m.FormBack.IS_Concentrate_CHECK, new { @id = "IsConcentrate", @onclick = "IsConcentrateFun()", @disabled = "disabled" })
+                                    <span>是</span>
+                                </div>
+                            </div>
+                            <div class="form-group" id="divConcentrate1">
+                                <label class="step-label col-sm-2" for="">生藥與浸膏比例(中文)</label>
+                                <div class="col-sm-10">
+                                    以上生藥製成浸膏
+                                    @Html.TextBoxFor(m => m.FormBack.PC_SCALE_1, new { @class = "form-normal form-10", @placeholder = "輸入分量", @onchange = "PCSCALEFun(this)", @readonly = "readonly" })
+                                    @Html.TextBoxFor(m => m.FormBack.PC_SCALE_1E, new { @class = "form-normal form-10", @placeholder = "輸入單位", @readonly = "readonly" })
+                                    (生藥與浸膏比例
+                                    @Html.TextBoxFor(m => m.FormBack.PC_SCALE_21, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)", @readonly = "readonly" })
+                                    :
+                                    @Html.TextBoxFor(m => m.FormBack.PC_SCALE_22, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)", @readonly = "readonly" })
+                                    =
+                                    @Html.TextBoxFor(m => m.FormBack.PC_SCALE_23, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)", @readonly = "readonly" })
+                                    :
+                                    @Html.TextBoxFor(m => m.FormBack.PC_SCALE_24, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)", @readonly = "readonly" })
+                                    )
+                                </div>
+                            </div>
+                            <div class="form-group" id="divConcentrate2">
+                                <label class="step-label col-sm-2" for="">生藥與浸膏比例(英文)</label>
+                                <div class="col-sm-10">
+                                    Above raw herbs equivalent to
+                                    @Html.TextBoxFor(m => m.FormBack.PC_SCALE_1, new { @class = "form-normal form-10", @placeholder = "輸入分量", @readonly = "readonly" })
+                                    @Html.TextBoxFor(m => m.FormBack.PC_SCALE_2E, new { @class = "form-normal form-10", @placeholder = "輸入單位", @readonly = "readonly" })
+                                    herbal extract. (Ratio of raw herbs and extract
+                                    @Html.TextBoxFor(m => m.FormBack.PC_SCALE_21, new { @class = "form-normal form-10", @placeholder = "輸入比例", @readonly = "readonly" })
+                                    :
+                                    @Html.TextBoxFor(m => m.FormBack.PC_SCALE_22, new { @class = "form-normal form-10", @placeholder = "輸入比例", @readonly = "readonly" })
+                                    =
+                                    @Html.TextBoxFor(m => m.FormBack.PC_SCALE_23, new { @class = "form-normal form-10", @placeholder = "輸入比例", @readonly = "readonly" })
+                                    :
+                                    @Html.TextBoxFor(m => m.FormBack.PC_SCALE_24, new { @class = "form-normal form-10", @placeholder = "輸入比例", @readonly = "readonly" })
+                                    )
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.EditorFor(m => m.PC, "GoodsDynamicGrid005001Pc")
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">登載效能、適應症</label>
+                                <div class="col-sm-10" id="DIV_INDIOCATION_AND_EFFICACY">
+                                    @Html.CheckBoxFor(m => m.FormBack.IS_EFFICACY_CHECK, new { @id = "addA", @onclick = "addAFun()", @disabled= "disabled" })
+                                    <span>1.效能</span>
+                                    @Html.CheckBoxFor(m => m.FormBack.IS_INDIOCATION_CHECK, new { @id = "addB", @onclick = "addBFun()", @disabled = "disabled" })
+                                    <span>2.適應症</span>
+                                </div>
+                            </div>
+                            @if (Model.FormBack.IS_INDIOCATION_CHECK)
+                            {
+                                <div class="form-group" id="choseB1">
+                                    <label class="step-label col-sm-2" for="">適應症(中文)</label>
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.FormBack.INDIOCATION, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" id="choseB2">
+                                    <label class="step-label col-sm-2" for="">適應症(英文)</label>
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.FormBack.INDIOCATION_E, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.FormBack.IS_EFFICACY_CHECK)
+                            {
+                                <div class="form-group" id="choseA1">
+                                    <label class="step-label col-sm-2" for="">效能(中文)</label>
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.FormBack.EFFICACY, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="form-group" id="choseA2">
+                                    <label class="step-label col-sm-2" for="">效能(英文)</label>
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.FormBack.EFFICACY_E, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            }
+                            <h2 class="second-title">佐證文件檔案上傳</h2>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+                                <div class="col-sm-10">
+                                    @if (Model.FormBack.RADIOYN == "Y")
+                                    {
+                                        <label class="radio-inline "><input type="radio" disabled="disabled" checked />是</label>
+                                        <label class="radio-inline "><input type="radio" disabled="disabled" />否</label>
+                                    }
+                                    else
+                                    {
+                                        <label class="radio-inline "><input type="radio" disabled="disabled" />是</label>
+                                        <label class="radio-inline "><input type="radio" disabled="disabled" checked/>否</label>
+                                    }
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">藥品許可證影本(正面)</label>
+                                <div class="col-sm-10">
+                                    @Html.FileDLForTurbo(m => m.FormBack.File_1_Name, Model.FormBack.FILE1_TEXT,"N")
+                                    <input type="file" class="form-control" name="FormBack.newFILE1" id="newFILE1" disabled="disabled" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">藥品許可證影本(反面)</label>
+                                <div class="col-sm-10">
+                                    @Html.FileDLForTurbo(m => m.FormBack.File_2_Name, Model.FormBack.FILE2_TEXT,"N")
+                                    <input type="file" class="form-control" name="FormBack.newFILE2" id="newFILE2" disabled="disabled" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">處方之中藥材中英文對照表</label>
+                                <div class="col-sm-10">
+                                    @Html.FileDLForTurbo(m => m.FormBack.File_3_Name, Model.FormBack.FILE3_TEXT,"N")
+                                    <input type="file" class="form-control" name="FormBack.newFILE3" id="newFILE3" disabled="disabled" />
+                                </div>
+                            </div>
+                            <div class="btn-bar text-center">
+                                <button type="button" class="btn btn-save" id="btnReturn">返回</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('#btnReturn').click(function () {
+            location.href = '/history/';
+        });
+
+        $('input[name^="Detail"]').each(function (item) {
+            //PL_CD 藥商許可執照字號，TAX_ORG_CITY_CODE 製造廠地址，TRA_CON_CHECK 產品類別
+            var itemID = $(this).attr("id").replace("Detail_", "");
+            //藥商許可執照字號 下拉選單及字號
+            if (itemID == "PL_CD") {
+                if ($(this).val() != "") {
+                    $('#FormBack_PL_CD').css("background-color", "#FF9797");
+                    $('#FormBack_PL_Num').css("background-color", "#FF9797");
+                } else {
+                    $('#FormBack_PL_CD').attr("disabled", "disabled");
+                    $('#FormBack_PL_Num').attr("disabled", "disabled");
+                }
+            }
+            //藥商許可執照字號 下拉選單及字號
+            if (itemID == "PL_CD_E") {
+                if ($(this).val() != "") {
+                    $('#FormBack_PL_CD_E').css("background-color", "#FF9797");
+                    $('#FormBack_PL_Num_E').css("background-color", "#FF9797");
+                } else {
+                    $('#FormBack_PL_CD_E').attr("disabled", "disabled");
+                    $('#FormBack_PL_Num_E').attr("disabled", "disabled");
+                }
+            }
+            //製造廠地址
+            if (itemID == "TAX_ORG_CITY_CODE") {
+                if ($(this).val() != "") {
+                    $("#TAX_ORG_CITY_CODE").css("background-color", "#FF9797");
+                    $("#TAX_ORG_CITY_TEXT").css("background-color", "#FF9797");
+                    $("#FormBack_TAX_ORG_CITY_DETAIL").css("background-color", "#FF9797");
+                } else {
+                    $("#TAX_ORG_CITY_CODE").attr("readonly", "readonly");
+                    $("#TAX_ORG_CITY_TEXT").attr("readonly", "readonly");
+                    $("#FormBack_TAX_ORG_CITY_DETAIL").attr("readonly", "readonly");
+                    $("#TAX_ORG_CITY_CODE").css("background-color", "#EEEEEE");
+                    $("#TAX_ORG_CITY_TEXT").css("background-color", "#EEEEEE");
+                    $("#FormBack_TAX_ORG_CITY_DETAIL").css("background-color", "#EEEEEE");
+                }
+            }
+            //生藥與浸膏比例(中文)
+            if (itemID == "PC_SCALE") {
+                if ($(this).val() != "") {
+                    $('#FormBack_PC_SCALE_1').css("background-color", "#FF9797");
+                    $('#FormBack_PC_SCALE_1E').css("background-color", "#FF9797");
+                    $('#FormBack_PC_SCALE_21').css("background-color", "#FF9797");
+                    $('#FormBack_PC_SCALE_22').css("background-color", "#FF9797");
+                    $('#FormBack_PC_SCALE_23').css("background-color", "#FF9797");
+                    $('#FormBack_PC_SCALE_24').css("background-color", "#FF9797");
+                } else {
+                    $('#FormBack_PC_SCALE_1').attr("disabled", "disabled");
+                    $('#FormBack_PC_SCALE_1E').attr("disabled", "disabled");
+                    $('#FormBack_PC_SCALE_21').attr("disabled", "disabled");
+                    $('#FormBack_PC_SCALE_22').attr("disabled", "disabled");
+                    $('#FormBack_PC_SCALE_23').attr("disabled", "disabled");
+                    $('#FormBack_PC_SCALE_24').attr("disabled", "disabled");
+                }
+            }
+            //生藥與浸膏比例(英文)
+            if (itemID == "PC_SCALE_EN") {
+                if ($(this).val() != "") {
+                    $('#FormBack_PC_SCALE_2E').css("background-color", "#FF9797");
+                } else {
+                    $('#FormBack_PC_SCALE_2E').attr("disabled", "disabled");
+                }
+            }
+            //登載外銷品名
+            if (itemID == "DRUG_ABROAD_CHECK") {
+                if ($(this).val() != "") {
+                    $('#DIV_DRUG_ABROAD_NAME').css("background-color", "#FF9797");
+                } else {
+                    $('#DIV_DRUG_ABROAD_NAME').attr("disabled", "disabled");
+                }
+            }
+            //顯示有效日期
+            if (itemID == "EXPIR_DATE_CHECK") {
+                if ($(this).val() != "") {
+                    $('#DIV_EXPIR_DATE_CHECK').css("background-color", "#FF9797");
+                } else {
+                    $('#DIV_EXPIR_DATE_CHECK').attr("disabled", "disabled");
+                }
+            }
+            //是否為濃縮製劑
+            if (itemID == "Concentrate_CHECK") {
+                if ($(this).val() != "") {
+                    $('#DIV_Concentrate_CHECK').css("background-color", "#FF9797");
+                } else {
+                    $('#DIV_Concentrate_CHECK').attr("disabled", "disabled");
+                }
+            }
+            //登載效能、適應症
+            if (itemID == "INDIOCATION_AND_EFFICACY") {
+                if ($(this).val() != "") {
+                    $('#DIV_INDIOCATION_AND_EFFICACY').css("background-color", "#FF9797");
+                } else {
+                    $('#DIV_INDIOCATION_AND_EFFICACY').attr("disabled", "disabled");
+                }
+            }
+            if ($(this).val() != "") {
+                $('#FormBack_' + itemID).css("background-color", "#FF9797");
+                if (itemID == "ISSUE_DATE") {
+                    $('#FormBack_' + itemID + '_TW').css("background-color", "#FF9797");
+                }
+                if (itemID == "EXPIR_DATE") {
+                    $('#FormBack_' + itemID + '_TW').css("background-color", "#FF9797");
+                }
+            } else {
+                $('#FormBack_' + itemID).attr("readonly", "readonly");
+                if (itemID == "ISSUE_DATE") {
+                    $('#FormBack_' + itemID + '_TW').attr("readonly", "readonly");
+                }
+                if (itemID == "EXPIR_DATE") {
+                    $('#FormBack_' + itemID + '_TW').attr("readonly", "readonly");
+                }
+
+                $(this).hide();
+            }
+        });
+
+        $('input[name^="Detail.File"]').each(function () {
+            var itemID = $(this).attr("id").replace("Detail_", "");
+            itemID = itemID.replace("_Name", "");
+            if ($(this).val() == "") {
+                $("#new" + itemID).attr("disabled", "disabled");
+            } else {
+                $("#new" + itemID).css("background-color", "#FF9797");
+            }
+        });
+    });
+
+    //生藥與浸膏比例文字連動
+    function PCSCALEFun(item) {
+        $("input[name='" + item.name + "']").val(item.value);
+    }
+
+    // 地址
+    function loadDialogTAX_ORG_CITYCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    // 地址
+    function doTAX_ORG_CITYSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#TAX_ORG_CITY_CODE').val(retData.Id);
+                    $('#TAX_ORG_CITY_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    // 地址
+    function doTAX_ORG_CITYNameGet() {
+        var code = $('#TAX_ORG_CITY_CODE');
+        console.log('TAX_ORG_CITY_CODE');
+        var data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#TAX_ORG_CITY_TEXT'),
+            'add': $('#TAX_ORG_CITY_CODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogTAX_ORG_CITYCodeMapName(data);
+        }
+    }
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".DOC",
+            ".DOCX",
+            ".ODT",
+            ".ODF",
+            ".ODS",
+            ".XLS",
+            ".XLSX",
+            ".PDF",
+            ".PPT",
+            ".PPTX",
+            ".JPG",
+            ".JPEG",
+            ".BMP",
+            ".PNG",
+            ".GIF",
+            ".TIF",
+            ".ZIP");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        } else {
+            $("#" + file.name + "_TEXT").val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+    // 送出
+    function send() {
+        var dataApply = getFormSubmitableFieldsWithCheckbox($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("DocSave")',
+            dataApply,
+            function (response) {
+                if (response.status) {
+                    var form = $("form[id=main_form]");
+                    form.attr('action', '@Url.Action("DocFinish")').submit();
+                } else {
+                    blockAlert(response.message, "提示訊息");
+                }
+            });
+    }
+</script>

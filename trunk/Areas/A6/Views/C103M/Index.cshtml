@@ -1,0 +1,130 @@
+﻿@using EECOnline.Areas.A6.Models;
+@using EECOnline.Models;
+@model C103MFormModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+}
+
+<div class="col-sm-12 content">
+    <!-- H1 title -->
+    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@sm.LastActionFunc.prgname</h1>
+
+    <div class="form-blue">
+        @using (Html.BeginForm("Index", "C103M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+        {
+            var button = new Dictionary<string, string>();
+            button.Add("search", "doSearch()");
+            button.Add("reset_fuc", "doReset_fuc()");
+            button.Add("new", "doNew()");
+            button.Add("print", "doPrint(" + Model.IsDealWith + ")");
+
+            @Html.ControlForTurbo(Model);
+            @Html.ButtonForTurbo(button)
+        }
+    </div>
+    <div class="clearfix"></div>
+    <h2 class="second-title">查詢結果</h2>
+    <div class="table-pager">
+        @Html.Partial("_PagingLink", Model)
+    </div>
+    <div class="table-responsive">
+        @if (Model.Grid != null)
+        {
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>服務單位</th>
+                        <th>使用者帳號</th>
+                        <th>姓名</th>
+                        <th>狀態</th>
+                        @*<th>資料檢視權限</th>
+                            <th>登入模式</th>*@
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="rows">
+                    @Html.Partial("_GridRows")
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //隱藏hidden下邊線
+        $('input[type="hidden"]').parent().css({ "border-style": 'none' })
+    })
+
+    /// 查詢
+    function doSearch() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Index")').submit();
+    }
+
+     /// 新增
+    function doNew() {
+        var url = '@(Url.Action("New", "C103M", new { area = "A6" }))';
+        var title = '建立帳號';
+        popupWindow({ 'width': -1 }, url, title, null, function (retData, doc) {
+            if (retData != null) { if (retData.redirectUrl != "") { RedirectAfterPopup(retData.redirectUrl) } }
+        })
+    }
+
+    /// 修改
+    function doModify(userno) {
+        var data = {
+            "userno": userno,
+        }
+        var url = '@Url.Action("Modify", "C103M")?' + $.param(data);
+        var title = '編輯帳號';
+        popupWindow({ 'width': -1 }, url, title, null, function (retData, doc) {
+            if (retData != null) { if (retData.redirectUrl != "") { RedirectAfterPopup(retData.redirectUrl) } }
+        })
+    }
+
+    /// 權限
+    function doGrp(userno) {
+        var data = {
+            "userno": userno
+        }
+        var url = '@(Url.Action("Grp", "C103M", new { area = "A6" }))?' + $.param(data);
+        var title = '功能群組設定';
+        popupWindow({ 'width': -1 }, url, title, null, function (retData, doc) {
+            if (retData != null) { if (retData.redirectUrl != "") { RedirectAfterPopup(retData.redirectUrl) } }
+        })
+    }
+
+    /// 重填
+    function doReset_fuc() {
+        $('#unitnm').val('');
+        $('#userno').val('');
+        $('#username').val('');
+    }
+
+      /// 匯出帳號
+    function doPrint(isdealwith) {
+        var today = new Date();
+        var year = today.getUTCFullYear();
+        var month = today.getMonth() + 1;
+        var date = today.getDate();
+
+
+        var dt = year-1911 + "" + month + "" + date;
+
+        var data = {
+            "unitnm": $('#unitnm').val(),
+            "userno": $('#userno').val(),
+            "username": $('#username').val(),
+            "isdealwith":  isdealwith,
+        }
+        var url = "@Url.Action("ApplyPrint", "C103M", new { area = "A6" })?" + $.param(data);
+
+
+        ajaxDownloadFile(url, null, true, dt + "_帳號權限清查資料.xlsx");
+    }
+</script>

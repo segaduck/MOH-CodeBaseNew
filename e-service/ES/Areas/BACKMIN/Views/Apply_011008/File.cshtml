@@ -1,0 +1,78 @@
+﻿@using ES.Services;
+@using ES.Areas.Admin.Models;
+@model Apply_011008ViewModel
+
+@{
+    ViewBag.SRV_NAME = "社工師證書換發（更名或汙損）";
+    if (Model.Form == null) { return; }
+    if (Model.Form.FileList == null) { return; }
+}
+
+<!--2-->
+<div class='panel panel-info'>
+    <div class='panel-heading'>
+        <h2 class='panel-title' data-toggle='collapse' data-parent='#ApplyData' href='#ApplyData'>
+            <a>上傳應附檔案(點擊展開)</a>
+        </h2>
+    </div>
+    <div id='ApplyData' class='panel-collapse collapse'>
+        <div class='panel-body'>
+            <div class="form-blue">
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">佐證文件採合併檔案</label>
+                    <div class="col-sm-10">
+                        <label class="radio-inline "><input type="radio" name="MERGEYN" value="Y" @(Model.Form.MERGEYN == "Y" ? "checked" : "") onchange="RadioChange()" disabled>是</label>
+                        <label class="radio-inline "><input type="radio" name="MERGEYN" value="N" @(Model.Form.MERGEYN != "Y" ? "checked" : "") onchange="RadioChange()" disabled>否</label>
+                        <br />
+                        若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.FileList.FILE_PASSCOPY)</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE_PASSCOPY, Model.Form.FileList.FILE_PASSCOPY_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.FileList.FILE_IDNF)</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE_IDNF, Model.Form.FileList.FILE_IDNF_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.FileList.FILE_IDNB)</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE_IDNB, Model.Form.FileList.FILE_IDNB_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.FileList.FILE_PHOTO)</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE_PHOTO, Model.Form.FileList.FILE_PHOTO_TEXT)
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.FileList.FILE_HOUSEHOLD)</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE_HOUSEHOLD, Model.Form.FileList.FILE_HOUSEHOLD_TEXT)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btnbar">
+                    <button type="button" onclick="GetZip('@Model.Form.FileList.APP_ID')" class="btn btn-blue">檔案打包下載</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

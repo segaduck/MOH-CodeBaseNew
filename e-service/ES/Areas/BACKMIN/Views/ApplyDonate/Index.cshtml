@@ -1,0 +1,121 @@
+﻿@using ES.Utils;
+@using ES.Commons;
+@model ES.Areas.Admin.Models.ApplyDonateViewModel
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+
+    function doExportDetail(srv_id_donate) {
+        $('#ActionForm').prop("action", "@Url.Action("ExportDetail", "ApplyDonate")?srv_id_donate=" + srv_id_donate);
+        $('#ActionForm').submit();
+    }
+
+    function doGridDetail(srv_id_donate) {
+        $('#ActionForm').prop("action", "@Url.Action("ApplyDetail", "ApplyDonate")?srv_id_donate=" + srv_id_donate);
+        $('#ActionForm').submit();
+    }
+
+    function doModify(srv_id_donate) {
+        $('#ActionForm').prop("action", "@Url.Action("Edit", "ApplyDonate")?srv_id_donate=" + srv_id_donate);
+        $('#ActionForm').submit();
+    }
+    function doOpenChange(srv_id_donate, isopen, isdraft) {
+        var data = getFormDataToObject($("form[id=ActionForm]"));
+        data.srv_id_donate = srv_id_donate;
+        data.isopen = isopen;
+        data.isdraft = isdraft;
+        ajaxLoadMore('@Url.Action("OpenChange")', data, function (retData) {
+            if (retData.status) {
+                blockMessage(retData.message, "提示訊息", function () {
+                    location.href = '@Url.Action("Index", "ApplyDonate")'
+                });
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+    }
+</script>
+@{
+    ViewBag.Title = "線上捐款維護";
+    ViewBag.FunctionTitle = "線上捐款維護";
+}
+@using (Html.BeginForm("Index", "ApplyDonate", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 線上捐款管理 / 線上捐款維護
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="btnbar">
+                <a href="#" class="btn btn-save" onclick="doModify('')">新建一筆賑災專戶</a>
+            </div>
+        </div>
+        @if (Model != null)
+        {
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th>項次</th>
+                            <th>編輯</th>
+                            <th>草稿/正式儲存</th>
+                            <th>賑災專戶名稱</th>
+                            <th>起始日</th>
+                            <th>結束日</th>
+                            <th>專戶狀態</th>
+                            <th>專戶金額</th>
+                            <th>捐款明細</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Grid != null && Model.Grid.Count > 0)
+                        {
+                            for (var i = 0; i < Model.Grid.Count; i++)
+                            {
+                                var a = Model.Grid[i];
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td><a href="#" onclick="doModify('@(a.SRV_ID_DONATE)')" class="btn btn-save">編輯</a></td>
+                                    <td>
+                                        @if (a.ISDRAFT == "Y")
+                                        {@Html.Raw("草稿儲存")}
+                                    else
+                                    {@Html.Raw("正式儲存")}
+                                    </td>
+                                    <td>@Html.Raw(a.NAME_CH)</td>
+                                    <td>
+                                        @if (a.START_DATE != null)
+                                        {@Html.Raw(HelperUtil.DateTimeToTwString(a.START_DATE));
+                                    }
+                                    </td>
+                                    <td>
+                                        @if (a.END_DATE != null)
+                                        {@Html.Raw(HelperUtil.DateTimeToTwString(a.END_DATE));
+                                    }
+                                    </td>
+                                    <td>
+                                        @if (a.ISOPEN == "Y")
+                                        {@Html.Raw("上架")}
+                                    else
+                                    {@Html.Raw("下架")}
+                                        <input type="button" onclick="doOpenChange('@(a.SRV_ID_DONATE)','@(a.ISOPEN)','@(a.ISDRAFT)')" class="btn btn-save" value="變更" />
+                                    </td>
+                                    <td>@Html.Raw(a.DonateAmt)</td>
+                                    <td>
+                                        <a href="#" onclick="doGridDetail('@(a.SRV_ID_DONATE)')" class="btn btn-save">捐款明細</a><br />
+                                        <a href="#" onclick="doExportDetail('@(a.SRV_ID_DONATE)')" class="btn btn-save">下載明細</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}

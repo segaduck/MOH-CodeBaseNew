@@ -1,0 +1,46 @@
+﻿@using Turbo.ReportTK
+@using System.Collections
+@using log4net
+@model Report
+@{
+    Layout = null;
+}
+@if (Model.HasAggregate && Model.Results.Count > 0)
+{
+    // 若有設定 Aggregation, 顯示報表結尾的合計列
+
+    // 計算第1個 Aggregation 欄位前, 共有幾個非 Aggregate 欄位, 以進行 td 合併
+    int cols = 0;
+    foreach (ReportColumn col in Model.Layout.Columns)
+    {
+        if (!"SUM".Equals(col.Aggregate)
+            && !"COUNT".Equals(col.Aggregate)
+            && !"AVG".Equals(col.Aggregate))
+        {
+            cols++;
+        }
+        else
+        {
+            break;
+        }
+    }
+    @Html.Raw("<tr class=\"report-sum\">")
+    @Html.Raw(string.Format("<td colspan=\"{0}\" align=\"{1}\">{2}</td>", cols, Model.AggregateLabelAlign, Model.AggregateLabel))
+
+    for (int i = cols; i < Model.Layout.Columns.Count; i++)
+    {
+        ReportColumn col = Model.Layout.Columns[i];
+        string value = "&nbsp;";
+        string placeholder = "{0}";
+
+        if (!string.IsNullOrEmpty(col.AggFormat))
+        {
+            placeholder = "{0:" + col.AggFormat + "}";
+        }
+        value = String.Format(placeholder, col.Caculation);
+
+        @Html.Raw(string.Format("<td align=\"{1}\">{0}</td>", value, col.Align))
+    }
+
+    @Html.Raw("</tr>")
+}

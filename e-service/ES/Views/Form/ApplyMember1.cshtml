@@ -1,0 +1,154 @@
+﻿@{
+    Layout = null;
+}
+@Html.Hidden("APPLY_DATE", (string)ViewBag.Dict["APPLY_DATE"])
+@Html.Hidden("IDN", (string)ViewBag.Dict["IDN"])
+@Html.Hidden("NAME", (string)ViewBag.Dict["NAME"])
+@Html.Hidden("ENAME", (string)ViewBag.Dict["ENAME"])
+@Html.Hidden("MAIL", (string)ViewBag.Dict["MAIL"])
+@Html.Hidden("LOGIN_TYPE", (string)ViewBag.Dict["LOGIN_TYPE"])
+@if (@ViewBag.Dict["IDN"].Length == 10)
+{
+<table id="formAppInfo" class="formTable1">
+    <caption style="padding: 0px 10px 0px 10px;">
+        <div style="float: left; padding: 9px 0px 7px 0px;">申請人資料</div>
+        @if (ViewBag.ServiceID.Equals("001005"))
+        {
+        <div style="float: left; padding: 12px 0px 0px 0px; color: Red; font-weight: bold; font-size: 12px;">(請使用申請人帳號申請)</div>
+        }
+        <div style="float: right;">
+            <input type="button" value="隱藏" onclick="showTableBody(this, '0')" />
+        </div>
+    </caption>
+    <tbody id="tbody_0">
+    <tr>
+        <th style="width: 120px;">申請日期</th>
+        <td>
+            @ViewBag.Dict["APPLY_DATE"]
+        </td>
+    </tr>
+    
+    
+        <tr>
+            <th>申請人</th>
+            <td>
+                身分證號：@ViewBag.Dict["IDN"]<br />
+                （中文）@ViewBag.Dict["NAME"]<br />
+                （英文）@ViewBag.Dict["ENAME"]
+            </td>
+        </tr>
+        <tr>
+            <th>性別</th>
+            <td>
+                @Html.RadioButton("SEX_CD", "M", (bool)@ViewBag.Dict["SEX_CD"].Equals("M")) 男
+                @Html.RadioButton("SEX_CD", "F", (bool)@ViewBag.Dict["SEX_CD"].Equals("F")) 女
+            </td>
+        </tr>
+        <tr>
+            <th><span style="color: red;">*</span>生日</th>
+            <td>@Html.TextBox("BIRTHDAY", (string)@ViewBag.Dict["BIRTHDAY"], new { style = "width: 90px;" })</td>
+        </tr>
+       
+    <tr>
+        <th>通訊地址</th>
+        <td>@Html.TextBox("ADDR", (string)@ViewBag.Dict["ADDR"], new { style = "width: 70%" })</td>
+    </tr>
+    <tr>
+        <th>電話號碼</th>
+        <td>@Html.TextBox("TEL", (string)@ViewBag.Dict["TEL"])</td>
+    </tr>
+    <tr>
+        <th>手機</th>
+        <td>@Html.TextBox("MOBILE", (string)@ViewBag.Dict["MOBILE"])</td>
+    </tr>
+    <tr>
+        <th>電子郵件</th>
+        <td>@ViewBag.Dict["MAIL"]（案件處理進度將以此信箱通知）</td>
+    </tr>
+    </tbody>
+</table>
+}
+else
+{
+@Html.Hidden("MEDICO", (string)ViewBag.Dict["MEDICO"])
+@Html.Hidden("CHR_NAME", (string)ViewBag.Dict["CHR_NAME"])
+@Html.Hidden("CHR_ENAME", (string)ViewBag.Dict["CHR_ENAME"])
+<table id="formAppInfo" class="formTable1">
+    <caption style="padding: 0px 10px 0px 10px;">
+        <div style="float: left; padding: 9px 0px 7px 0px;">@if (ViewBag.ServiceID.Equals("001038")){@Html.Raw("申請機構資料");}else{@Html.Raw("申請人資料");}</div>
+        <div style="float: right;">
+            <input type="button" value="隱藏" onclick="showTableBody(this, '0')" />
+        </div>
+    </caption>
+    <tbody id="tbody_0">
+    <tr>
+        <th style="width: 120px;">申請日期</th>
+        <td>@ViewBag.Dict["APPLY_DATE"]</td>
+    </tr>
+@if (ViewBag.ServiceID.Equals("001038"))
+{
+    <tr>
+        <th>人工生殖機構</th>
+        <td>
+            統一編號：@ViewBag.Dict["IDN"]<br />
+            （中文）@ViewBag.Dict["NAME"]<br />
+            （英文）@ViewBag.Dict["ENAME"]
+        </td>
+    </tr>
+}
+else
+{
+    <tr>
+        <th>申請商號</th>
+        <td>
+            統一編號：@ViewBag.Dict["IDN"]<br />
+            藥商許可執照編號：@ViewBag.Dict["MEDICO"]<br />
+            （中文）@ViewBag.Dict["NAME"]<br />
+            （英文）@ViewBag.Dict["ENAME"]
+        </td>
+    </tr>
+    <tr>
+        <th>負責人</th>
+        <td>
+            （中文）@ViewBag.Dict["CHR_NAME"]<br />
+            （英文）@ViewBag.Dict["CHR_ENAME"]
+        </td>
+    </tr>
+    <tr>
+        <th>聯絡人（承辦人）</th>
+        <td>
+            （中文）@Html.TextBox("CNT_NAME", (string)@ViewBag.Dict["CNT_NAME"])<br />
+            （英文）@Html.TextBox("CNT_ENAME", (string)@ViewBag.Dict["CNT_ENAME"])
+        </td>
+    </tr>
+}
+    <tr>
+        <th>通訊地址</th>
+        <td>
+            @Html.TextBox("ADDR", (string)@ViewBag.Dict["ADDR"], new { style = "width: 70%" })<br />
+            @Html.TextBox("EADDR", (string)@ViewBag.Dict["EADDR"], new { style = "width: 70%" })（英文）
+        </td>
+    </tr>
+    <tr>
+        <th>@if (ViewBag.ServiceID.Equals("001038")){@Html.Raw("電話號碼");}else{@Html.Raw("電話或手機號碼");}</th>
+        <td>
+            @Html.TextBox("TEL", (string)@ViewBag.Dict["TEL"])<br />
+            @if (!ViewBag.ServiceID.Equals("001038")){
+                @Html.TextBox("CNT_TEL", (string)@ViewBag.Dict["CNT_TEL"])@Html.Raw("（聯絡人）");
+            }
+        </td>
+    </tr>
+    <tr>
+        <th>電子郵件</th>
+        <td>@ViewBag.Dict["MAIL"]（案件處理進度將以此信箱通知）</td>
+    </tr>
+    </tbody>
+</table>
+}
+<br />
+<script language="javascript" type="text/javascript">
+    $(function () {
+        $('#BIRTHDAY').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+    });
+</script>
+

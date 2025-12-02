@@ -1,0 +1,210 @@
+﻿@model ES.Areas.BACKMIN.Models.Apply_005014ViewModel
+@using ES.Utils
+@using ES.Models.Entities
+
+@{
+    ViewBag.Title = "_ErrataFileUpload";
+    // 檔案上傳
+}
+
+<div class="form-blue" id="file-grid">
+    <div class="form-group">
+        <label class="main-label col-sm-2">佐證文件採合併檔案</label>
+        <div class="col-sm-10">
+            <div class="form-control-static">
+                @*<label class="radio-inline "><input type="radio" name="optradio" checked="">是</label>*@
+                @Html.RadioButtonFor(x => x.Detail.IS_MERGE_FILE, "Y") 是
+                @*<label class="radio-inline "><input type="radio" name="optradio">否</label>*@
+                @Html.RadioButtonFor(x => x.Detail.IS_MERGE_FILE, "N") 否
+            </div>
+        </div>
+    </div>
+
+    @{
+        if (Model.FileList == null || Model.FileList.Count == 0)
+        {
+            Model.FileList.Add(new Apply_005014_FILExt { FILE_NAME = "(未上傳檔案)" });
+        }
+
+    }
+
+    @for (int i = 0; i < Model.FileList.Count; i++)
+    {
+        var item = Model.FileList[i];
+        Model.ErrataList.Add(new ES.Models.ViewModels.ErrataModel { IsSel = false, Name = "FILE_" + (i + 1).ToString() });
+
+        <div class="form-group">
+            <label class="main-label col-sm-2" style="padding-top:22px">
+                @{
+                    Dictionary<string, object> dict = new Dictionary<string, object>();
+                    dict["v-model"] = Html.Raw(string.Format("errata[{0}]", i));
+                    dict["placeholder"] = "補件備註";
+                }
+                @Html.CheckBoxFor(x => x.ErrataList[i].IsSel, dict)
+                其他證明文件 @(i + 1)
+            </label>
+            <div class="col-sm-10">
+                @{
+                    Dictionary<string, object> dict1 = new Dictionary<string, object>();
+                    dict1["v-show"] = Html.Raw(string.Format("errata[{0}]", i));
+                    dict1["class"] = "form-control";
+                    dict1["placeholder"] = "補件備註";
+                }
+                <div>
+                    <div class="form-inline">最新檔案: @RenderDownloadField(item.FILE_NAME) </div>
+                    @Html.TextBoxFor(x => Model.FileList[i].FILE_E, dict1)
+                </div>
+                @{
+                    IList<Apply_005014_FILE_Log> logFileList = Model.FileLogList.Where(x => x.FILE_ID == (i + 1).ToString())
+                        .OrderBy(x => x.CREATE_DATE)
+                        .ToList();
+                }
+                @if (logFileList != null && logFileList.Count > 1)
+                {
+                    for (int j = logFileList.Count - 2; j >= 0; j--)
+                    {
+                        var it = logFileList[j];
+                        if (j == 0)
+                        {
+                            <div class="form-inline">首次上傳: @RenderDownloadField(it.FILE_NAME) </div>
+                        }
+                        else
+                        {
+                            <div class="form-inline">第 @(j) 次補件: @RenderDownloadField(it.FILE_NAME) </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    }
+    <div class="btnbar">
+        <button type="button" class="btn btn-blue" onclick="doPackage('@Model.Apply.APP_ID')">檔案打包下載</button>
+        <button type="button" class="btn btn-blue" onclick="preview_print()">套印申請書</button>
+        <button type="button" class="btn btn-blue" onclick="preview_print2A()">套印一般切結書</button>
+        <button type="button" class="btn btn-blue" onclick="preview_print2B()">套印萃取物切結書</button>
+    </div>
+</div>
+
+
+
+<script>
+    new Vue({
+        el: '#file-grid',
+        name: 'ApplyFileList',
+        data: function () {
+            return {
+                fileCount: parseInt('@Model.FileList.Count'),
+                errata: []
+            };
+        },
+        mounted: function () {
+            for (var i = 0; i < this.fileCount; i++) {
+                this.errata.push(false);
+            }
+        }
+    });
+    //套印申請書
+    function preview_print() {
+        var data = getFormDataToObject($("form[id=main_form]"));
+        $.fileDownload('@Url.Action("PreviewApplyForm1")', {
+            httpMethod: 'post',
+            data: data,
+            prepareCallback: function (url) {
+
+            }
+        });
+    }
+    //套印一般切結書
+    function preview_print2A() {
+        var data = getFormDataToObject($("form[id=main_form]"));
+        $.fileDownload('@Url.Action("PreviewApplyForm2A")', {
+            httpMethod: 'post',
+            data: data,
+            prepareCallback: function (url) {
+
+            }
+        });
+    }
+    //套印萃取物切結書
+    function preview_print2B() {
+        var data = getFormDataToObject($("form[id=main_form]"));
+        $.fileDownload('@Url.Action("PreviewApplyForm2B")', {
+            httpMethod: 'post',
+            data: data,
+            prepareCallback: function (url) {
+
+            }
+        });
+    }
+</script>
+
+@helper RenderDownloadField(string filename)
+{
+    bool isImg = true;
+    bool isPdf = true;
+    if (!string.IsNullOrEmpty(filename))
+    {
+        var fileExt = Path.GetExtension(filename);
+        string shortFilename = Path.GetFileName(filename);
+        byte[] ba = System.Text.Encoding.UTF8.GetBytes(filename); ;
+        string base64filename = Convert.ToBase64String(ba);
+        string urlAttch = Url.Action("DownloadFileFromPath", "File", new { area = "", filepath = base64filename });
+        string urlInline = Url.Action("DownloadFileFromPath", "File", new { area = "", filepath = base64filename, downloadtype = "inline" });
+
+        switch (fileExt)
+        {
+            case ".jpg":
+            case ".jpeg":
+            case ".bmp":
+            case ".png":
+            case ".gif":
+                isImg = true;
+                isPdf = false;
+                break;
+            case ".pdf":
+                isImg = false;
+                isPdf = true;
+                break;
+            default:
+                isImg = false;
+                isPdf = false;
+                break;
+        }
+
+        if (isImg)
+        {
+            <a href="@urlAttch" class="" download>@shortFilename</a>
+            <a href="@urlInline" target="_blank">
+                <img src="@urlInline" style="width:100px" />
+            </a>
+        }
+        else if (isPdf)
+        {
+            <div class="form-control-static">
+                <a href="@urlAttch" class="form-control-static" download>@shortFilename</a>
+                <a href="@urlInline" class="btn btn-default" target="_blank">預覽</a>
+            </div>
+        }
+        else
+        {
+            if (shortFilename == "__NONE__")
+            {
+                <div class="form-control-static"> (未上傳檔案) </div>
+            }
+            else
+            {
+                <div class="form-control-static">
+                    <a href="@urlAttch" class="form-control-static" target="_blank" download>@shortFilename</a>
+                </div>
+            }
+        }
+    }
+}
+
+@{ var url = Html.Raw(Url.Action("GetZIP", "Apply_005014", new { APP_ID = Model.Apply.APP_ID, CASENAME = "005014" })); }
+<script>
+    function doPackage() {
+        window.location = '@url';
+    }
+</script>
+

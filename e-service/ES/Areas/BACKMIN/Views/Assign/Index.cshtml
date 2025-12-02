@@ -1,0 +1,189 @@
+﻿@using ES.Utils;
+@model ES.Areas.Admin.Models.AssignModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "分文處理";
+    ViewBag.FunctionTitle = "分文處理";
+    ViewBag.Script = @"
+function doPrint(serviceId, applyId) {
+//window.open('" + Url.Action("Index", "Home", new { area = "" }) + @"FormRpt/Apply' + serviceId + '?id=' + applyId, '', 'width=800,height=600,menubar=yes,scrollbars=yes,resizable=yes');
+document.location.href = '" + Url.Action("Index", "Home", new { area = "" }) + @"FormRpt/Apply' + serviceId + '?id=' + applyId;
+}
+
+function doQuery(page) {
+var CaseType= $('#CaseType').val();
+var CaseAccount= $('#CaseAccount').val();
+$('#NowPage').val(page);
+$('#CaseTypeVal').val(CaseType);
+$('#CaseAccountVal').val(CaseAccount);
+$('#ActionForm').submit();
+}
+
+function changeCaseType(value) {
+$.ajax({
+type: 'POST',
+url: '" + @Url.Action("GetAdminList", "Assign") + @"',
+data: { serviceId: value },
+dataType: 'json',
+cache: false,
+async: false,
+success: function (res) {
+$('#CaseAccount').empty();
+$('#CaseAccount').append($('<option></option>').val('').text('-- 承辦人員 --'));
+if (res.length > 0) {
+$.each(res, function (i, item) {
+$('#CaseAccount').append($('<option></option>').val(item.ACC_NO + '/' + item.UNIT_CD).text(item.UNIT_NAME + '：' + item.NAME));
+});
+}
+}
+});
+}
+
+function batchAssign() {
+
+if($('#CaseType').val().length == 0) {
+jAlert('請選擇申辦項目');
+return;
+}
+
+if($('#CaseAccount').val().length == 0) {
+jAlert('請選擇承辦人員');
+return;
+}
+
+jConfirm(""確定要送出嗎？"", function () {
+$.ajax({
+type: 'POST',
+url: '" + @Url.Action("BatchAssign", "Assign") + @"',
+data: { caseType: $('#CaseType :selected').val(), caseAccount: $('#CaseAccount :selected').val() },
+dataType: 'json',
+cache: false,
+async: false,
+success: function (res) {
+if(res.status) {
+jAlert('批次分文成功！', function() {location.reload();});
+} else {
+jAlert('批次分文失敗！');
+}
+}
+});
+});
+}
+";
+}
+
+
+@using (Html.BeginForm("Index", "Assign", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件分文及處理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">批次分文</label>
+                <div class="col-sm-10">
+                    <select name="CaseType" id="CaseType" onchange="changeCaseType(this.value);" class="form-normal">
+                        <option value="">-- 申辦項目 --</option>
+                        @foreach (Dictionary<string, object> item in ViewBag.CaseTypeList)
+                        {
+                            <option value="@item["SRV_ID"]">@item["SRV_NAME"]</option>
+                        }
+                        @Html.HiddenFor(x => x.SRV_ID)
+                    </select>
+
+                    <select onchange="onProAccSelect(this.value)" name="CaseAccount" id="CaseAccount" class="form-normal">
+                        <option value="">--請選擇--</option>
+                        @{
+                            foreach (ES.Areas.Admin.Models.Map map in WebUtils.GetSrvUnitADMIN(this.Model.SRV_ID))
+                            {
+                                string op = "<option value='" + map.GetString("ACC_NO") + "/" + map.GetString("UNIT_CD") +
+                                    "'>" + map.GetString("UNIT_NAME") + "：" + map.GetString("NAME") + "</option>";
+                                @Html.Raw(op);
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="btnbar">
+                @*<a href="#" class="btn btn-blue" onclick="doQuery('1')"><i class="fas fa-search space-right">查詢</i></a>*@
+                @*<i class="fas fa-search space-right">查詢</i><input type="button" class="btn btn-blue" value="查詢" onclick="doQuery('1')" />*@
+                <button type="button" class="btn btn-blue" onclick="doQuery(@Model.NowPage)"><i class="fas fa-search space-right"></i>查詢</button>
+                <input type="button" class="btn btn-save" value="批次分文" onclick="batchAssign()" />
+            </div>
+        </div>
+
+        @Html.HiddenFor(m => m.NowPage)
+        @Html.HiddenFor(m => m.CaseType, new { @id = "CaseTypeVal" })
+        @Html.HiddenFor(m => m.CaseAccount, new { @id = "CaseAccountVal" })
+        @Html.HiddenFor(x => x.IS_HOME_PAGE)
+   
+        <div class="table-pager">
+            @Html.HiddenFor(m => m.NowPage)
+            @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+        </div>
+        <div class="clearfix"></div>
+        @if (ViewBag.List != null)
+        {
+            <h2 class="second-title">查詢結果</h2>
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th width="5%">項次</th>
+                            <th width="15%">申辦編號</th>
+                            <th width="15%">申辦日期</th>
+                            <th width="15%">申辦項目</th>
+                            <th width="5%">分文</th>
+                            @*<th width="5%">列印申請表</th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.List.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="5" style="text-align: center;">查無資料</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (var i = 0; i < ViewBag.List.Count; i++)
+                            {
+                                ES.Areas.Admin.Models.Map item = ViewBag.List[i];
+                                var pageItem = (((int)ViewBag.NowPage - 1) * 20) + (i + 1);
+                                <tr>
+                                    <td align="center">@(pageItem)</td>
+                                    <td align="center"><a target="_blank" href="@(Url.Action("Index", "Apply_"+@item.GetString("SRV_ID"), new {appid =@item.GetString("APP_ID") , srvid= @item.GetString("SRV_ID"),statusId="999" }))">@Html.Raw(@item.GetString("APP_ID"))</a>   </td>
+                                    <td align="center">@Html.Raw(@item.GetString("APP_TIME"))</td>
+                                    <td align="center">@Html.Raw(@item.GetString("SRV_NAME"))</td>
+                                    <td align="center">
+                                        <input type="button" class="btn btn-save" value="分文" onclick="document.location.href = '@Url.Action("Edit", "Assign", new {id = @item.GetString("APP_ID"),srv_id = @item.GetString("SRV_ID"),is_home_page= Model.IS_HOME_PAGE})';" />
+                                    </td>
+                                    @*<td align="center">
+                                        @if (WebUtils.GetServiceRPT(item.GetString("SRV_ID")) && 
+                                            item.GetString("SRV_ID") == "001005" && item.GetString("SRV_ID") == "001007" &&
+                                            item.GetString("SRV_ID") == "001008" && item.GetString("SRV_ID") == "001009" &&
+                                            item.GetString("SRV_ID") == "001036" && item.GetString("SRV_ID") == "001037" &&
+                                            item.GetString("SRV_ID") == "001039")
+                                        {
+                                            <input type="button" class="btn btn-print" value="列印申請表" onclick="doPrint('@item.GetString("SRV_ID")', '@item.GetString("APP_ID")')" />
+                                        }
+                                    </td>*@
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        }
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#CaseType').val($('#SRV_ID').val());
+    });
+
+</script>

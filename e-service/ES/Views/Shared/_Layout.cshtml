@@ -1,0 +1,161 @@
+﻿@using ES.Utils
+@{
+    ViewBag.Member = Session["Member"];
+}
+<!DOCTYPE html>
+<html>
+<head>
+    @*<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE10" />*@
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title - 衛生福利部線上申辦系統</title>
+    <link rel="govtwsimpledc.xsd" href="http://www.gov.tw/schema/dc/" title="Dublin Core" />
+    <meta name="DC.Title" content="衛生福利部線上申辦系統" />
+    <meta name="DC.Creator" content="衛生福利部" />
+    <meta name="DC.Subject" content="@ViewBag.DCSubject" />
+    <meta name="DC.Description" content="衛生福利部線上申辦系統" />
+    <meta name="DC.Contributor" content="衛生福利部" />
+    <meta name="DC.Type" content="@ViewBag.DCType" />
+    <meta name="DC.Format" content="text" />
+    <meta name="DC.Source" content="衛生福利部" />
+    <meta name="DC.Language" content="中文" />
+    <meta name="DC.coverage.t.max" content="@DateTime.Now.ToString("yyyy-MM-dd")" />
+    <meta name="DC.coverage.t.min" content="9999-12-31" />
+    <meta name="DC.Publisher" content="衛生福利部" />
+    <meta name="DC.Date" content="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")" />
+    <meta name="DC.Identifier" content="A21000000I" />
+    <meta name="DC.Relation" content=" " />
+    <meta name="DC.Rights" content="衛生福利部" />
+    <meta name="Category.Theme" content="@ViewBag.DCTheme" />
+    <meta name="Category.Cake" content="@ViewBag.DCCake" />
+    <meta name="Category.Service" content="@ViewBag.DCService" />
+    <meta name="Keywords" content="@ViewBag.DCKeywords" />
+    @Styles.Render("~/Content/themes/redmond/css")
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="@Url.Action("Index", "Home")Scripts/public.js" type="text/javascript"></script>
+    @RenderSection("scripts", required: false)
+    <script language="javascript" type="text/javascript">
+        function loginTab(idx) {
+            if(idx == 1) {
+                $("#dLoginTab1A").prop("class", "dLoginTab1");
+                $("#dLoginTab2A").prop("class", "dLoginTab2");
+                $("#dLoginTab1B").show();
+                $("#dLoginTab2B").hide();
+            } else if(idx == 2) {
+                $("#dLoginTab1A").prop("class", "dLoginTab2");
+                $("#dLoginTab2A").prop("class", "dLoginTab1");
+                $("#dLoginTab1B").hide();
+                $("#dLoginTab2B").show();
+            }
+        }
+
+        function uPkiLogin() {
+            if($("#CertLoginForm").valid()) {
+                $("#CertLoginSubmit").prop("disabled", true);
+                $("#CertLoginSubmit").prop("value", "登入中...");
+                $("#uPkiFrame").prop("src", "@Url.Action("LoginCF", "Home")");
+            }
+        }
+
+        function certLogigKey(e) {
+            var key;      
+            if(window.event) {
+                key = window.event.keyCode; 
+            } else {
+                key = e.which;
+            }
+
+            if(key == 13) {
+                uPkiLogin();
+            }
+
+            return (key != 13);
+        }
+
+        @if(!String.IsNullOrEmpty(ViewBag.tempMessage)) {
+            @Html.Raw("$(function () {")
+            @Html.Raw("jAlert(\"")@Html.Raw(ViewBag.tempMessage)@Html.Raw("\");") 
+            @Html.Raw("});")
+        }
+
+        @Html.Raw(@ViewBag.Script)
+    </script>
+</head>
+<body>
+<center>
+<div class="dMain">
+        <div class="dHeader">
+            <div class="dHeaderLeft">
+                <div class="dHeaderLogo"></div>
+                <div class="dLoginTab">
+                    @if (Request.IsAuthenticated && User.IsInRole("Member"))
+                    {
+                        <div class="dLoginTab1">會員資訊</div>
+                    }
+                    else
+                    {
+                        <div class="dLoginTab1" id="dLoginTab1A" onclick="loginTab(1);">會員登入</div>
+                        <div class="dLoginTab2" id="dLoginTab2A" onclick="loginTab(2);">憑證登入</div>
+                    }
+                </div>
+            </div>
+            <div style="float: right; padding: 0px; text-align: right;">
+                <div style="padding: 0px 20px 20px 0px; width: 208px;">
+                    <div id="dHeaderMenu">@Html.ActionLink("回首頁", "Index", "Home") ｜<a href="http://www.mohw.gov.tw/" target="_blank">衛生福利部全球資訊網</a></div><br />
+                </div>
+                <div style="padding: 0px 20px 0px 0px; width: 220px;">
+                    <div style="float: right;">@Html.Action("SearchAction", "Search")</div>
+                </div>
+            </div>
+            
+        </div>
+        <div class="dBody">
+            <div id="dLeft">
+                @Html.Partial("_LoginPartial")
+                <img src="@Url.Action("Index", "Home")Images/default/bg_left_bar.png" alt="分隔線" />
+                @Html.Action("LeftMenu", "Home")
+                <br /><br />
+                <div style="padding-left: 8px;">
+                <a href="@Url.Action("Index", "Search")"><img src="@Url.Action("Index", "Home")Images/default/main_search.png" alt="案件搜尋" border="0" /></a>
+                <a href="@Url.Action("Index", "QuestNonWeb")"><img src="@Url.Action("Index", "Home")Images/default/main_survey.png" alt="非線上案件滿意度調查" border="0" /></a>
+                <a href="http://www.gov.tw/" target="_blank"><img src="@Url.Action("Index", "Home")Images/default/main_gov.png" alt="我的E政府" border="0" /></a>
+                </div>
+                <br /><br />
+            </div>
+            
+            <div class="dRight">
+                <div id="dRightMenu">
+                    <div>@Html.ActionLink("服務項目", "Index", "Service")</div>
+                    <div>@Html.ActionLink("相關連結", "Index", "Site")</div>
+                    <div>@Html.ActionLink("歷史消息查詢", "Index", "Message")</div>
+                    <div>@Html.ActionLink("案件紀錄查詢", "Index", "History")</div>
+                </div>
+                <center>
+                <div style="padding: 20px; text-align: left;">@RenderBody()</div>
+                </center>
+                
+            </div>
+        </div>
+        <div class="dFooter1">
+            <div style="float: left; padding: 25px 0px 0px 450px; line-height: 1.6em">
+                衛生福利部線上申辦系統<br />
+                服務地址：115204 臺北市南港區忠孝東路六段488號<br />
+                @DataUtils.GetConfig("CONTACTINFO")<br />
+                @DataUtils.GetConfig("CONTACTINFO2")<br />
+                @DataUtils.GetConfig("CONTACTINFO3")<br />
+                @DataUtils.GetConfig("CONTACTINFO4")<br />
+                @DataUtils.GetConfig("CONTACTINFO5")
+            </div>
+        </div>
+        <div class="dFooter2">
+            <div style="float: left;">衛生福利部版權所有 Ministry of Health and Welfare, Exective Yuan R.O.C. (Taiwan) All rights reserved.</div>
+            <div id="dFooterMenu" style="float: right;">｜@Html.ActionLink("隱私權政策及安全宣告", "Privacy", "Home")｜@Html.ActionLink("網站著作權聲明", "")｜</div>
+        </div>
+</div>
+</center>
+</body>
+</html>

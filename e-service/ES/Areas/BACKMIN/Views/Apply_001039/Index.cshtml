@@ -1,0 +1,666 @@
+﻿@using ES.Areas.Admin.Models;
+@model Apply_001039ViewModel
+
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ES.Models.ShareCodeListModel sc = new ES.Models.ShareCodeListModel();
+}
+
+@using (Html.BeginForm("Index", "Apply_001039", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.Form.E_MAIL)
+    @Html.HiddenFor(m => m.Form.IS_MERGE_FILE)
+    @Html.HiddenFor(m => m.Form.APP_ID)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件分文及處理 / 案件處理 / 醫師赴國外訓練英文保證函
+    </div>
+    <div class="col-sm-12 content">
+        <!-- H1 title -->
+        <h1 class="main-title"><i class="fas fa-edit"></i>案件審理作業</h1>
+
+        <div class="table-responsive">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th colspan="2">基本資料檔</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="20%"><div align="center">申辦項目：</div></td>
+                        <td width="80%"><div align="left">醫師赴國外訓練英文保證函</div></td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">申辦日期：</div></td>
+                        <td>@Model.Form.APPLY_DATE_STR</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">預計完成日：</div></td>
+                        <td>@Model.Form.APP_EXT_DATE</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">案件承辦人姓名：</div></td>
+                        <td>@Model.Form.PRO_NAME</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">案件編號：</div></td>
+                        <td>@Model.Form.APP_ID</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">系統狀態：</div></td>
+                        <td>@Model.Form.APP_STATUS</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--1-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#basicData' href='#basicData'>
+                    <a>基本資料檔(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='basicData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.CNAME)</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.Form.CNAME, new { @id = "CNAME", @class = "form-control", placeholder = "", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.PID)</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.Form.PID, new { @id = "PID", @class = "form-control", placeholder = "", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.ENAME)</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.Form.ENAME, new { @id = "ENAME", @class = "form-control", placeholder = "", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.GENDER)</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.Form.GENDER, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.BIRTHDAY_AD)</label>
+                                <div class="col-sm-4">
+                                    @Html.DatePickerTWFor(x => x.Form.BIRTHDAY_AD, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.ECFMG)</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.Form.ECFMG, new { @class = "form-control", placeholder = "", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.HOSPITAL_DIVISION)</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.Form.HOSPITAL_DIVISION, new { @class = "form-control", placeholder = "", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.COUNTRY)</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.Form.COUNTRY, new { @class = "form-control", placeholder = "", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.CAUSE)</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.Form.CAUSE, new { @class = "form-control", placeholder = "", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.MAIL_ADDRESS)</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.Form.MAIL_ADDRESS, new { @class = "form-control", placeholder = "", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 class="second-title">申辦資料</h2>
+
+                        <div class='form-group'>
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.CONTACT_NAME)</label>
+                                <div class="col-sm-3 ">
+                                    @Html.TextBoxFor(m => m.Form.CONTACT_NAME, new { @class = "form-control", placeholder = "", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                        <div class='form-group'>
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.CONTACT_TEL_0)</label>
+                                <div class="col-sm-10">
+                                    <span>(</span>
+                                    @Html.TextBoxFor(m => m.Form.CONTACT_TEL_0, new { @class = "form-normal", placeholder = "", @readonly = true })
+                                    <span>)</span>
+                                    @Html.TextBoxFor(m => m.Form.CONTACT_TEL_1, new { @class = "form-normal", placeholder = "", @readonly = true })
+                                    <span>#</span>
+                                    @Html.TextBoxFor(m => m.Form.CONTACT_TEL_2, new { @class = "form-normal", placeholder = "", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                        <div class='form-group'>
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.CONTACT_MOBILE)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.Form.CONTACT_MOBILE, new { @class = "form-control", placeholder = "", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.E_MAIL_1)</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.Form.E_MAIL_1, new { @class = "form-normal", @readonly = true })
+                                    @@
+                                    @Html.DropDownListFor(m => m.Form.E_MAIL_2, sc.GetMailDomainList, new { @class = "form-normal", disabled = "disabled" })
+                                    @Html.TextBoxFor(m => m.Form.E_MAIL_3, new { @class = "form-normal", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                        <div class='form-group'>
+                            <div class="col-sm-12">
+                                <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.CONTACT_FAX_0)</label>
+                                <div class="col-sm-10">
+                                    <span>(</span>
+                                    @Html.TextBoxFor(m => m.Form.CONTACT_FAX_0, new { @class = "form-normal", placeholder = "", @readonly = true })
+                                    <span>)</span>
+                                    @Html.TextBoxFor(m => m.Form.CONTACT_FAX_1, new { @class = "form-normal", placeholder = "", @readonly = true })
+                                    <span>#</span>
+                                    @Html.TextBoxFor(m => m.Form.CONTACT_FAX_2, new { @class = "form-normal", placeholder = "", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--2-->
+        @Html.Partial("File")
+
+        <!--4-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#ReviewData' href='#ReviewData'>
+                    <a>案件進度歷程(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='ReviewData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件進度</label>
+                            <div class="col-sm-4">
+                                <input type="text" id="StatusDesc" class="form-control" readonly value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件狀態修改</label>
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(x => x.Form.FLOW_CD, sc.GetStatuListForDEP, new { @class = "form-control", onchange = "changeAddDocCheck()" })
+                            </div>
+                        </div>
+                        <div id="notice" style="display:none">
+                            <div class="form-group" id="notice_item">
+                                <label class="main-label col-sm-2" for="">補件項目(附件)</label>
+                                <div class="col-sm-10">
+                                    <div class="col-sm-3" style="padding:0px;">
+                                        <input type="checkbox" id="chkNotice_0" value="0">我國評鑑合格醫院保證函
+                                    </div>
+                                    <div class="col-sm-3" style="padding:0px;">
+                                        <input type="checkbox" id="chkNotice_1" value="1">申請人自行提出書面保證函
+                                    </div>
+                                    <div class="col-sm-2" style="padding:0px;">
+                                        <input type="checkbox" id="chkNotice_2" value="2">醫師證書影本
+                                    </div>
+                                    <div class="col-sm-4" style="padding:0px;">
+                                        <input type="checkbox" id="chkNotice_3" value="3">國外契約或接受文件
+                                    </div>
+                                    <div class="col-sm-4" style="padding:0px;">
+                                        <input type="checkbox" id="chkNotice_4" value="4">E.C.F.M.G.及格證書影本
+                                    </div>
+                                    <div class="col-sm-4" style="padding:0px;">
+                                        <input type="checkbox" id="chkNotice_5" value="5">國民身分證正面影本
+                                    </div>
+                                    <div class="col-sm-4" style="padding:0px;">
+                                        <input type="checkbox" id="chkNotice_6" value="6">國民身分證反面影本
+                                    </div>
+                                    <div class="col-sm-4" style="padding:0px;">
+                                        <input type="checkbox" id="chkNotice_7" value="7">護照影本或有關部會許可出國文件影本
+                                    </div>
+                                    <div class="col-sm-4" style="padding:0px;">
+                                        <input type="checkbox" id="chkNotice_8" value="8">個人執業發展規劃書
+                                    </div>
+                                      <div class="col-sm-4" style="padding:0px;">
+                                        <input type="checkbox" id="chkNotice_10" value="10">醫師赴國外訓練英文保證函申請表
+                                    </div>
+                                    <div class="col-sm-3" style="padding:0px;">
+                                        <input type="checkbox" id="chkNotice_9" name="chkNotice" value="9">其他
+                                    </div>
+                                    @Html.HiddenFor(m => m.Form.chkNotice)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label id="remark" class="main-label col-sm-2" for="">補件內容</label>
+                                <div class="col-sm-4">
+                                    @Html.TextAreaFor(m => m.Form.NOTE, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="mail_record">
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">郵寄日期</label>
+                                <div class="col-sm-4">
+                                    @Html.DatePickerTWFor(x => x.Form.MAIL_DATE_AC, new { size = "10" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">掛號條碼</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.Form.MAIL_BARCODE, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                                <label class="main-label col-sm-2" for="">公文文號</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.Form.MOHW_CASE_NO, new { @id = "MOHW_CASE_NO", @class = "form-control", placeholder = "" })
+                                </div>
+                                <button type="button" id="btnCaseNo" class="btn btn-blue" onclick="GetMOHW_CASE_NO('4','@Model.Form.APP_ID')">取得公文文號</button>
+                            </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件歷程記錄</label>
+                            <div class="col-sm-10">
+                                @Html.LogForTurbo(Model.Form.APP_ID, "APPLY_001039")
+                            </div>
+                        </div>
+                        <div class="btn-bar text-center">
+                            <button id="btnSave" type="button" class="btn btn-save" onclick="doSave()">存檔</button>
+                            <button type="button" class="btn btn-gray" onclick="doback()">返回</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var YN = $('input[name ="Form.IS_MERGE_FILE"]').val();
+        $("input[name=MERGEYN][value='" + YN + "']").attr('checked', true);
+
+        //var GENDER = $("#Form_GENDER").val();
+        //$("input[name=GENDER][value='" + GENDER + "']").attr('checked', true);
+
+        $("#StatusDesc").val($('#Form_FLOW_CD option:selected').text());
+
+        // 0:完成申請 9 逾期未補件而予結案 12 核可(發文歸檔) 15自請撤銷 8退件通知
+        if ($('#Form_FLOW_CD option:selected').val() == '0'
+            || $('#Form_FLOW_CD option:selected').val() == '9'
+            || $('#Form_FLOW_CD option:selected').val() == '12'
+            || $('#Form_FLOW_CD option:selected').val() == '15'
+            || $('#Form_FLOW_CD option:selected').val() == '8') {
+            $('input[id^="Chk"]').each(function (item) {
+                $(this).css({ "display": "none" });
+                $(this).prop("checked", false);
+            });
+
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnCaseNo').attr('disabled', 'disabled');
+
+            $("#Form_FLOW_CD").attr('disabled', 'disabled');
+            $('#btnSave').hide();
+        }
+        // 通知補件
+        if ($('#Form_FLOW_CD option:selected').val() == '2') {
+
+            $('#notice').show();
+            $('#notice_item').show();
+            $('#note_content').show();
+            $('#remark').text('補件內容');
+
+            //if ($('#Apply_ISMODIFY').val() == 'Y') {
+            //    $('#chkNotice_0').attr('checked', false);
+            //    $('#chkNotice_1').attr('checked', false);
+            //    $('#chkNotice_2').attr('checked', false);
+            //    $('#chkNotice_3').attr('checked', false);
+            //    $('#chkNotice_4').attr('checked', false);
+            //    $('#chkNotice_5').attr('checked', false);
+            //    $('#chkNotice_6').attr('checked', false);
+            //    $('#chkNotice_7').attr('checked', false);
+            //    $('#chkNotice_8').attr('checked', false);
+            //    $('#chkNotice_9').attr('checked', true);
+            //} else {
+            //    $('#chkNotice_0').attr('checked', true);
+            //    $('#chkNotice_1').attr('checked', true);
+            //    $('#chkNotice_2').attr('checked', true);
+            //    $('#chkNotice_3').attr('checked', true);
+            //    $('#chkNotice_4').attr('checked', true);
+            //    $('#chkNotice_5').attr('checked', true);
+            //    $('#chkNotice_6').attr('checked', true);
+            //    $('#chkNotice_7').attr('checked', true);
+            //    $('#chkNotice_8').attr('checked', true);
+            //    $('#chkNotice_9').attr('checked', false);
+            //}
+            //$('#chkNotice_0').attr('disabled', 'disabled');
+            //$('#chkNotice_1').attr('disabled', 'disabled');
+            //$('#chkNotice_2').attr('disabled', 'disabled');
+            //$('#chkNotice_3').attr('disabled', 'disabled');
+            //$('#chkNotice_4').attr('disabled', 'disabled');
+            //$('#chkNotice_5').attr('disabled', 'disabled');
+            //$('#chkNotice_6').attr('disabled', 'disabled');
+            //$('#chkNotice_7').attr('disabled', 'disabled');
+            //$('#chkNotice_8').attr('disabled', 'disabled');
+            //$('#chkNotice_9').attr('disabled', 'disabled');
+            //$('#Form_NOTE').attr('disabled', 'disabled');
+            $('#mail_record').hide();
+            //$('#btnsave').hide();
+
+        }
+        else if ($('#Form_FLOW_CD option:selected').val() == '9') {
+            // 9:逾期未補件而予結案
+            $('#notice').show();
+            $('#notice_item').hide();
+            $('#note_content').show();
+            $('#remark').text('備註');
+            $('#Form_NOTE').attr('readonly', 'readonly');
+            $('#btnSave').hide();
+            $('#mail_record').hide();
+        }
+        else if ($('#Form_FLOW_CD option:selected').val() == '12') {
+            // 12:核可(發文歸檔)
+            $('#mail_record').show();
+            $('#notice').hide();
+            $('#notice_item').hide();
+            $('#note_content').hide();
+            $('#remark').text('補件內容');
+        }
+        else if ($('#Form_FLOW_CD option:selected').val() == '15') {
+            // 15:自請撤銷
+            $('#notice').show();
+            $('#notice_item').hide();
+            $('#note_content').show();
+            $('#remark').text('備註');
+            $('#Form_NOTE').attr('readonly', 'readonly');
+            $('#btnSave').hide();
+            $('#mail_record').hide();
+        }
+        else if ($('#Form_FLOW_CD option:selected').val() == '8') {
+            // 8:退件通知
+            $('#notice').show();
+            $('#notice_item').hide();
+            $('#note_content').show();
+            $('#remark').text('備註');
+            $('#Form_FLOW_CD').attr('disabled', 'disabled');
+            $('#Form_NOTE').attr('readonly', 'readonly');
+            $('#btnSave').hide();
+            $('#mail_record').hide();
+        }
+        else {
+            $('#notice').hide();
+            $('#notice_item').hide();
+            $('#note_content').hide();
+            $('#remark').text('補件內容');
+            $('#mail_record').hide();
+        }
+
+        if ($('#Form_IS_MERGE_FILE').val() == 'Y') {
+            $('#chkFileY').prop('checked', 'checked');
+        }
+        else {
+            $('#chkFileN').prop('checked', 'checked');
+        }
+    });
+
+    // 地址
+    function loadDialogACC_ADDRCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+    // 案件狀態變更
+    function changechk() {
+        // 完成申請
+        if ($('#Form_FLOW_CD option:selected').val() == '0') {
+            $('input[id^="Chk"]').each(function (item) {
+                $(this).css({ "display": "none" });
+                $(this).prop("checked", false);
+            });
+
+            $('div[id^="DIV_"]').each(function (item) {
+                $(this).hide();
+            });
+
+            $('input[id$="_Note"]').each(function (item) {
+                $(this).val('');
+            });
+
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnCaseNo').attr('disabled', 'disabled');
+        }
+        else {
+            $('input[id^="Chk"]').each(function (item) {
+                $(this).css({ "display": "" });
+            });
+
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnCaseNo').attr('disabled', 'disabled');
+        }
+    }
+
+    function doACC_ADDRSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#ACC_ADDR_CODE').val(retData.Id);
+                    $('#ACC_ADDR_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doACC_ADDRNameGet() {
+        var code = $('#ACC_ADDR_CODE');
+        console.log('ACC_ADDR_CODE');
+        var data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#ACC_ADDR_TEXT'),
+            'add': $('#ACC_ADDR_CODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogACC_ADDRCodeMapName(data);
+        }
+    }
+
+    // 是否合併檔案
+    function RadioChange() {
+        $("#MERGEYN").val($('input[name="MERGEYN"]:checked').val());
+    }
+
+    // 送出
+    function doSave() {
+
+        var ValStr = "";
+        var chkNoticeArr = [];
+        $('input[id^="chkNotice"]:checked').each(function(i, obj) {
+            chkNoticeArr.push($(obj).val());
+        });
+
+        $("#Form_chkNotice").val(chkNoticeArr.join(','));
+        // 通知補件
+        if ($('#Form_FLOW_CD option:selected').val() == '2') {
+            if (chkNoticeArr.length == 0)
+                ValStr += '請勾選補件項目!!\r\n';
+            if ($("#Form_NOTE").val() == null || $("#Form_NOTE").val() == '') {
+                ValStr += '請輸入補件內容!!\r\n';
+            }
+        }
+        // 核可(發文歸檔)
+        if ($('#Form_FLOW_CD option:selected').val() == '12') {
+            if ($('#Form_MAIL_DATE_AC_TW').val().trim() == '') {
+                ValStr += '請輸入郵寄日期!!<br>';
+            }
+            //if ($('#Form_MAIL_BARCODE').val().trim() == '') {
+            //    ValStr += '請輸入掛號條碼!!<br>';
+            //}
+        }
+        // 逾期未補件而予結案
+        if ($('#Form_FLOW_CD option:selected').val() == '9') {
+            if ($('#Form_NOTE').val().trim() == '') {
+                ValStr += '請輸入備註!!</br>';
+            }
+        }
+
+        if (ValStr != "") { blockAlert(ValStr, "提示訊息"); }
+        else {
+            var data = getFormDataToObject($("form[id=main_form]"));
+            var appID = '@Model.Form.APP_ID';
+            ajaxLoadMore('@Url.Action("Save")', data, function (retData) {
+                if (retData.status) {
+                    blockMessage(retData.message, "提示訊息", function () {
+                        blockUI();
+                        location.href = '@Url.Action("Index", "Apply_001039")?appid=' + appID;
+                    });
+                }
+                else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+
+        }
+
+    }
+
+    // 返回
+    function doback() {
+        location.href = '@Url.Action("Index", "Case")';
+    }
+
+    // 取得ZIP
+    function GetZip(APP_ID) {
+        var data = {
+            "APP_ID": APP_ID
+        }
+        var url = '/GetZIP/GetZIP?' + $.param(data);
+        location.href = url;
+    }
+
+    // 取公文號
+    function GetMOHW_CASE_NO(UNIT_CD, APP_ID) {
+        var data = {
+            "UNIT_CD": UNIT_CD,
+            "APP_ID": APP_ID
+        }
+        ajaxLoadMore('/AJAX/GetMOHW_CASE_NO', data, function (retData) {
+            if (retData.status) {
+                $('#MOHW_CASE_NO').val(retData.message);
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+    }
+    // 通知補件
+    function changeAddDocCheck() {
+        // 通知補件
+        if ($('#Form_FLOW_CD option:selected').val() == '2') {
+            $('#notice').show();
+            $('#notice_item').show();
+            $('#note_content').show();
+            $('#remark').text('補件內容');
+            $('#mail_record').hide();
+        }
+        else if ($('#Form_FLOW_CD option:selected').val() == '9') {
+            // 逾期未補件而予結案
+            $('#notice').show();
+            $('#notice_item').hide();
+            $('#note_content').show();
+            $('#remark').text('備註');
+            $('#mail_record').hide();
+        }
+        else if ($('#Form_FLOW_CD option:selected').val() == '12') {
+            // 核可(發文歸檔)
+            $('#mail_record').show();
+            $('#notice').hide();
+            $('#notice_item').hide();
+            $('#note_content').hide();
+            $('#remark').text('補件內容');
+        }
+        else if ($('#Form_FLOW_CD option:selected').val() == '15') {
+            // 自請撤銷
+            $('#notice').show();
+            $('#notice_item').hide();
+            $('#note_content').show();
+            $('#remark').text('備註');
+            $('#mail_record').hide();
+        }
+        else if ($('#Form_FLOW_CD option:selected').val() == '8') {
+            // 退件通知
+            $('#notice').show();
+            $('#notice_item').hide();
+            $('#note_content').show();
+            $('#remark').text('備註');
+            $('#mail_record').hide();
+        }
+        else {
+            $('#notice').hide();
+            $('#notice_item').hide();
+            $('#note_content').hide();
+            $('#remark').text('補件內容');
+            $('#mail_record').hide();
+        }
+
+        $("#StatusDesc").val($('#Form_FLOW_CD option:selected').text());
+
+    }
+</script>

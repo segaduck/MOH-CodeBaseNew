@@ -1,0 +1,40 @@
+﻿@using EECOnline.Models;
+@using EECOnline.Services;
+@model HomeViewModel
+
+@if (Model.LoginApply == null || Model.LoginApply.ApplyDetail == null || Model.LoginApply.ApplyDetail.Where(x => x.payed == "Y").ToCount() <= 0)
+{
+    <tr>
+        <td colspan="6">- 無 -</td>
+    </tr>
+}
+else
+{
+    var tmpListDet = Model.LoginApply.ApplyDetail.Where(x => x.payed == "Y").ToList();
+    for (int i = 0; i < tmpListDet.Count; i++)
+    {
+        var item = tmpListDet[i];
+        string strTypes = "";
+        int sumPrice = 0;
+        if (item.ApplyDetailPrice.ToCount() > 0)
+        {
+            strTypes = string.Join(", ",
+                item.ApplyDetailPrice
+                .Where(x => x.his_type.TONotNullString() != "")
+                .OrderBy(x => x.keyid)
+                .Select(x => x.his_type_name + x.Get_Api_A1_Remark)
+                .ToList()
+            );
+            sumPrice = item.ApplyDetailPrice
+                .Sum(x => x.price ?? 0);
+        }
+        <tr>
+            <td style="padding: 0.5rem">@item.apply_no_sub</td>
+            <td style="padding: 0.5rem">@Model.LoginApply.createdatetime_Text_NoTime</td>
+            <td style="padding: 0.5rem">@item.hospital_name</td>
+            <td style="padding: 0.5rem">@strTypes</td>
+            <td style="padding: 0.5rem"><div class="price">@sumPrice</div></td>
+            <td style="padding: 0.5rem"><div class="timeMark">@item.payed_datetime_Text 已付款</div></td>
+        </tr>
+    }
+}

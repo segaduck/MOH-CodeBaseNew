@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>錯誤 - 衛生福利部線上申辦系統</title>
+    @Styles.Render("~/Content/themes/redmond/css")
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="@Url.Action("Index", "Home")Scripts/public.js" type="text/javascript"></script>
+    <script language="javascript" type="text/javascript">
+        @if(!String.IsNullOrEmpty(ViewBag.tempMessage)) {
+            @Html.Raw("$(function () {")
+            @Html.Raw("jAlert(\"")@Html.Raw(ViewBag.tempMessage)@Html.Raw("\");") 
+            @Html.Raw("});")
+        }
+    </script>
+</head>
+<body style="background-color: #FFF; color: #000;">
+<div style="text-align: left; height:100%;">@RenderBody()</div>
+</body>
+</html>

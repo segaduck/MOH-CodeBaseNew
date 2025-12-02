@@ -1,0 +1,51 @@
+﻿@model ES.Areas.Admin.Models.UnitEditModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "單位管理（修改）";
+    ViewBag.FunctionTitle = "單位管理 - 修改";
+}
+@using (Html.BeginForm("Edit", "Unit", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 後台管理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span class="formRequired">*</span> @Html.LabelFor(m => m.Name)</label>
+                <div class="col-sm-10">
+                    @Html.DisplayFor(m => m.ParentUnitName) @Html.TextBoxFor(m => m.Name, new { @class = "form-normal" }) @Html.ValidationMessageFor(m => m.Name)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.LabelFor(m => m.UnitSCode)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.UnitSCode, new { @class = "form-normal" }) @Html.ValidationMessageFor(m => m.UnitSCode)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span class="formRequired">*</span> @Html.LabelFor(m => m.Seq)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Seq, new { @class = "form-normal" }) @Html.ValidationMessageFor(m => m.Seq)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.LabelFor(m => m.Address)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Address, new { @class = "form-control" }) @Html.ValidationMessageFor(m => m.Address)
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.UnitCode)
+                @Html.HiddenFor(m => m.ParentCode)
+                @Html.HiddenFor(m => m.Level)
+                <input type="submit" value="存檔" class="btn btn-save" />
+                <input type="reset" value="重填" class="btn btn-gray" />
+                <input type="button" value="返回" class="btn btn-gray" onclick="document.location.href='@Url.Action("Index", "Unit")';" />
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,206 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_005005FormModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+}
+
+@using (Html.BeginForm("Apply", "Apply_005005", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink">
+                <i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">中藥GMP廠證明文件(英文)</a>
+            </div>
+            <div class="clearfix"></div>
+            <div class="step_map">
+                <ul>
+                    <li id="apply" class="active">填寫申報表件並上傳檔案</li>
+                    <li id="preview">預覽申辦表件</li>
+                    <li id="pay">繳費</li>
+                    <li id="save">完成申報</li>
+                </ul>
+            </div>
+            <div class="tab-content" id="myTabContent">
+                <div id="form" class="tab-pane fade active in">
+                    @Html.Partial("Apply")
+                </div>
+                <div id="form1" class="tab-pane fade">
+                    @Html.Partial("PreView005005")
+                </div>
+                <div id="form2" class="tab-pane fade">
+                    @Html.Partial("Pay")
+                </div>
+                <div id="form3" class="tab-pane fade">
+                    @Html.Partial("Save")
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function() {
+        $("#RadioYN").val("N");
+        $("#pay_paycount").val($("#PAYCOUNTSELECT :selected").val());
+        $("#pay_payamount").val($("#PAYAMOUNT").val());
+    });
+
+    //計算繳費金額(n*1500)
+    function CalculationVal() {
+        $("#PAYAMOUNT").val($("#PAYCOUNTSELECT :selected").val() * 1500);
+        $("#PAYCOUNT").val($("#PAYCOUNTSELECT :selected").val());
+
+        $("#pay_paycount").val($("#PAYCOUNTSELECT :selected").val());
+        $("#pay_payamount").val($("#PAYCOUNTSELECT :selected").val() * 1500);
+    }
+
+    //製造廠許可編號查詢按鈕
+    function search(LIC_NUM) {
+        alert(LIC_NUM);
+    }
+
+    //申請頁面送出
+    function send_apply() {
+        var ErrMsg = "";
+        //合併檔案檢查
+        if ($('input[name="optradio"]:checked').val() == "Y") {
+            var fileExist = 0;
+            for (var i = 1; i <= 2; i++) {
+                if ($("#File_" + i).val() != "") {
+                    fileExist++;
+                }
+            }
+            if (fileExist == 0) {
+                ErrMsg += "請至少上傳一筆檔案!\r\n";
+            }
+        }
+
+        if (ErrMsg == "") {
+            var dataApply = getFormDataToObject($("form[id=main_form]"));
+            ajaxLoadMore('@Url.Action("Apply")',
+                dataApply,
+                function (retData) {
+                    if (retData.status) {
+                        var data = getFormDataToObject($("form[id=main_form]"));
+                        ajaxLoadMore('@Url.Action("PreView")',
+                            data,
+                            function (getHtml) {
+                                $('#apply').removeClass('active');
+                                $('#preview').attr('class', 'active');
+                                $('#form').attr('class', 'tab-pane fade');
+                                $('#form1').attr('class', 'tab-pane fade active in');
+                                $("#form1").html(getHtml);
+                            });
+                    } else {
+                        blockAlert(retData.message, "提示訊息");
+                    }
+                });
+        } else {
+            blockAlert(ErrMsg, "提示訊息");
+        }
+    }
+
+    //預覽頁面返回
+    function back_preview() {
+        $('#traTablePre tbody tr').empty(); 
+        $('#conTablePre tbody tr').empty();
+        $("#TRA_ITEM").val("");
+        $("#TRA_ITEM_CD").val("");
+        $("#CON_ITEM").val("");
+        $("#CON_ITEM_CD").val("");
+        $('#preview').removeClass('active');
+        $('#apply').attr('class', 'active');
+        $('#form1').attr('class', 'tab-pane fade');
+        $('#form').attr('class', 'tab-pane fade active in');
+    }
+
+    //預覽頁面送出
+    function send_preview() {
+        $('#preview').removeClass('active');
+        $('#pay').attr('class', 'active');
+        $('#form1').attr('class', 'tab-pane fade');
+        $('#form2').attr('class', 'tab-pane fade active in');
+    }
+
+    //繳費頁面返回
+    function back_pay() {
+        $('#pay').removeClass('active');
+        $('#apply').attr('class', 'active');
+        $('#form2').attr('class', 'tab-pane fade');
+        $('#form').attr('class', 'tab-pane fade active in');
+    }
+
+    //繳費頁面送出
+    function send_pay() {
+        if ($("input[name='PAY_METHOD']:checked").val() == undefined) {
+            blockAlert("請選擇繳費方式!", "提示訊息");
+        } else {
+            blockUI();
+            var form = $("form[id=main_form]");
+            form.attr('action', '@Url.Action("Save")').submit();
+        }
+    }
+
+    //套表列印
+    function preview_pay() {
+        var data = getFormDataToObject($("form[id=main_form]"));
+        $.fileDownload('@Url.Action("PreviewApplyForm")', {
+            httpMethod: 'post',
+            data: data,
+            prepareCallback: function (url) { 
+                
+            }
+        });
+    }
+
+    function EmailChange() {
+        $("#EMAIL_ADDR_TEXT").val($("#EMAIL_ADDR :selected").text());
+    }
+
+    function RadioChange() {
+        $("#RadioYN").val($('input[name="optradio"]:checked').val());
+    }
+
+    function fileChange(sender) {
+        // 可接受的附檔名
+        var validExts = new Array(".DOC", ".DOCX", ".ODT", ".ODF", ".ODS", ".XLS", ".XLSX", ".PDF", ".PPT", ".PPTX", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF", ".ZIP");
+
+        var fileExt = sender.value;
+        fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            sender.value = null;
+            $("#Name_" + sender.name).val('');
+            return false;
+        } else {
+            $("#Name_" + sender.name).val(sender.files.item(0).name);
+            return true;
+        }
+    }
+
+      //製造廠許可編號查詢按鈕
+    function search() {
+        var dataApply = getFormDataToObject($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("getGMPData")', dataApply, function(resp) {
+            if (resp.status) {
+                //介接成功，帶回頁面
+                console.log(resp.message);
+                //$("#MF_CNT_NAME").val(resp.data.名稱);               
+                //$("#MF_ADDR").val(resp.data.營業地址);
+                var strDate1 = toTaiwanDate(resp.data.查廠日期, '/')   
+                $("#ISSUE_DATE").val(resp.data.查廠日期);
+                $("#ISSUE_DATE_TW").val(strDate1);
+                var strDate2 = toTaiwanDate(resp.data.有效期限, '/')   
+                $("#EXPIR_DATE").val(resp.data.有效期限);
+                $("#EXPIR_DATE_TW").val(strDate2);
+                blockAlert("已取回資料", "提示訊息");
+            } else {
+                blockAlert(resp.message, "提示訊息");
+            }
+        });
+    }
+</script>

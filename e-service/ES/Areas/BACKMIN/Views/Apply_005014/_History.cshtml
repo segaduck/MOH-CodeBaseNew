@@ -1,0 +1,147 @@
+﻿@model ES.Areas.BACKMIN.Models.Apply_005014ViewModel
+@using ES.Models
+
+@{
+    ViewBag.Title = "_History";
+    ShareCodeListModel options = new ShareCodeListModel();
+    IList<SelectListItem> items = options.GetStatuMemoList;
+    string flowText = null;
+    var curFlow = items.Where(x => x.Value == Model.Apply.FLOW_CD).FirstOrDefault();
+    if (curFlow != null)
+    {
+        flowText = curFlow.Text;
+    }
+}
+
+<div class="form-horizontal">
+    <div class="form-blue">
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">案件進度</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-normal" value="@flowText" readonly />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">案件狀態修改</label>
+            <div class="col-sm-4">
+                @Html.DropDownListFor(m => m.Apply.FLOW_CD, options.GetStatuMemoList, new { @class = "form-normal" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2">公文文號</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="Apply_MOHW_CASE_NO" name="Apply.MOHW_CASE_NO" readonly />
+            </div>
+            <button class="btn btn-blue" id="btnGetMohwCaseNo" type="button" onclick="getMOHW_CASE_NO()">
+                收文整合
+            </button>
+            <button class="btn btn-blue" id="btnGetMohwCaseNoS" type="button" onclick="getMOHW_TOKEN()">
+                文號查詢
+            </button>
+            <span id="caseNoTip" style="color:red; display:none;">請輸入公文文號</span>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">案件歷程記錄</label>
+            <div class="col-sm-10">
+                @Html.LogForTurbo(Model.Apply.APP_ID, "APPLY,APPLY_005014")
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">補件歷程記錄</label>
+            <div class="col-sm-10">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th> 補正序號 </th>
+                            <th> 日期 </th>
+                            <th> 欄位名稱 </th>
+                            <th> 補正(件)項目 </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.AllNoticeList != null && Model.AllNoticeList.Count > 0)
+                        {
+                            for (int i = 0; i < Model.AllNoticeList.Count; i++)
+                            {
+                                var item = Model.AllNoticeList[i];
+                                var first = Model.AllNoticeList.FirstOrDefault(x => x.FREQUENCY.Value == item.FREQUENCY);
+                                int count = Model.AllNoticeList.Count(x => x.FREQUENCY.Value == item.FREQUENCY);
+                                bool isFirst = item.Field == first.Field;
+                                <tr>
+                                    <td>@item.FREQUENCY</td>
+                                    <td> @item.ADD_TIME.Value.ToString("yyyy/MM/dd")</td>
+
+                                    <td> @item.Field_NAME </td>
+                                    <td> @item.NOTE </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center"> 查無資料 </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function getMOHW_CASE_NO() {
+        var data = {
+            "UNIT_CD": '7',
+            "APP_ID": '@Model.Apply.APP_ID'
+        };
+        ajaxLoadMore('/AJAX/GetMOHW_CASE_NO_PostIncoming',
+            data,
+            function (retData) {
+                if (retData.status) {
+                    var mohwCaseNo = retData.message;
+                    if (mohwCaseNo) {
+                        $('#Apply_MOHW_CASE_NO').val("success");
+                        blockAlert(retData.message, "提示訊息");
+                    }
+                } else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+    }
+    function getMOHW_TOKEN() {
+        var data = {
+            "APP_ID": '@Model.Apply.APP_ID'
+        };
+        ajaxLoadMore('/AJAX/GetMOHW_Token',
+            data,
+            function (retData) {
+                if (retData.status) {
+                    var mohwCaseNo = retData.message;
+                    if (mohwCaseNo) {
+                        $('#Apply_MOHW_CASE_NO').val(mohwCaseNo);
+                    }
+                } else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+    }
+
+    function syncStatus(val) {
+        if (val == '0' || val == '20') {
+            $('span#caseNoTip').show();
+        } else {
+            $('span#caseNoTip').hide();
+        }
+    }
+
+    $(function () {
+        $('select#Apply_FLOW_CD').on('change', function (e) {
+            var val = e.target.value;
+            syncStatus(val);
+        });
+
+        var flowcd = '@Model.Apply.FLOW_CD';
+        syncStatus(flowcd);
+    })
+</script>

@@ -1,0 +1,26 @@
+﻿@using EECOnline.Areas.A2.Models;
+@using EECOnline.Services;
+@model C102MFormModel
+
+@if (Model.LogGrid.ToCount() <= 0)
+{
+    <tr>
+        <td colspan="7" align="center">- 無 -</td>
+    </tr>
+}
+else
+{
+    for (int i = 0; i < Model.LogGrid.Count; i++)
+    {
+        var item = Model.LogGrid[i];
+        <tr>
+            <td align="center">@item.apply_no_sub</td>
+            <td align="center">@item.user_name</td>
+            <td align="center">@item.hospital_name</td>
+            <td align="center">@(item.his_type_name)@(item.Get_Api_A1_Remark)</td>
+            <td align="center">@item.his_range1_Text ~ @item.his_range2_Text</td>
+            <td align="center">@item.createdatetime_Text</td>
+            <td align="center">@item.provide_datetime_Text</td>
+        </tr>
+    }
+}

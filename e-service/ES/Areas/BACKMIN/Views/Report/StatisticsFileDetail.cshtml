@@ -1,0 +1,90 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model ES.Areas.Admin.Models.StatisticsFileModel
+@section scripts{
+    <link href="../../../../Content/Report/TableStyle.css" rel="stylesheet" type="text/css" />
+}
+@{
+    ViewBag.Title = "StatisticsFileDetail";
+    ViewBag.FunctionTitle = "書表下載統計";
+}
+<table class="oldTitle">
+    <tr class="oldTitle_title">
+        <td>
+            統計區間：
+        </td>
+    </tr>
+    <tr>
+        <td>
+            民國 <font color="red">@Html.Raw(this.Model.Sdate.Split('/')[0])</font>年 <font color="red">@Html.Raw(this.Model.Sdate.Split('/')[1])</font>月
+            <font color="red">@Html.Raw(this.Model.Sdate.Split('/')[2])</font>日到 民國 <font color="red">@Html.Raw(this.Model.Fdate.Split('/')[0])</font>年
+            <font color="red">@Html.Raw(this.Model.Fdate.Split('/')[1])</font>月 <font color="red">@Html.Raw(this.Model.Fdate.Split('/')[2])</font>日
+        </td>
+    </tr>
+</table>
+<br />
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td>
+            <span>分類：@ViewBag.SNAME／處理機關：@ViewBag.UNAME／總下載次數：@ViewBag.COUNTER</span>
+        </td>
+        <td align="right">
+            <a href="#" onclick="javascript:window.history.back(); return false;"><span>回上一頁</span></a>
+        </td>
+    </tr>
+</table>
+<table class="oldReport">
+    <tr class="oldReport_title">
+        <td>
+            項次
+        </td>
+        <td>
+            案件編號
+        </td>
+        <td>
+            案件名稱
+        </td>
+        <td>
+            表格名稱
+        </td>
+        <td>
+            下載次數
+        </td>
+    </tr>
+    @{
+        List<Map> li = ViewBag.List;
+        if (li.Count == 0)
+        {
+            <tr>
+                <td colspan="4">
+                    此範圍無資料可統計
+                </td>
+            </tr>
+        }
+        else
+        {
+            int i = 0;
+            foreach (Map m in li)
+            {
+                i++;
+                <tr>
+                    <td>
+                        @i.
+                </td>
+                <td>
+                    @m.GetString("SRV_ID")
+                </td>
+                <td>
+                    @m.GetString("NAME")
+            </td>
+            <td>
+                @m.GetString("TITLE")
+        </td>
+        <td align="right">
+            @m.GetString("total_count")
+    </td>
+</tr>
+}
+}
+    }
+</table>

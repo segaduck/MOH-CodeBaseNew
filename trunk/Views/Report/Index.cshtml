@@ -1,0 +1,74 @@
+﻿@using Turbo.ReportTK
+@model Report
+@{
+    ViewBag.Title = "報表-" + Model.Name;
+    Layout = "~/Views/Shared/_MainLayout_NoHeader.cshtml";
+}
+
+
+<form name="reportQuery" action="" method="post" novalidate="novalidate" class="form-horizontal">
+    @Html.Hidden("RptId", Model.Id)
+
+    <div class="col-sm-12">
+        @if (!string.IsNullOrWhiteSpace(Model.ResultMessage))
+        {
+            <div class="search-note"><i class="fa fa-info-circle" aria-hidden="true"></i>@(Model.ResultMessage)</div>
+        }
+        <div class="btn-group btn-group-right btn-group-sm clearfix">
+            @if (Model.BtnQuery)
+            {
+                <button type="button" class="btn btn-info" data-role="QUERY"><i class="fa fa-search" aria-hidden="true"></i>查詢</button>
+            }
+            @if (Model.BtnExcel)
+            {
+                <button type="button" class="btn btn-info" data-role="EXCEL"><i class="fa fa-search" aria-hidden="true"></i>匯出Excel</button>
+                <button type="button" class="btn btn-info" data-role="ODS"><i class="fa fa-search" aria-hidden="true"></i>匯出ODS</button>
+            }
+            @if (Model.BtnWord)
+            {
+                <button type="button" class="btn btn-info" data-role="WORD"><i class="fa fa-search" aria-hidden="true"></i>匯出Word</button>
+            }
+            @if (Model.BtnPDF)
+            {
+                <button type="button" class="btn btn-info" data-role="PDF"><i class="fa fa-search" aria-hidden="true"></i>PDF列印</button>
+            }
+        </div>
+    </div>
+    <h3>@Model.Name</h3>
+    @Html.Partial("_QueryForm", Model)
+</form>
+<script>
+    var actQuery = "@Url.Content("~/Report/Query")";
+    var actExcel = "@Url.Content("~/Report/XLS")";
+    var actOds = "@Url.Content("~/Report/ODS")";
+    var actWord = "@Url.Content("~/Report/WORD")";
+    var actPdf = "@Url.Content("~/Report/PDF")";
+    $(document).ready(function () {
+        $("button[data-role=QUERY]").click(function () {
+            $("form[name=reportQuery]")
+                .attr("action", actQuery)
+                .attr("target", "_blank")
+                .submit();
+        });
+        $("button[data-role=EXCEL]").click(function () {
+            $("form[name=reportQuery]")
+                .attr("action", actExcel)
+                .submit();
+        });
+        $("button[data-role=ODS]").click(function () {
+            $("form[name=reportQuery]")
+                .attr("action", actOds)
+                .submit();
+        });
+        $("button[data-role=WORD]").click(function () {
+            $("form[name=reportQuery]")
+                .attr("action", actWord)
+                .submit();
+        });
+        $("button[data-role=PDF]").click(function () {
+            $("form[name=reportQuery]")
+                .attr("action", actPdf)
+                .submit();
+        });
+    });
+</script>

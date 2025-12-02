@@ -1,0 +1,38 @@
+﻿@model ES.Areas.Admin.Models.ServiceApplyOpenModel
+@{
+    ViewBag.Title = "設定開放時間";
+    ViewBag.FunctionTitle = "設定開放時間";
+}
+@using (Html.BeginForm("Edit", "ServiceApplyOpen"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <table class="formTable1">
+        <tr>
+            <th style="width: 120px;"><span class="formRequired">*</span> @Html.DisplayNameFor(m => m.SRV_ID)</th>
+            <td>
+                @Html.DisplayFor(m => m.SRV_ID)
+                @Html.HiddenFor(m => m.SRV_ID)
+            </td>
+        </tr>
+        <tr>
+            <th><span class="formRequired">*</span> @Html.DisplayNameFor(m => m.APP_SDATE)</th>
+            <td>
+                @Html.TextBoxFor(m => m.APP_SDATE, new { style = "width: 90%;" })
+                @Html.ValidationMessageFor(m => m.APP_SDATE)
+            </td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.APP_EDATE)</th>
+            <td>
+                @Html.TextBoxFor(m => m.APP_EDATE, new { style = "width: 90%;" })
+                @Html.ValidationMessageFor(m => m.APP_EDATE)
+            </td>
+        </tr>
+    </table>
+    @Html.ValidationSummary()
+    <div class="formButtomBar">
+        <input type="submit" value="存檔" />
+    </div>
+}

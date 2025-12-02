@@ -1,0 +1,63 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    
+    if(ViewBag.Item["SRV_ID"].StartsWith("007")) {
+        ViewBag.Title = "信用卡重新捐款";
+    } else {
+        ViewBag.Title = "信用卡重新繳費";
+    }
+    
+    ViewBag.Script = @"
+        function doSubmit() {
+            if($('#CardIDN').val().length != 10) {
+                jAlert('持卡人身分證號未填或格式錯誤');
+            } else {
+                $('#btnSubmit').prop('disabled', true);
+                $('#btnSubmit').val('請稍候...');
+                $('#ActionForm').submit();
+            }
+        }
+    ";
+    string applyId = ViewBag.Item["APP_ID"];
+}
+<br />
+@using (Html.BeginForm("CardPay", "Form", FormMethod.Post, new { id="ActionForm" }))
+{
+    <table class="formTable1">
+        <caption>@ViewBag.Title</caption>
+        <tr>
+            <th style="width: 120px;">申請編號</th>
+            <td>@ViewBag.Item["APP_ID"]</td>
+        </tr>
+        <tr>
+            <th>申辦項目</th>
+            <td>@ViewBag.Item["SRV_NAME"]</td>
+        </tr>
+        <tr>
+            <th>捐款日期</th>
+            <td>@(((DateTime)ViewBag.Item["APP_TIME"]).ToString("yyyy/MM/dd"))</td>
+        </tr>
+        <tr>
+            <th>捐款金額</th>
+            <td>@ViewBag.Item["PAY_A_FEE"]</td>
+        </tr>
+        <tr>
+            <th>持卡人身分證號</th>
+            <td>@Html.TextBox("CardIDN", "", new { style = "width: 150px", maxlength = "10" })</td>
+        </tr>
+        <tr>
+            <th>說明</th>
+            <td style="color: #CC3333">
+                <ol style="margin: 0px 0px 0px -15px;">
+                    <li>請您按「下一步」(請勿連續點選)後耐心等候約15秒鐘，系統將會自動轉至E政府平臺頁面。若未成功轉至E政府平臺，請回信用卡線上捐款的「填表」頁面，按下「F5」重整後，點選「最近信用卡線上捐款紀錄」中捐款未確認的申請編號，並選擇「信用卡重新捐款」，則無須再次填寫捐款資料。</li>
+                    <li>另使用信用卡線上捐款時請注意，E政府平臺刷卡捐款完成後該系統會自動導回本申辦頁面，並成功取得案件編號才算完成此線上捐款。</li>
+                </ol>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <div class="formButtomBar">
+        @Html.Hidden("ApplyID", applyId)
+        <input type="button" id="btnSubmit" value="下一步" onclick="doSubmit();" />
+    </div>
+}

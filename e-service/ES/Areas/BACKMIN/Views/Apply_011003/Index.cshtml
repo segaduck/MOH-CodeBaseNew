@@ -1,0 +1,947 @@
+﻿@using ES.Areas.Admin.Models;
+@using ES.Services;
+
+@model Apply_011003ViewModel
+
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ES.Models.ShareCodeListModel sc = new ES.Models.ShareCodeListModel();
+    ViewBag.Title = "社會工作實務經驗年資審查線上申辦";
+}
+
+@using (Html.BeginForm("Index", "Apply_011003", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.Form.SEX_CD)
+    @Html.HiddenFor(m => m.Form.ISMEET)
+    @Html.HiddenFor(m => m.Form.EMAIL)
+    @Html.HiddenFor(m => m.Form.EDUCATION)
+    @Html.HiddenFor(m => m.Form.MERGEYN)
+    @Html.HiddenFor(m => m.Form.APP_ID)
+    @Html.HiddenFor(m => m.Form.IsNotice)
+    @Html.HiddenFor(m => m.Form.NAME)
+    @Html.HiddenFor(m => m.Form.APP_TIME)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件分文及處理 / 案件處理 / @ViewBag.Title
+    </div>
+    <div class="col-sm-12 content">
+        <!-- H1 title -->
+        <h1 class="main-title"><i class="fas fa-edit"></i>案件審理作業</h1>
+
+        <div class="table-responsive">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th colspan="2">基本資料檔</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="20%">
+                            <div align="center">申辦項目：</div>
+                        </td>
+                        <td width="80%">
+                            <div align="left">社會工作實務經驗年資審查線上申辦</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center">申辦日期：</div>
+                        </td>
+                        <td>@Model.Form.APP_TIME</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center">預計完成日：</div>
+                        </td>
+                        <td>@Model.Form.APP_EXT_DATE</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center">本部案件承辦人姓名：</div>
+                        </td>
+                        <td>@Model.Form.PRO_NAM</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center">公文文號：</div>
+                        </td>
+                        <td>@Model.Form.MOHW_CASE_NO</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center">案件編號：</div>
+                        </td>
+                        <td>@Model.Form.APP_ID</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center">系統狀態：</div>
+                        </td>
+                        <td>@Model.Form.APP_STATUS</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--1-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#basicData' href='#basicData'>
+                    <a>基本資料檔(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='basicData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">申辦項目</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">社會工作實務經驗年資審查線上申辦</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">申請種類：依「專門職業及技術人員高等考試社會工作師考試規則」第六條申請部分科目免試</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline "><input type="radio" name="ISMEET" value="1" onchange="RadioISMEETChange()" disabled>符合第一款(國內社會工作實務經驗五年以上，有中央主管機關審查合格之證明文件。)</label>
+                                <label class="radio-inline "><input type="radio" name="ISMEET" value="2" onchange="RadioISMEETChange()" disabled>符合第二款(外國社會工作師證書及國內社會工作實務經驗一年以上，有中央主管機關審查合格之證明文件。)</label>
+                                <label class="radio-inline "><input type="radio" name="ISMEET" value="3" onchange="RadioISMEETChange()" disabled>符合第三款(曾任公立或依法立案之私立專科以上學校講師三年以上、助理教授或副教授二年以上、教授一年以上，<br /> &nbsp;&nbsp;講授前條第一項所列學科至少二科，並有國內社會工作實務經驗一年以上，有中央主管機關審查合格之證明文件。)</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">姓名</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">@Model.Form.NAME</p>
+                                @* @Html.TextBoxFor(m => m.Form.NAME, new { @id = "NAME", @class = "form-normal", placeholder = "", @readonly = true })*@
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">出生年月日</label>
+                            <div class="col-sm-4">
+                                <div class="input-group">
+                                    <p class="form-control-static">@Model.Form.BIRTHDAY</p>
+                                    @*@Html.DatePickerTWFor(m => m.Form.BIRTHDAY, new { @readonly = true, disabled = "disabled" })*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">國民身分證統一編號</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">@Model.Form.IDN</p>
+                                @*@Html.TextBoxFor(m => m.Form.IDN, new { @id = "IDN", @class = "form-normal", placeholder = "", @readonly = true })*@
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">性別</label>
+                            <div class="col-sm-4">
+                                <label class="radio-inline "><input type="radio" value="M" name="SEX_CD" onchange="RadioSEXChange()" disabled>男</label>
+                                <label class="radio-inline "><input type="radio" value="F" name="SEX_CD" onchange="RadioSEXChange()" disabled>女</label>
+                                <label class="radio-inline "><input type="radio" value="O" name="SEX_CD" onchange="RadioSEXChange()" disabled>其他</label>
+                            </div>
+                        </div>
+                        <!--網站電話-->
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">電話(公)</label>
+                            <div class="col-sm-10">
+                                @Html.TelForTurbo(m => m.Form.TEL)
+                                @*<span>(</span>
+                                    @Html.TextBoxFor(m => m.Form.TEL, new { @id = "TEL", @class = "form-10 form-normal", placeholder = "", @readonly = true })
+                                    <span>)</span>
+                                    @Html.TextBoxFor(m => m.Form.TEL_0, new { @id = "TEL_0", @class = "form-normal", placeholder = "", @readonly = true })
+                                    <span>#</span>
+                                    @Html.TextBoxFor(m => m.Form.TEL_1, new { @id = "TEL_1", @class = "form-normal", placeholder = "", @readonly = true })*@
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">電話(宅)</label>
+                            <div class="col-sm-10">
+                                @Html.TelForTurbo(m => m.Form.FAX)
+                                @*<span>(</span>
+                                    @Html.TextBoxFor(m => m.Form.FAX, new { @id = "FAX", @class = "form-10 form-normal", placeholder = "", @readonly = true })
+                                    <span>)</span>
+                                    @Html.TextBoxFor(m => m.Form.FAX_0, new { @id = "FAX_0", @class = "form-normal", placeholder = "", @readonly = true })
+                                    <span>#</span>
+                                    @Html.TextBoxFor(m => m.Form.FAX_1, new { @id = "FAX_1", @class = "form-normal", placeholder = "", @readonly = true })*@
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">行動電話</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.Form.MOBILE, new { @id = "MOBILE", @class = "form-normal", placeholder = "", @readonly = true })
+                            </div>
+                        </div>
+                        <!--網站地址-->
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">通訊地址<br />(含郵遞區號，請填目前服務單位或可收掛號信件之地址)</label>
+                            <div class="col-sm-10 form-inline">
+                                @Html.TextBoxFor(m => m.Form.ADDR, new { @id = "ADDR", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = true })
+                                <div class="input-group">
+                                    @Html.TextBoxFor(m => m.Form.ADDR_TEXT, new { @id = "ADDR_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-info" onclick="doACC_ADDRSelect()" disabled><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.Form.ADDR_DETAIL, new { @id = "ADDR_DETAIL", @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">E-MAIL</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.MAIL, new { @id = "MAIL", @class = "form-normal", @readonly = true })
+                                @@
+                                @Html.DropDownListFor(m => m.Form.MAIL_0, sc.GetMailDomainList, new { @class = "form-normal", disabled = "disabled" })
+                                @Html.TextBoxFor(m => m.Form.MAIL_1, new { @id = "MAIL_1", @class = "form-normal", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">學歷證明</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline "><input type="radio" name="EDUCATION" value="1" onchange="doEDUCATIONChange()" disabled>1.中華民國一百零二年起，經考選部依「<a href="https://wwwc.moex.gov.tw/main/ExamLaws/wfrmExamLaws.aspx?kind=3&menu_id=320&laws_id=88" target="_blank">專技人員社會工作師考試應考資格第五條審議通過並公告名單</a>」所列學校之畢業證書影本</label><br />
+                                <label class="radio-inline "><input type="radio" name="EDUCATION" value="2" onchange="doEDUCATIONChange()" disabled>2.非考選部公告之學校系所(學分證明) (如檢附成績單，請清楚標記15學科(如螢光筆劃記)，以利審查)</label><br />
+                                <label class="radio-inline "><input type="radio" name="EDUCATION" value="3" onchange="doEDUCATIONChange()" disabled>3.經教育部承認之國外專科以上社會工作相關科、系、組、所、學位學程畢業證書影本</label><br />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">學歷-學校名稱<br>(請填全銜)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.SCHOOL, new { @id = "SCHOOL", @class = "form-normal", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">學歷-系(組)所名稱</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.OFFICE, new { @id = "OFFICE", @class = "form-normal", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">學歷-畢業年月</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">
+                                    @Model.Form.GRADUATION
+                                    <label>年</label>
+                                    @Model.Form.GRADUATION_MONTH
+                                    <label>月</label>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">考試通知書-通知年月</label>
+                            <div class="col-sm-10">
+                                @if (Model.Form.NOTICEDAY.TONotNullString() != "")
+                                {
+                                    <p class="form-control-static">
+                                        @Model.Form.NOTICEDAY_YEAR
+                                        <label>年</label>
+                                        @Model.Form.NOTICEDAY_MONTH
+                                        <label>月</label>
+                                    </p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#srvlistData' href='#srvlistData'>
+                    <a>服務經歷(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='srvlistData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        @{
+                            var i = 1;
+                            foreach (var item in Model.Form.SRVLIST)
+                            {
+                                var listNum = i - 1;
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">序號</label>
+                                    <div class="col-sm-10">
+                                        <p id="SEQ_NO" class="form-control-static">@i</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">服務經歷-服務單位名稱<br />(請填全銜)</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" readonly="readonly" value="@item.SRV_NAM">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">服務經歷-職稱</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="" readonly="readonly" value="@item.SRV_TITLE">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">服務經歷-服務年資</label>
+                                    <div class="col-sm-10 form-inline">
+                                        <div class="date datepicker-outline input-group" tagid="SRV_SYEAR_TW" disabled="disabled">
+                                            <input class="datepickerinput" id="SRV_SYEAR" name="SRVLIST[0].SRV_SYEAR" type="hidden" value="">
+                                            <input class="form-control" id="SRV_SYEAR_TW" name="SRVLIST[0].SRV_SYEAR_TW" size="10" type="text" value="@item.SRV_SYEAR_AD" readonly>
+                                            <span class="input-group-btn"><a class="open-datepicker btn-info btn" role="button"><i class="fa fa-calendar" style="color: white" aria-hidden="true"></i><span class="sr-only">calendar</span></a></span>
+                                        </div>
+                                        <span>&nbsp;至&nbsp;</span>
+                                        <div class="date datepicker-outline input-group" tagid="SRV_EYEAR_TW" disabled="disabled">
+                                            <input class="datepickerinput" id="SRV_EYEAR" name="SRVLIST[0].SRV_EYEAR" type="hidden" value="">
+                                            <input class="form-control" id="SRV_EYEAR_TW" name="SRVLIST[0].SRV_EYEAR_TW" size="10" type="text" value="@item.SRV_EYEAR_AD" readonly>
+                                            <span class="input-group-btn"><a class="open-datepicker btn-info btn" role="button"><i class="fa fa-calendar" style="color: white" aria-hidden="true"></i><span class="sr-only">calendar</span></a></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">服務證明正本彩色檔</label>
+                                    <div class="col-sm-10">
+                                        @{
+                                            if (Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 1).ToList().Count > 0)
+                                            {
+                                                @Html.FileDLForTurbo(m => m.Form.SRVLIST[(listNum)].FILE_PICRGB,
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 1).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 1).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 1).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 1).ToList().FirstOrDefault().SRC_NO + "," + i.ToString())
+
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">服務單位認可有案證明文件</label>
+                                    <div class="col-sm-10">
+                                        @{
+                                            if (Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 2).ToList().Count > 0)
+                                            {
+                                                @Html.FileDLForTurbo(m => m.Form.SRVLIST[(listNum)].FILE_SRVPROVE,
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 2).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 2).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 2).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 2).ToList().FirstOrDefault().SRC_NO + "," + i.ToString())
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">勞工保險被保險人投保明細表影本<br />(服務證明為團體或私立機構開具者需附)</label>
+                                    <div class="col-sm-10">
+                                        @{
+                                            if (Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 3).ToList().Count > 0)
+                                            {
+                                                @Html.FileDLForTurbo(m => m.Form.SRVLIST[(listNum)].FILE_LABOR,
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 3).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 3).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 3).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 3).ToList().FirstOrDefault().SRC_NO + "," + i.ToString())
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">服務單位立案或法人登記證書影本<br />(服務證明為團體或私立機構開具者需附)</label>
+                                    <div class="col-sm-10">
+                                        <span>特殊需求:</span>
+                                        @item.SRVLST_DEMAND_1
+                                        @Html.TextBoxFor(m => m.Form.SRVLIST[(i - 1)].SRVLST_DEMAND_1_TEXT, new { @id = "SRVLST_DEMAND_1_TEXT", @class = "form-control", placeholder = "請輸入特殊需求", @readonly = "readonly" })
+                                        @{
+                                            if (Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 4).ToList().Count > 0)
+                                            {
+                                                @Html.FileDLForTurbo(m => m.Form.SRVLIST[(listNum)].FILE_LEGAL,
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 4).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 4).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 4).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 4).ToList().FirstOrDefault().SRC_NO + "," + i.ToString())
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">服務單位章程影本<br />(服務證明為團體或私立機構開具者需附)</label>
+                                    <div class="col-sm-10">
+                                        <span>特殊需求:</span>
+                                        @item.SRVLST_DEMAND_2
+                                        @Html.TextBoxFor(m => m.Form.SRVLIST[(i - 1)].SRVLST_DEMAND_2_TEXT, new { @id = "SRVLST_DEMAND_2_TEXT", @class = "form-control", placeholder = "請輸入特殊需求", @readonly = "readonly" })
+                                        @{
+                                            if (Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 5).ToList().Count > 0)
+                                            {
+                                                @Html.FileDLForTurbo(m => m.Form.SRVLIST[(listNum)].FILE_CHARTER,
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 5).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 5).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 5).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.BATCH_INDEX == (i) && x.SRC_NO == 5).ToList().FirstOrDefault().SRC_NO + "," + i.ToString())
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                i++;
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--2-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#ApplyData' href='#ApplyData'>
+                    <a>上傳應附檔案(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='ApplyData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">佐證文件採合併檔案</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline "><input type="radio" name="MERGEYN" value="Y" onchange="RadioChange()" disabled>是</label>
+                                <label class="radio-inline "><input type="radio" name="MERGEYN" value="N" checked onchange="RadioChange()" disabled>否</label>
+                                <br />
+                                若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">國民身分證正面影本</label>
+                            <div class="col-sm-10">
+                                @{
+                                    if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 1).ToList().Count > 0)
+                                    {
+                                        @Html.FileDLForTurbo(m => m.Form.FILE_FIDC,
+     Model.Form.FILE.Where(x => x.FILE_NO == 1 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 1 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 1 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 1 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">國民身分證背面影本</label>
+                            <div class="col-sm-10">
+                                @{
+                                    if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 2).ToList().Count > 0)
+                                    {
+                                        @Html.FileDLForTurbo(m => m.Form.FILE_BIDC,
+    Model.Form.FILE.Where(x => x.FILE_NO == 2 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+    Model.Form.FILE.Where(x => x.FILE_NO == 2 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+    Model.Form.FILE.Where(x => x.FILE_NO == 2 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+    Model.Form.FILE.Where(x => x.FILE_NO == 2 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">最近一年內半身脫帽照片一張</label>
+                            <div class="col-sm-10">
+                                @{
+                                    if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 3).ToList().Count > 0)
+                                    {
+                                        @Html.FileDLForTurbo(m => m.Form.FILE_PIC,
+     Model.Form.FILE.Where(x => x.FILE_NO == 3 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 3 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 3 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 3 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                    }
+                                }
+                            </div>
+                        </div>
+                        @switch (Model.Form.EDUCATION)
+                        {
+                            case "1":
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">中華民國一百零二年起，經考選部依「專技人員社會工作師考試應考資格第五條審議通過並公告名單」所列學校之畢業證書影本</label>
+                                    <div class="col-sm-10">
+                                        @{
+                                            if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 4).ToList().Count > 0)
+                                            {
+                                                @Html.FileDLForTurbo(m => m.Form.FILE_GRAD,
+     Model.Form.FILE.Where(x => x.FILE_NO == 4 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 4 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 4 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 4 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                break;
+                            case "2":
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">非考選部公告之學校系所(報考專門職業及技術人員高等考試社會工作師考試之考試通知書影本)</label>
+                                    <div class="col-sm-10">
+                                        @{
+                                            if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 5).ToList().Count > 0)
+                                            {
+                                                @Html.FileDLForTurbo(m => m.Form.FILE_NOTI,
+     Model.Form.FILE.Where(x => x.FILE_NO == 5 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 5 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 5 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 5 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">非考選部公告之學校系所(畢業證書影本)</label>
+                                    <div class="col-sm-10">
+                                        @{
+                                            if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 12).ToList().Count > 0)
+                                            {
+                                                @Html.FileDLForTurbo(m => m.Form.FILE_NOTI2,
+     Model.Form.FILE.Where(x => x.FILE_NO == 12 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 12 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 12 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 12 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">非考選部公告之學校系所(學分證明) (如檢附成績單，請清楚標記15學科(如螢光筆劃記)，以利審查)</label>
+                                    <div class="col-sm-10">
+                                        @{
+                                            if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 13).ToList().Count > 0)
+                                            {
+                                                @Html.FileDLForTurbo(m => m.Form.FILE_NOTI3,
+     Model.Form.FILE.Where(x => x.FILE_NO == 13 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 13 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 13 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 13 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">非考選部公告之學校系所(實習證明)</label>
+                                    <div class="col-sm-10">
+                                        @{
+                                            if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 14).ToList().Count > 0)
+                                            {
+                                                @Html.FileDLForTurbo(m => m.Form.FILE_NOTI4,
+     Model.Form.FILE.Where(x => x.FILE_NO == 14 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 14 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 14 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 14 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                break;
+                            case "3":
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">經教育部承認之國外專科以上社會工作相關科、系、組、所、學位學程畢業證書影本</label>
+                                    <div class="col-sm-10">
+                                        @{
+                                            if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 6).ToList().Count > 0)
+                                            {
+                                                @Html.FileDLForTurbo(m => m.Form.FILE_GRADOFF,
+     Model.Form.FILE.Where(x => x.FILE_NO == 6 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 6 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 6 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+     Model.Form.FILE.Where(x => x.FILE_NO == 6 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                break;
+                        }
+                        @switch (Model.Form.ISMEET)
+                        {
+                            case "2":
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">國外社會工作師資格證明文件</label>
+                                    <div class="col-sm-10">
+                                        @if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 7).ToList().Count > 0)
+                                        {
+                                            @Html.FileDLForTurbo(m => m.Form.FILE_FONSRV,
+                 Model.Form.FILE.Where(x => x.FILE_NO == 7 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+                 Model.Form.FILE.Where(x => x.FILE_NO == 7 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+                 Model.Form.FILE.Where(x => x.FILE_NO == 7 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+                 Model.Form.FILE.Where(x => x.FILE_NO == 7 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                        }
+                                    </div>
+                                </div>
+                                break;
+                            case "3":
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">公立或立案之私立專科以上學校教學之證明文件</label>
+                                    <div class="col-sm-10">
+                                        @if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 8).ToList().Count > 0)
+                                        {
+                                            @Html.FileDLForTurbo(m => m.Form.FILE_SCHOOL,
+                                                     Model.Form.FILE.Where(x => x.FILE_NO == 8 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+                                                     Model.Form.FILE.Where(x => x.FILE_NO == 8 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+                                                     Model.Form.FILE.Where(x => x.FILE_NO == 8 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+                                                     Model.Form.FILE.Where(x => x.FILE_NO == 8 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                        }
+                                    </div>
+                                </div>
+                                break;
+                        }
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">戶籍謄本或戶口名簿<br />(改過姓名者需附)</label>
+                            <div class="col-sm-10">
+                                @{
+                                    if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 9).ToList().Count > 0)
+                                    {
+                                        @Html.FileDLForTurbo(m => m.Form.FILE_DOMICILE,
+                                        Model.Form.FILE.Where(x => x.FILE_NO == 9 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+                                        Model.Form.FILE.Where(x => x.FILE_NO == 9 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+                                        Model.Form.FILE.Where(x => x.FILE_NO == 9 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+                                        Model.Form.FILE.Where(x => x.FILE_NO == 9 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">其他附件(申請人自行列舉)</label>
+                            <div class="col-sm-10">
+                                @{
+                                    if (Model.Form.FILE.Where(x => x.SRC_NO == 0 && x.FILE_NO == 10).ToList().Count > 0)
+                                    {
+                                        @Html.FileDLForTurbo(m => m.Form.FILE_OTHER,
+                                        Model.Form.FILE.Where(x => x.FILE_NO == 10 && x.SRC_NO == 0).ToList().FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+                                        Model.Form.FILE.Where(x => x.FILE_NO == 10 && x.SRC_NO == 0).ToList().FirstOrDefault().APP_ID + "," +
+                                        Model.Form.FILE.Where(x => x.FILE_NO == 10 && x.SRC_NO == 0).ToList().FirstOrDefault().FILE_NO + "," +
+                                        Model.Form.FILE.Where(x => x.FILE_NO == 10 && x.SRC_NO == 0).ToList().FirstOrDefault().SRC_NO)
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="btnbar">
+                                <button type="button" onclick="GetZip('@Model.Form.APP_ID')" class="btn btn-blue">檔案打包下載</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--4-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#ReviewData' href='#ReviewData'>
+                    <a>案件進度歷程(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='ReviewData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件進度</label>
+                            <div class="col-sm-4">
+                                <input type="text" id="StatusDesc" class="form-control" readonly value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件狀態修改</label>
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(x => x.Form.FLOW_CD, sc.GetStatuListForUnitCD8, new { @class = "form-control", onchange = "changeAddDocCheck()" })
+                            </div>
+                        </div>
+
+                        <div id="notice" style="display:none">
+                            <div id="notice_ITEM">
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">補件項目(附件)</label>
+                                    <div class="col-sm-10">
+                                        @{
+                                            var q = 1;
+                                            for (int j = 1; j <= Model.Form.SRVLIST.Count(); j++)
+                                            {
+                                                <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />@Html.Raw("經歷" + j + " 服務證明正本彩色檔")<br>
+                                                q++;
+                                                <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />@Html.Raw("經歷" + j + " 服務單位認可有案證明文件")<br>
+                                                q++;
+                                                <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />@Html.Raw("經歷" + j + " 勞工保險被保險人投保明細表影本(服務證明為團體或私立機構開具者需附)")<br>
+                                                q++;
+                                                <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />@Html.Raw("經歷" + j + " 服務單位立案或法人登記證書影本(服務證明為團體或私立機構開具者需附)")<br>
+                                                q++;
+                                                <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />@Html.Raw("經歷" + j + " 服務單位章程影本(服務證明為團體或私立機構開具者需附)")<br>
+                                                q++;
+                                            }
+                                        }
+                                        <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />國民身分證正面影本<br>
+                                        @{q++;}
+                                        <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />國民身分證背面影本<br>
+                                        @{q++;}
+                                        <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />最近一年內半身脫帽照片一張<br>
+                                        @{q++;}
+                                        <div id="ED_1" style="display:none;">
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />中華民國一百零二年起，經考選部依「專技人員社會工作師考試應考資格第五條審議通過並公告名單」所列學校之畢業證書影本<br>
+                                        </div>
+                                        @{q++;}
+                                        <div id="ED_2" style="display:none;">
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />非考選部公告之學校系所(報考專門職業及技術人員高等考試社會工作師考試之考試通知書影本)<br>
+                                        </div>
+                                        @{q++;}
+                                        <div id="ED_3" style="display:none;">
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />經教育部承認之國外專科以上社會工作相關科、系、組、所、學位學程畢業證書影本<br>
+                                        </div>
+                                        @{q++;}
+                                        <div id="ISM_1">
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />國外社會工作師資格證明文件<br>
+                                        </div>
+                                        @{q++;}
+                                        <div id="ISM_2">
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />公立或立案之私立專科以上學校教學之證明文件<br>
+                                        </div>
+                                        @{q++;}
+                                        <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />戶籍謄本或戶口名簿(改過姓名者需附)<br>
+                                        @{q++;}
+                                        <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />其他附件(申請人自行列舉)<br>
+                                        @{q++;}
+                                        <div id="ED_22" style="display:none;">
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />非考選部公告之學校系所(畢業證書影本)<br>
+                                        </div>
+                                        @{q++;}
+                                        <div id="ED_23" style="display:none;">
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />非考選部公告之學校系所(學分證明)<br>
+                                        </div>
+                                        @{q++;}
+                                        <div id="ED_24" style="display:none;">
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />非考選部公告之學校系所(實習證明)<br>
+                                        </div>
+                                        @{q++;}
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">補件項目(其他)</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">
+                                            <input type="checkbox" id="chkfile" value="@q" onchange="checkfile()" />其他<br>
+                                        </p>
+                                        @{q++;}
+                                    </div>
+                                </div>
+                            </div>
+                            @Html.HiddenFor(m => m.Form.FileCheck)
+                            <div class="form-group" id="notice_content">
+                                <label id="remark" class="main-label col-sm-2" for="">補件內容</label>
+                                <div class="col-sm-4">
+                                    @Html.TextAreaFor(x => x.Form.NOTE, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">公文文號</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.Form.MOHW_CASE_NO, new { @id = "MOHW_CASE_NO", @class = "form-control", placeholder = "" })
+                            </div>
+                            <button type="button" id="btnCaseNo" class="btn btn-blue" onclick="GetMOHW_CASE_NO('4','@Model.Form.APP_ID')">取得公文文號</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件歷程記錄</label>
+                            <div class="col-sm-10">
+                                @Html.LogForTurbo(Model.Form.APP_ID, "APPLY_011003,APPLY_011003_SRVLST")
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btn-bar text-center">
+            <button type="button" id="btnSave" class="btn btn-save" onclick="doSave()">存檔</button>
+            <button type="button" id="btnReturn" class="btn btn-gray" onclick="doBack()">返回</button>
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#Form_TEL_Zip').attr("readonly", "readonly");
+        $('#Form_TEL_Phone').attr("readonly", "readonly");
+        $('#Form_TEL_Num').attr("readonly", "readonly");
+        $('#Form_FAX_Zip').attr("readonly", "readonly");
+        $('#Form_FAX_Phone').attr("readonly", "readonly");
+        $('#Form_FAX_Num').attr("readonly", "readonly");
+        $('#ADDR').on('blur', doADDRNameGet); doADDRNameGet();
+
+        $("#StatusDesc").val($('#Form_FLOW_CD option:selected').text());
+
+        var YN = $("#Form_MERGEYN").val();
+        $("input[name=MERGEYN][value='" + YN + "']").attr('checked', true);
+
+        $("input[name=ISMEET][value='" + $("#Form_ISMEET").val() + "']").attr('checked', true);
+
+        $("input[name=SEX_CD][value='" + $("#Form_SEX_CD").val() + "']").attr('checked', true);
+
+        var EDVAL = $("#Form_EDUCATION").val()
+        $("input[name=EDUCATION][value='" + EDVAL + "']").attr('checked', true);
+        $('#ED_' + EDVAL).removeAttr("style");
+        if (EDVAL == 2) {
+            $('#ED_22').removeAttr("style");
+            $('#ED_23').removeAttr("style");
+            $('#ED_24').removeAttr("style");
+        }
+
+        if (($('#Form_FLOW_CD option:selected').val() == "0" || $('#Form_FLOW_CD option:selected').val() == "2") && $('#Form_IsNotice').val() == 'Y') {
+            $("#Form_FLOW_CD").attr('disabled', 'disabled');
+            $('#btnCaseNo').hide();
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnSave').hide();
+        }
+
+        $("#Form_FLOW_CD [value='1']").remove();
+        $("#Form_FLOW_CD [value='3']").remove();
+
+        if ($("#Form_ISMEET").val() == "1") {
+            $('#ISM_1').hide()
+            $('#ISM_2').hide()
+        }
+        else if ($("#Form_ISMEET").val()=="2") {
+            $('#ISM_1').show()
+            $('#ISM_2').hide()
+        }
+        else if ($("#Form_ISMEET").val() == "3") {
+            $('#ISM_1').hide()
+            $('#ISM_2').show()
+        }
+    });
+
+    // 地址
+    function loadDialogADDRCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doADDRSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#ADDR').val(retData.Id);
+                    $('#ADDR_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doADDRNameGet() {
+        var code = $('#ADDR');
+        var data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#ADDR_TEXT'),
+            'add': $('#ADDR')
+        };
+        if ($.trim(data.arg.CODE) == '') { data.box.val(''); $('#ADDR').val('') }
+        else {
+            code.val(data.arg.CODE);
+            loadDialogADDRCodeMapName(data);
+        }
+    }
+
+    function changeAddDocCheck() {
+        if ($('#Form_FLOW_CD option:selected').val() == '0') {
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnCaseNo').attr('disabled', 'disabled');
+            $('#notice').hide();
+        }
+        else if ($('#Form_FLOW_CD option:selected').val() == '4') {
+            $('#notice').show();
+            $('#notice_ITEM').show();
+            $('#notice_content').hide();
+        }
+        else if ($('#Form_FLOW_CD option:selected').val() == '9') {
+            $('#notice').show();
+            $('#notice_ITEM').hide();
+            $('#remark').text('備註');
+            $('#notice_content').show();
+        }
+        else {
+            if ($('#Form_FLOW_CD option:selected').val() == '2') {
+                $('#notice').show();
+                $('#notice_ITEM').show();
+            }
+            else {
+                $('#notice').hide();
+            }
+
+            $('#MOHW_CASE_NO').removeAttr("readonly");
+            $('#btnCaseNo').removeAttr('disabled')
+        }
+    }
+
+    function checkfile() {
+        var ValArr = new Array();
+        $('input[type="checkbox"][id="chkfile"]:checked').each(function (i) {
+            ValArr[i] = this.value;
+        });
+        $('#Form_FileCheck').val(ValArr.join());
+    }
+
+   // 送出
+    function doSave() {
+
+        var ValStr = "";
+
+        if (ValStr != "") { blockAlert(ValStr, "提示訊息"); }
+        else {
+            var data = getFormDataToObject($("form[id=main_form]"));
+
+            ajaxLoadMore('@Url.Action("Save")', data, function (retData) {
+                if (retData.status) {
+                    blockMessage(retData.message, "提示訊息", function () {
+                        var id = $('#Form_APP_ID').val();
+                        location.href = "Apply_011003?appid=" + id + "&srvid=011003";
+                    });
+                }
+                else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+
+        }
+
+    }
+
+    // 取公文號
+    function GetMOHW_CASE_NO(UNIT_CD) {
+        var APP_ID = $('#Form_APP_ID').val();
+        var data = {
+            "UNIT_CD": UNIT_CD,
+            "APP_ID": APP_ID
+        }
+        ajaxLoadMore('/AJAX/GetMOHW_CASE_NO', data, function (retData) {
+            if (retData.status) {
+                $('#MOHW_CASE_NO').val(retData.message)
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+    }
+    // 取得ZIP
+    function GetZip(APP_ID) {
+        var data = {
+            "APP_ID": APP_ID,
+            "CASENAME": "社會工作實務經驗年資審查線上申辦"
+        }
+        var url = '/GetZIP/GetZIP?' + $.param(data);
+        location.href = url;
+    }
+
+
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index", "Case")';
+    }
+</script>
+

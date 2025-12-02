@@ -1,0 +1,308 @@
+﻿@using EECOnline.Models;
+@using EECOnline.Services;
+@using EECOnline.Areas.Login.Models;
+@using Newtonsoft.Json;
+@model C102MViewModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+
+    // 組成圓餅圖所需的字串
+    var tmpJson = JsonConvert.SerializeObject(Model.YearHisTypeDatas);
+    tmpJson = tmpJson.Replace("\"", "'");
+
+    // 資料區間
+    var dataRange = (DateTime.Now.Year - 1911).ToString() + "/01 ~ " + (DateTime.Now.Year - 1911).ToString() + "/12";
+}
+
+@Scripts.Render("~/Scripts/chartist/chartist.js")
+@Styles.Render("~/Scripts/chartist/chartist.css")
+
+<div class="home-content">
+    <div class="content-bg">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4 hvr-float">
+                    <div class="todo-card cardBg-case">
+                        <div class="card-title">申辦案件數</div>
+                        <div class="card-item"><span class="number">@Model.ApplyNoSubNum</span>件</div>
+                    </div>
+                </div>
+                <div class="col-md-4 hvr-float">
+                    <div class="todo-card cardBg-upload">
+                        <div class="card-title">待補上傳件數</div>
+                        <div class="card-item"><span class="number">@Model.WaitUploadNum</span>件</div>
+                    </div>
+                </div>
+                <div class="col-md-4 hvr-float">
+                    <div class="todo-card cardBg-cash">
+                        <div class="card-title">本月申辦預定收款金額</div>
+                        <div class="card-item"><span class="number">@Model.MonthMoneySum</span>元</div>
+                    </div>
+                </div>
+            </div>
+            @if (sm.UserInfo.LoginTab == "1")
+            {
+                <div class="row">
+                    <div class="col-md-6">
+                        <h1 class="main-title">當年度申請情形</h1>
+                        <div class="board-gray">
+                            <div id="index-chart-a"></div>
+                        </div>
+                        <div class="data-note">＊資料區間 @dataRange</div>
+                    </div>
+                    <div class="col-md-6">
+                        <h1 class="main-title">當年度病歷單張類型申請情形</h1>
+                        <div class="board-gray">
+                            <div id="index-chart-b"></div>
+                        </div>
+                        <div class="data-note">＊資料區間 @dataRange</div>
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 class="main-title">最新消息</h1>
+                    <div class="board-gray mb-4">
+                        <div class="table-responsive table-newsList">
+                            <table class="table">
+                                <tbody>
+                                    @if (Model.News.ToCount() > 0)
+                                    {
+                                        for (int i = 0; i < Model.News.Count; i++)
+                                        {
+                                            var item = Model.News[i];
+                                            var tmpDate = DateTime.ParseExact(item.Date, "yyyyMMdd", null);
+                                            <tr>
+                                                <td width="10%" style="text-align: center">@tmpDate.AddYears(-1911).ToString("yyy/MM/dd")</td>
+                                                <td width="80%">
+                                                    <a href="#" onclick="OnNewsClick(@item.NewsID)">
+                                                        [@item.TypeName] @item.Subject
+                                                    </a>
+                                                </td>
+                                                <td width="10%" style="text-align: right">
+                                                    @if (item.IsTop == "1")
+                                                    {
+                                                        <img src="~/images/bookmarks-fill.svg" style="position: relative; top: -0.8rem;" />
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="3" style="color: black;">- 無 -</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+        </div>
+    </div>
+</div>
+<footer>2023 © 衛生福利部版權所有</footer>
+
+@if (sm.UserInfo.LoginTab == "1")
+{
+    <!-- chart 1 -->
+    <script type="text/javascript">
+
+        var dom = document.getElementById('index-chart-a');
+        var myChart = echarts.init(dom, null, {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        var app = {};
+        var option = {
+            color: [
+                '#77b1d3',
+                '#6e90d1',
+                '#676ed0',
+                '#7966d0',
+                '#9668d0',
+                '#b669d1',
+                '#c86bc4',
+                '#c86ba4',
+                '#c86b85',
+                '#c86c68',
+                '#cc8c6b',
+                '#d0ad6e',
+            ],
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#999'
+                    }
+                }
+            },
+            grid: {
+                right: '5px',
+                left: '8%',
+                height: '220',
+            },
+            toolbox: {
+                feature: {
+                    magicType: {
+                        show: true,
+                        type: ['line', 'bar'],
+                        title: {
+                            line:'切換為折線圖',
+                            bar:'切換為柱狀圖',
+                        },
+                    },
+                    restore: {
+                        show: true,
+                        title:'還原',
+                    },
+                    saveAsImage: {
+                        show: true,
+                        title:'下載圖檔',
+				   },
+                },
+            },
+            legend: {
+                data: ['Evaporation']
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月',],
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '申請件數',
+                    min: 0,
+                    interval: 50,
+                    axisLabel: {
+                        formatter: '{value} 件'
+                    }
+                },
+            ],
+            series: [
+                {
+                    name: '申請',
+                    type: 'bar',
+                    colorBy: 'data',
+                    tooltip: {
+                        valueFormatter: function (value) {
+                            return value + ' 件';
+                        }
+                    },
+                    data: [
+                        @(string.Join(", ", Model.YearApplyNoDatas))
+                    ]
+                },
+            ]
+        };
+        if (option && typeof option === 'object') {
+            myChart.setOption(option);
+        }
+        window.addEventListener('resize', myChart.resize);
+
+    </script>
+
+    <!-- chart 2 -->
+    <script type="text/javascript">
+
+        var dom = document.getElementById('index-chart-b');
+        var myChart = echarts.init(dom, null, {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        var app = {};
+        var option = {
+            color: [
+                '#77b1d3',
+                '#6e90d1',
+                '#676ed0',
+                '#7966d0',
+                '#9668d0',
+            ],
+            title: {
+                text: '',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b}: {c} ({d}%)'
+            },
+            grid: {
+                right: '5px',
+                left: '5px',
+                height: '350',
+                width: '100%',
+            },
+            legend: {
+                show: false,
+                top: '20px',
+            },
+            series: [
+                {
+                    name: '病歷單張類型申請',
+                    type: 'pie',
+                    selectedMode: 'single',
+                    radius: '50%',
+
+                    label: {
+                        formatter: '{b|{b}：}{per|{d}%}',
+                        rich: {
+                            b: {
+                                color: '#4C5058',
+                                fontSize: 14,
+                                fontWeight: 'bold',
+                                lineHeight: 33
+                            },
+                            per: {
+                                color: '#0054d1',
+                                fontSize: 14,
+                            }
+                        }
+                    },
+                    data: @(Html.Raw(tmpJson)),
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        if (option && typeof option === 'object') {
+            myChart.setOption(option);
+        }
+        window.addEventListener('resize', myChart.resize);
+
+    </script>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+    })
+
+    function OnNewsClick(NewsID) {
+        var data = { "NewsID": NewsID };
+        var url = '@Url.Action("News", "C102M")?' + $.param(data);
+        var title = '最新消息';
+        popupWindow({ 'width': -1 }, url, title, null, function (retData, doc) {
+            if (retData != null) { if (retData.redirectUrl != "") { RedirectAfterPopup(retData.redirectUrl) } }
+        });
+    }
+
+</script>

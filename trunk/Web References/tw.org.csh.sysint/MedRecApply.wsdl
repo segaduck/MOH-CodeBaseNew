@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GetToken">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PKey" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetTokenResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetTokenResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RefreshToken">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="token" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RefreshTokenResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RefreshTokenResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetPtEMRList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Token" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="idno" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="birth" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ec_sdate" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ec_edate" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetPtEMRListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetPtEMRListResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="EMRApply">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Token" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="idno" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="birth" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="caseNo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Json" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="EMRApplyResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="EMRApplyResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetTokenSoapIn">
+    <wsdl:part name="parameters" element="tns:GetToken" />
+  </wsdl:message>
+  <wsdl:message name="GetTokenSoapOut">
+    <wsdl:part name="parameters" element="tns:GetTokenResponse" />
+  </wsdl:message>
+  <wsdl:message name="RefreshTokenSoapIn">
+    <wsdl:part name="parameters" element="tns:RefreshToken" />
+  </wsdl:message>
+  <wsdl:message name="RefreshTokenSoapOut">
+    <wsdl:part name="parameters" element="tns:RefreshTokenResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetPtEMRListSoapIn">
+    <wsdl:part name="parameters" element="tns:GetPtEMRList" />
+  </wsdl:message>
+  <wsdl:message name="GetPtEMRListSoapOut">
+    <wsdl:part name="parameters" element="tns:GetPtEMRListResponse" />
+  </wsdl:message>
+  <wsdl:message name="EMRApplySoapIn">
+    <wsdl:part name="parameters" element="tns:EMRApply" />
+  </wsdl:message>
+  <wsdl:message name="EMRApplySoapOut">
+    <wsdl:part name="parameters" element="tns:EMRApplyResponse" />
+  </wsdl:message>
+  <wsdl:portType name="MedRecApplySoap">
+    <wsdl:operation name="GetToken">
+      <wsdl:input message="tns:GetTokenSoapIn" />
+      <wsdl:output message="tns:GetTokenSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RefreshToken">
+      <wsdl:input message="tns:RefreshTokenSoapIn" />
+      <wsdl:output message="tns:RefreshTokenSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPtEMRList">
+      <wsdl:input message="tns:GetPtEMRListSoapIn" />
+      <wsdl:output message="tns:GetPtEMRListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="EMRApply">
+      <wsdl:input message="tns:EMRApplySoapIn" />
+      <wsdl:output message="tns:EMRApplySoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="MedRecApplySoap" type="tns:MedRecApplySoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetToken">
+      <soap:operation soapAction="http://tempuri.org/GetToken" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RefreshToken">
+      <soap:operation soapAction="http://tempuri.org/RefreshToken" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPtEMRList">
+      <soap:operation soapAction="http://tempuri.org/GetPtEMRList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="EMRApply">
+      <soap:operation soapAction="http://tempuri.org/EMRApply" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="MedRecApplySoap12" type="tns:MedRecApplySoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetToken">
+      <soap12:operation soapAction="http://tempuri.org/GetToken" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RefreshToken">
+      <soap12:operation soapAction="http://tempuri.org/RefreshToken" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPtEMRList">
+      <soap12:operation soapAction="http://tempuri.org/GetPtEMRList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="EMRApply">
+      <soap12:operation soapAction="http://tempuri.org/EMRApply" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MedRecApply">
+    <wsdl:port name="MedRecApplySoap" binding="tns:MedRecApplySoap">
+      <soap:address location="https://sysint.csh.org.tw/MedRecApply/MedRecApply.asmx" />
+    </wsdl:port>
+    <wsdl:port name="MedRecApplySoap12" binding="tns:MedRecApplySoap12">
+      <soap12:address location="https://sysint.csh.org.tw/MedRecApply/MedRecApply.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

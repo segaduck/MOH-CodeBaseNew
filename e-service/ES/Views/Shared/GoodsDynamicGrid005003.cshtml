@@ -1,0 +1,156 @@
+﻿@using ES.Commons
+@using ES.Services
+@using ES.Models
+@using ES.Models.ViewModels
+@using ES.Models.Entities
+@model ES.Models.GoodsDynamicGrid<Apply_005003_F11ViewModel>
+@{
+    ShareCodeListModel dao = new ShareCodeListModel();
+    string s_IsDisabled = Model.IsReadOnly ? "pointer-events:none;background:#DDDDDD" : "";
+}
+
+<div id="GoodsDynamicGrid005003">
+    <h2 class="second-title">
+        @Html.HiddenFor(m => m.IsNewOpen)
+        @Html.HiddenFor(m => m.IsReadOnly)
+        @Html.HiddenFor(m => m.IsDeleteOpen)
+        @Html.HiddenFor(m => m.SourceModelName)
+        成分內容
+        @if (Model.IsNewOpen && !Model.IsReadOnly)
+        {
+            <button type="button" class="btn btn-save" id="btnAdd" onclick="addGoodRow()">新增</button>
+        }       
+        <br />
+    </h2>
+    <div id="goodsTable" class="table-responsive">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+            <thead>
+            <th width="5%">上下</th>
+            <th width="25%"><span style="color:red" sr-only="必填">＊</span>生藥名</th>
+            <th width="25%">成分內容(中文)</th>
+            <th width="20%">份量</th>
+            <th width="20%">單位</th>
+            <th width="5%">刪除</th>
+            </thead>
+            <tbody>
+                @if (Model.GoodsList.ToCount() > 0)
+                {
+                    for (int i = 0; i < Model.GoodsList.Count; i++)
+                    {
+                        var item = Model.GoodsList[i];
+                        <tr style="border: none;">
+                            @if (!Model.IsReadOnly)
+                            {
+                                <td style="border: none;">
+                                    <button type="button" id="btnUp_1" class="btn btn-clear" onclick="UpGoodRow(@(Model.GoodsList[i].SRL_NO))">上</button>
+                                    <button type="button" id="btnDown_1" class="btn btn-clear" onclick="DownGoodRow(@(Model.GoodsList[i].SRL_NO))">下</button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td style="border: none;">&nbsp;</td>
+                            }
+                            <td style="border: none;">
+                                @Html.HiddenFor(m => Model.GoodsList[i].SRL_NO)
+                                @Html.TextBoxFor(m => Model.GoodsList[i].F11_SCI_NM, new { @class = "form-control", style = s_IsDisabled })
+                            </td>
+                            <td style="border: none;">
+                                @Html.TextBoxFor(m => Model.GoodsList[i].F11_SCI_NAME, new { @class = "form-control", style = s_IsDisabled })
+                            </td>
+                            <td style="border: none;">
+                                @Html.TextBoxFor(m => Model.GoodsList[i].F11_QUANTITY, new { @class = "form-control", style = s_IsDisabled })
+                            </td>
+                            <td style="border: none;">
+                                @Html.TextBoxFor(m => Model.GoodsList[i].F11_UNIT, new { @class = "form-control", style = s_IsDisabled })
+                            </td>
+                            @if (Model.IsDeleteOpen && !Model.IsReadOnly)
+                            {
+                                <td style="border: none;">
+                                    <button type="button" id="btnDelte_1" class="btn btn-clear" onclick="deleteGoodRow(@(i))">
+                                        刪除
+                                    </button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+    });
+
+    // 新增一列
+    function addGoodRow() {
+        var url = "@Url.Action("addGoodRow005003", "AJAX",new { area = "" })";
+        var parms = getDivDataJson("#GoodsDynamicGrid005003");
+
+        ajaxLoadMore(url, parms,
+            function (data) {
+                $("#GoodsDynamicGrid005003").html(data);
+                $("#GoodsDynamicGrid005003 :input").each(function (i, obj) {
+                    $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                    $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                    $(this).val().replace('+', ' ')
+                })
+            });
+    }
+
+    // 上移此列
+    function UpGoodRow(idx) {
+        //if (idx == null) { return; }
+        var url = "@Url.Action("UpGoodRow005003", "AJAX",new { area = "" })";
+        var parms = getDivDataJson("#GoodsDynamicGrid005003");
+        parms["idx"] = idx;
+
+        ajaxLoadMore(url, parms,
+            function (data) {
+                $("#GoodsDynamicGrid005003").html(data);
+                //$("#GoodsDynamicGrid005003").html(data);
+                $("#GoodsDynamicGrid005003 :input").each(function (i, obj) {
+                    $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                    $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                    $(this).val().replace('+', ' ')
+                })
+            });
+    }
+
+    // 下移此列
+    function DownGoodRow(idx) {
+        //if (idx == null) { return; }
+        var url = "@Url.Action("DownGoodRow005003", "AJAX",new { area = "" })";
+        var parms = getDivDataJson("#GoodsDynamicGrid005003");
+        parms["idx"] = idx;
+
+        ajaxLoadMore(url, parms
+         , function (data) {
+             $("#GoodsDynamicGrid005003").html(data);
+             //$("#GoodsDynamicGrid005003").html(data);
+             $("#GoodsDynamicGrid005003 :input").each(function (i, obj) {
+                 $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                 $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+             })
+         });
+    }
+
+    // 刪除此列
+    function deleteGoodRow(idx) {
+        var url = "@Url.Action("deleteGoodRow005003", "AJAX",new { area = "" })";
+        var parms = getDivDataJson("#GoodsDynamicGrid005003");
+        parms["idx"] = idx;
+
+        ajaxLoadMore(url, parms
+         , function (data) {
+             $("#GoodsDynamicGrid005003").html(data);
+             //$("#GoodsDynamicGrid005003").html(data);
+             $("#GoodsDynamicGrid005003 :input").each(function (i, obj) {
+                 $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                 $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+             })
+         });
+    }
+</script>

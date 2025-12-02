@@ -1,0 +1,287 @@
+﻿@using EECOnline.Areas.Login.Models;
+@using EECOnline.Models;
+@using EECOnline.Services
+@using EECOnline.Commons
+@using Turbo.ReportTK
+@using Newtonsoft.Json
+@model C101MFormModel
+@{
+    Layout = null;
+}
+<!doctype html>
+<html>
+<head>
+    <title>衛生福利部｜民眾線上申辦電子病歷服務平台管理系統</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=8,9,edge,chrome=1">
+    <meta name="google-site-verification" content="xO1rl3yyV9pA8bYEEbsrQHV6bsvYiN-OmygfyITWAyQ">
+    <meta name="description" content="衛生福利部｜民眾線上申辦電子病歷服務平台管理系統">
+    <meta name="keywords" content="衛生福利部,民眾,線上申辦,電子病歷,申辦,醫療院所, 進度查詢, 線上繳費">
+    <meta name="author" content="">
+    <meta name="copyright" content="本網頁著作權屬衛生福利部所有">
+    <meta name="robots" content="all">
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta data-n-head="ssr" name="theme-color" content="#0066cc">
+
+    @*CSS*@
+    @Styles.Render("~/Content/base.css")
+    @Styles.Render("~/Content/bootstrap.min.css")
+
+    @*JS*@
+    @Scripts.Render("~/Scripts/bootstrap.min.js")
+    @Scripts.Render("~/Scripts/boxicons.js")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/Scripts/jquery-ui.js")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/globaljs")
+    <!-- fontawasome -->
+    <link rel="stylesheet" href="~/css/css.all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="~/css/boxicons.min.css">
+
+    <script src="~/Scripts/boxicons.js"></script>
+
+    <script src="/Scripts/jquery-2.1.3.js"></script>
+    <script src="/Scripts/jquery-confirm.min.js"></script>
+    <script src="/Scripts/jquery.blockUI.js"></script>
+    <script src="/Scripts/jquery-ui.js"></script>
+
+    <link href="/Content/jquery-confirm.min.css" rel="stylesheet" />
+
+    <!-- Favicons -->
+    <link href="~/assests/images/favicon.png" rel="icon">
+    <link href="~/assests/images/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <style>
+        .col-md-6 {
+            margin-left: 25%
+        }
+    </style>
+
+    <style>
+        /* Style the tab */
+        .tab {
+            overflow: hidden;
+            border: 0.1rem solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+            /* Style the buttons that are used to open the tab content */
+            .tab button {
+                background-color: inherit;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 1rem 1.5rem;
+                transition: 0.3s;
+            }
+
+                /* Change background color of buttons on hover */
+                .tab button:hover {
+                    background-color: #ddd;
+                }
+
+                /* Create an active/current tablink class */
+                .tab button.active {
+                    background-color: #ccc;
+                }
+
+        /* Style the tab content */
+        .tabcontent {
+            display: none;
+            padding: 1rem 1rem 0.5rem 1rem;
+            border: 0.1rem solid #ccc;
+            border-top: none;
+            border-bottom: none;
+        }
+
+        .tabcontent_other {
+            display: flex;
+            padding: 0.5rem 1rem 1rem 1rem;
+            border: 0.1rem solid #ccc;
+            border-top: none;
+        }
+    </style>
+</head>
+
+<body id="login-bg">
+    <section class="login-card">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="logo"><img src="~/images/logo-main.svg" alt="衛生福利部｜民眾線上申辦電子病歷服務平台管理系統"></div>
+                    @using (Html.BeginForm("Index", "Login", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "login-form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(x => x.ThePage)
+                        <!-- Tab -->
+                        <div class="tab">
+                            <button type="button" class="tablinks" onclick="OnChangePage('BtnTab1', 'Tab1')" id="BtnTab1">帳號密碼登入</button>
+                            <button type="button" class="tablinks" onclick="OnChangePage('BtnTab2', 'Tab2')" id="BtnTab2">醫院授權碼登入</button>
+                        </div>
+                        <!-- Tab content -->
+                        <div id="Tab1" class="tabcontent">
+                            <div class="form-floating">
+                                @Html.TextBoxFor(m => m.UserNo, new { @class = "form-control", @placeholder = "請輸入您的帳號", maxlength = "20" })
+                                <label for="account">帳號</label>
+                            </div>
+                            <div class="form-floating">
+                                @Html.PasswordFor(m => m.UserPwd, new { @class = "form-control", @placeholder = "請輸入您的密碼", maxlength = "20" })
+                                <label for="pwd">密碼</label>
+                            </div>
+                        </div>
+                        <div id="Tab2" class="tabcontent">
+                            <div class="form-floating">
+                                @Html.TextBoxFor(m => m.AuthCode, new { @class = "form-control", @placeholder = "請輸入您的醫院授權碼", maxlength = "20" })
+                                <label for="account">醫院授權碼</label>
+                            </div>
+                            <div class="form-floating">
+                                @Html.PasswordFor(m => m.AuthCode_Pwd, new { @class = "form-control", @placeholder = "請輸入您的密碼", maxlength = "20" })
+                                <label for="pwd">密碼</label>
+                            </div>
+                        </div>
+                        <!-- Common content -->
+                        <div class="tabcontent_other">
+                            <div class="col-sm-6">
+                                <div class="form-floating" style="margin-right: 1rem;">
+                                    @Html.TextBoxFor(m => m.ValidateCode, new { @class = "form-control", @placeholder = "請輸入驗證碼", maxlength = "10" })
+                                    <label for="code">驗證碼</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-6">
+                                <img id="vCode" src="@Url.Action("GetValidateCode", "C101M")" alt="驗證碼" class="login-code" data-toggle="tooltip" data-placement="top" title="產生新驗證碼" style="margin-top: 0rem;" />
+                            </div>
+                            <div class="col-sm-3 col-6">
+                                <div class="help-link" style="text-align: center; display: inline-flex; padding-top: 0.7rem;">
+                                    <a href="@Url.Action("VCodeAudio", "C101M")" target="frmPlayer" title="語音撥放驗證碼">
+                                        <img id="playCode" alt="撥放" src="~/images/speaker.svg" height="40" class="pull-right" />
+                                    </a>
+                                    <a href="javascript: void(0)" onclick="reloadValidCode()">
+                                        <img src="~/images/revision.svg" height="40" alt="重新產生驗證碼" title="重新產生驗證碼" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-apply" onclick="login()">登入</button>
+                        <button type="button" class="btn btn-cancel" onclick="cancel()">取消</button>
+
+                        @Html.Partial("_DatePickerTW")
+                        @Html.Partial("_CommonDialog")
+
+                        @* Validation Summary *@
+                        @*<div class="hide" id="ValidationSummary">@Html.ValidationSummary()</div>*@
+                        <form name="RedirAfterBlockResult" action="" method="POST"></form>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        #loadingMask {
+            display: none;
+            text-align: center;
+            padding: 1rem 3rem
+        }
+    </style>
+
+    @*Loading Mask*@
+    <div id="loadingMask">
+        <svg class="ani-lightSpeedIn ani-ambulance" xmlns="http://www.w3.org/2000/svg" width="200" @*width="518" height="421.699"*@ viewBox="0 0 518 421.699">
+            <g transform="translate(0 -45.001)">
+                <path d="M8,426H504c4,0,8-4,8-8V393H0v25C0,422,4,426,8,426Z" fill="#fcf3e3" />
+                <path d="M512,122V393H0V337l6-17L0,303V271c0-4,3-8,7-10l26-10c3-1,5-4,6-7L76,119c1-4,5-7,10-7H502A10.021,10.021,0,0,1,512,122Z" fill="#e6f7fe" />
+                <path d="M-11307-3792a84,84,0,0,1,51.374-61.587A84,84,0,0,1-11176-3844c9,5,20-1,20-11v-218h21a10.019,10.019,0,0,1,10,10v271Zm-314,0a84,84,0,0,1,82.5-68.2,84,84,0,0,1,82.5,68.2Z" transform="translate(11637 4185)" fill="#d3effd" />
+                <path d="M0,337H25a7.887,7.887,0,0,0,8-8V311a7.887,7.887,0,0,0-8-8H0Z" fill="#ffe07d" />
+                <path d="M-11290-4040c-2-5-2-11-2-17,0-5,0-11,2-16h181v25c0,4-4,8-8,8Zm-323,0c-4,0-8-4-8-8v-25h181c2,5,2,11,2,16,0,6,0,12-2,17Z" transform="translate(11627 4466)" fill="#f8e7c7" />
+                <path d="M-11306.8-4015.8a57.2,57.2,0,0,1,57.2-57.2,57.2,57.2,0,0,1,57.2,57.2,57.2,57.2,0,0,1-57.2,57.2A57.2,57.2,0,0,1-11306.8-4015.8Zm-314.2,0a57.2,57.2,0,0,1,57.2-57.2,57.2,57.2,0,0,1,57.2,57.2,57.2,57.2,0,0,1-57.2,57.2A57.2,57.2,0,0,1-11621-4015.8Z" transform="translate(11662.7 4425.3)" fill="#838383" />
+                <path d="M-11307-3995a57,57,0,0,0,69.132-8.869A57,57,0,0,0-11229-4073a57,57,0,0,1,27.284,59.2,57,57,0,0,1-46.09,46.089,57.076,57.076,0,0,1-10.034.891A57.006,57.006,0,0,1-11307-3995Zm-314,0a57,57,0,0,0,69.133-8.869A57,57,0,0,0-11543-4073a56.994,56.994,0,0,1,27.283,59.193,57,57,0,0,1-46.089,46.092,57.1,57.1,0,0,1-10.035.891A57.011,57.011,0,0,1-11621-3995Z" transform="translate(11670 4433)" fill="#5a5a5a" />
+                <circle cx="16.6" cy="16.6" r="16.6" transform="translate(82.3 392.9)" fill="#e6f7fe" />
+                <circle cx="16.6" cy="16.6" r="16.6" transform="translate(396.5 392.9)" fill="#e6f7fe" />
+                <path d="M109,145h57c4,0,8,4,8,8v88a7.887,7.887,0,0,1-8,8H82c-5,0-9-5-7-10l26-88C102,148,106,145,109,145Z" fill="#91dafa" />
+                <path d="M143,145V249h23a7.887,7.887,0,0,0,8-8V153c0-4-4-8-8-8Z" fill="#75cff9" />
+                <path d="M215,249h17c5,0,8-3,8-8V153a7.887,7.887,0,0,0-8-8H215c-4,0-8,4-8,8v88A7.887,7.887,0,0,0,215,249Z" fill="#6cbff8" />
+                <path d="M-11474.5-4040a7.888,7.888,0,0,1-8-8v-17c0-4,4-8,8-8h171a7.885,7.885,0,0,1,8,8v17c0,5-3,8-8,8Zm-139-15a7.5,7.5,0,0,1-7.5-7.5,7.5,7.5,0,0,1,7.5-7.5h14a7.5,7.5,0,0,1,7.5,7.5,7.5,7.5,0,0,1-7.5,7.5Z" transform="translate(11765.5 4345)" fill="#5766cb" />
+                <path d="M265,112V89c0-6-4-10-10-10H193c-6,0-11,4-11,10v23Z" fill="#838383" />
+                <path d="M-11450-3879a6.454,6.454,0,0,1-6-6v-13a6.452,6.452,0,0,0-6-6h-13a6.454,6.454,0,0,1-6-6v-21a5.765,5.765,0,0,1,6-6h13c3,0,6-3,6-7v-12a5.765,5.765,0,0,1,6-6h21q6,0,6,6v12a6.835,6.835,0,0,0,7,7h12q6,0,6,6v21a5.764,5.764,0,0,1-6,6h-12c-4,0-7,3-7,6v13a5.764,5.764,0,0,1-6,6Zm-171-160,8-26a9.738,9.738,0,0,1,10-8h22c4,0,8,3,10,8l8,26Z" transform="translate(11816 4118)" fill="#e175a5" />
+            </g>
+        </svg>
+        <div class="load-txt">
+            <span>處</span>
+            <span>理</span>
+            <span>中</span>
+            <span>.</span>
+            <span>.</span>
+            <span>.</span>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            if ("@Model.ErrorMessage" !== "") {
+                blockAlert("@Model.ErrorMessage");
+            }
+            OnChangePage("BtnTab@(Model.ThePage)", "Tab@(Model.ThePage)");
+        });
+
+        $('#vCode').on("load", function () {
+            unblockUI();
+        });
+        function reloadValidCode() {
+            blockUI();
+            $('#vCode').attr("src", '@Url.Action("GetValidateCode")' + "?rand=" + new Date().getMilliseconds());
+        }
+        $(function () {
+            $('#vCode').on("click", function (e) {
+                reloadValidCode();
+            });
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+
+        function OnChangePage(eName, tabName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(eName).className = "tablinks active";
+        }
+
+        // 登入
+        function login() {
+            blockUI();
+            var TabIdx = 1;
+            if (document.getElementById("Tab1").style.display === "block") { TabIdx = 1; }
+            if (document.getElementById("Tab2").style.display === "block") { TabIdx = 2; }
+            $("#ThePage").val(TabIdx);
+            @*
+            $("#UserNo").val('turbo');
+            $("#UserPwd").val('turbo@1314');
+            *@
+            var form = $("form[id=main_form]");
+            form.attr('action', '@Url.Action("Login")').submit();
+        }
+
+        function cancel() {
+            $("#UserNo").val("");
+            $("#UserPwd").val("");
+            $("#AuthCode").val("");
+            $("#AuthCode_Pwd").val("");
+            $("#ValidateCode").val("");
+        }
+
+    </script>
+</body>
+</html>

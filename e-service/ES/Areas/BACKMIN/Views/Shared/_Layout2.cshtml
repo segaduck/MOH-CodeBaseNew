@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>錯誤 - 衛生福利部線上申辦維護系統</title>
+    @Styles.Render("~/style/base.css")
+    @Styles.Render("~/style/bootstrap.css")
+    <script language="javascript" type="text/javascript">
+        function showMessage() {
+            var message = "@Html.Raw(@ViewBag.tempMessage)";
+
+            if (message != "") {
+                jAlert(message);
+            }
+        }
+    </script>
+</head>
+<body onload="showMessage();">
+    <!-- header -->
+    <div class="mainbg">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="main-header">
+                    <div class="col-sm-7 col-md-8 logo">
+                        <a href="#"><img src="/images/logo.png" title="衛生福利部｜人民申請案件線上申辦系統" alt="衛生福利部｜人民申請案件線上申辦系統" class="img-responsive"></a>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <!-- nav end -->
+                <!-- main content start-->
+                <div class="col-sm-12">
+                    <div class="main-content">
+                        <!--bread-->
+                        <div class="bread">
+                            <i class="fas fa-home"></i><a href="#">首頁</a> / <a href="#">@ViewBag.FunctionTitle</a>
+                        </div>
+                        <div class="col-sm-12 content">
+                            @RenderBody()
+                            <br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- footer -->
+    <div class="col-sm-12">
+        <div class="footer">
+            Copyright &copy;
+            <script type="text/javascript">
+                function ShowNowYear() {
+                    var now = new Date();
+                    var year = now.getFullYear();
+                    document.write(year);
+                }
+            </script>
+            <script type="text/javascript">ShowNowYear();</script>
+            衛生福利部版權所有 Ministry of Health and Welfare, Exective Yuan R.O.C. (Taiwan) All rights reserved.
+        </div>
+        <div id="dFooterMenu" style="float: right;">｜@Html.ActionLink("隱私權政策及安全宣告", "Privacy", "Home", new { Area = "" }, null)｜@Html.ActionLink("網站著作權聲明", "", new { Area = "" }, null)｜</div>
+    </div>
+</body>
+</html>

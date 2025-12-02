@@ -1,0 +1,16 @@
+﻿@{
+    Layout = null;
+    ViewBag.Member = Session["Member"];
+}
+<div class="dLeftLogin">
+    <div style="height: 95px;">
+        <div><span style="color: #FEB59C; font-weight: bold;">@ViewBag.Member.Name</span> 會員您好！<br />歡迎您使用本系統！</div>
+        <hr />
+        <div>
+            @Html.ActionLink("會員資料管理", "Edit", "Member")<br />
+            <a href="https://ep.cp.gov.tw/paymentservice/querytrans.aspx" target="_blank">繳費資訊查詢</a><br />
+            @Html.ActionLink("案件紀錄查詢", "Index", "History")
+        </div>
+    </div>
+    <div style="float: right; padding-right: 10px;"><input type="button" value="登出" onclick="document.location.href='@Url.Action("Logout", "Member")';" /></div>
+</div>

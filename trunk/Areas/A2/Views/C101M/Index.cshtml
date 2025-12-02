@@ -1,0 +1,82 @@
+﻿@using EECOnline.Areas.A2.Models;
+@using EECOnline.Models;
+@model C101MFormModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+}
+
+<style>
+    .table > tbody > tr > td {
+        vertical-align: middle;
+    }
+</style>
+
+<div class="col-sm-12 content">
+    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@sm.LastActionFunc.prgname</h1>
+    <div class="form-blue">
+        @using (Html.BeginForm("Index", "C101M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+        {
+            var button = new Dictionary<string, string>();
+            button.Add("search", "doSearch()");
+            button.Add("reset_fuc", "doReset_fuc()");
+
+            @Html.ControlForTurbo(Model);
+            @Html.ButtonForTurbo(button)
+        }
+    </div>
+    <div class="clearfix"></div>
+    <h2 class="second-title">查詢結果</h2>
+    <div class="table-pager">@Html.Partial("_PagingLink", Model)</div>
+    <div class="table-responsive">
+        @if (Model.Grid != null)
+        {
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th width="13%">訂單編號</th>
+                        <th width="10%">申請人</th>
+                        <th width="13%">申請醫院</th>
+                        <th width="18%">申請內容</th>
+                        <th width="13%">申請期間</th>
+                        <th width="10%">系統通報時間</th>
+                        <th width="10%">病歷補上傳狀態</th>
+                        <th width="08%">狀態</th>
+                        <th width="05%">編輯</th>
+                    </tr>
+                </thead>
+                <tbody id="rows">
+                    @Html.Partial("_GridRows")
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    // 查詢
+    function doSearch() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Index")').submit();
+    }
+
+    // 重填
+    function doReset_fuc() {
+        $('#user_name').val('');
+        $('#his_range1_AD').val('');
+        $('#his_range1_AD_TW').val('');
+        $('#his_range2_AD').val('');
+        $('#his_range2_AD_TW').val('');
+    }
+
+    // 修改
+    function doModify(apply_no_sub) {
+        var data = {
+            "apply_no_sub": apply_no_sub,
+        };
+        location.href = '@Url.Action("Detail", "C101M")?' + $.param(data);
+    }
+
+</script>

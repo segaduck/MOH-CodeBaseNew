@@ -1,0 +1,213 @@
+﻿@using ES.Models.Entities
+@using ES.Models
+@using ES.Commons;
+@model ES.Models.ViewModels.Apply_001009ViewModel
+
+@{Layout = null; }
+
+<div class="col-sm-12">
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="form-title title-bg-y">申辦表件預覽</h1>
+            <div class="form-set">
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申辦項目</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">醫事人員或公共衛生師資格英文求證</p>
+                    </div>
+                    <label class="step-label col-sm-2" for="">申辦日期</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">@Model.APPLY_DATE</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申請人中文姓名(與護照相同)</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">@Model.APPLY_NAME</p>
+                    </div>
+                    <label class="step-label col-sm-2" for="">身分證編號/居留證號</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">@Model.APPLY_PID</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申請人英文姓名(與護照相同)</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">@Model.Apply.ENAME</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申請人英文別名(與護照相同)</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">@Model.Apply.E_ALIAS_NAME</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申請人出生年月日</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">@Html.BLATYPForTurbo(x => x.BIRTHDAY_AC, HelperUtil.DateTimeToTwString(Convert.ToDateTime(Model.BIRTHDAY_AC)))</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申請事由</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.APPLY_CAUSE_TEXT</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申請證明類別</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.APPLY_CERT_CATE_TEXT</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">醫事人員或公共衛生師證書字號</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.LIC_CD 字 @Model.LIC_NUM 號</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">醫事人員或公共衛生師證書日期</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">@Html.BLATYPForTurbo(x => x.CERT_APPROVED_DATE_AC, HelperUtil.DateTimeToTwString(Convert.ToDateTime(Model.CERT_APPROVED_DATE_AC)))</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">畢業學校名稱及所在縣市中文</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.C_SCHOOL_NAME</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">畢業學校名稱及所在縣市英文</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.E_SCHOOL_NAME</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">修業年限</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">西元 @Model.YEAR1 年 @Model.MONTH1 月 至 西元 @Model.YEAR2 年 @Model.MONTH2 月</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">通訊地址</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.FULL_ADDRESS</p>                       
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">本求證表郵寄機構地址(含國別及收件者)</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.VERIFY_ADDRESS</p>
+                        <p class="form-control-static">@Model.COUNTRY_TEXT</p>
+                        <p class="form-control-static">@Model.RECEIVER</p>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">機構名稱</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.VERIFY_NAME</p>
+                    </div>
+                </div>
+                <h2 class="second-title">申辦資料</h2>
+                <div class='form-group'>
+                    <label class='step-label col-sm-2' for=''>聯絡人姓名</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.Apply.CNT_NAME</p>
+                    </div>
+                </div>
+                <div class='form-group'>
+                    <label class='step-label col-sm-2' for=''>聯絡人電話</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.TEL</p>
+                    </div>
+                </div>
+                <div class='form-group'>
+                    <label class='step-label col-sm-2' for=''>聯絡人行動電話</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.MOBILE</p>
+                    </div>
+                </div>
+                <div class='form-group'>
+                    <label class='step-label col-sm-2' for=''>聯絡人E-MAIL</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.MAIL</p>
+                    </div>
+                </div>
+                <div class='form-group'>
+                    <label class='step-label col-sm-2' for=''>聯絡人傳真</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.FAX</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <h1 class="form-title title-bg-y">上傳附件預覽</h1>
+            <div class="form-set">
+                <div class='form-group'>
+                    <label class='step-label col-sm-2' for=''>護照影本</label>
+                    <div class="col-sm-10">
+                        @Html.ImageHoverForTurbo(x => x.FILE1, Model.FILE1_NAME)
+                    </div>
+                </div>
+                <div class='form-group'>
+                    <label class='step-label col-sm-2' for=''>醫事人員或公共衛生師中文證書影本</label>
+                    <div class="col-sm-10">
+                        @Html.ImageHoverForTurbo(x => x.FILE2, Model.FILE2_NAME)
+                    </div>
+                </div>
+                <div class='form-group'>
+                    <label class='step-label col-sm-2' for=''>考照時之畢業證書影本</label>
+                    <div class="col-sm-10">
+                        @Html.ImageHoverForTurbo(x => x.FILE3, Model.FILE3_NAME)
+                    </div>
+                </div>
+                <div class='form-group'>
+                    <label class='step-label col-sm-2' for=''>考試及格證書影本</label>
+                    <div class="col-sm-10">
+                        @Html.ImageHoverForTurbo(x => x.FILE4, Model.FILE4_NAME)
+                    </div>
+                </div>
+                <div class='form-group'>
+                    <label class='step-label col-sm-2' for=''>對方機構求證表格</label>
+                    <div class="col-sm-10">
+                        @Html.ImageHoverForTurbo(x => x.FILE5, Model.FILE5_NAME)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-set">
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="doSave()">確認送出</button>
+            <button type="button" class="btn btn-clear" onclick="doApply()">返回修改</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('[data-hover!=\"\"]').hover();
+    });
+
+    function doApply() {
+        $('#PreView_Tab').removeClass('active');
+        $('#PreViewForm').attr('class', 'tab-pane fade');
+
+        $('#Apply_Tab').attr('class', 'active');
+        $('#ApplyForm').attr('class', 'tab-pane fade active in');
+
+    }
+
+    function doSave() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+
+
+</script>

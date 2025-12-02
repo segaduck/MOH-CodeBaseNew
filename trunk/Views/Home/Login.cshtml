@@ -1,0 +1,1660 @@
+﻿@using EECOnline.Models;
+@using EECOnline.Services;
+@using EECOnline.DataLayers;
+@using System.Collections;
+@model HomeViewModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    // 登入頁面顯示設定
+    string Active1 = (Model.UserLoginTab == "1") ? "active" : "";
+    string Active2 = (Model.UserLoginTab == "2") ? "active" : "";
+    string Active3 = (Model.UserLoginTab == "3") ? "active" : "";
+    string TabActive1 = (Model.UserLoginTab == "1") ? "active show" : "";
+    string TabActive2 = (Model.UserLoginTab == "2") ? "active show" : "";
+    string TabActive3 = (Model.UserLoginTab == "3") ? "active show" : "";
+    var tmpUserName = "";
+    if (Model.LoginApply != null) { tmpUserName = Model.LoginApply.user_name_Text; }
+    var OnOff = ConfigModel.level1OnOrOff;
+    bool IsNeedAdd = (Model.ProcessStep == "2" || Model.ProcessStep == "3") && (Model.LoginApply.ApplyDetail.ToCount() <= 0);
+
+    // 取醫院代號
+    var Data_HospitalCode = "";
+    if (Model.LoginApply != null && Model.LoginApply.ApplyDetail.ToCount() == 1)
+    {
+        Data_HospitalCode = Model.LoginApply.ApplyDetail.FirstOrDefault().hospital_code;  // 基本上 ApplyDetail 只會有一筆
+    }
+
+    FrontDAO dao = new FrontDAO();
+    var GetSetups = dao.QueryForListAll<Hashtable>("Front.get_ApplyDetail_Pay_SETUP", null);
+    // 亞東
+    var TransRedirectAction = "https://" + dao.GetDataFromHashtableList(GetSetups, "PAY_EEC_DOMAINNAME") + dao.GetDataFromHashtableList(GetSetups, "PAY_EEC_REQUESTURL");
+    // 中山醫
+    var TransRedirectAction_csh = dao.GetDataFromHashtableList(GetSetups, "PAY_EEC_POST_URL_CSH");
+}
+
+@* 搜尋式下拉選單用 *@
+<link href="~/vendor/select2/dist/css/select2.min.css" rel="stylesheet" />
+<script src="~/vendor/select2/dist/js/select2.min.js"></script>
+
+<script src="~/Scripts/cert/HiPKICerts.js"></script>
+<script src="~/Scripts/cert/HiPKIErrorcode.js"></script>
+<style>
+    .time-out-div {
+        position: absolute;
+        margin-top: 1rem;
+        margin-left: 13rem;
+    }
+
+    .time-out-img {
+        margin-top: -0.3rem;
+    }
+</style>
+<div id="step_process1" style="display:none">
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="step-set">
+                        <ul class="step-list">
+                            <li class="step-card step-01">
+                                <div class="step-group">
+                                    <div class="number">1</div>
+                                    <p>憑證登入</p>
+                                </div>
+                            </li>
+                            <li class="step-card">
+                                <div class="step-group">
+                                    <div class="number">2</div>
+                                    <p>線上申辦說明</p>
+                                </div>
+                            </li>
+                            <li class="step-card">
+                                <div class="step-group">
+                                    <div class="number">3</div>
+                                    <p>填寫申請資料</p>
+                                </div>
+                            </li>
+                            <li class="step-card">
+                                <div class="step-group">
+                                    <div class="number">4</div>
+                                    <p>確認申請項目</p>
+                                </div>
+                            </li>
+                            <li class="step-card">
+                                <div class="step-group">
+                                    <div class="number">5</div>
+                                    <p>取得電子病歷</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div id="step_process2" style="display:none">
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="user-bar">
+                        <div class="user-name">申請人<span>@tmpUserName</span></div>
+                        <button type="button" class="btn btn-logout" onclick="OnLogout()">登出</button>
+                        <div class="time-out-div">
+                            <div class="data-timer">
+                                <img class="time-out-img" src="~/images/stopwatch.svg"> 倒數&nbsp;<span class="data-timer-number"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="step-set">
+                        <ul class="step-list">
+                            <li class="step-card step-01a">
+                                <div class="step-group">
+                                    <div class="number">1</div>
+                                    <p>憑證登入</p>
+                                </div>
+                            </li>
+                            <li class="step-card step-02">
+                                <div class="step-group">
+                                    <div class="number">2</div>
+                                    <p>線上申辦說明</p>
+                                </div>
+                            </li>
+                            <li class="step-card">
+                                <div class="step-group">
+                                    <div class="number">3</div>
+                                    <p>填寫申請資料</p>
+                                </div>
+                            </li>
+                            <li class="step-card">
+                                <div class="step-group">
+                                    <div class="number">4</div>
+                                    <p>確認申請項目</p>
+                                </div>
+                            </li>
+                            <li class="step-card">
+                                <div class="step-group">
+                                    <div class="number">5</div>
+                                    <p>取得電子病歷</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div id="step_process3" style="display:none">
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="user-bar">
+                        <div class="user-name">申請人<span>@tmpUserName</span></div>
+                        <button type="button" class="btn btn-logout" onclick="OnLogout()">登出</button>
+                        <div class="time-out-div">
+                            <div class="data-timer">
+                                <img class="time-out-img" src="~/images/stopwatch.svg"> 倒數&nbsp;<span class="data-timer-number"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="step-set">
+                        <ul class="step-list">
+                            <li class="step-card step-01a">
+                                <div class="step-group">
+                                    <div class="number">1</div>
+                                    <p>憑證登入</p>
+                                </div>
+                            </li>
+                            <li class="step-card step-02a">
+                                <div class="step-group">
+                                    <div class="number">2</div>
+                                    <p>線上申辦說明</p>
+                                </div>
+                            </li>
+                            <li class="step-card step-03">
+                                <div class="step-group">
+                                    <div class="number">3</div>
+                                    <p>填寫申請資料</p>
+                                </div>
+                            </li>
+                            <li class="step-card">
+                                <div class="step-group">
+                                    <div class="number">4</div>
+                                    <p>確認申請項目</p>
+                                </div>
+                            </li>
+                            <li class="step-card">
+                                <div class="step-group">
+                                    <div class="number">5</div>
+                                    <p>取得電子病歷</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div id="step_process4" style="display:none">
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="user-bar">
+                        <div class="user-name">申請人<span>@tmpUserName</span></div>
+                        <button type="button" class="btn btn-logout" onclick="OnLogout()">登出</button>
+                        <div class="time-out-div">
+                            <div class="data-timer">
+                                <img class="time-out-img" src="~/images/stopwatch.svg"> 倒數&nbsp;<span class="data-timer-number"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="step-set">
+                        <ul class="step-list">
+                            <li class="step-card step-01a">
+                                <div class="step-group">
+                                    <div class="number">1</div>
+                                    <p>憑證登入</p>
+                                </div>
+                            </li>
+                            <li class="step-card step-02a">
+                                <div class="step-group">
+                                    <div class="number">2</div>
+                                    <p>線上申辦說明</p>
+                                </div>
+                            </li>
+                            <li class="step-card step-03a">
+                                <div class="step-group">
+                                    <div class="number">3</div>
+                                    <p>填寫申請資料</p>
+                                </div>
+                            </li>
+                            <li class="step-card step-04">
+                                <div class="step-group">
+                                    <div class="number">4</div>
+                                    <p>確認申請項目</p>
+                                </div>
+                            </li>
+                            <li class="step-card">
+                                <div class="step-group">
+                                    <div class="number">5</div>
+                                    <p>取得電子病歷</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div id="step_process5" style="display:none">
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="user-bar">
+                        <div class="user-name">申請人<span>@tmpUserName</span></div>
+                        <button type="button" class="btn btn-logout" onclick="OnLogout()">登出</button>
+                        <div class="time-out-div">
+                            <div class="data-timer">
+                                <img class="time-out-img" src="~/images/stopwatch.svg"> 倒數&nbsp;<span class="data-timer-number"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="step-set">
+                        <ul class="step-list">
+                            <li class="step-card step-01a">
+                                <div class="step-group">
+                                    <div class="number">1</div>
+                                    <p>憑證登入</p>
+                                </div>
+                            </li>
+                            <li class="step-card step-02a">
+                                <div class="step-group">
+                                    <div class="number">2</div>
+                                    <p>線上申辦說明</p>
+                                </div>
+                            </li>
+                            <li class="step-card step-03a">
+                                <div class="step-group">
+                                    <div class="number">3</div>
+                                    <p>填寫申請資料</p>
+                                </div>
+                            </li>
+                            <li class="step-card step-04a">
+                                <div class="step-group">
+                                    <div class="number">4</div>
+                                    <p>確認申請項目</p>
+                                </div>
+                            </li>
+                            <li class="step-card step-05">
+                                <div class="step-group">
+                                    <div class="number">5</div>
+                                    <p>取得電子病歷</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div id="step1" style="display:none">
+    @if (Model.ProcessStep == "1")
+    {
+        <section id="step">
+            <div class="container">
+                <div class="row" role="tablist">
+                    <a class="accesskey" href="#aC" id="aC" accesskey="C" title="主要內容區">:::</a>
+                    <div class="col-sm-4">
+                        <div class="login-card cardBg-green">
+                            <a href="#loginTypeA" data-bs-toggle="tab" class="@Active1">
+                                <img src="~/assests/images/loginType-01.svg" alt="自然人憑證登入">
+                                <h1>自然人憑證登入<div class="note-xs">本服務需使用讀卡機，建議使用電腦操作。</div></h1>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="login-card cardBg-purple">
+                            <a href="#loginTypeB" data-bs-toggle="tab" class="@Active2">
+                                <img src="~/assests/images/loginType-02.svg" alt="行動自然人憑證登入(TW FidO)">
+                                <h1>行動自然人憑證登入(TW FidO)</h1>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="login-card cardBg-yellow">
+                            <a href="#loginTypeC" data-bs-toggle="tab" class="@Active3">
+                                <img src="~/assests/images/loginType-03.svg" alt="身分證字號＋健保卡">
+                                <h1>
+                                    身分證字號＋健保卡
+                                    <!--<div class="note-xs">本服務需使用讀卡機，建議使用電腦操作。</div>-->
+                                </h1>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="tab-content">
+                            <div class="tab-pane @TabActive1" id="loginTypeA">
+                                <div class="board">
+                                    <div class="board-green board-sup" style="min-height: 18rem;" id="loginTypeA_SetHeight">
+                                        <h1 class="board-title">自然人憑證登入</h1>
+                                        <span style="color:red;">基本資料請務必填寫正確，屆時相關檔案會依基本資料組成密碼後提供資訊</span>
+                                        @using (Html.BeginForm("Login", "Home", FormMethod.Post, htmlAttributes: new { id = "loginform1", @class = "board-form" }))
+                                        {
+                                            @Html.HiddenFor(x => x.ProcessStep)
+                                            @Html.HiddenFor(x => x.UserLoginTab)
+                                            //@Html.HiddenFor(x => x.Login.user_name)
+
+                                            @Html.HiddenFor(x => x.Login.certData_subjectID)
+
+                                            @* 自然人憑證登入 第一階段 *@
+                                            <div class="col-sm-12" style="display: block;" id="loginTypeA_1">
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="自然人憑證 PIN 碼是必填欄位" style="color: red;">*</label>
+                                                        自然人憑證 PIN 碼
+                                                    </label>
+                                                    <div class="col-md-6 col-sm-7">
+                                                        @Html.PasswordFor(x => x.Login.user_pincode, new { @class = "form-control", placeholder = "請插入您的自然人憑證並輸入PIN碼", autocomplete = "new-password" })
+                                                        <span class="eye-icon" href="javascript: void(0)" onclick="doOpenPd(this)" onkeypress="doOpenPd(this)" title="查看自然人憑證PIN碼" tabindex="0" style="position: absolute; top: 0.5rem; right: 1.7rem;">
+                                                            <i id="openPd" title="查看自然人憑證PIN碼" class="fas fa-eye" aria-hidden="true"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="驗證碼是必填欄位" style="color: red;">*</label>
+                                                        驗證碼
+                                                    </label>
+                                                    <div class="col-sm-2">
+                                                        <div class="form-floating" style="margin-right: 1rem;">
+                                                            @Html.TextBoxFor(m => m.Login.ValidateCode1, new { @class = "form-control", @placeholder = "請輸入驗證碼", maxlength = "10" })
+                                                            <label for="code">驗證碼</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-1 col-6" style="margin: initial; padding: initial; margin-right: 0.5rem;">
+                                                        <img id="vCode1" src="@Url.Action("GetValidateCode1", "Home")" alt="驗證碼" class="login-code" data-toggle="tooltip" data-placement="top" title="產生新驗證碼" style="margin-top: 0.5rem;" />
+                                                    </div>
+                                                    <div class="col-sm-1 col-6">
+                                                        <div class="help-link" style="text-align: center; display: inline-flex; margin-top: 0.5rem;">
+                                                            <a href="@Url.Action("VCodeAudio1", "Home")" target="frmPlayer" title="撥放語音驗證碼">
+                                                                <img id="playCode" alt="撥放語音驗證碼" src="~/images/speaker.svg" height="40" class="pull-right" />
+                                                            </a>
+                                                            <a href="javascript: void(0)" onclick="reloadValidCode1()">
+                                                                <img src="~/images/revision.svg" height="40" alt="重新產生驗證碼" title="重新產生驗證碼" />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <script type="text/javascript">
+                                                    function reloadValidCode1() {
+                                                        blockUI();
+                                                        $('#vCode1').attr("src", '@Url.Action("GetValidateCode1")' + "?rand=" + new Date().getMilliseconds());
+                                                    }
+                                                    $(function () {
+                                                        $('#vCode1').on("click", function (e) {
+                                                            reloadValidCode1();
+                                                        });
+                                                        $('#vCode1').on("load", function () {
+                                                            unblockUI();
+                                                        });
+                                                    });
+                                                </script>
+                                                <div class="btnBar">
+                                                    <button type="button" class="btn btn-apply" onclick="OnLoginForm1_Login()">登入</button>
+                                                    <button type="button" class="btn btn-cancel" onclick="OnLoginForm1_Clear()">清除</button>
+                                                </div>
+                                            </div>
+                                            @* 自然人憑證登入 第二階段 *@
+                                            <div class="col-sm-12" style="display: none;" id="loginTypeA_2">
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="姓名是必填欄位" style="color: red;">*</label>
+                                                        姓名
+                                                    </label>
+                                                    <div class="col-md-6 col-sm-7">
+                                                        @Html.TextBoxFor(x => x.Login.user_name, new { @class = "form-control", placeholder = "請輸入您的姓名", })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="身分證字號是必填欄位" style="color: red;">*</label>
+                                                        身分證字號
+                                                    </label>
+                                                    <div class="col-md-6 col-sm-7">
+                                                        @Html.PasswordFor(x => x.Login.user_idno, new { @class = "form-control", placeholder = "請輸入您的身分證字號", autocomplete = "new-password" })
+                                                        <span class="eye-icon" href="javascript: void(0)" onclick="doOpenPd(this)" onkeypress="doOpenPd(this)" title="查看身分證字號" tabindex="0" style="position: absolute; top: 0.5rem; right: 1.7rem;">
+                                                            <i id="openPd" title="查看身分證字號" class="fas fa-eye" aria-hidden="true"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="出生年月日是必填欄位" style="color: red;">*</label>
+                                                        出生年月日
+                                                    </label>
+                                                    <div class="col-md-6 col-sm-7">
+                                                        @Html.DatePickerTWFor(x => x.Login.user_birthday, new { placeholder = "yyymmdd", autocomplete = "new-password" })
+                                                        <span>範例：0781231</span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="電子郵件Email是必填欄位" style="color: red;">*</label>
+                                                        電子郵件Email
+                                                    </label>
+                                                    <div class="col-md-6 col-sm-7">
+                                                        @Html.TextBoxFor(m => m.Login.user_email1, new { @class = "form-control", @placeholder = "請輸入電子郵件Email" })
+                                                    </div>
+                                                </div>
+                                                <div class="btnBar">
+                                                    <button type="button" class="btn btn-apply" onclick="OnLoginForm1_Login2()">確認</button>
+                                                    <button type="button" class="btn btn-cancel" onclick="window.location.href='@Url.Action("Login", "Home")';">取消</button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="board-gray board-sub">
+                                        <div class="help-note">
+                                            <p>注意事項：</p>
+                                            <ol>
+                                                <li>需使用憑證IC卡與讀卡機。</li>
+                                                <li>使用前需先申請憑證，申請憑證請依種類至各憑證管理中心辦理。</li>
+                                                <li>初次使用憑證登入，請務必安裝最新版本HICOS元件(2.1.9.6以上之版本)與跨平臺網頁元件方能完整支援自然人憑證之讀取及使用。<a href="https://moica.nat.gov.tw/download_1.html" target="_blank" title="HICOS元件下載">HICOS元件下載</a></li>
+                                                <li>若有自然人憑證相關問題，請洽<a href="https://moica.nat.gov.tw/main.html" target="_blank" title="內政部憑證管理中心">內政部憑證管理中心</a>。</li>
+                                                <li>若忘記PIN碼或鎖卡，請至<a href="https://moica.nat.gov.tw/unblockcard.html" target="_blank" title="憑證網站">憑證網站</a>處理。</li>
+                                            </ol>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane @TabActive2" id="loginTypeB">
+                                <div class="board">
+                                    <div class="board-purple board-sup" style="min-height: 28rem;">
+                                        <h1 class="board-title">行動自然人憑證登入</h1>
+                                        <span style="color:red;">基本資料請務必填寫正確，屆時相關檔案會依基本資料組成密碼後提供資訊</span>
+                                        <div class="row">
+                                            <div class="col-md-9 col-sm-12">
+                                                @using (Html.BeginForm("Login", "Home", FormMethod.Post, htmlAttributes: new { id = "loginform2", @class = "board-form" }))
+                                                {
+                                                    @Html.HiddenFor(x => x.ProcessStep)
+                                                    @Html.HiddenFor(x => x.UserLoginTab)
+                                                    <div class="form-group row">
+                                                        <label for="" class="form-label col-sm-4">
+                                                            <label title="姓名是必填欄位" style="color: red;">*</label>
+                                                            姓名
+                                                        </label>
+                                                        <div class="col-sm-7">
+                                                            @Html.TextBoxFor(x => x.Login.user_name, new { @class = "form-control", placeholder = "請輸入您的姓名", })
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="" class="form-label col-sm-4">
+                                                            <label title="身分證字號是必填欄位" style="color: red;">*</label>
+                                                            身分證字號
+                                                        </label>
+                                                        <div class="col-sm-7">
+                                                            @Html.PasswordFor(x => x.Login.user_idno1, new { @class = "form-control", placeholder = "請輸入您的身分證字號", autocomplete = "new-password" })
+                                                            <span class="eye-icon" href="javascript: void(0)" onclick="doOpenPd(this)" onkeypress="doOpenPd(this)" title="查看身分證字號" tabindex="0" style="position: absolute; top: 0.5rem; right: 1.7rem;">
+                                                                <i id="openPd" title="查看身分證字號" class="fas fa-eye" aria-hidden="true"></i>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="" class="form-label col-sm-4">
+                                                            <label title="出生年月日是必填欄位" style="color: red;">*</label>
+                                                            出生年月日
+                                                        </label>
+                                                        <div class="col-sm-7">
+                                                            @Html.DatePickerTWFor(x => x.Login.user_birthday1, new { placeholder = "yyymmdd" })
+                                                            <span>範例：0781231</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="" class="form-label col-sm-4">
+                                                            <label title="電子郵件Email是必填欄位" style="color: red;">*</label>
+                                                            電子郵件Email
+                                                        </label>
+                                                        <div class="col-sm-7">
+                                                            @Html.TextBoxFor(m => m.Login.user_email2, new { @class = "form-control", @placeholder = "請輸入電子郵件Email" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="" class="form-label col-sm-4">
+                                                            <label title="驗證碼是必填欄位" style="color: red;">*</label>
+                                                            驗證碼
+                                                        </label>
+                                                        <div class="col-sm-2">
+                                                            <div class="form-floating" style="margin-right: 1rem;">
+                                                                @Html.TextBoxFor(m => m.Login.ValidateCode2, new { @class = "form-control", @placeholder = "請輸入驗證碼", maxlength = "10" })
+                                                                <label for="code">驗證碼</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-1 col-6" style="margin: initial; padding: initial; margin-right: 2.1rem;">
+                                                            <img id="vCode2" src="@Url.Action("GetValidateCode2", "Home")" alt="驗證碼" class="login-code" data-toggle="tooltip" data-placement="top" title="產生新驗證碼" style="margin-top: 0.5rem;" />
+                                                        </div>
+                                                        <div class="col-sm-1 col-6">
+                                                            <div class="help-link" style="text-align: center; display: inline-flex; margin-top: 0.5rem;">
+                                                                <a href="@Url.Action("VCodeAudio2", "Home")" target="frmPlayer" title="撥放語音驗證碼">
+                                                                    <img id="playCode" alt="撥放語音驗證碼" src="~/images/speaker.svg" height="40" class="pull-right" />
+                                                                </a>
+                                                                <a href="javascript: void(0)" onclick="reloadValidCode2()">
+                                                                    <img src="~/images/revision.svg" height="40" alt="重新產生驗證碼" title="重新產生驗證碼" />
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <script type="text/javascript">
+                                                        function reloadValidCode2() {
+                                                            blockUI();
+                                                            $('#vCode2').attr("src", '@Url.Action("GetValidateCode2")' + "?rand=" + new Date().getMilliseconds());
+                                                        }
+                                                        $(function () {
+                                                            $('#vCode2').on("click", function (e) {
+                                                                reloadValidCode2();
+                                                            });
+                                                            $('#vCode2').on("load", function () {
+                                                                unblockUI();
+                                                            });
+                                                        });
+                                                    </script>
+                                                    <div class="form-group row">
+                                                        <div class="col-lg-4"></div>
+                                                        <div class="col-lg-8 col-md-12">
+
+                                                            <div class="btnBar">
+                                                                <button type="button" class="btn btn-apply" onclick="OnLoginForm2_Login()">TW-FidO驗證</button>
+                                                                <button type="button" class="btn btn-cancel" onclick="OnLoginForm2_Clear()">清除</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                <!--行動自然人憑證-->
+                                                <form id="LoginForm2Go" action="https://fido.moi.gov.tw/fidoRedirect/web" method="POST" style="display: none">
+                                                    <input id="op_code" name="op_code" value="" />
+                                                    <input id="sign_type" name="sign_type" value="" />
+                                                    <input id="sign_data" name="sign_data" value="" />
+                                                    <input id="tbs_encoding" name="tbs_encoding" value="" />
+                                                    <input id="hash_algorithm" name="hash_algorithm" value="" />
+                                                    <input id="hint" name="hint" value="" />
+                                                    <input id="transaction_id" name="transaction_id" value="" />
+                                                    <input id="sp_service_id" name="sp_service_id" value="" />
+                                                    <input id="sp_checksum" name="sp_checksum" value="" />
+                                                </form>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="board-gray board-sub">
+                                        <div class="help-note">
+                                            <p>注意事項：</p>
+                                            <ol>
+                                                <li>若首次使用行動自然人，請先參考內政部教學進行插卡綁定：<a href="https://fido.moi.gov.tw/pt/main/teaching" target="_blank">https://fido.moi.gov.tw/pt/main/teaching</a></li>
+                                                <li>行動自然人憑證操作<a href="https://fido.moi.gov.tw/pt/qa" target="_blank">常見問題</a>。</li>
+
+                                            </ol>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane @TabActive3" id="loginTypeC">
+                                <div class="board">
+                                    <div class="board-yellow board-sup" style="min-height: 32rem;">
+                                        <h1 class="board-title">身分證字號＋健保卡</h1>
+                                        <span style="color:red;">基本資料請務必填寫正確，屆時相關檔案會依基本資料組成密碼後提供資訊</span>
+                                        @using (Html.BeginForm("Login", "Home", FormMethod.Post, htmlAttributes: new { id = "loginform3", @class = "board-form" }))
+                                        {
+                                            @Html.HiddenFor(x => x.ProcessStep)
+                                            @Html.HiddenFor(x => x.UserLoginTab)
+                                            <div class="col-sm-12">
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="姓名是必填欄位" style="color: red;">*</label>
+                                                        姓名
+                                                    </label>
+                                                    <div class="col-md-6 col-sm-7">
+                                                        @Html.TextBoxFor(x => x.Login.user_name, new { @class = "form-control", placeholder = "請輸入您的姓名", })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="身分證字號是必填欄位" style="color: red;">*</label>
+                                                        身分證字號
+                                                    </label>
+                                                    <div class="col-md-6 col-sm-7">
+                                                        @Html.PasswordFor(x => x.Login.user_idno2, new { @class = "form-control", placeholder = "請輸入您的身分證字號", autocomplete = "new-password" })
+                                                        <span class="eye-icon" href="javascript: void(0)" onclick="doOpenPd(this)" onkeypress="doOpenPd(this)" title="查看身分證字號" tabindex="0" style="position: absolute; top: 0.5rem; right: 1.7rem;">
+                                                            <i id="openPd" title="查看身分證字號" class="fas fa-eye" aria-hidden="true"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="出生年月日是必填欄位" style="color: red;">*</label>
+                                                        出生年月日
+                                                    </label>
+                                                    <div class="col-md-6 col-sm-7">
+                                                        @Html.DatePickerTWFor(x => x.Login.user_birthday2, new { placeholder = "yyymmdd" })
+                                                        <span>範例：0781231</span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="電子郵件Email是必填欄位" style="color: red;">*</label>
+                                                        電子郵件Email
+                                                    </label>
+                                                    <div class="col-md-6 col-sm-7">
+                                                        @Html.TextBoxFor(m => m.Login.user_email3, new { @class = "form-control", @placeholder = "請輸入電子郵件Email" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="驗證碼是必填欄位" style="color: red;">*</label>
+                                                        驗證碼
+                                                    </label>
+                                                    <div class="col-md-3 col-sm-4">
+                                                        <div class="mb-2">
+                                                            @Html.TextBoxFor(m => m.Login.ValidateCode3, new { @class = "form-control", @placeholder = "請輸入驗證碼", maxlength = "10" })
+                                                            <!--<label for="code">驗證碼</label>-->
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <img id="vCode3" src="@Url.Action("GetValidateCode3", "Home")" alt="驗證碼" class="login-code" data-toggle="tooltip" data-placement="top" title="產生新驗證碼" />
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <div class="help-link" style="text-align: center; display: inline-flex; ">
+                                                            <a href="@Url.Action("VCodeAudio3", "Home")" target="frmPlayer" title="撥放語音驗證碼">
+                                                                <img id="playCode" alt="撥放語音驗證碼" src="~/images/speaker.svg" height="36" class="pull-right" />
+                                                            </a>
+                                                            <a href="javascript: void(0)" onclick="reloadValidCode3()">
+                                                                <img src="~/images/revision.svg" height="36" alt="重新產生驗證碼" title="重新產生驗證碼" />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <script type="text/javascript">
+                                                    function reloadValidCode3() {
+                                                        blockUI();
+                                                        $('#vCode3').attr("src", '@Url.Action("GetValidateCode3")' + "?rand=" + new Date().getMilliseconds());
+                                                    }
+                                                    $(function () {
+                                                        $('#vCode3').on("click", function (e) {
+                                                            reloadValidCode3();
+                                                        });
+                                                        $('#vCode3').on("load", function () {
+                                                            unblockUI();
+                                                        });
+                                                    });
+                                                </script>
+                                                <div class="btnBar">
+                                                    <button type="button" class="btn btn-apply" onclick="OnLoginForm3_Login()">登入</button>
+                                                    <button type="button" class="btn btn-cancel" onclick="OnLoginForm3_Clear()">清除</button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <!--<div class="board-gray board-sub">
+                                        <div class="help-note">
+                                            <p>注意事項：</p>
+                                            <ol>
+                                                <li>需使用健保卡與讀卡機。</li>
+                                                <li>使用前，請先完成健保卡註冊、瀏覽器設定及安裝必要元件等程序，相關資訊及設定方式請連結至<a href="https://cloudicweb.nhi.gov.tw/cloudic/system/Login.aspx" target="_blank">健保卡網路服務註冊網站</a>查詢，並依照健保卡網路註冊網站上所提供的「電腦環境說明」完成電腦環境檢測及設定。</li>
+                                            </ol>
+
+                                        </div>
+                                    </div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+</div>
+
+<div id="step2" style="display:none">
+    @if (Model.ProcessStep == "2")
+    {
+        <section id="step">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a class="accesskey" href="#aC" id="aC" accesskey="C" title="主要內容區">:::</a>
+                        <div class="board board-white">
+                            <div class="note-title">線上申辦服務注意事項說明</div>
+                            <div class="note-content">
+                                @{
+                                    var theHospNow = new ShareCodeListModel().Get_Hospital_list().Select(s => "「" + s.Text + "」").ToList();
+                                    var strHospNow = string.Join("、", theHospNow);
+                                }
+                                <strong style="color: red;">
+                                    請注意：本平台目前僅提供@(strHospNow)之電子病歷線上申請，且為完善防護個資資訊，僅可由申請人之信用卡刷卡付款，如您需申請其他醫院之病歷，請逕洽該醫院詢問。謝謝。
+                                </strong>
+                                <br />
+                                <br />
+                                <ol>
+                                    <li><strong>申請須知</strong>：申請人資格須為病人本人。</li>
+                                    <li><strong>作業時間</strong>：約 3-7 個工作天。</li>
+                                    <li><strong>收費標準</strong>：單張收費金額由申請醫院訂定之，透過本平台申請需支付使用服務費。</li>
+                                    <li><strong>繳費方式</strong>：平台僅提供線上刷卡服務。</li>
+                                    <li><strong>取件方式</strong>：於本平台申請電子病歷，均採電子檔下載方式。</li>
+                                    <li>如有需協助或洽詢之處，請撥打(02)8590-6349，謝謝。</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="note-check">
+                            <div class="form-check">
+                                <input id="ckAgree" type="checkbox" class="form-check-input" style="zoom: 1.5; margin-top: 0.2rem;" />
+                                <label for="ckAgree" style="color:red; font-size:1.25rem;">
+                                    我已詳細閱讀並充分了解，本人謹此聲明此次申請申請屬實，爾後若有不實作為而衍伸之違法情事，本人願負完全法律責任，絕無異議。
+                                </label>
+                            </div>
+                        </div>
+                        <div class="note-btn" style="display: inline-flex; width: 100%; padding-left: 1rem; padding-right: 1rem">
+                            <button class="btn btn-apply hvr-bob col-sm-9" onclick="OnAgreeCheck()">
+                                開始線上申辦
+                                <img class="bx-fade-up" src="~/images/hand-up.svg" alt="開始線上申辦" title="開始線上申辦" />
+                                @*<i class="bx bxs-hand-up bx-fade-up"></i>*@
+                            </button>
+                            <button class="btn btn-apply hvr-bob col-sm-3" onclick="window.location.href='@Url.Action("Index", "Home")';">
+                                取消申辦，返回首頁
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+</div>
+
+<div id="step3" style="display:none">
+    @if (Model.LoginApply != null && (Model.ProcessStep == "2" || Model.ProcessStep == "3"))
+    {
+        <section id="step">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a class="accesskey" href="#aC" id="aC" accesskey="C" title="主要內容區">:::</a>
+                        @using (Html.BeginForm("Login", "Home", FormMethod.Post, htmlAttributes: new { id = "LoginApplyForm", @class = "board" }))
+                        {
+                            @Html.HiddenFor(x => x.ProcessStep)
+                            @Html.HiddenFor(x => x.UserLoginTab)
+
+                            @Html.HiddenFor(x => x.LoginApply.keyid)
+                            @Html.HiddenFor(x => x.LoginApply.apply_no)
+                            @Html.HiddenFor(x => x.LoginApply.user_idno)
+                            @Html.HiddenFor(x => x.LoginApply.user_pincode)
+                            @Html.HiddenFor(x => x.LoginApply.user_cardpwd)
+                            @Html.HiddenFor(x => x.LoginApply.user_name)
+                            @Html.HiddenFor(x => x.LoginApply.user_birthday)
+                            @Html.HiddenFor(x => x.LoginApply.user_email)
+                            @Html.HiddenFor(x => x.LoginApply.login_type)
+                            @Html.HiddenFor(x => x.LoginApply.createdatetime)
+                            @Html.HiddenFor(x => x.LoginApply.user_birthday_Y)
+                            @Html.HiddenFor(x => x.LoginApply.user_birthday_M)
+                            @Html.HiddenFor(x => x.LoginApply.user_birthday_D)
+
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail_DelIdx)
+
+                            <div class="board-blue board-sup">
+                                <h1 class="board-title">申請人基本資料</h1>
+                                <div class="data-form">
+                                    <div class="row form-group">
+                                        <label class="form-label col-md-2 col-4">出生年月日</label>
+                                        <div class="col-md-4 col-8">
+                                            <div class="form-control-plaintext">民國 @Model.LoginApply.user_birthday_Y 年 @Model.LoginApply.user_birthday_M 月 @Model.LoginApply.user_birthday_D 日</div>
+                                        </div>
+                                        <label class="form-label col-md-2 col-4">電子郵件Email</label>
+                                        <div class="col-md-4 col-8">
+                                            <div class="form-control-plaintext">@Model.LoginApply.user_email</div>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <label class="form-label col-md-2 col-4">申請人</label>
+                                        <div class="col-md-4 col-8">
+                                            <div class="form-control-plaintext">@Model.LoginApply.user_name_Text</div>
+                                        </div>
+                                        <label class="form-label col-md-2 col-4">身分證字號</label>
+                                        <div class="col-md-4 col-8">
+                                            <div class="form-control-plaintext">@Model.LoginApply.user_idno_Text</div>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <label class="form-label col-md-2 col-4">申請日期</label>
+                                        <div class="col-md-4 col-8">
+                                            <div class="form-control-plaintext">民國 @Model.LoginApply.createdatetime_Text</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="board-gray board-sub">
+                                <div class="row">
+                                    <div class="col-sm-7" style="">
+                                        <h1 class="board-title">申請內容</h1>
+                                    </div>
+                                    <div class="col-sm-5" style="padding-left: unset;">
+                                        <h1 class="board-title">申請費用明細</h1>
+                                    </div>
+                                    <div class="row" id="Div_ApplyDetail">
+                                        @Html.Partial("_GridRows_ApplyDetail", Model)
+                                    </div>
+                                    @*
+                                        <div class="btnBar">
+                                            先暫時隱藏
+                                            <button type="button" class="btn btn-apply" onclick="OnLoginApplyForm_New()">新增一筆申請</button>
+                                        </div>
+                                    *@
+                                    <div class="apply-card d-flex justify-content-center mt-2">
+                                        <div>
+                                            <button id="paybtn" style="width: 15rem;" class="btn btn-cost btn-cancel" onclick="OnLogout()"><span>取消申請</span></button>
+                                        </div>
+                                        <div>
+                                            <button id="paybtn" style="width: 15rem;" class="btn btn-cost btn-send" onclick="OnLoginApplyForm_NextStep()"><span>確認申請</span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="help-note">
+                                            <p>注意事項：</p>
+                                            <ol>
+                                                <li>單張收費金額由申請醫院依病歷類型不同訂定之。</li>
+                                                <li>平台手續費：同一醫院申請多筆電子病歷時，單次申請僅收取一次平台手續費。</li>
+                                                @*<li>如單次申請多家醫院電子病歷，平台於繳費階段乃是採單一醫院個別獨立結帳付費之機制。</li>*@
+                                                <li>如有需協助或洽詢之處，請撥打(02)8590-6349，謝謝。</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    var closebtns = document.getElementsByClassName("close");
+                                    var i;
+
+                                    for (i = 0; i < closebtns.length; i++) {
+                                        closebtns[i].addEventListener("click", function () {
+                                            this.parentElement.style.display = 'none';
+                                        });
+                                    }
+                                </script>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+</div>
+<div id="step4" style="display:none">
+    @if (Model.LoginApply != null && Model.ProcessStep == "4")
+    {
+        <section id="step">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a class="accesskey" href="#aC" id="aC" accesskey="C" title="主要內容區">:::</a>
+                        @using (Html.BeginForm("Login", "Home", FormMethod.Post, htmlAttributes: new { id = "LoginApplyPayForm", @class = "board board-blue" }))
+                        {
+                            @Html.HiddenFor(x => x.ProcessStep)
+                            @Html.HiddenFor(x => x.UserLoginTab)
+
+                            @Html.HiddenFor(x => x.LoginApply.keyid)
+                            @Html.HiddenFor(x => x.LoginApply.apply_no)
+                            @Html.HiddenFor(x => x.LoginApply.user_idno)
+                            @Html.HiddenFor(x => x.LoginApply.user_pincode)
+                            @Html.HiddenFor(x => x.LoginApply.user_cardpwd)
+                            @Html.HiddenFor(x => x.LoginApply.user_name)
+                            @Html.HiddenFor(x => x.LoginApply.user_birthday)
+                            @Html.HiddenFor(x => x.LoginApply.user_email)
+                            @Html.HiddenFor(x => x.LoginApply.login_type)
+                            @Html.HiddenFor(x => x.LoginApply.createdatetime)
+                            @Html.HiddenFor(x => x.LoginApply.user_birthday_Y)
+                            @Html.HiddenFor(x => x.LoginApply.user_birthday_M)
+                            @Html.HiddenFor(x => x.LoginApply.user_birthday_D)
+
+                            //@Html.HiddenFor(x => x.LoginApply.ApplyDetail_PayIdx)
+
+                            <div>
+                                <h1 class="board-title">確認申請項目</h1>
+                                @*
+                                    <div class="table-tab" style="margin-left: 0rem; margin-top: 0.5rem;">
+                                        申請人<span>@Model.LoginApply.user_name</span>
+                                    </div>
+                                *@
+                                <div id="Div_ApplyDetail_Pay">
+                                    @Html.Partial("_GridRows_ApplyDetail_Pay", Model)
+                                </div>
+                            </div>
+                            <div style="text-align: center; color: red; margin-bottom: 2rem;">
+                                <strong>
+                                    請注意：您所申請之病歷檔案，經申請醫院端製檔完成提供下載與查閱後，將不受理取消退費之要求，謝謝。<br />
+                                    電子病歷一經線上繳費付款完成即進入病歷檔案產製階段，因此歉難受理退費，謝謝。
+                                </strong>
+                            </div>
+                            <div class="btnBar text-center" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                                <button type="button" class="btn btn-cancel" onclick="OnLoginApplyPayForm_Back()">返回修改</button>
+                                @if (Data_HospitalCode == "1131010011H")
+                                {
+                                    // 亞東
+                                    <button type="button" class="btn btn-apply" onclick="OnLoginApplyPayForm_Send()">確認申請</button>
+                                }
+                                else
+                                if (Data_HospitalCode == "1317040011H")
+                                {
+                                    // 中山醫
+                                    <button type="button" class="btn btn-apply" onclick="OnLoginApplyPayForm_Send_csh()">確認申請</button>
+                                }
+                                else
+                                if (Data_HospitalCode == "1317050017H")
+                                {
+                                    // 中國醫
+
+                                }
+                                else
+                                {
+                                    // 其他 EEC
+                                    <button type="button" class="btn btn-apply" onclick="OnLoginApplyPayForm_Send()">確認申請</button>
+                                }
+                            </div>
+                            @*
+                                <!-- 繳費紀錄 -->
+                                <div class="board-gray board-sub" style="margin-bottom: 1rem; border-radius: 1.5rem 1.5rem 1.5rem 1.5rem;">
+                                    <h2 class="board-title" style="margin-left: 1rem;">付款紀錄</h2>
+                                    <div class="table-responsive table-set" style="margin-left: 0rem;">
+                                        <table class="table table-gray">
+                                            <thead>
+                                                <tr>
+                                                    <th width="10%">訂單編號</th>
+                                                    <th width="15%">申請日期</th>
+                                                    <th width="20%">醫院名稱</th>
+                                                    <th width="30%">病歷類型</th>
+                                                    <th width="10%">應付金額</th>
+                                                    <th width="15%">繳款狀態</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="Div_ApplyDetail_PayedList">
+                                                @Html.Partial("_GridRows_ApplyDetail_PayedList", Model)
+                                            </tbody>
+                                        </table>
+                                        <div class="help-note">
+                                            *本平台已收到您的款項，病歷產製約需 3-7 個工作天，請您耐心等候，謝謝。
+                                        </div>
+                                    </div>
+                                </div>
+                            *@
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+</div>
+<div id="step5" style="display:none">
+    @if (Model.LoginApply != null && Model.ProcessStep == "5")
+    {
+        <section id="step">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a class="accesskey" href="#aC" id="aC" accesskey="C" title="主要內容區">:::</a>
+                        @using (Html.BeginForm("Login", "Home", FormMethod.Post, htmlAttributes: new { id = "LoginApplyDoneForm", @class = "board" }))
+                        {
+                            @Html.HiddenFor(x => x.ProcessStep)
+                            @Html.HiddenFor(x => x.UserLoginTab)
+
+                            @Html.HiddenFor(x => x.LoginApply.keyid)
+                            @Html.HiddenFor(x => x.LoginApply.apply_no)
+                            @Html.HiddenFor(x => x.LoginApply.user_idno)
+                            @Html.HiddenFor(x => x.LoginApply.user_pincode)
+                            @Html.HiddenFor(x => x.LoginApply.user_cardpwd)
+                            @Html.HiddenFor(x => x.LoginApply.user_name)
+                            @Html.HiddenFor(x => x.LoginApply.user_birthday)
+                            @Html.HiddenFor(x => x.LoginApply.user_email)
+                            @Html.HiddenFor(x => x.LoginApply.login_type)
+                            @Html.HiddenFor(x => x.LoginApply.createdatetime)
+                            @Html.HiddenFor(x => x.LoginApply.user_birthday_Y)
+                            @Html.HiddenFor(x => x.LoginApply.user_birthday_M)
+                            @Html.HiddenFor(x => x.LoginApply.user_birthday_D)
+
+                            //@Html.HiddenFor(x => x.LoginApply.ApplyDetail_PayIdx)
+
+                            <div class="board-blue board-sup">
+                                <h1 class="board-title">申請人基本資料</h1>
+                                <form class="data-form">
+                                    <div class="row form-group" style="margin-left: 0rem; margin-right: 0rem;">
+                                        <label class="form-label col-md-2 col-4">出生年月日</label>
+                                        <div class="col-md-4 col-8">
+                                            <div class="form-control-plaintext">民國 @Model.LoginApply.user_birthday_Y 年 @Model.LoginApply.user_birthday_M 月 @Model.LoginApply.user_birthday_D 日</div>
+                                        </div>
+                                        <label class="form-label col-md-2 col-4">電子郵件Email</label>
+                                        <div class="col-md-4 col-8">
+                                            <div class="form-control-plaintext">@Model.LoginApply.user_email</div>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group" style="margin-left: 0rem; margin-right: 0rem;">
+                                        <label class="form-label col-md-2 col-4">申請人</label>
+                                        <div class="col-md-4 col-8">
+                                            <div class="form-control-plaintext">@Model.LoginApply.user_name_Text</div>
+                                        </div>
+                                        <label class="form-label col-md-2 col-4">身分證字號</label>
+                                        <div class="col-md-4 col-8">
+                                            <div class="form-control-plaintext">@Model.LoginApply.user_idno_Text</div>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group" style="margin-left: 0rem; margin-right: 0rem;">
+                                        <label class="form-label col-md-2 col-4">申請日期</label>
+                                        <div class="col-md-4 col-8">
+                                            <div class="form-control-plaintext">民國 @Model.LoginApply.createdatetime_Text</div>
+                                        </div>
+                                        <label class="form-label col-md-2 col-4">申請案號</label>
+                                        <div class="col-md-4 col-8">
+                                            <div class="form-control-plaintext">@Model.LoginApply.apply_no</div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div>
+                                    <h1 class="board-title">申請內容</h1>
+                                    @Html.Partial("_GridRows_ApplyDetail_Done", Model)
+                                </div>
+                            </div>
+                            <div class="board-gray board-sub">
+                                <div class="board-inn">
+                                    <h2>申請確認</h2>
+                                    <p>
+                                        您所申請的病歷訂單編號
+                                        @{
+                                            string strHospital = "";
+                                            if (Model.LoginApply != null && Model.LoginApply.ApplyDetail != null && Model.LoginApply.ApplyDetail.ToCount() > 0)
+                                            {
+                                                strHospital = string.Join("<br />", Model.LoginApply.ApplyDetail.Select(x => x.hospital_name).ToList());
+                                            }
+                                        }
+                                        @*<span class="highlight">@Html.Raw(strHospital)</span><br />*@
+                                        <br />
+                                        <a herf="javascript: void(0)" class="highlight" style="color: blue;" title="訂單進度查詢" onclick="Goto_SearchGridDetail()">
+                                            @(Model.LoginApply.ApplyDetail.FirstOrDefault().apply_no_sub)
+                                        </a>
+                                        <br />
+                                        已登錄至系統，請於期限內完成線上刷卡付款程序 ，逾期將自動取消申請。<br />
+                                        線上刷卡繳費完成，將由醫院進行病歷調檔製作，系統於可供您線上讀取及下載申請病歷時寄送通知至您所登錄的電子信箱，謝謝。
+                                        @*
+                                            需等待院方回覆確認後，系統將寄發可列印通知信至您的電子信箱，<br />
+                                            再請於期限內登入此系統進行列印動作，謝謝。
+                                        *@
+                                    </p>
+                                    <div style="text-align: center; color: red; margin-bottom: 2rem;">
+                                        <strong>
+                                            請注意：您所申請之病歷檔案，經申請醫院端製檔完成提供下載與查閱後，將不受理取消退費之要求，謝謝。<br />
+                                            電子病歷一經線上繳費付款完成即進入病歷檔案產製階段，因此歉難受理退費，謝謝。
+                                        </strong>
+                                    </div>
+                                    <div class="btnBar">
+                                        @*<button class="btn btn-cancel" onclick="OnLoginApplyDoneForm_Back()">返回修改</button>*@
+                                        <button class="btn btn-apply" onclick="OnLogout()">登出系統</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+        <br />
+    }
+</div>
+
+@* 付款用 form *@
+@if (Data_HospitalCode == "1131010011H")
+{
+    // 亞東
+    <div style="display: none;">
+        <form id="TransRedirect" name="TransRedirect" method="post" action="@TransRedirectAction">
+            <input type="hidden" name="Others" value="" />
+            <input type="hidden" name="KEY" id="KEY" value="" />
+        </form>
+    </div>
+}
+else
+if (Data_HospitalCode == "1317040011H")
+{
+    // 中山醫
+    <div style="display: none;">
+        <form id="TransRedirect" name="TransRedirect" method="post" accept-charset="Big5" action="@TransRedirectAction_csh">
+            <input type="hidden" name="MerchantID" id="MerchantID" value="" />
+            <input type="hidden" name="TerminalID" id="TerminalID" value="" />
+            <input type="hidden" name="merID" id="merID" value="" />
+            <input type="hidden" name="MerchantName" id="MerchantName" value="" />
+            <input type="hidden" name="purchAmt" id="purchAmt" value="" />
+            <input type="hidden" name="lidm" id="lidm" value="" />
+            <input type="hidden" name="AutoCap" id="AutoCap" value="" />
+            <input type="hidden" name="AuthResURL" id="AuthResURL" value="" />
+        </form>
+    </div>
+}
+else
+if (Data_HospitalCode == "1317050017H")
+{
+    // 中國醫
+
+}
+else
+{
+    // 其他 EEC
+    <div style="display: none;">
+        <form id="TransRedirect" name="TransRedirect" method="post" action="@TransRedirectAction">
+            <input type="hidden" name="Others" value="" />
+            <input type="hidden" name="KEY" id="KEY" value="" />
+        </form>
+    </div>
+}
+
+<script type="text/javascript">
+
+    var onOff = '@(OnOff)';
+
+    $(document).ready(function () {
+        OnStepProcess('@Model.ProcessStep');
+        OnLoginForm1_Clear();
+        OnLoginForm2_Clear();
+        OnLoginForm3_Clear();
+        SetDateComponentFormat("Login_user_birthday_TW");
+        SetDateComponentFormat("Login_user_birthday1_TW");
+        SetDateComponentFormat("Login_user_birthday2_TW");
+        if ('@IsNeedAdd' === 'True') {
+            OnLoginApplyForm_New();
+        }
+    });
+
+    function OnStepProcess(StepStr) {
+        // Hide
+        document.getElementById("step_process1").style.display = "none";
+        document.getElementById("step_process2").style.display = "none";
+        document.getElementById("step_process3").style.display = "none";
+        document.getElementById("step_process4").style.display = "none";
+        document.getElementById("step_process5").style.display = "none";
+        //document.getElementById("step_process4-user").style.display = "none";
+        document.getElementById("step1").style.display = "none";
+        document.getElementById("step2").style.display = "none";
+        document.getElementById("step3").style.display = "none";
+        document.getElementById("step4").style.display = "none";
+        document.getElementById("step5").style.display = "none";
+        //document.getElementById("step4-user").style.display = "none";
+        // Show
+        document.getElementById("step_process" + StepStr).style.display = "block";
+        document.getElementById("step" + StepStr).style.display = "block";
+        @*
+        if (StepStr === "1") {
+            if ($("#Login_certData_subjectID").val() !== "") {
+                document.getElementById("loginTypeA_1").style.display = "none";
+                document.getElementById("loginTypeA_2").style.display = "block";
+                $("#loginTypeA_SetHeight").removeAttr("style");
+                $("#loginTypeA_SetHeight").attr("style", "height: 27rem;");
+            }
+        }
+        *@
+    }
+
+    // 自然人憑證 登入
+    @*function OnLoginForm1_Login() {
+        var form = $("form[id=loginform1]");
+        form.attr('action', '@Url.Action("LoginForm1")').submit();
+    }*@
+
+    // 自然人憑證 清除
+    function OnLoginForm1_Clear() {
+        $("#Login_user_idno").val("");
+        $("#Login_user_birthday").val("");
+        $("#Login_user_birthday_TW").val("");
+        $("#Login_user_pincode").val("");
+        $("#Login_ValidateCode1").val("");
+    }
+
+     // 登入
+    function OnLoginForm1_Login() {
+        var PinCode = $("input#Login_user_pincode").val();
+        if (!PinCode) {
+            blockAlert("請輸入正確的PIN 密碼，不可為空。<br/>");
+            return false;
+        }
+        var model = new FormData(document.getElementById('loginform1'));
+        $.ajax({
+            method: 'POST', url: '@Url.Action("LoginForm1_CheckValidateCode", "Home")', data: model, cache: false, processData: false, contentType: false,
+            success: function (resp) {
+                if (resp !== "") {
+                    blockAlert(resp);
+                    return false;
+                }
+                else {
+
+                    if (onOff == '1') {
+                        // 呼叫自然人跨平台元件驗證Pin碼
+                        CertValidation(PinCode, CertCallback);
+                    }
+                    else {
+                        CertCallbackOff(PinCode);
+                    }
+
+
+                }
+            }
+        });
+
+    }
+
+    // 自然人跨平台元件驗證後會呼叫這個 function
+    function CertCallback(certData, rtnCode, msg) {
+        //debugger;
+        if (rtnCode != 0) {
+            blockAlert(msg, "憑證驗證失敗");
+            return;
+        }
+        if (!certData) {
+            blockAlert("跨平台元件 CertValidation() 失敗: 沒有回傳憑證資料!");
+            return;
+        }
+        @*
+            分為兩階段登入，所以這邊先把資料丟去暫存起來 (certData.subjectID)，
+            後續在二階段按下按鈕，再去觸發 OnLoginForm1_Login2()，然後接續後面的登入
+        *@
+        $("#Login_certData_subjectID").val(certData.subjectID);
+        document.getElementById("loginTypeA_1").style.display = "none";
+        document.getElementById("loginTypeA_2").style.display = "block";
+        $("#loginTypeA_SetHeight").removeAttr("style");
+        $("#loginTypeA_SetHeight").attr("style", "height: 22rem;");
+    }
+
+    // 自然人跨平台元件驗證後會呼叫這個 function
+    function CertCallbackOff(pinCode) {
+        @*
+            分為兩階段登入，所以這邊先把資料丟去暫存起來 (certData.subjectID)，
+            後續在二階段按下按鈕，再去觸發 OnLoginForm1_Login2()，然後接續後面的登入
+        *@
+        $("#Login_certData_subjectID").val(pinCode);
+        document.getElementById("loginTypeA_1").style.display = "none";
+        document.getElementById("loginTypeA_2").style.display = "block";
+        $("#loginTypeA_SetHeight").removeAttr("style");
+        $("#loginTypeA_SetHeight").attr("style", "height: 22rem;");
+    }
+
+    function OnLoginForm1_Login2() {
+        var formObj = $("form#loginform1");
+        formObj.attr('action', '@Url.Action("LoginForm1")').submit();
+    }
+
+    // 行動自然人憑證 登入
+    function OnLoginForm2_Login() {
+        //debugger;
+        var data = getFormDataToObject($("form[id=loginform2]"));
+        ajaxLoadMore('@Url.Action("GetSPAPIWEB01", "Ajax")', data, function (retData) {
+            //debugger;
+            if (retData.status) {
+                $("#LoginForm2Go #op_code").val(retData.data.op_code);
+                $("#LoginForm2Go #sign_type").val(retData.data.sign_type);
+                $("#LoginForm2Go #sign_data").val(retData.data.sign_data);
+                $("#LoginForm2Go #tbs_encoding").val(retData.data.tbs_encoding);
+                $("#LoginForm2Go #hash_algorithm").val(retData.data.hash_algorithm);
+                $("#LoginForm2Go #hint").val(retData.data.hint);
+                $("#LoginForm2Go #transaction_id").val(retData.data.transaction_id);
+                $("#LoginForm2Go #sp_service_id").val(retData.data.sp_service_id);
+                $("#LoginForm2Go #sp_checksum").val(retData.data.sp_checksum);
+                $("#LoginForm2Go").submit();
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+        @*var form = $("form[id=loginform2]");
+        form.attr('action', '@Url.Action("LoginForm2")').submit();*@
+    }
+
+    function postToFido(data) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "https://fido.moi.gov.tw/fidoRedirect/web";
+
+        const appendField = (name, value) => {
+            if (!value) return;
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        };
+
+        appendField("transaction_id", data.transaction_id);
+        appendField("sp_service_id", data.sp_service_id);
+        appendField("sp_checksum", data.sp_checksum);
+        appendField("id_num", data.id_num);
+        appendField("op_code", data.op_code);
+        appendField("op_mode", data.op_mode);
+        appendField("hint", data.hint);
+        //appendField("sign_data", data.sign_data); // 可選 SIGN 模式用
+        appendField("sign_info", data.sign_info);
+        //console.log(form);
+        //debugger;
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // 行動自然人憑證 清除
+    function OnLoginForm2_Clear() {
+        $("#Login_user_idno1").val("");
+        $("#Login_user_birthday1").val("");
+        $("#Login_user_birthday1_TW").val("");
+        $("#Login_ValidateCode2").val("");
+    }
+
+    // 身分證字號＋健保卡 登入
+    function OnLoginForm3_Login() {
+        var form = $("form[id=loginform3]");
+        form.attr('action', '@Url.Action("LoginForm3")').submit();
+    }
+
+    // 身分證字號＋健保卡 清除
+    function OnLoginForm3_Clear() {
+        $("#Login_user_idno2").val("");
+        $("#Login_user_birthday2").val("");
+        $("#Login_user_birthday2_TW").val("");
+        $("#Login_ValidateCode3").val("");
+    }
+
+    // 開始線上申辦
+    function OnAgreeCheck() {
+        if (document.getElementById("ckAgree").checked === false) {
+            blockAlert("請勾選我同意，以進行下一步驟！");
+            return;
+        }
+        document.querySelectorAll('[id=ProcessStep]').forEach(element => { element.value = '3'; });
+        OnStepProcess('3');
+    }
+
+    // 填寫申請資料頁 - 新增一筆申請
+    function OnLoginApplyForm_New() {
+        RefreshApplyDetail("@Url.Action("New_GridRows_ApplyDetail", "Home")");
+    }
+
+    // 填寫申請資料頁 - 刪除
+    function OnLoginApplyForm_Del(DelIdx) {
+        $("#LoginApply_ApplyDetail_DelIdx").val(DelIdx);
+        RefreshApplyDetail("@Url.Action("Del_GridRows_ApplyDetail", "Home")");
+    }
+
+    // 填寫申請資料頁 - 變更時重整
+    function OnApplyDetailChange() {
+        RefreshApplyDetail("@Url.Action("Refresh_GridRows_ApplyDetail", "Home")");
+    }
+
+    // 刷新 填寫申請資料頁
+    function RefreshApplyDetail(TheAction) {
+        blockUI();
+        var model = new FormData(document.getElementById('LoginApplyForm'));
+        $.ajax({
+            method: 'POST', url: TheAction, data: model, cache: false, processData: false, contentType: false,
+            success: function (resp) {
+                if (resp) {
+                    $("#Div_ApplyDetail").html(resp);
+                    $("#LoginApply_ApplyDetail_DelIdx").val("");
+                    // 明細的 DatePicker
+                    $("div.date").each(function () {
+                        initDatePicker(this);
+                        $(this).on("dp.change", function (e) { OnDatePickerChange(e); });  // 彈窗修改時
+                        $(this).on("change", function (e) { OnDatePickerChange(e); });     // 直接修改時
+                    });
+                }
+                unblockUI();
+            }
+        });
+    }
+
+    function OnDatePickerChange(e) {
+        var tmpID = e.target.firstChild.id;
+        var tmpIdx1 = tmpID.indexOf('[');
+        var tmpIdx2 = tmpID.indexOf(']');
+        var Idx = tmpID.substring(tmpIdx1 + 1, tmpIdx2);
+        //console.log(Idx);
+        var value1 = document.getElementById('LoginApply_ApplyDetail_' + Idx + '__hospital_code').value;
+        var value2 = document.getElementById('LoginApply_ApplyDetail[' + Idx + ']_his_range1_AD_TW').value;
+        var value3 = document.getElementById('LoginApply_ApplyDetail[' + Idx + ']_his_range2_AD_TW').value;
+        if (value1 !== "" && value2 !== "" && value3 !== "") {
+            RefreshApplyDetail("@Url.Action("Refresh_GridRows_ApplyDetail", "Home")");
+        }
+    }
+
+    // 填寫申請資料頁 - 下一步
+    function OnLoginApplyForm_NextStep() {
+        var form = $("form[id=LoginApplyForm]");
+        form.attr('action', '@Url.Action("LoginApplySave")').submit();
+    }
+
+    // 刷卡付費頁 - 返回
+    function OnLoginApplyPayForm_Back() {
+        var form = $("form[id=LoginApplyPayForm]");
+        form.attr('action', '@Url.Action("LoginApplyPayForm_Back")').submit();
+    }
+
+    function OnLoginApplyPayForm_Send() {
+        blockConfirm("是否要現在進行繳費？", "請確認",
+            function () {
+                $("#KEY").val("");
+                $.ajax({
+                    method: 'POST',
+                    url: '@Url.Action("Get_Pay_STKey_forLogin", "Home")',
+                    data: new FormData(document.getElementById('LoginApplyPayForm')),
+                    cache: false, processData: false, contentType: false,
+                    success: function (resp) {
+                        if (resp) {
+                            $("#KEY").val(resp.data);  // 回填
+                            if ($("#KEY").val() != "") {
+                                $('#TransRedirect').submit();
+                            }
+                            if (!resp.status) {
+                                blockAlert(resp.message, "連接失敗");
+                            }
+                        }
+                    }
+                });
+            },
+            function () {
+                var form = $("form[id=LoginApplyPayForm]");
+                form.attr('action', '@Url.Action("LoginApplyPayForm_Send", "Home")').submit();
+            },
+            "是，現在繳費", "否，後續再進行繳費"
+        );
+    }
+
+    function OnLoginApplyPayForm_Send_csh() {
+        blockConfirm("是否要現在進行繳費？", "請確認",
+            function () {
+                $("#MerchantID").val("");
+                $("#TerminalID").val("");
+                $("#merID").val("");
+                $("#MerchantName").val("");
+                $("#purchAmt").val("");
+                $("#lidm").val("");
+                $("#AutoCap").val("");
+                $("#AuthResURL").val("");
+                $.ajax({
+                    method: 'POST',
+                    url: '@Url.Action("LoginApplyPayForm_Send_csh", "Home")',
+                    data: new FormData(document.getElementById('LoginApplyPayForm')),
+                    cache: false, processData: false, contentType: false,
+                    success: function (resp) {
+                        if (resp && resp.data) {
+                            // 回填
+                            $("#MerchantID").val(resp.data.MerchantID);
+                            $("#TerminalID").val(resp.data.TerminalID);
+                            $("#merID").val(resp.data.merID);
+                            $("#MerchantName").val(resp.data.MerchantName);
+                            $("#purchAmt").val(resp.data.purchAmt);
+                            $("#lidm").val(resp.data.lidm);
+                            $("#AutoCap").val(resp.data.AutoCap);
+                            $("#AuthResURL").val(resp.data.AuthResURL);
+                            if ($("#lidm").val() != "" && $("#purchAmt").val() != "" && $("#purchAmt").val() > 0) {
+                                $('#TransRedirect').submit();
+                            }
+                            if (!resp.status) {
+                                blockAlert(resp.message, "連接失敗");
+                            }
+                        }
+                    }
+                });
+            },
+            function () {
+                var form = $("form[id=LoginApplyPayForm]");
+                form.attr('action', '@Url.Action("LoginApplyPayForm_Send", "Home")').submit();
+            },
+            "是，現在繳費", "否，後續再進行繳費"
+        );
+    }
+
+    function OnLoginApplyDoneForm_Back() {
+        var form = $("form[id=LoginApplyDoneForm]");
+        form.attr('action', '@Url.Action("LoginApplyDoneForm_Back")').submit();
+    }
+
+    // 登出
+    function OnLogout() {
+        window.location.href='@Url.Action("Login", "Home")';
+    }
+
+    // 檢視密碼
+    function doOpenPd(even) {
+        if ($(even).children().attr('class') == 'fas fa-eye') {
+            $(even).prev().attr('type', 'text');
+        } else {
+            $(even).prev().attr('type', 'password');
+        }
+        $(even).children().toggleClass('fa-eye').toggleClass('fa-eye-slash');
+    }
+
+    function SetDateComponentFormat(id) {
+        @*
+        //Put our input DOM element into a jQuery Object
+        var $jqDate = jQuery('input[id="' + id + '"]');
+        //Bind keyup/keydown to the input
+        $jqDate.bind('keyup', 'keydown', function (e) {
+            //To accomdate for backspacing, we detect which key was pressed - if backspace, do nothing:
+            if (e.which !== 9) {
+                var numChars = $jqDate.val().length;
+                if (numChars === 3 || numChars === 6) {
+                    var thisVal = $jqDate.val();
+                    thisVal += '/';
+                    $jqDate.val(thisVal);
+                }
+            }
+        });
+        *@
+    }
+
+    function Goto_SearchGridDetail() {
+        var form = $("form[id=LoginApplyDoneForm]");
+        form.attr('action', '@Url.Action("Goto_SearchGridDetail")').submit();
+    }
+
+</script>
+
+<script>
+    @{
+        int timeout = 60;
+    }
+    var __ssTimeout = {
+        //timeout   系統登入逾時時間，單位：秒
+        //counter   倒數計時計數器。
+        //hint      登入即將過期提醒訊息的彈出時間點。單位：秒
+        //hintFired 是否顯示過登入即將過期訊息。
+        "timerId": undefined,
+        "redirectUrl": "@(Url.Action("Login", "Home"))",
+        "board": $("span.data-timer-number"),
+        "timeout": parseInt("@(timeout * 20)", 10),
+        "counter": parseInt("@(timeout * 20)", 10),
+        "hint": 300,
+        "hintFired": 0,
+        refreshBoard: function () {
+            if (this.counter > 0) {
+                //20171214 修正 IE11 不支援 Math.trunc 方法問題
+                var m = (Math.trunc) ? Math.trunc(this.counter / 60) : Math.floor(this.counter / 60);
+                var s = this.counter % 60;
+                m = ((m < 10) ? "0" : "") + m;
+                s = ((s < 10) ? "0" : "") + s;
+                this.board.text([m, ":", s].join(""));
+            }
+            else {
+                this.board.text("00:00");
+            }
+        },
+        resetCount: function () {
+            this.counter = this.timeout;
+            this.hintFired = 0;
+            this.refreshBoard();
+        },
+        countDown: function () {
+            var self = this;
+            if (this.counter <= 0) {
+                blockAlert("您的登入已經過期，請重新登入系統！", "登入逾時", function () {
+                    window.location.href = self.redirectUrl;
+                });
+                return;
+            }
+
+            this.timerId = setTimeout(function () { self.countDown(); }, 1000);
+            if (this.counter > 0) this.counter--;
+            this.refreshBoard();
+
+            if (this.counter <= this.hint && this.hintFired == 0) {
+                this.hintFired = 1;
+                //blockConfirm("您的登入即將過期，要延長時間嗎？", "", function () { self.resetCount(); }, null, "延長", "不延長");
+            }
+        }
+    }
+    $(document).ready(function () {
+        if ('@Model.ProcessStep' !== '1') {
+            __ssTimeout.countDown();
+        }
+    });
+</script>

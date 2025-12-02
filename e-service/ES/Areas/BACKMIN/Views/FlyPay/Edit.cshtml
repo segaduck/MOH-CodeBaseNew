@@ -1,0 +1,215 @@
+﻿@using ES.Utils;
+@using CTCB.Crypto;
+@model ES.Areas.Admin.Models.FlyPayModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "航班乘客資料";
+    ViewBag.FunctionTitle = "航班乘客資料";
+    string s_GRANTDATE = "";
+    if (Model.detail.GRANTDATE != null && Model.detail.GRANTDATE.HasValue) { s_GRANTDATE = Model.detail.GRANTDATE.Value.ToString("yyyy/MM/dd"); }
+    bool flag_CanEdit = false;
+    if (Model.QRY_CanEdit) { flag_CanEdit = true; }
+}
+@using (Html.BeginForm("Edit", "FlyPay", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    @Html.HiddenFor(m => m.QRY_PAY_STATUSList)
+    @Html.HiddenFor(m => m.QRY_CanEdit)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 帳務管理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <h2 class="second-title">航班乘客資料</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">姓名</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.FIRSTNAME)&nbsp;&nbsp;
+                    @(Model.detail.MIDDLENAME) &nbsp;&nbsp;
+                    @(Model.detail.LASTNAME)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">生日</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.BIRTH)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">性別</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.GENDER)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">證件號碼</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.MAINDOCNO)
+                    @Html.HiddenFor(m => m.detail.MAINDOCNO)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">國籍</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.NATIONALITY)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">航班時間</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.FLIGHTDATE)
+                    @Html.HiddenFor(m => m.detail.FLIGHTDATE)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">航班號碼</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.FLIGHTNO)
+                    @Html.HiddenFor(m => m.detail.FLIGHTNO)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">機場代碼</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.DEPARTAIRPORT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">旅客類別</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.PASSENGERTYPE)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">刷卡日期及金額</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @if (Model.detail.PAYDATE != null)
+                {
+                        @(Model.detail.PAYDATE.Value.ToString("yyyy/MM/dd HH:mm:ss"))
+                        <span>&nbsp; &nbsp; &nbsp; &nbsp;</span>
+                        if (Model.detail.MAINDOCNO.Contains("TURBO"))
+                        {
+                            <span>1</span>
+                        }
+                        else
+                        {
+                            @(Model.detail.PAYMONEY)
+                        }
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">繳費狀態</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.STATUS)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">繳費編號</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.PAYRESULT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">銀行繳費編號</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.XID)
+                </div>
+            </div>
+            @if (!string.IsNullOrEmpty(Model.detail.PAYRETURN))
+                {
+                    Decrypt dec = new Decrypt();
+                    dec.Key = DataUtils.GetConfig("FLYPAY_VISA_KEY");
+                    dec.EncRes = Model.detail.PAYRETURN;
+                    Model.detail.AUTHCODE = dec.AuthCode;
+                    if (!string.IsNullOrEmpty(Model.detail.AUTHCODE))
+                    {
+                    <div class="form-group">
+                        <label class="main-label col-sm-2" for="">中信授權碼</label>
+                        <div class="col-sm-10" style="margin:10px auto;">
+                            @(Model.detail.AUTHCODE)
+                        </div>
+                    </div>
+                }
+            }
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">銀聯繳費編號</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.QID)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">授權碼</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(Model.detail.TRACENO)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">撥款日期</label>
+                <div class="col-sm-10" style="margin:10px auto;">
+                    @(s_GRANTDATE)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">防疫所別</label>
+                <div class="col-sm-10" >
+                    @Html.TextBoxFor(m => m.detail.PLACE, new { @class="form-control"})
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">是否為應繳費人員</label>
+                <div class="col-sm-10">
+                    @Html.RadioButtonFor(m => m.detail.ISPAY, "Y")是 &nbsp;&nbsp;&nbsp;&nbsp;
+                    @Html.RadioButtonFor(m => m.detail.ISPAY, "N")否
+                </div>
+            </div>
+            @*@if (flag_CanEdit)*@
+            @if (true)
+                {
+                <h2 class="second-title">編輯資料</h2>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">刷卡日期</label>
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(m => m.detail.PAYDATE, String.Format("{0:yyyy/MM/dd}", Model.detail.PAYDATE), new { id = "txt_PAYDATE", autoautocomplete = "off", @class="form-normal" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">刷卡金額</label>
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(m => m.detail.PAYMONEY, new { maxlength = 10, autoautocomplete = "off", @class="form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">繳費狀態</label>
+                    <div class="col-sm-10">
+                        @Html.RadioButtonFor(m => m.detail.STATUS, "Y")是 &nbsp;&nbsp;&nbsp;&nbsp;
+                        @Html.RadioButtonFor(m => m.detail.STATUS, "N")否
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">授權碼</label>
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(m => m.detail.TRACENO, new { id = "txt_TRACENO", autoautocomplete = "off", @class="form-control" })
+                    </div>
+                </div>
+                @*<div class="form-group">
+                      <label class="main-label col-sm-2" for="">撥款日期</label>
+                      <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.detail.GRANTDATE, String.Format("{0:yyyy/MM/dd}", Model.detail.GRANTDATE), new { id = "txt_GRANTDATE" })
+                      </div>
+                </div>*@
+            }
+            <div class="btnbar">
+                <input type="submit" value="存檔" class="btn btn-save" onclick="$('#ActionType').val('SAVE')" />
+                <input type="button" value="返回" class="btn btn-gray" onclick="document.location.href='@Url.Action("Index", "FlyPay")';" />
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$('#txt_PAYDATE').datetimepicker({ dateFormat: 'yy/mm/dd', timeFormat: 'HH:mm', showSecond: false, changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '2000:+1' });
+        $('#txt_PAYDATE').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+3' });
+        //$('#txt_GRANTDATE').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+    });
+</script>

@@ -1,0 +1,130 @@
+﻿@model ES.Areas.BACKMIN.Models.Apply_005014ViewModel
+@{
+    ViewBag.Title = "_FileUpload";
+    // 檔案上傳
+}
+
+@** @
+    <div id="_fileupload">
+        <h2 class="second-title">佐證文件檔案上傳<button type="button" class="btn btn-save" v-on:click="add()">新增</button></h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+            <div class="col-sm-10">
+                <label class="radio-inline ">
+                    @Html.RadioButtonFor(x => x.Detail.IS_MERGE_FILE, "Y") 是
+                </label>
+                <label class="radio-inline ">
+                    @Html.RadioButtonFor(x => x.Detail.IS_MERGE_FILE, "N") 否
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">其他證明文件 1</label>
+            <div class="col-sm-10">
+                <div class="form-inline">
+                    <input type="file" class="form-control" name="UploadFiles" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group" v-for="(item, index) in itemList">
+            <label class="step-label col-sm-2" for="">其他證明文件 {{index+2}}</label>
+            <div class="col-sm-10">
+                <div class="form-inline">
+                    <input type="file" class="form-control" v-bind:id="item" name="UploadFiles" />
+                    <button type="button" class="btn btn-danger" v-on:click="remove(item)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @**@
+
+@* ------------------------------------------------------------------------------- *@
+
+<div class="panel panel-info" id="_fileupload">
+    <div class="panel-heading">
+        <h2 class="panel-title" data-toggle="collapse" data-parent="#ApplyData" href="#ApplyData" aria-expanded="true">
+            <a>上傳應附檔案(點擊展開)</a>
+        </h2>
+    </div>
+    <div id="ApplyData" class="panel-collapse collapse in" aria-expanded="true" style="">
+        <div class="panel-body">
+            @*<form class="form-horizontal" action="/action_page.php">*@
+            <div class="form-blue">
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">佐證文件採合併檔案</label>
+                    <div class="col-sm-10">
+                        @*<label class="radio-inline "><input type="radio" name="optradio" checked="">是</label>*@
+                        @Html.RadioButtonFor(x => x.Detail.IS_MERGE_FILE, "Y") 是
+                        @*<label class="radio-inline "><input type="radio" name="optradio">否</label>*@
+                        @Html.RadioButtonFor(x => x.Detail.IS_MERGE_FILE, "N") 否
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        @foreach (var item in Model.FileList)
+                        {
+                            if (item.MIME.Contains("image"))
+                            {
+                                <div class="alert alert-link col-sm-6">
+                                    <span class="glyphicon glyphicon-file"></span>
+                                    <a href="@item.FILE_URL" title="">@item.FILE_NAME</a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-link col-sm-6">
+                                    <span class="glyphicon glyphicon-file"></span>
+                                    <img src="@item.FILE_URL" title="使用者上傳" />
+                                </div>
+                            }
+                        }
+                        @*其他證明文件
+        <input type="file" class="form-control" value="其他證明文件">
+        <iframe src="../網站/中醫藥司-貨品進口專案申請-切結書.pdf" class="img-setB"></iframe>
+        <iframe src="../網站/中醫藥司-貨品進口專案申請-專案申請切結.pdf" class="img-setB"></iframe>
+                        *@
+                    </div>
+                </div>
+                <div class="btnbar">
+                    <button type="button" class="btn btn-blue" onclick="doPackage('@Model.Apply.APP_ID')">檔案打包下載</button>
+                </div>
+            </div>
+            @*</form>*@
+        </div>
+    </div>
+</div>
+
+<script>
+    var vm = new Vue({
+        name: 'FileUpload',
+        data: function () {
+            return {
+                itemList: []
+            }
+        },
+        methods: {
+            add: function () {
+                var id = new Date().getTime().toString(); @* 唯一值 *@
+                this.itemList.push(id);
+            },
+            remove: function (item) {
+                this.itemList = this.itemList.filter(function (elm) {
+                    return elm !== item;
+                });
+            }
+        }
+    });
+    vm.$mount('#_fileupload');
+</script>
+@{
+    var url = Html.Raw(Url.Action("GetZIP", "GetZIP", new { area = "", APP_ID = Model.Apply.APP_ID, CASENAME = "貨品進口專案申請" }));
+}
+<script>
+    function doPackage() {
+        window.location = '@url';
+    }
+</script>

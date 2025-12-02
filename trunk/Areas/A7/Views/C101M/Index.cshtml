@@ -1,0 +1,96 @@
+﻿@using EECOnline.Areas.A7.Models;
+@using EECOnline.Models;
+@model C101MFormModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+}
+
+<div class="col-sm-12 content">
+    <!-- H1 title -->
+    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@sm.LastActionFunc.prgname</h1>
+
+    <div class="form-blue">
+        @using (Html.BeginForm("Index", "C101M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+        {
+            var button = new Dictionary<string, string>();
+            button.Add("search", "doSearch()");
+            button.Add("reset_fuc", "doReset_fuc()");
+            button.Add("new", "doNew()");
+
+            @Html.ControlForTurbo(Model);
+            @Html.ButtonForTurbo(button)
+        }
+    </div>
+    <div class="clearfix"></div>
+    <h2 class="second-title">查詢結果</h2>
+    <div class="table-pager">
+        @Html.Partial("_PagingLink", Model)
+    </div>
+    <div class="table-responsive">
+        @if (Model.Grid != null)
+        {
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th>項次</th>
+                        <th>公告類型</th>
+                        <th>主旨</th>
+                        <th>上架時間</th>
+                        <th>下架時間</th>
+                        <th>是否上架</th>
+                        <th>是否置頂</th>
+                        <th>編輯</th>
+                    </tr>
+                </thead>
+                <tbody id="rows">
+                    @Html.Partial("_GridRows")
+                </tbody>
+            </table>
+        }
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    /// 查詢
+    function doSearch() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Index")').submit();
+    }
+
+     /// 新增
+    function doNew() {
+        var url = '@(Url.Action("New", "C101M", new { area = "A7" }))';
+        var title = '建立公告';
+        popupWindow({ 'width': -1 }, url, title, null, function (retData, doc) {
+            if (retData != null) { if (retData.redirectUrl != "") { RedirectAfterPopup(retData.redirectUrl) } }
+        })
+    }
+
+    /// 修改
+    function doModify(enews_id) {
+        var data = {
+            "enews_id": enews_id,
+        }
+        var url = '@Url.Action("Modify", "C101M")?' + $.param(data);
+        var title = '編輯公告';
+        popupWindow({ 'width': -1 }, url, title, null, function (retData, doc) {
+            if (retData != null) { if (retData.redirectUrl != "") { RedirectAfterPopup(retData.redirectUrl) } }
+        })
+    }
+
+    /// 重填
+    function doReset_fuc() {
+        $('#subject').val('');
+        $('#enews').val('');
+        $('#totop').val('');
+        $('#showdates_AD').val('');
+        $('#showdates_AD_TW').val('');
+        $('#showdatee_AD').val('');
+        $('#showdatee_AD_TW').val('');
+    }
+
+</script>

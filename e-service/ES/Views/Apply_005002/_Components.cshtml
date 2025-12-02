@@ -1,0 +1,62 @@
+﻿<script>
+    Vue.component('tb-tw-date', {
+        props: ['value', 'name', 'readonly'],
+        data: function () {
+            return {
+                curDate: '',
+                adName: this.$props.name,
+                twDate: '',
+                twName: ''
+            };
+        },
+        watch: {
+            "value": function (val) {
+                this.$emit('change', this.$data.curDate);
+            }
+        },
+        computed: {
+            adDate: function () {
+                return this.getAdDate(this.$data.twDate);
+            },
+            dateEl: function () {
+                return $(this.$el).datepicker();
+            }
+        },
+        methods: {
+            getAdDate: function (twDate) {
+                //var twDateArr = twDate.split(/\-/);
+                //var year = twDateArr[0];
+                //var date = (parseInt(year) + 1911) + '-' + twDateArr[1] + '-' + twDateArr[2];
+                //return moment(date).format();
+            }
+        },
+        mounted: function () {
+            var self = this;
+            var ss = $('span.date');
+            this.$nextTick(function () {
+                $('span.date').datetimepicker({
+                    locale: 'zh-tw',
+                    format: 'YYYY/MM/DD',
+                    showClear: true,
+                    showClose: true
+                }).on("dp.change", function (e) {
+                    debugger
+                    //  onDPChangeShowZHDate(e, callback);
+                });
+            });
+        },
+        template: '<span class="date datepicker-outline input-group" size="10">\
+                <input class="datepickerinput" :name="adName" type="hidden" :value="adDate" :readonly="readonly" />\
+                <input class="form-control" :name="twName" size="10" type="text" :value="twDate" :readonly="readonly" />\
+                <span class="input-group-btn">\
+                    <a class="open-datepicker btn-info btn" role="button" :readonly="readonly">\
+                        <i class="fa fa-calendar" style="color: white" aria-hidden="true"></i>\
+                        <span class="sr-only">calendar</span>\
+                    </a>\
+                </span>\
+            </span>'
+    });
+
+    //Vue.components('tb-address', {
+    //});
+</script>

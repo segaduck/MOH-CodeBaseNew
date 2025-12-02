@@ -1,0 +1,162 @@
+﻿@using ES.Models
+@model QuestNonWebModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "網路申辦案件滿意度調查";//"衛生福利部網路申辦案件滿意度調查";
+    ViewBag.Script = @" ";
+    //if (ViewBag.ServiceList == null) { ViewBag.ServiceList = Model.ServiceList; }
+    int i_num1 = 0;
+}
+
+<script>
+    $('#lihead_QuestNonWeb').addClass("navMark-orange");
+</script>
+<div class="container-fluid">
+    <!--bread -->
+    <div class="col-sm-12">
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> > <a href="@(Url.Action("Index", "QuestNonWeb"))">@Html.Raw(ViewBag.Title)</a></div>
+    </div>
+    <!--news -->
+    @using (Html.BeginForm("Index", "QuestNonWeb", FormMethod.Post, new { id = "ActionForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        @*<div class="tab-content"></div>*@
+        @*<div class="col-sm-12"></div>*@
+        <div class="col-sm-12">
+            <h3 class="note-title note-titlebar-blue">@Html.Raw(ViewBag.Title)</h3>
+            <div class="form-set form-gray">
+                <!-- second-title -->
+                <div class="form-group">
+                    <h2 class="second-title">案件資料</h2>
+                </div>
+                @*<div class="form-group">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-survey table">
+                        <tr><td></td></tr>
+                    </table>
+                        </div>*@
+                <div class="form-group">
+                    <div class="col-sm-1">@{i_num1 = i_num1 + 1;}</div>
+                    <label class="step-label col-sm-2" for="">@Html.Raw(string.Format("{0}.承辦機關", i_num1))</label>
+                    <div class="col-sm-9">
+                        @*, onchange = "loadServiceOption(this.value, refreshServiceVil)"*@
+                        @Html.DropDownListFor(m => m.UnitCode, Model.UnitCodeSelList, new { id = "ddlUnitCode", onchange = "loadServiceOption(this.value, refreshServiceVil)", @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1">@{i_num1 = i_num1 + 1;}</div>
+                    <label class="step-label col-sm-2" for="">@Html.Raw(string.Format("{0}.案件名稱", i_num1)) </label>
+                    <div class="col-sm-9">
+                        @Html.DropDownListFor(m => m.ServiceId, Model.ServiceIdSelList, "請選擇", new { id = "ddlService", @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1">@{i_num1 = i_num1 + 1;}</div>
+                    <label class="step-label col-sm-2" for=""><span class="formRequired">*</span>@Html.Raw(string.Format("{0}.申請案號", i_num1))</label>
+                    <div class="col-sm-9">
+                        @Html.TextBoxFor(m => m.ApplyId, new { maxlength = "18", @class = "form-control" })
+                        <font color="red">@Html.ValidationMessageFor(m => m.ApplyId)</font>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1"> </div>
+                    <label class="step-label col-sm-2" for="code">驗證碼</label>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.ValidateCode, new { @class = "form-control", placeholder = "請輸入驗證碼", maxlength = "10" })
+                    </div>
+                    <div class="col-sm-4">
+                        <img src="@Url.Action("GetValidateCode", "Login")" id="imgChgNum1" alt="產生新驗證碼" title="產生新驗證碼" />
+                        <a href="#" class="btn" id="imgChgNum2"><i class="fas fa-sync-alt"></i></a>
+                        @*<span style="color:red">點擊圖片可更換驗證碼</span>*@
+                        <noscript> 不支援javascript時，請按鍵盤上的F5鍵以重新產生驗證碼。 </noscript>
+                    </div>
+                    <div class="col-sm-1">
+                        <a href="#" onclick="doShowQuest()" class="btn btn-search">確認資訊</a>
+                    </div>
+                </div>
+                <div class="tab-content" id="myTabContent">
+                    <div id="form" class="tab-pane fade">
+                        @Html.Partial("_Quest")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @Html.HiddenFor(m => m.LST_ID)
+                        @Html.HiddenFor(m => m.UnitCode)
+                        @*@Html.HiddenFor(m => m.ServiceId)*@
+
+                        }
+
+</div>
+
+<form role="form" name="formRefreshService" action="~/AJAX2/VillageByServiceName"></form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        reloadValidCode();
+        //debugger;
+        $("button[data-role=SUBMIT]").click(function () {
+            //var rst = $('#ActionForm').valid();
+            //if (!rst) { jAlert('請檢查輸入項目'); return; }
+
+            blockConfirm("確定要送出嗎?", "請確認", function () {
+                var vUnitCode = $("#UnitCode").val();
+                $("#LST_ID").val(vUnitCode);
+                $('#ActionForm').submit();
+            });
+        });
+        //$('#ActionForm').submit();
+        //loadServiceOption(this.value, refreshServiceVil)
+        loadServiceOption($("select#ddlUnitCode").val(), refreshServiceVil, '@(Model.ServiceId == null ? "" : Model.ServiceId)');
+    });
+
+    //透過 Ajax 載入課程領域選項清單
+    function loadServiceOption(vid, handler, vil) {
+        if (vid == undefined || vid == "") { return; }
+        $("#LST_ID").val(vid);
+        var url = $("form[name=formRefreshService]").attr("action");
+        var _vil = null;
+        if (typeof vil != 'undefined') { _vil = vil; }
+        var parms = {};
+        parms.LST_ID = vid;
+        parms.VIL = _vil;
+        //if($("hidFIRST1POSTBACK").val()!="1"){ return; }
+        ajaxLoadMore(url, parms, handler);
+    }
+
+    //重載下拉內容
+    function refreshServiceVil(data) {
+        var selElm = $("select#ddlService");
+        selElm.find('option:not(:first)').remove();
+        //selElm.find('option').remove();
+        selElm.html(selElm.html() + data);
+    }
+
+    function reloadValidCode() {
+        if ($('#imgChgNum1').length) { blockUI(); } else { unblockUI(); }
+        $('#imgChgNum1').attr("src", '@Url.Action("GetValidateCode", "Login")' + "?rand=" + new Date().getMilliseconds());
+    }
+    $(function () {
+        $('#imgChgNum1').on("click", function (e) {
+            reloadValidCode();
+        });
+        $('#imgChgNum2').on("click", function (e) {
+            reloadValidCode();
+        });
+        $('#imgChgNum1').on("load", function () {
+            unblockUI();
+        });
+        $('#imgChgNum2').on("load", function () {
+            unblockUI();
+        });
+        //$('[data-toggle="tooltip"]').tooltip()
+    });
+    function doShowQuest() {
+        $('#form').attr('class', 'active');
+        $('#ddlUnitCode').attr('disabled', 'disabled');
+        $('#ddlService').attr('disabled', 'disabled');
+        $('#ApplyId').attr('readonly', 'readonly');
+    }
+</script>
+

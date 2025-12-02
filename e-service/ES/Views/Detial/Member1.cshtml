@@ -1,0 +1,42 @@
+﻿@model ES.Models.DetialMemberModel
+
+@{
+    Layout = null;
+}
+
+．登入會員基本資料
+<hr />
+<table class="formTable1">
+    <tr>
+        <th style="width: 80px;">申請日期</th>
+        <td>@(((DateTime)Model.ApplyDate).ToString("yyyy/MM/dd"))</td>
+    </tr>
+    <tr>
+        <th>申請人</th>
+        <td>
+            身分證號：@Model.Identity<br />
+            （中文）：@Model.Name<br />
+            （英文）：@Model.NameEng
+        </td>
+    </tr>
+    <tr>
+        <th>性別</th>
+        <td>@Model.SexDesc</td>
+    </tr>
+    <tr>
+        <th>生日</th>
+        <td>@(((DateTime)Model.Birthday).ToString("yyyy/MM/dd"))</td>
+    </tr>
+    <tr>
+        <th>通訊地址</th>
+        <td>@Model.Address</td>
+    </tr>
+    <tr>
+        <th>電話</th>
+        <td>@Model.Tel</td>
+    </tr>
+    <tr>
+        <th>電子郵件</th>
+        <td>@Model.Mail（案件處理進度將以此信箱通知）</td>
+    </tr>
+</table>

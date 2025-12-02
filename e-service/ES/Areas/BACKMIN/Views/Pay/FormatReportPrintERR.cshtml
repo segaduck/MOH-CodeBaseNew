@@ -1,0 +1,129 @@
+﻿@using ES.Utils;
+@{
+                /**/
+
+                Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>衛生福利部線上申辦維護系統</title>
+</head>
+<body bgcolor="#FFFFFF" leftmargin="00" topmargin="00">
+    <div>
+        <table width="100%" border="0" cellpadding="3" cellspacing="5">
+            <tr>
+                <td align="center" bgcolor="#FFFFCC">
+                    <strong>
+                        @{
+                            string temp = "";
+                            if (!string.IsNullOrEmpty(ViewBag.Sdate) && !string.IsNullOrEmpty(ViewBag.Fdate))
+                            {
+                                temp = ViewBag.Sdate + " - " + ViewBag.Fdate + " 未繳費日報表";
+                            }
+                            else if (!string.IsNullOrEmpty(ViewBag.Sdate) && string.IsNullOrEmpty(ViewBag.Fdate))
+                            {
+                                temp = ViewBag.Sdate + "之後 未繳費日報表";
+                            }
+                            else if (string.IsNullOrEmpty(ViewBag.Sdate) && !string.IsNullOrEmpty(ViewBag.Fdate))
+                            {
+                                temp = ViewBag.Fdate + "之前 未繳費日報表";
+                            }
+                            else
+                            {
+                                temp = "未繳費日報表";
+                            }
+                            @Html.Raw(temp)
+                        }
+                    </strong>
+                </td>
+            </tr>
+            <tr>
+                <td align="center" bgcolor="#FFFFFF">
+                    <table width="90%" border="1" cellpadding="3" cellspacing="0" bordercolor="#CCCCCC">
+                        <tr>
+                            <td nowrap>
+                                承辦單位
+                            </td>
+                            <td nowrap>
+                                案件名稱
+                            </td>
+                            <td nowrap>
+                                申請人
+                            </td>
+                            <td nowrap>
+                                應繳金額
+                            </td>
+                            <td nowrap>
+                                差額
+                            </td>
+                            <td nowrap>
+                                狀態
+                            </td>
+                        </tr>
+                        @{
+                            int total_expect = 0, total_diff = 0, sum_expect = 0, sum_diff = 0;
+                            foreach (ES.Areas.Admin.Models.Map map in ViewBag.List)
+                            {
+                                String data = WebUtils.GetFormatReportPrintERR(
+                                    map.GetString("PAY_POINT"), map.GetInt("PAY_A_FEE"), map.GetInt("PAY_A_PAID"), map.GetInt("PAY_C_FEE"), map.GetInt("PAY_C_PAID"),
+                                    map.GetString("CASE_BACK_MK"), map.GetString("PAY_BACK_MK"), out sum_expect, out sum_diff);
+                                total_expect += sum_expect;
+                                total_diff += sum_diff;
+                                <tr>
+                                    <td>
+                                        @map.GetString("UNIT_NAME")
+                                    </td>
+                                    <td align="left">
+                                        @map.GetString("SRV_NAME")
+                                    </td>
+                                    <td align="left">
+                                        @if (String.IsNullOrEmpty(map.GetString("NAME")))
+                                        {
+                                            @map.GetString("ENAME")
+                                        }
+                                        else
+                                        {
+                                            @map.GetString("NAME")
+                                        }
+                                    </td>
+                                    <td>
+                                        @Html.Raw(sum_expect)
+                                    </td>
+                                    <td>
+                                        @Html.Raw(sum_diff)
+                                    </td>
+                                    <td nowrap>
+                                        @Html.Raw(data)
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td>
+                                總計
+                            </td>
+                            <td>
+                                &nbsp;
+                            </td>
+                            <td>
+                                &nbsp;
+                            </td>
+                            <td>
+                                @Html.Raw(total_expect)
+                        </td>
+                        <td>
+                            @Html.Raw(total_diff)
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                        }
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

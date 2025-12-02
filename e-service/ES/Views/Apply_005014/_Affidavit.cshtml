@@ -1,0 +1,299 @@
+﻿@model ES.Models.ViewModels.Apply_005014ViewModel
+@using ES.Models.ViewModels
+@using ES.Models
+@using System.Linq.Expressions
+
+@{
+    ViewBag.Title = "_AFFIDAVIT";
+    ShareCodeListModel options = new ShareCodeListModel();
+    bool errata = Model.IsErrata();
+    bool isNew = (Model.Apply == null || string.IsNullOrEmpty(Model.Apply.APP_ID));
+}
+
+@*<h2>_AFFIDAVIT</h2>*@
+<div id="_affidavit">
+    <h2 class="second-title">
+        @*<input type="checkbox">一般切結書*@
+        一般切結書
+    </h2>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出口國</label>
+        <div class="col-sm-10">
+            @*<select class="form-control"><option>--請選擇--</option></select>*@
+            @*@IsErrata(
+                Html.DropDownListFor(x => x.Detail.AFF1_EXPORT_COUNTRY, options.CountryList, null, new { @class = "form-control" }),
+                x => x.Detail.AFF1_EXPORT_COUNTRY_E,
+                errata, isNew
+            )*@
+        </div>
+    </div>
+    @*<div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>貨品名稱</label>
+        <div class="col-sm-10">*@
+            @*<input type="text" class="form-control">*@
+            @*@IsErrata(
+                Html.TextBoxFor(x => x.Detail.AFF1_COMMODITIES, new { @class = "form-control" }),
+                x => x.Detail.AFF1_COMMODITIES_E,
+                errata, isNew
+            )
+        </div>
+    </div>*@
+    @*<div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>貨品數量</label>
+        <div class="col-sm-10">*@
+            @*<input type="text" class="form-control">*@
+            @*@IsErrata(
+                Html.TextBoxFor(x => x.Detail.AFF1_QTY, new { @class = "form-control decimal-only" }),
+                x => x.Detail.AFF1_QTY_E,
+                errata, isNew
+            )
+        </div>
+    </div>*@
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">報單號碼</label>
+        <div class="col-sm-10">
+            @*@IsErrata(
+                Html.TextBoxFor(x => x.Detail.AFF1_SHEET_NO, new { @class = "form-control" }),
+                x=> x.Detail.AFF1_SHEET_NO_E,
+                errata, isNew
+            )*@
+        </div>
+    </div>
+    @*<div class="form-group">
+        <label class="step-label col-sm-2" for="">報單號碼項次</label>
+        <div class="col-sm-10">*@
+            @*<input type="text" class="form-control">*@
+            @*@IsErrata(
+                Html.TextBoxFor(x => x.Detail.AFF1_NO, new { @class = "form-control" }),
+                x => x.Detail.AFF1_NO_E,
+                errata, isNew
+            )
+        </div>
+    </div>*@
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>進口關</label>
+        <div class="col-sm-10">
+            @*<select class="form-control"><option>--請選擇--</option></select>*@
+            @*@IsErrata(
+                Html.DropDownListFor(x => x.Detail.AFF1_IMPORT_COUNTRY, options.LocalPortList, "請選擇", new { @class = "form-control" }),
+                x=> x.Detail.AFF1_IMPORT_COUNTRY_E,
+                errata, isNew
+            )*@
+        </div>
+    </div>
+
+    <h2 class="second-title">
+        @*<input type="checkbox">萃取物(提取物)切結書*@
+        @*@{
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict["v-model"] = "aff2";
+        }*@
+        <label class="checkbox-inline">
+            @*@Html.CheckBoxFor(x => x.Detail.AFFIDAVIT2_CHECKED, dict)*@ 萃取物(提取物)切結書
+        </label>
+    </h2>
+    @*<fieldset v-bind:disabled="!aff2">*@
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出口國</label>
+            <div class="col-sm-10">
+                @*<select class="form-control"><option>--請選擇--</option></select>*@
+                @*@IsErrata(
+                    Html.DropDownListFor(x => x.Detail.AFF2_EXPORT_COUNTRY, options.CountryList, null, new { @class = "form-control" }),
+                    x => x.Detail.AFF2_EXPORT_COUNTRY_E,
+                    errata, isNew
+                )*@
+            </div>
+        </div>
+        @*<div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>貨品名稱</label>
+            <div class="col-sm-10">*@
+                @*<input type="text" class="form-control">*@
+                @*@IsErrata(
+                    Html.TextBoxFor(x => x.Detail.AFF2_COMMODITIES, new { @class = "form-control" }),
+                    x => x.Detail.AFF2_COMMODITIES_E,
+                    errata, isNew
+                )
+            </div>
+        </div>*@
+        @*<div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>貨品數量</label>
+            <div class="col-sm-10">*@
+                @*<input type="text" class="form-control">*@
+                @*@IsErrata(
+                    Html.TextBoxFor(x => x.Detail.AFF2_QTY, new { @class = "form-control decimal-only" }),
+                    x=> x.Detail.AFF2_QTY_E,
+                    errata, isNew
+                )
+            </div>
+        </div>*@
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>原中藥材含量</label>
+            <div class="col-sm-10">
+                @*<input type="text" class="form-control"><span>產品每公克含原中藥材 OO共 OO 公克，範例:產品每公克含原中藥材當歸共0.5公克</span>*@
+                @*<input type="text" class="form-control">*@
+                <span>產品每公克含原中藥材</span>
+                @*@IsErrata(
+                    Html.TextBoxFor(x => x.Detail.AFF2_AMOUNT_NAME, new { @class = "form-normal" }),
+                    x => x.Detail.AFF2_AMOUNT_NAME_E,
+                    errata, isNew
+                )*@
+                <span>共</span>
+                @*@IsErrata(
+                    Html.TextBoxFor(x => x.Detail.AFF2_AMOUNT, new { @class = "form-normal" }),
+                    x => x.Detail.AFF2_AMOUNT_E,
+                    errata, isNew
+                )*@
+                <span>公克</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">報單號碼</label>
+            <div class="col-sm-10">
+                @*<input type="text" class="form-control">*@
+                @*@IsErrata(
+                    Html.TextBoxFor(x => x.Detail.AFF2_SHEET_NO, new { @class = "form-control" }),
+                    x => x.Detail.AFF2_SHEET_NO_E,
+                    errata, isNew
+                )*@
+            </div>
+        </div>
+        @*<div class="form-group">
+            <label class="step-label col-sm-2" for="">報單號碼項次</label>
+            <div class="col-sm-10">*@
+                @*<input type="text" class="form-control">*@
+                @*@IsErrata(
+                    Html.TextBoxFor(x => x.Detail.AFF2_NO, new { @class = "form-control" }),
+                    x => x.Detail.AFF2_NO_E,
+                    errata, isNew
+                )
+            </div>
+        </div>*@
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>進口關</label>
+            <div class="col-sm-10">
+                @*<select class="form-control"><option>--請選擇--</option></select>*@
+                @*@IsErrata(
+                    Html.DropDownListFor(x => x.Detail.AFF2_IMPORT_COUNTRY, options.LocalPortList, "請選擇", new { @class = "form-control" }),
+                    x => x.Detail.AFF2_IMPORT_COUNTRY_E,
+                    errata, isNew
+                )*@
+            </div>
+        </div>
+    @*</fieldset>*@
+</div>
+
+<script>
+    @*var vm = new Vue({
+        name: 'Affidavit',
+        data: function () {
+            return {
+                aff2: ('@Model.Detail.AFFIDAVIT2' == 'Y'),
+            }
+        }
+    });
+    vm.$mount('#_affidavit');*@
+</script>
+
+<script>
+    $('.aff1l1').on('change', function (e) {
+        GetHarborList('Detail_Aff1ImportCountryL1', 'Detail_AFF1_IMPORT_COUNTRY');
+        $('#Detail_AFF1_IMPORT_COUNTRY').val($('#Detail_Aff1ImportCountryL1 option:selected').text());
+    });
+    $('.aff2l1').on('change', function (e) {
+        GetHarborList('Detail_Aff2ImportCountryL1', 'Detail_AFF2_IMPORT_COUNTRY');
+        $('#Detail_AFF2_IMPORT_COUNTRY').val($('#Detail_Aff2ImportCountryL1 option:selected').text());
+    });
+ function GetHarborList(TRN_PORT_ID, TRN_PORT_ID2) {
+        var port = $('#' + TRN_PORT_ID);
+
+        var data = {
+            'url': '/Ajax/GetHarborList', 'msg': '查無該港口!!', 'arg': { 'port': port.val() }, 'result': $('#' + TRN_PORT_ID)
+        };
+
+        if ($.trim(data.arg.port) == '')
+            data.result.val('');
+        else {
+            port.val(data.arg.port);
+            loadHarborList(data, TRN_PORT_ID2);
+        }
+    };
+
+    function loadHarborList(data, objectId) {
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) {
+                data.result.val('');
+            }
+            else {
+                if (resp.data != '') {
+                    $('#' + objectId).empty();
+                    $.each(resp.data, function (i, item) {
+                        $('#' + objectId).append('<option value=' + item.CODE + '>' + item.TEXT + '</option>');
+                    });
+                }
+                else {
+                    data.result.val('');
+                    blockAlert(data.msg);
+                }
+            }
+        });
+    };
+
+    $(function () {
+        $('select.aff1l1').trigger('change');
+        $('select.aff2l1').trigger('change');
+    })
+
+</script>
+
+@helper IsErrata(MvcHtmlString html, Expression<Func<Apply_005014ViewModel, string>> exp, bool errata, bool isNew)
+{
+    if (isNew)
+    {
+        @html    
+    }
+    else
+    {
+        string msg = exp.Compile().Invoke(Model);
+        if (string.IsNullOrEmpty(msg))
+        {
+            <fieldset disabled>@html</fieldset>
+        }
+        else
+        {
+            <div class="errata-input">@html</div>
+            if (errata && !isNew)
+            {
+                @Html.TextBoxFor(exp, new { @class = "form-control" }, true)
+            }
+        }
+    }
+}
+
+@helper IsErrata(MvcHtmlString html1, MvcHtmlString html2, Expression<Func<Apply_005014ViewModel, string>> exp, bool errata, bool isNew)
+{
+    if (isNew)
+    {
+        @html1
+        @html2
+    }
+    else
+    {
+        string msg = exp.Compile().Invoke(Model);
+        if (string.IsNullOrEmpty(msg))
+        {
+            <fieldset disabled> @html1 @html2 </fieldset>
+        }
+        else
+        {
+            <div class="errata-input">
+                @html1
+                @html2
+            </div>
+            if (errata)
+            {
+                @Html.TextBoxFor(exp, new { @class = "form-control" }, true)
+            }
+        }
+    }
+}
+

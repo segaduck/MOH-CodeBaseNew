@@ -1,0 +1,188 @@
+﻿@using ES.Commons;
+@using ES.Models;
+@model ServiceLstViewModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "申辦服務";
+    //SessionModel sm = SessionModel.Get();
+}
+<script>
+    $('#lihead_ServiceLst').addClass("navMark-orange");
+</script>
+
+@using (Html.BeginForm("Index", "ServiceLst", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+{
+    @Html.HiddenFor(x => x.ACT_TYPE)
+    @Html.HiddenFor(x => x.LST_ID)
+    <div class="container-fluid">
+        <!--bread -->
+        <div class="col-sm-12">
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> > <a href="@(Url.Action("Index", "ServiceLst"))">@Html.Raw(ViewBag.Title)</a></div>
+        </div>
+        <!--news -->
+        <div class="col-sm-12">
+            <div class="index-note">
+                <h3 class="note-title">@Html.Raw(ViewBag.Title)</h3>
+                <div class="service-main">
+                    <ul class="nav nav-tabs nav-justified" role="tablist">
+                        @*<li id="navli_1" class="active" data-id="1"><a data-toggle="tab" href="#type1">申辦類型</a></li>*@
+                        <li id="navli_1" class="nav-item" data-id="1"><a class="nav-link active" href="javascript:void(0);" role="tab" onclick="switchTab('type1', this)">申辦類型</a></li>
+
+                        @*<li id="navli_2" data-id="2"><a data-toggle="tab" href="#type2">業務單位別</a></li>*@
+                        <li id="navli_2" class="nav-item" data-id="2"><a class="nav-link" href="javascript:void(0);" role="tab" onclick="switchTab('type2', this);">業務單位別</a></li>
+
+                    </ul>
+                    <div class="tab-content">
+                        <div id="type1" class="tab-pane fade show in active">
+                            <ul class="service-type">
+                                @*<span class="type-title">醫事人員相關</span>*@
+                                <li><a id="slct11" class="slct11 itemslct" href="#" onclick="doQuery('1', '1', 'slct11')">醫事人員或公共衛生師相關<img src="~/images/pic-st101.svg" alt="醫事人員或公共衛生師相關"></a></li>
+                                <li><a id="slct12" class="slct12 itemslct" href="#" onclick="doQuery('1', '2', 'slct12')">社工相關<img src="~/images/pic-st102.svg" alt="社工相關"></a></li>
+                                <li><a id="slct13" class="slct13 itemslct" href="#" onclick="doQuery('1', '3', 'slct13')">中醫藥相關<img src="~/images/pic-st103.svg" alt="中醫藥相關"></a></li>
+                                <li><a id="slct14" class="slct14 itemslct" href="#" onclick="doQuery('1', '4', 'slct14')">生醫、器官與儀器<img src="~/images/pic-st104.svg" alt="生醫、器官與儀器"></a></li>
+                                <li><a id="slct15" class="slct15 itemslct" href="#" onclick="doQuery('1', '5', 'slct15')">補助、檔案應用與其他<img src="~/images/pic-st105.svg" alt="補助、檔案應用與其他"></a></li>
+                                <li><a id="slct16" class="slct16 itemslct" href="#" onclick="doQuery('1', '6', 'slct16')">行政救濟相關<img src="~/images/pic-st303.svg" alt="行政救濟相關"></a></li>
+                            </ul>
+                        </div>
+                        <div id="type2" class="tab-pane fade">
+                            <ul class="service-type">
+                                <li><a id="slct21" class="slct21 itemslct" href="#" onclick="doQuery('2', '1', 'slct21')">醫事司<img src="~/images/pic-st201.svg" alt="醫事司"></a></li>
+                                <li><a id="slct22" class="slct22 itemslct" href="#" onclick="doQuery('2', '2', 'slct22')">中醫藥司<img src="~/images/pic-st202.svg" alt="中醫藥司"></a></li>
+                                <li><a id="slct23" class="slct23 itemslct" href="#" onclick="doQuery('2', '3', 'slct23')">社會救助及社工司<img src="~/images/pic-st203.svg" alt="社會救助及社工司"></a></li>
+                                <li><a id="slct24" class="slct24 itemslct" href="#" onclick="doQuery('2', '4', 'slct24')">護理及健康照護司<img src="~/images/pic-st204.svg" alt="護理及健康照護司"></a></li>
+                                <li><a id="slct25" class="slct25 itemslct" href="#" onclick="doQuery('2', '5', 'slct25')">衛生福利部秘書處<img src="~/images/pic-st205.svg" alt="衛生福利部秘書處"></a></li>
+                                <li><a id="slct26" class="slct26 itemslct" href="#" onclick="doQuery('2', '6', 'slct26')">國健署秘書室<img src="~/images/pic-st206.svg" alt="國健署秘書室"></a></li>
+                                <li><a id="slct27" class="slct27 itemslct" href="#" onclick="doQuery('2', '7', 'slct27')">國健署婦幼組<img src="~/images/pic-st207.svg" alt="國健署婦幼組"></a></li>
+                                <li><a id="slct28" class="slct28 itemslct" href="#" onclick="doQuery('2', '8', 'slct28')">國民年金監理會<img src="~/images/pic-st208.svg" alt="國民年金監理會"></a></li>
+                                <li><a id="slct29" class="slct29 itemslct" href="#" onclick="doQuery('2', '9', 'slct29')">法規會<img src="~/images/pic-st301.svg" alt="法規會"></a></li>
+                                <li><a id="slct210" class="slct210 itemslct" href="#" onclick="doQuery('2', '10', 'slct30')">全民健康保險爭議審議會<img src="~/images/pic-st302.svg" alt="全民健康保險爭議審議會"></a></li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-12">
+            <div class="index-note">
+                <h3 class="note-title">服務項目</h3>
+                <div class="tab-content">
+
+                    @*<div class="tab-content"></div>*@
+                    <div class="table-responsive">
+                        <table style="width:100%" border="0" cellspacing="0" cellpadding="0" class="table-download table">
+                            <thead>
+                                <tr>
+                                    <th width="10%" align="center">項次</th>
+                                    <th align="center">申請項目</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rows">
+                                @Html.Partial("_GridRows")
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="type1msg1" style="color:red;display:none;">請選擇 申辦服務-申辦類型</div>
+                    <div class="type2msg1" style="color:red;display:none;">請選擇 申辦服務-業務單位別</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var $ACT_TYPE = $('#ACT_TYPE');
+        var $LST_ID = $('#LST_ID');
+        var itemLst = "#slct" + $ACT_TYPE.val() + $LST_ID.val();
+        $(itemLst).css({ backgroundColor: "coral" });
+        $("ul.nav.nav-tabs.nav-justified li").each(function () {
+            if ($ACT_TYPE.val() != "") {
+                $("ul.nav.nav-tabs.nav-justified li").removeClass('active');
+            }
+        });
+        //alert($ACT_TYPE.val());
+        //return;
+
+        //<div id="type1" class="tab-pane fade in active">
+        //<div id="type2" class="tab-pane fade">
+        if ($ACT_TYPE.val() == '1') {
+            $ACT_TYPE.val(""); $("#navli_1").addClass("active");
+            $("#type1").removeClass().addClass("tab-pane fade in active");
+            $("#type2").removeClass().addClass("tab-pane fade");
+        }
+        if ($ACT_TYPE.val() == '2') {
+            $ACT_TYPE.val(""); $("#navli_2").addClass("active");
+            $("#type2").removeClass().addClass("tab-pane fade in active");
+            $("#type1").removeClass().addClass("tab-pane fade");
+        }
+        if ($ACT_TYPE.val() == '0') {
+            $('.type1msg1').show();
+            $('.type2msg1').hide();
+        }
+        //if ($('#active_type').val() == '1') { $('#active_type').val(""); $("ul.nav.nav-tabs.nav-justified").tabs({ active: 0 }); }
+        //if ($('#active_type').val() == '2') { $('#active_type').val(""); $("ul.nav.nav-tabs.nav-justified").tabs({ active: 1 }); }
+
+        $('#navli_1').click(function () {
+            $('#rows').hide("slow");
+            $('.type1msg1').show();
+            $('.type2msg1').hide();
+        });
+        $('#navli_2').click(function () {
+            $('#rows').hide("slow");
+            $('.type1msg1').hide();
+            $('.type2msg1').show();
+        });
+    });
+
+    // 補件
+    function GetDetail(id,act_type,lst_id) {
+        var data = { "id": id, "ACT_TYPE": act_type, "LST_ID": lst_id }
+        //location.href = '/Apply_' + SRV_ID + '/AppDoc?' + $.param(data);
+        //location.href = '@Url.Action("Notice", "ServiceLst")' + '?id=' + id;
+        var url = '@(Url.Action("Notice", "ServiceLst"))';
+        goBackPage(url, data, 2, 'POST')
+    }
+
+    function doQuery(act_type, id, slct) {
+        var selectItem = $("[id=" + slct + "]");
+        $('#LST_ID').val(id);
+        $('#ACT_TYPE').val(act_type);
+        var data = { act_type: act_type, id: id };
+        var url = '@(Url.Action("Index", "ServiceLst"))';
+        goBackPage(url, data, 2, 'POST');
+    }
+
+    function switchTab(tabId, linkElement) {
+        console.log(tabId);
+        // 移除所有 tab-pane 的 active 類別
+        var tabPanes = document.querySelectorAll('.tab-pane');
+        tabPanes.forEach(function (pane) {
+            pane.classList.remove('show', 'active');
+            pane.classList.remove('in', 'active');
+        });
+
+        // 隱藏所有 nav-link active 樣式
+        var tabLinks = document.querySelectorAll('.nav-link');
+        tabLinks.forEach(function (link) {
+            link.classList.remove('active');
+        });
+
+        // 顯示點選的 tab-pane
+        var targetTab = document.getElementById(tabId);
+        console.log(targetTab);
+        if (targetTab) {
+            targetTab.classList.add('show', 'active');
+            targetTab.classList.add('in', 'active');
+        }
+
+        // 加上 nav-link 的 active 樣式
+        if (linkElement) {
+            linkElement.classList.add('active');
+        }
+    }
+</script>

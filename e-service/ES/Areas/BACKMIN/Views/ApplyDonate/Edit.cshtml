@@ -1,0 +1,195 @@
+﻿@model ES.Areas.Admin.Models.ApplyDonateViewModel
+@{
+    ViewBag.Title = "線上捐款維護 - 明細";
+    ViewBag.FunctionTitle = "線上捐款維護 - 明細";
+}
+
+@using (Html.BeginForm("SaveFile", "ApplyDonate", FormMethod.Post, new { id = "ActionForm", enctype = "multipart/form-data" }))
+{
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 線上捐款管理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(x => x.Detail.ISOPEN)
+        @Html.HiddenFor(x => x.Detail.SRV_ID_DONATE)
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <h2 class="second-title">基本資料</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span style="color:red;">*</span>賑災專戶名稱(中文)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Detail.NAME_CH, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span style="color:red;">*</span>賑災專戶名稱(英文)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Detail.NAME_ENG, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span style="color:red;">*</span>起始日</label>
+                <div class="col-sm-4">
+                    @Html.DatePickerTWFor(m => m.Detail.START_DATE, new { size = "10" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span style="color:red;">*</span>結束日</label>
+                <div class="col-sm-4">
+                    @Html.DatePickerTWFor(m => m.Detail.END_DATE, new { size = "10" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span style="color:red;">*</span>捐款方式</label>
+                <div class="col-sm-10">
+                    @Html.CheckBoxFor(m => m.Detail.PAY_WAY_C)
+                    <span>信用卡線上刷卡</span> &nbsp;&nbsp;
+                    @Html.CheckBoxFor(m => m.Detail.PAY_WAY_S)
+                    <span>超商條碼捐款</span>&nbsp;&nbsp;
+                    @Html.CheckBoxFor(m => m.Detail.PAY_WAY_T)
+                    <span>銀行虛擬帳號</span>&nbsp;&nbsp;
+                    @Html.CheckBoxFor(m => m.Detail.PAY_WAY_L)
+                    <span>LinePay</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span style="color:red;">*</span> 匯款帳號 </label>
+                <div class="col-sm-1">
+                    @Html.TextBoxFor(x => x.Detail.BANK_CODE, new { @class = "form-control", @placeholder = "銀行代碼" })
+                </div>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(x => x.Detail.BANK_ACCOUNT, new { @class = "form-control", @placeholder = "銀行帳號" })
+                </div>
+                <div class="col-sm-2">
+                    @Html.TextBoxFor(x => x.Detail.BANK_NAME, new { @class = "form-control", @placeholder = "戶頭名稱" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span style="color:red;"> *</span> 專戶說明(中文) </label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Detail.DESC_CH, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">專戶說明(英文)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Detail.DESC_ENG, new { @class = "form-control" })
+                </div>
+            </div>
+            @if (string.IsNullOrEmpty(Model.Detail.SRV_ID_DONATE))
+            {
+                <span>請將基本資料儲存，再上傳附件。</span>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">上傳附件</label>
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(x => x.File_1, new { @id = "File_1", @class = "form-control", placeholder = "", type = "file", onchange = "fileChange(this)" })
+                        <input type="submit" class="btn-blue" value="上傳" />
+                    </div>
+                </div>
+                <!--檔案上傳列表-->
+                <h2 class="second-title">上傳附件預覽</h2>
+                if (Model.Detail.FileList != null && Model.Detail.FileList.Count > 0)
+                {
+                    @Html.Partial("_FileGrid")
+                }
+            }
+            <div class="btnbar">
+                @*<a href="#" onclick="doPreView()" class="btn btn-gray"><i class="fas fa-search space-right"></i>預覽畫面</a>*@
+                <a href="#" onclick="doDraft()" class="btn btn-blue"><i class="fas fa-save space-right"></i>草稿儲存</a>
+                <a href="#" onclick="doSave()" class="btn btn-blue"><i class="fas fa-save space-right"></i>正式儲存</a>
+                <a href="#" onclick="doReset()" class="btn btn-gray"><i class="fas fa-clear space-right"></i>清除重填</a>
+                <a href="#" onclick="doBack()" class="btn btn-gray"><i class="fas fa-clear space-right"></i>返回</a>
+            </div>
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript">
+
+    // 草稿儲存
+    function doDraft() {
+        var data = getFormDataToObject($("form[id=ActionForm]"));
+
+        ajaxLoadMore('@Url.Action("SaveDraft")', data, function (retData) {
+            if (retData.status) {
+                blockMessage(retData.message, "提示訊息", function () {
+                    location.href = '@Url.Action("Index", "ApplyDonate")'
+                });
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+    }
+    // 正式儲存
+    function doSave() {
+        var data = getFormDataToObject($("form[id=ActionForm]"));
+
+        ajaxLoadMore('@Url.Action("Save")', data, function (retData) {
+            if (retData.status) {
+                blockMessage(retData.message, "提示訊息", function () {
+                    location.href = '@Url.Action("Index", "ApplyDonate")'
+                });
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+    }
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index", "ApplyDonate")';
+    }
+    // 檔案上傳檢核
+    function fileChange(sender) {
+        // 可接受的附檔名
+        var validExts = new Array(".doc", ".docx", ".odt", ".odf", ".ods", ".xls", ".xlsx", ".pdf", ".ppt", ".pptx", ".jpg", ".bmp", ".png", ".gif", ".tif", ".zip");
+
+        var fileExt = sender.value;
+        fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+        if (validExts.indexOf(fileExt) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            sender.value = null;
+            return false;
+        } else {
+            $("#Name_" + sender.name).val(sender.files.item(0).name);
+            return true;
+        }
+    }
+    // 刪除檔案
+    function DelFile(filestr, srv_id_donate) {
+        var data = getFormDataToObject($("form[id=ActionForm]"));
+        data.filestr = filestr;
+        ajaxLoadMore('@Url.Action("DelFile")', data, function (retData) {
+            if (retData.status) {
+                blockMessage(retData.message, "提示訊息", function () {
+                    location.href = '@Url.Action("Edit", "ApplyDonate")?srv_id_donate=' + srv_id_donate
+                });
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+    }
+    // 清除重填
+    function doReset() {
+        $('#Detail_NAME_CH').val('');
+        $('#Detail_NAME_ENG').val('');
+        $('#Detail_START_DATE_TW').val('');
+        $('#Detail_START_DATE').val('');
+        $('#Detail_END_DATE_TW').val('');
+        $('#Detail_END_DATE').val('');
+        $('input:checked').prop('checked', false);
+        $('#Detail_BANK_CODE').val('');
+        $('#Detail_BANK_ACCOUNT').val('');
+        $('#Detail_BANK_NAME').val('');
+        $('#Detail_DESC_CH').val('');
+        $('#Detail_DESC_ENG').val('');
+    }
+</script>

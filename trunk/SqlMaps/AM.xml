@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="AM"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <resultMaps>
+  </resultMaps>
+
+  <cacheModel id="WDASE-cache" implementation="MEMORY">
+    <flushInterval hours="1" />
+    <property name="Type" value="WEAK" />
+  </cacheModel>
+
+  <statements>
+   
+  </statements>
+</sqlMap>

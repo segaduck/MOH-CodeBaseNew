@@ -1,0 +1,191 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_011010DetailModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+    ViewBag.SRV_NAME = "全國社會工作專業人員選拔推薦";
+}
+
+@using (Html.BeginForm("Apply", "Apply_011010", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.APP_ID)
+    @Html.HiddenFor(m => m.MERGEYN)
+    @Html.HiddenFor(m => m.FieldStr)
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@Html.Raw(ViewBag.SRV_NAME)</a></div>
+            <div class="clearfix"></div>
+            <h3 class="note-title" style="color:red;">粉紅色欄位為通知補件欄位，請確認</h3>
+            <div class="tab-content" id="myTabContent">
+                <div id="form" class="tab-pane fade active in">
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                    <div class="form-set">
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦項目</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">@Html.Raw(ViewBag.SRV_NAME)</p>
+                            </div>
+                            <label class="step-label col-sm-2" for="">申辦日期</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">@Model.APP_TIME_TW</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>國民身分證統一編號</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(m => m.IDN, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.NAME, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.EMAIL_0, new { @class = "form-normal", @readonly = "readonly" })
+                                @@
+                                @Html.DropDownListFor(m => m.EMAIL_1, sc.GetMailDomainList, new { @class = "form-normal", onchange = "doEmailChange()", disabled = "disabled" })
+                                @Html.TextBoxFor(m => m.EMAIL_2, new { @class = "form-normal", @readonly = "readonly" })
+                                @Html.HiddenFor(m => m.EMAIL_3)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">行動電話</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.MOBILE, new { @class = "form-normal", MaxLength = 10, @readonly = "readonly" })
+                                <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+                            </div>
+                        </div>
+                        <h2 class="second-title">佐證文件檔案上傳</h2>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">
+                                佐證文件採合併檔案
+                            </label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline "><input type="radio" name="MERGEYN" value="Y" @(Model.MERGEYN == "Y" ? "checked" : "") onchange="RadioChange()" disabled>是</label>
+                                <label class="radio-inline "><input type="radio" name="MERGEYN" value="N" @(Model.MERGEYN != "Y" ? "checked" : "") onchange="RadioChange()" disabled>否</label>
+                                <br />
+                                若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>彙整表(EXCEL檔)</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FILE_EXCEL, Model.FILE_EXCEL_TEXT)
+                                @Html.TextBoxFor(m => m.FILE_EXCEL, new { @id = "FILE_EXCEL", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)", disabled = "disabled" })
+                                @Html.HiddenFor(m => m.FILE_EXCEL_TEXT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>檢核表(PDF檔)</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FILE_PDF, Model.FILE_PDF_TEXT)
+                                @Html.TextBoxFor(m => m.FILE_PDF, new { @id = "FILE_PDF", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)", disabled = "disabled" })
+                                @Html.HiddenFor(m => m.FILE_PDF_TEXT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>推薦表(PDF檔)</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FILE_3, Model.FILE_3_TEXT)
+                                @Html.TextBoxFor(m => m.FILE_3, new { @id = "FILE_3", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)", disabled = "disabled" })
+                                @Html.HiddenFor(m => m.FILE_3_TEXT)
+                            </div>
+                        </div>
+                        <div class="btn-bar text-center">
+                            <button type="button" class="btn btn-clear" onclick="doBack()">返回</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+}
+<script>
+
+    $(document).ready(function () {
+        
+        // 取得補件欄位字串
+        var FieldStr = $('#FieldStr').val();
+        if (FieldStr.length == 0) { $(".btn-save").hide(); }
+        var FieldLst = FieldStr.split(',');
+        FieldLst.forEach(function (i) {
+            if ($('input[id="' + i + '"][type="file"]').length > 0) {
+                $('#' + i).removeAttr("disabled");
+                $('#' + i).css("background-color", "#FF9797");
+            }
+            else {
+                $('#' + i).removeAttr("readonly");
+                $('#' + i).css("background-color", "#FF9797");
+            }
+        });
+
+        // 欄位開放
+        if ($("#EMAIL_0").attr("readonly") == undefined) {
+            $("#EMAIL_1").removeAttr("disabled");
+            $("#EMAIL_2").removeAttr("readonly");
+            $('#EMAIL_1').css("background-color", "#FF9797");
+            $('#EMAIL_2').css("background-color", "#FF9797");
+        }
+
+        // 信箱
+        var ADM_MAIL = $('#EMAIL_1').val();
+        if (ADM_MAIL == 0) $('#EMAIL_2').removeAttr("readonly");
+        else {
+            if (ADM_MAIL == 1) $('#EMAIL_3').val('gmail.com');
+            if (ADM_MAIL == 2) $('#EMAIL_3').val('yahoo.com.tw');
+            if (ADM_MAIL == 3) $('#EMAIL_3').val('outlook.com');
+            $('#EMAIL_2').attr("readonly", "readonly");
+            $('#EMAIL_2').val('')
+        }
+        if ($('#EMAIL_0').prop("readonly")) { $('#EMAIL_2').prop("readonly", true) }
+        // 是否合併檔案
+        $("input[name=RMERGEYN]").val($("#MERGEYN").val()).attr('checked', true);;
+
+    });
+
+    // MAIL 選自訂
+    function doEmailChange() {
+        var ADM_MAIL = $('#EMAIL_1').val();
+        if (ADM_MAIL == 0) $('#EMAIL_2').removeAttr("readonly");
+        else {
+            if (ADM_MAIL == 1) $('#EMAIL_3').val('gmail.com');
+            if (ADM_MAIL == 2) $('#EMAIL_3').val('yahoo.com.tw');
+            if (ADM_MAIL == 3) $('#EMAIL_3').val('outlook.com');
+            $('#EMAIL_2').attr("readonly", "readonly");
+            $('#EMAIL_2').val('')
+        }
+    }
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".ODF", ".ODS", ".XLS", ".XLSX", ".PDF", ".ZIP");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        }
+        else {
+            $("#" + file.name + "_TEXT").val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index","History")';
+    }
+
+</script>

@@ -1,0 +1,42 @@
+﻿@using ES.Areas.Admin.Models;
+@model ApplyDonateDetailModifyModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "線上捐款明細查詢 - 明細";
+    ViewBag.FunctionTitle = "線上捐款明細查詢 - 明細";
+}
+
+@using (Html.BeginForm("Edit", "ApplyDonateDetail", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "ActionForm" }))
+{
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 線上捐款管理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>線上捐款明細查詢</h1>
+        @Html.ControlForTurbo(Model, true)
+        <div class="btn-bar text-center">
+            <button type="button" id="btnSave" class="btn btn-save" onclick="doSave('@Model.APP_ID')">存檔</button>
+            <button type="button" id="btnReturn" class="btn btn-gray" onclick="doBack()">返回</button>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    // 正式儲存
+    function doSave(appid) {
+        var data = getFormDataToObject($("form[id=ActionForm]"));
+        ajaxLoadMore('@Url.Action("Save")', data, function (retData) {
+            if (retData.status) {
+                blockMessage(retData.message, "提示訊息", function () {
+                    location.href = '@Url.Action("Edit", "ApplyDonateDetail")?app_id=' + appid;
+                });
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+    }
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index", "ApplyDonateDetail")';
+    }
+</script>

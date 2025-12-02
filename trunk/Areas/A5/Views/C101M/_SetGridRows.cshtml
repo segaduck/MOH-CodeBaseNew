@@ -1,0 +1,26 @@
+﻿@using EECOnline.Areas.A5.Models;
+@model C101MFuncmModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        <tr>
+            <td align="center">
+                @(item.prgid)
+                @Html.HiddenFor(m => Model.Grid[i].grp_id)
+                @Html.HiddenFor(m => Model.Grid[i].sysid)
+                @Html.HiddenFor(m => Model.Grid[i].modules)
+                @Html.HiddenFor(m => Model.Grid[i].submodules)
+                @Html.HiddenFor(m => Model.Grid[i].prgid)
+            </td>
+            <td align="center">@(item.prgname)</td>
+            <td align="center">@Html.CheckBoxFor(m => m.Grid[i].prg_q_check, new { checkid = "Q" })</td>
+            <td align="center">@Html.CheckBoxFor(m => m.Grid[i].prg_i_check, new { checkid = "I" })</td>
+            <td align="center">@Html.CheckBoxFor(m => m.Grid[i].prg_u_check, new { checkid = "U" })</td>
+            <td align="center">@Html.CheckBoxFor(m => m.Grid[i].prg_d_check, new { checkid = "D" })</td>
+            <td align="center">@Html.CheckBoxFor(m => m.Grid[i].prg_p_check, new { checkid = "P" })</td>
+        </tr>
+    }
+}

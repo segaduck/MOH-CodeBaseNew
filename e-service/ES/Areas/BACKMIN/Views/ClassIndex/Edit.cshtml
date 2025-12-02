@@ -1,0 +1,44 @@
+﻿@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "分類檢索維護";
+    ViewBag.FunctionTitle = "分類檢索維護";
+    ViewBag.Script = @"
+";
+}
+@using (Html.BeginForm("EditPage", "ClassIndex", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 後台管理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <input type="hidden" value="" id="Pkey" name="Pkey" />
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th>網頁</th>
+                        <th>編輯</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (ES.Areas.Admin.Models.Map item in ViewBag.List)
+                    {
+                        <tr>
+                            <td align="center">
+                                @item.GetString("TITLE")
+                            </td>
+                            <td align="center">
+                                <input class="btn btn-save" type="submit" id="BUTTON_@item.GetString("SRL_NO")" value="編輯" onclick="$('#Pkey').val(@item.GetString("SRL_NO"))" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+}

@@ -1,0 +1,901 @@
+﻿@using ES.Models.Entities
+@using ES.Models
+@using ES.Commons;
+@model ES.Models.ViewModels.Apply_001034ViewModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "危險性醫療儀器進口申請作業";
+    ShareCodeListModel scList = new ShareCodeListModel();
+}
+<script type="text/javascript" src="~/Scripts/utility.js"></script>
+
+@using (Html.BeginForm("AppDoc", "Apply_001034", FormMethod.Post, new { id = "main_form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+{    
+    <div class="container" id="Apply">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink">
+                <i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">危險性醫療儀器進口申請作業</a>
+            </div>
+            <div class="clearfix"></div>
+            <h3 class="note-title" style="color:red;">粉紅色欄位為通知補件欄位，請確認</h3> 
+            <div class="tab-content" id="myTabContent">
+                <!--ApplyForm-->
+                <div id="ApplyForm" class="tab-pane fade active in">
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                    <div class="form-set">
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦項目</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">危險性醫療儀器進口申請作業</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">承辦單位</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">衛生福利部醫事司</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦日期</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static"> @Model.APPLY_DATE</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申請人</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.APPLY_NAME, new { @class = "form-control", @disabled = "disabled" })
+                            </div>
+                            <label class="step-label col-sm-2" for="">申請人身分證字號</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.APPLY_PID, new { @class = "form-control", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <h2 class="second-title">納稅義務人資料</h2>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證字號/統一編號</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.TAX_ORG_ID, new { @class = "form-control", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名/公司名稱<font style="color: red;">中文</font></label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.TAX_ORG_NAME, new { @class = "form-control", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名/公司名稱<font style="color: red;">英文</font></label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.TAX_ORG_ENAME, new { @class = "form-control", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">聯絡地址中文</label>
+                            <div class="col-sm-10 form-inline">
+                                @Html.TextBoxFor(m => m.TAX_ORG_CITY_CODE, new { @id = "TAX_ORG_CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = "readonly" })
+                                <div class="input-group">
+                                    @Html.TextBoxFor(m => m.TAX_ORG_CITY_TEXT, new { @id = "TAX_ORG_CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.TAX_ORG_CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class='step-label col-sm-2' for="">聯絡地址英文</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.TAX_ORG_EADDR, new { @class = "form-control", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <h2 class="second-title">申辦資料</h2>
+                        <div class='form-group'>
+                            <label class='step-label col-sm-2' for=''><span style="color:red;">*</span>聯絡人姓名</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.TAX_ORG_MAN, new { @class = "form-normal", @disabled = "disabled" })
+                                @*<button type='button' class="btn btn-info" onclick="getMemberData()">同登入會員資料</button>*@
+                            </div>
+                        </div>
+                        <div class='form-group'>
+                            <label class='step-label col-sm-2' for=''><span style="color:red;">*</span>聯絡人電話</label>
+                            <div class="col-sm-10">
+                                <span></span>
+                                @Html.TextBoxFor(x => x.TEL_SEC, new { @class = "form-10 form-normal", @disabled = "disabled" })
+                                <span>-</span>
+                                @Html.TextBoxFor(x => x.TEL_NO, new { @class = "form-normal", @disabled = "disabled" })
+                                <span>#</span>
+                                @Html.TextBoxFor(x => x.TEL_EXT, new { @class = "form-10 form-normal", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人E-MAIL</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.MAIL_ACCOUNT, new { @class = "form-normal", @disabled = "disabled" })@@
+                                @Html.DropDownListFor(x => x.DOMAINList, scList.GetMailDomainList, new { @class = "form-normal", @disabled = "disabled" })
+                                @Html.TextBoxFor(x => x.MAIL_DOMAIN, new { @class = "form-normal", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class='form-group'>
+                            <label class='step-label col-sm-2' for=''>聯絡人傳真</label>
+                            <div class="col-sm-10">
+                                <span></span>
+                                @Html.TextBoxFor(x => x.FAX_SEC, new { @class = "form-10 form-normal", @disabled = "disabled" })
+                                <span>-</span>
+                                @Html.TextBoxFor(x => x.FAX_NO, new { @class = "form-normal", @disabled = "disabled" })
+                                <span>#</span>
+                                @Html.TextBoxFor(x => x.FAX_EXT, new { @class = "form-10 form-normal", @disabled = "disabled" })
+                            </div>
+                        </div>
+
+                        <div class='form-group'>
+                            <label class='step-label col-sm-2' for=''><span style="color:red;">*</span>進出口別</label>
+                            <div class="form-control-static col-sm-10">
+                                <input type="radio" id='IM_EXPORT' name="IM_EXPORT" value='1' checked>進口
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>起始日期</label>
+                            <div class="col-sm-4">
+                                @Html.DatePickerTWFor(x => x.DATE_S_AC, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                            </div>
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>終止日期</label>
+                            <div class="col-sm-4">
+                                @Html.DatePickerTWFor(x => x.DATE_E_AC, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>生產國家</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.DEST_STATE_ID, scList.CountryList, new { @class = "form-control", @disabled = "disabled" })
+                                @Html.HiddenFor(x => x.DEST_STATE)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>賣方國家</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.SELL_STATE_ID, scList.CountryList, new { @class = "form-control", @disabled = "disabled" })
+                                @Html.HiddenFor(x => x.SELL_STATE)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">轉口港</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.TRN_PORT_ID, scList.PortList, new { @class = "form-normal form-inline", @disabled = "disabled" })
+                                @Html.DropDownListFor(x => x.TRN_PORT_ID2, new List<SelectListItem>(), new { @class = "form-normal form-inline", @disabled = "disabled" })
+                                @Html.HiddenFor(x => x.TRN_PORT_COUNTRY)
+                                @Html.HiddenFor(x => x.TRN_PORT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">起運口岸</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.BEG_PORT_ID, scList.PortList, new { @class = "form-normal form-inline", @disabled = "disabled" })
+                                @Html.DropDownListFor(x => x.BEG_PORT_ID2, new List<SelectListItem>(), new { @class = "form-normal form-inline", @disabled = "disabled" })
+                                @Html.HiddenFor(x => x.BEG_PORT_COUNTRY)
+                                @Html.HiddenFor(x => x.BEG_PORT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>賣方英文名稱</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.SELL_NAME, new { @class = "form-control", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2"><span style="color:red;">*</span>賣方英文地址</label>
+                            <div class='col-sm-10'>
+                                @Html.TextBoxFor(x => x.SELL_ADDR, new { @class = "form-control", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2"><span style="color:red;">*</span>申請用途</label>
+                            <div class='col-sm-10'>
+                                @Html.DropDownListFor(x => x.APP_USE_ID, scList.GetAPP_USEList, new { @class = "form-control", @disabled = "disabled" })
+                                @Html.HiddenFor(x => x.APP_USE_TEXT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2">用途說明</label>
+                            <div class='col-sm-10'>
+                                @Html.TextAreaFor(x => x.USE_MARK, new { @class = "form-control", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2"><span style="color:red;">*</span>核發方式</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.CONF_TYPE_ID, scList.GetCONF_TYPEList, new { @class = "form-control", @disabled = "disabled" })
+                                @Html.HiddenFor(x => x.CONF_TYPE_TEXT)
+                            </div>
+                        </div>
+
+
+                        <h2 class="second-title">
+                            貨品資料
+                            @*<button type="button" class="btn btn-save" id="btnAdd" onclick="addGoodRow()">新增一筆</button>*@
+                        </h2>
+
+                        <!--貨品資料列-->
+                        <div id="goodsTable">
+                            @Html.Partial("Goods")
+                        </div>
+                        <!--貨品資料列-->
+
+                        <div class="btn-bar text-center">
+                            <button type="button" class="btn btn-save" onclick="doSave()">存檔</button>
+                            <button type="button" id="btnReturn" class="btn btn-clear">返回</button>
+                        </div>
+
+                    </div>
+
+                    @Html.HiddenFor(x=>x.APP_ID)
+                    @Html.HiddenFor(x => x.TAX_FULL_ADDRESS)
+                    @Html.HiddenFor(x => x.TEL)
+                    @Html.HiddenFor(x => x.FAX)
+                    @Html.HiddenFor(x => x.MAIL)
+
+                    @Html.HiddenFor(x => x.FieldList)
+                    @Html.HiddenFor(x => x.GoodFieldList)
+                </div>
+                <!--ApplyForm-->
+
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+
+
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#TRN_PORT_ID').change(function () {
+            GetHarborList('TRN_PORT_ID', 'TRN_PORT_ID2');
+            $('#TRN_PORT_COUNTRY').val($('#TRN_PORT_ID option:selected').text());
+        });
+
+        $('#BEG_PORT_ID').change(function () {
+            GetHarborList('BEG_PORT_ID', 'BEG_PORT_ID2');
+            $('#BEG_PORT_COUNTRY').val($('#BEG_PORT_ID option:selected').text());
+        });
+
+        initGoodsDDL();
+
+        $('#TAX_ORG_CITY_CODE').on('blur', doTAX_ORG_CITYNameGet);
+        doTAX_ORG_CITYNameGet();
+
+        $('#DOMAINList').change(function () {
+            if ($('#DOMAINList option:selected').text() == '自訂' || $('#DOMAINList option:selected').text() == '請選擇') {
+                $('#MAIL_DOMAIN').val('');
+            }
+            else {
+                $('#MAIL_DOMAIN').val($('#DOMAINList option:selected').text());
+            }
+        });
+
+        $('#row1 input[name="Goods[0].SRL_NO"').val('1');
+
+        $('#DEST_STATE_ID').change(function () {
+            $('#DEST_STATE').val($('#DEST_STATE_ID option:selected').text());
+        });
+
+        $('#SELL_STATE_ID').change(function () {
+            $('#SELL_STATE').val($('#SELL_STATE_ID option:selected').text());
+        });
+
+        $('#APP_USE_ID').change(function () {
+            $('#APP_USE_TEXT').val($('#APP_USE_ID option:selected').text());
+        });
+
+        $('#CONF_TYPE_ID').change(function () {
+            $('#CONF_TYPE_TEXT').val($('#CONF_TYPE_ID option:selected').text());
+        });
+
+        $('#btnReturn').click(function () {
+            location.href = '/history/';
+        });
+
+        $('#SELL_STATE').change();
+        $('#DEST_STATE').change();
+        $('#TRN_PORT_ID').change();
+        $('#BEG_PORT_ID').change();
+
+        SetChangeField(); 
+
+    });
+
+    function GetHarborList(TRN_PORT_ID, TRN_PORT_ID2) {
+        var port = $('#' + TRN_PORT_ID);
+
+        var data = {
+            'url': '/Ajax/GetHarborList', 'msg': '查無該港口!!', 'arg': { 'port': port.val() }, 'result': $('#' + TRN_PORT_ID)
+        };
+
+        if ($.trim(data.arg.port) == '')
+            data.result.val('');
+        else {
+            port.val(data.arg.port);
+            loadHarborList(data, TRN_PORT_ID2);
+        }
+    };
+
+    function loadHarborList(data, objectId) {
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) {
+                data.result.val('');
+            }
+            else {
+                if (resp.data != '') {
+                    $('#' + objectId).empty();
+                    $.each(resp.data, function (i, item) {
+                        $('#' + objectId).append('<option value=' + item.CODE + '>' + item.TEXT + '</option>');
+                    });
+                }
+                else {
+                    data.result.val('');
+                    blockAlert(data.msg);
+                }
+            }
+        });
+    };
+
+    // 地址
+    function loadDialogTAX_ORG_CITYCodeMapName(data) {
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) data.box.val('');
+            else {
+                if (resp.data != '') data.box.val(resp.data);
+                else { data.box.val(''); data.add.val(''); blockAlert(data.msg); }
+            }
+        });
+    };
+
+    function doTAX_ORG_CITYSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢'; popupWindow({ 'width': 900 }, url, title, null, function (retData, doc) {
+            if (retData != null) {
+                $('#TAX_ORG_CITY_CODE').val(retData.Id);
+                $('#TAX_ORG_CITY_TEXT').val(retData.Name);
+            }
+        });
+    }
+
+    function doTAX_ORG_CITYNameGet() {
+        var code = $('#TAX_ORG_CITY_CODE');
+        var data = { 'url': '/Ajax/GetCityTown', 'msg': '查無該郵遞區號!!', 'arg': { 'CODE': code.val().toUpperCase() }, 'box': $('#TAX_ORG_CITY_TEXT'), 'add': $('#TAX_ORG_CITY_CODE') };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogTAX_ORG_CITYCodeMapName(data);
+        }
+    };
+
+    function doSave()
+    {
+        if (validation()) {
+
+            $('#TRN_PORT').val($('#TRN_PORT_ID2 option:selected').text());
+            $('#BEG_PORT').val($('#BEG_PORT_ID2 option:selected').text());
+            $('#TAX_FULL_ADDRESS').val($('#TAX_ORG_CITY_CODE').val() + $('#TAX_ORG_CITY_TEXT').val() + $('#TAX_ORG_CITY_DETAIL').val())
+
+            if ($('#TEL_SEC').val() == '' || $('#TEL_NO').val() == '')
+            {
+                $('#TEL').val('');
+            }
+            else
+            {
+                $('#TEL').val($('#TEL_SEC').val() + '-' + $('#TEL_NO').val())
+            }
+
+            if ($('#TEL').val()!='' && $('#TEL_EXT') != '') {
+                $('#TEL').val($('#TEL_SEC').val() + '-' + $('#TEL_NO').val() + '#' + $('#TEL_EXT').val());
+            }
+
+            if ($('#FAX_SEC').val() == '' || $('#FAX_NO').val()=='')
+            {
+                $('#FAX').val('')
+            }
+            else
+            {
+                $('#FAX').val($('#FAX_SEC').val() + '-' + $('#FAX_NO').val())
+            }
+            
+            if ($('#FAX').val()!='' && $('#FAX_EXT') != '') {
+                $('#FAX').val($('#FAX_SEC').val() + '-' + $('#FAX_NO').val() + '#' + $('#FAX_EXT').val());
+            }
+
+            $('#MAIL').val($('#MAIL_ACCOUNT').val() + '@@' + $('#MAIL_DOMAIN').val().replace('@@', ''));
+
+            for (var i = 0; i < $('input[id$="_CHK"]').length; i++) {
+                var attrName = $($('input[id$="_CHK"]')[i]).attr('name');
+
+                if ($('input[name^="' + attrName + '"]').attr('disabled') != undefined) {
+                    $('input[name^="' + attrName + '"]').removeAttr('disabled');
+                    $('input[name^="' + attrName + '"]').attr('value', 'true');
+                }
+
+                if ($('input[name^="' + attrName + '"]').is(':checked')) {
+                    $('input[name^="' + attrName + '"]').attr('value', 'true');
+                }
+
+            }
+
+            blockUI();
+            var form = $("form[id=main_form]");
+            form.attr('action', '@Url.Action("AppDocSave")').submit();
+
+        }
+    }
+
+    function validation()
+    {
+        var grid = '';
+
+        if ($('#APPLY_PID').val().trim()=='')
+        {
+            blockAlert('請輸入申請人身分證字號', '訊息');
+            return false;
+        }
+
+        if (!checkID($('#APPLY_PID').val())) {
+            blockAlert('請輸入"正確"申請人身分證字號', '訊息');
+            return false;
+        }
+
+        if ($('#TAX_ORG_ID').val().trim() == '')
+        {
+            blockAlert('請輸入身分證字號/統一編號', '訊息');
+            return false;
+        }
+
+        if (!checkID($('#TAX_ORG_ID').val()) && !isValidTaxID($('#TAX_ORG_ID').val()))
+        {
+            blockAlert('請輸入"正確"身分證字號/統一編號', '訊息');
+            return false;
+        }
+
+        if ($('#TAX_ORG_NAME').val().trim() == '' && $('#TAX_ORG_ENAME').val().trim() == '')
+        {
+            blockAlert('請輸入姓名/公司名稱中文或姓名或姓名/公司名稱英文', '訊息');
+            return false;
+        }
+
+
+        if ($('#TAX_ORG_CITY_CODE').val().trim() + $('#TAX_ORG_CITY_TEXT').val().trim() + $('#TAX_ORG_CITY_DETAIL').val().trim() == '' && $('#TAX_ORG_EADDR').val().trim() == '')
+        {
+            blockAlert('請輸入聯絡地址中文或聯絡地址英文', '訊息');
+            return false;
+        }
+
+        if ($('#TAX_ORG_MAN').val().trim() == '')
+        {
+            blockAlert('請輸入聯絡人姓名', '訊息');
+            return false;
+        }
+
+        if ($('#TEL_SEC').val().trim() + $('#TEL_NO').val().trim() == '') {
+
+            blockAlert('請輸入聯絡人電話', '訊息');
+            return false;
+
+            if (!($('#TEL_SEC').val().trim() +'-' + $('#TEL_NO').val().trim() +'#'+ $('#TEL_EXT').val().trim()).match(/^(\d{2,4}-)(\d{6,8})?(#\d{1,6})?$/))
+            {
+                blockAlert('聯絡人電話輸入格式不正確', '訊息');
+                return false;
+            }
+
+        }
+
+        if($('#MAIL_ACCOUNT').val()=='' || $('#MAIL_DOMAIN').val()=='')
+        {
+            blockAlert('請輸入完整聯絡人E-MAIL', '訊息');
+            return false;
+        } 
+
+        if ($('#DATE_S_AC').val().trim() == '')
+        {
+            blockAlert('請輸入起始日期', '訊息');
+            return false;
+        }
+
+        if ($('#DATE_E_AC').val().trim() == '') {
+            blockAlert('請輸入終止日期', '訊息');
+            return false;
+        }
+
+        if ($('#DEST_STATE_ID option:selected').val().trim() == '')
+        {
+            blockAlert('請選擇生產國家', '訊息');
+            return false;
+        }
+
+        if ($('#SELL_STATE_ID option:selected').val().trim() == '') {
+            blockAlert('請選擇賣方國家', '訊息');
+            return false;
+        }
+
+        if ($('#SELL_NAME').val().trim() == '')
+        {
+            blockAlert('請輸入賣方英文名稱', '訊息');
+            return false;
+        }
+
+        if ($('#SELL_ADDR').val().trim() == '') {
+            blockAlert('請輸入賣方英文地址', '訊息');
+            return false;
+        }
+
+        if ($('#APP_USE_ID option:selected').val().trim() == '')
+        {
+            blockAlert('請選擇申請用途', '訊息');
+            return false;
+        }
+
+        if ($('#CONF_TYPE_ID option:selected').val().trim() == '') {
+            blockAlert('請選擇核發方式', '訊息');
+            return false;
+        }
+
+        for (i = 0; i < $('#goodsTable div[id^="row"]').length; i++) {
+
+            var msg = '';
+            //'序號'
+            var SRL_NO = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__SRL_NO').val();
+
+            //貨品類別（規格）
+            var GOODS_TYPE_ID = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_'+ i +'__GOODS_TYPE_ID option:selected').val().trim();
+            if (GOODS_TYPE_ID == '') {
+                msg += '請選擇貨品類別（規格）</br>';
+            }
+            //貨品名稱
+            var GOODS_TYPE = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_'+i+'__GOODS_TYPE_ID').val().trim();
+            if (GOODS_TYPE = '') {
+                msg += '請輸入貨品名稱</br>';
+            }
+            //申請數量
+            var APPLY_CNT = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__APPLY_CNT').val().trim();
+            if (APPLY_CNT = '') {
+                msg += '請輸入申請數量</br>';
+            }
+            //貨品單位
+            var GOODS_UNIT_ID = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_'+ i +'__GOODS_UNIT_ID option:selected').val().trim();
+            if (APPLY_CNT = '') {
+                msg += '請選擇貨品單位</br>';
+            }
+            //型號
+            var GOODS_MODEL = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__GOODS_MODEL').val().trim();
+            if (GOODS_MODEL = '') {
+                msg += '請輸入型號</br>';
+            }
+            //規格
+            var GOODS_SPEC_1 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__GOODS_SPEC_1').val().trim();
+            if (GOODS_SPEC_1 = '') {
+                msg += '請輸入規格</br>';
+            }
+            //牌名
+            var GOODS_BRAND = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__GOODS_BRAND').val().trim();
+            if (GOODS_BRAND = '') {
+                msg += '請輸入牌名</br>';
+            }
+
+            //檢附文件類型一
+            var DOC_TYP_01 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_01_FILE').val().trim();
+            //檢附文件類型二
+            var DOC_TYP_02 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_02_FILE').val().trim();
+            //檢附文件類型三
+            var DOC_TYP_03 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_03_FILE').val().trim();
+            //檢附文件類型四
+            var DOC_TYP_04 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_04_FILE').val().trim();
+            //檢附文件類型五
+            var DOC_TYP_05 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_05_FILE').val().trim();
+            //檢附文件類型六
+            var DOC_TYP_06 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_06_FILE').val().trim();
+            //檢附文件類型七
+            var DOC_TYP_07 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_07_FILE').val().trim();
+            //檢附文件類型八
+            var DOC_TYP_08 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_08_FILE').val().trim();
+            //檢附文件類型九
+            var DOC_TYP_09 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_09_FILE').val().trim();
+            //檢附文件類型十
+            var DOC_TYP_10 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_10_FILE').val().trim();
+            //檢附文件類型十一
+            var DOC_TYP_11 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_11_FILE').val().trim();
+            //檢附文件類型十二
+            var DOC_TYP_12 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_12_FILE').val().trim();
+            //檢附文件類型十三
+            var DOC_TYP_13 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_13_FILE').val().trim();
+            //檢附文件類型十四
+            var DOC_TYP_14 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_14_FILE').val().trim();
+            //檢附文件類型十五
+            var DOC_TYP_15 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_15_FILE').val().trim();
+            //檢附文件類型十六
+            var DOC_TYP_16 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_16_FILE').val().trim();
+            //檢附文件類型十七
+            var DOC_TYP_17 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_17_FILE').val().trim();
+            //檢附文件類型十八
+            var DOC_TYP_18 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_18_FILE').val().trim();
+            //檢附文件類型十九
+            var DOC_TYP_19 = 'N/A';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_19_FILE').val().trim();
+
+            //醫院開業執照影本
+            var CHK_DOC_TYP_01 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_01_CHK').prop("checked");
+            if (CHK_DOC_TYP_01 && DOC_TYP_01 == '' && $('#Goods_'+i+'__DOC_TYP_01_FILE').siblings().length < 2) {
+                msg += '請上傳醫院開業執照影本檔案</br>';
+            }
+            //型錄（圖樣及說明書）一份
+            var CHK_DOC_TYP_02 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_02_CHK').prop("checked");
+            if (CHK_DOC_TYP_02 && DOC_TYP_02 == '' && $('#Goods_' + i + '__DOC_TYP_02_FILE').siblings().length < 2) {
+                msg += '請上傳型錄（圖樣及說明書）一份檔案</br>';
+            }
+            //原廠報價單一份
+            var CHK_DOC_TYP_03 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_03_CHK').prop("checked");
+            if (CHK_DOC_TYP_03 && DOC_TYP_03 == '' && $('#Goods_' + i + '__DOC_TYP_03_FILE').siblings().length < 2) {
+                msg += '請上傳原廠報價單一份檔案</br>';
+            }
+            //醫療器材許可證明文件影本一份
+            var CHK_DOC_TYP_04 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_04_CHK').prop("checked");
+            if (CHK_DOC_TYP_04 && DOC_TYP_04 == '' && $('#Goods_' + i + '__DOC_TYP_04_FILE').siblings().length < 2) {
+                msg += '請上傳醫療器材許可證明文件影本一份檔案</br>';
+            }
+            //管理醫師：執業執照影本
+            var CHK_DOC_TYP_05 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_05_CHK').prop("checked");
+            if (CHK_DOC_TYP_05 && DOC_TYP_05 == '' && $('#Goods_' + i + '__DOC_TYP_05_FILE').siblings().length < 2) {
+                msg += '請上傳管理醫師：執業執照影本檔案</br>';
+            }
+            //管理醫師：核子醫學科專科醫師證書影本
+            var CHK_DOC_TYP_06 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_06_CHK').prop("checked");
+            //檢附文件字號六
+            var DOC_COD_06 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_COD_06').val().trim();
+            //檢附文件說明六
+            var DOC_TXT_06 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TXT_06').val().trim();
+            if (CHK_DOC_TYP_06 && DOC_TYP_06 == '' && $('#Goods_' + i + '__DOC_TYP_06_FILE').siblings().length < 2) {
+                msg += '請上傳管理醫師：核子醫學科專科醫師證書影本檔案</br>';
+                if (DOC_COD_06 == '' || DOC_TXT_06 == '') {
+                    msg += '請輸入檢附文件字號六及檢附文件說明六</br>';
+                }
+            }
+            //管理醫師：放射線（腫瘤）專科醫師證書影本
+            var CHK_DOC_TYP_07 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_07_CHK').prop("checked");
+            //檢附文件字號七
+            var DOC_COD_07 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_COD_07').val().trim();
+            //檢附文件說明七
+            var DOC_TXT_07 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TXT_07').val().trim();
+            if (CHK_DOC_TYP_07 && DOC_TYP_07 == '' && $('#Goods_' + i + '__DOC_TYP_07_FILE').siblings().length < 2) {
+                msg += '請上傳管理醫師：放射線（腫瘤）專科醫師證書影本檔案</br>';
+                if (DOC_COD_07 == '' || DOC_TXT_07 == '') {
+                    msg += '請輸入檢附文件字號七及檢附文件說明七</br>';
+                }
+            }
+            //專任輻射防護人員：認可證書影本
+            var CHK_DOC_TYP_08 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_08_CHK').prop("checked");
+            if (CHK_DOC_TYP_08 && DOC_TYP_08 == '' && $('#Goods_' + i + '__DOC_TYP_08_FILE').siblings().length < 2) {
+                msg += '請上傳專任輻射防護人員：認可證書影本檔案</br>';
+            }
+            //專任輻射防護人員：在職證明影本
+            var CHK_DOC_TYP_09 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_09_CHK').prop("checked");
+            if (CHK_DOC_TYP_09 && DOC_TYP_09 == '' && $('#Goods_' + i + '__DOC_TYP_09_FILE').siblings().length < 2) {
+                msg += '請上傳專任輻射防護人員：在職證明影本檔案</br>';
+            }
+            //專任醫學物理專業人員：醫學物理訓練證明影本
+            var CHK_DOC_TYP_10 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_10_CHK').prop("checked");
+            if (CHK_DOC_TYP_10 && DOC_TYP_10 == '' && $('#Goods_' + i + '__DOC_TYP_10_FILE').siblings().length < 2) {
+                msg += '請上傳專任醫學物理專業人員：醫學物理訓練證明影本檔案</br>';
+            }
+            //專任醫學物理專業人員：在職證明影本
+            var CHK_DOC_TYP_11 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_11_CHK').prop("checked");
+            if (CHK_DOC_TYP_11 && DOC_TYP_11 == '' && $('#Goods_' + i + '__DOC_TYP_11_FILE').siblings().length < 2) {
+                msg += '請上傳專任醫學物理專業人員：在職證明影本檔案</br>';
+            }
+            //專任運轉人員：運轉人員資格證明文件影本
+            var CHK_DOC_TYP_12 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_12_CHK').prop("checked");
+            if (CHK_DOC_TYP_12 && DOC_TYP_12 == '' && $('#Goods_' + i + '__DOC_TYP_12_FILE').siblings().length < 2) {
+                msg += '請上傳專任運轉人員：運轉人員資格證明文件影本檔案</br>';
+            }
+            //專任運轉人員：在職證明影本
+            var CHK_DOC_TYP_13 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_13_CHK').prop("checked");
+            if (CHK_DOC_TYP_13 && DOC_TYP_13 == '' && $('#Goods_' + i + '__DOC_TYP_13_FILE').siblings().length < 2) {
+                msg += '請上傳專任運轉人員：在職證明影本檔案</br>';
+            }
+            //專任正子放射製藥專業人員：具正子放射藥物製備一年以上工作經驗，或曾在國內外醫療機構接受正子放射藥物製備訓練三個月以上之證明文件
+            var CHK_DOC_TYP_14 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_14_CHK').prop("checked");
+            if (CHK_DOC_TYP_14 && DOC_TYP_14 == '' && $('#Goods_' + i + '__DOC_TYP_14_FILE').siblings().length < 2) {
+                msg += '請上傳專任正子放射製藥專業人員：具正子放射藥物製備一年以上工作經驗，或曾在國內外醫療機構接受正子放射藥物製備訓練三個月以上之證明文件檔案</br>';
+            }
+            //常駐工程師相關證明文件:本國常駐工程師應有維修訓練三個月以上經驗，並取得證明文件。原廠常駐工程師應提出國外相同機組之維修訓練證明文件。
+            var CHK_DOC_TYP_15 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_15_CHK').prop("checked");
+            if (CHK_DOC_TYP_15 && DOC_TYP_15 == '' && $('#Goods_' + i + '__DOC_TYP_15_FILE').siblings().length < 2) {
+                msg += '請上傳常駐工程師相關證明文件:本國常駐工程師應有維修訓練三個月以上經驗，並取得證明文件。原廠常駐工程師應提出國外相同機組之維修訓練證明文件。檔案</br>';
+            }
+            //醫事放射師或醫事放射士：證書影本
+            var CHK_DOC_TYP_16 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_16_CHK').prop("checked");
+            //檢附文件字號十六
+            var DOC_COD_16 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_COD_16').val().trim();
+            //檢附文件說明十六
+            var DOC_TXT_16 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TXT_16').val().trim();
+            if (CHK_DOC_TYP_16 && DOC_TYP_16 == '' && $('#Goods_' + i + '__DOC_TYP_16_FILE').siblings().length < 2) {
+                msg += '請上傳醫事放射師或醫事放射士：證書影本檔案</br>';
+                if (DOC_COD_16 == '' || DOC_TXT_16 == '') {
+                    msg += '請輸入檢附文件字號七及檢附文件說明七</br>';
+                }
+            }
+            //醫事放射師或醫事放射士：執業執照影本
+            var CHK_DOC_TYP_17 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_17_CHK').prop("checked");
+            if (CHK_DOC_TYP_17 && DOC_TYP_17 == '' && $('#Goods_' + i + '__DOC_TYP_17_FILE').siblings().length < 2) {
+                msg += '請上傳醫事放射師或醫事放射士：執業執照影本檔案</br>';
+            }
+            //醫事放射師或醫事放射士：應有一人以上具操作單光子斷層掃描設備一年以上之經驗，或曾在國內外 醫療機構接受正子斷層掃描設備操作訓練三個月以上之證明文件
+            var CHK_DOC_TYP_18 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_18_CHK').prop("checked");
+            if (CHK_DOC_TYP_18 && DOC_TYP_18 == '' && $('#Goods_' + i + '__DOC_TYP_18_FILE').siblings().length < 2) {
+                msg += '請上傳醫事放射師或醫事放射士：應有一人以上具操作單光子斷層掃描設備一年以上之經驗，或曾在國內外 醫療機構接受正子斷層掃描設備操作訓練三個月以上之證明文件檔案</br>';
+            }
+            //醫院評鑑結果證明文件
+            var CHK_DOC_TYP_19 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_' + i + '__DOC_TYP_19_CHK').prop("checked");
+            if (CHK_DOC_TYP_19 && DOC_TYP_19 == '' && $('#Goods_' + i + '__DOC_TYP_19_FILE').siblings().length < 2) {
+                msg += '請上傳醫院評鑑結果證明文件檔案</br>';
+            }
+
+            grid += '<tr style="width:100%;border-width:1px;border-style:solid"><td>序號:' + SRL_NO + '</tr></td>';
+            grid += '<tr style="width:100%;border-width:1px;border-style:solid"><td>' + msg + '</tr></td>';
+        }
+
+        grid = '<table style="width:100%;border-width:1px;border-style:solid">' + grid + '</table>';
+
+        if (msg != '') {
+            blockAlert(grid, '訊息');
+            return false;
+        }
+
+        return true;
+    }
+
+    function initGoodsDDL() {
+        for (i = 0; i < $('#goodsTable div[id^="row"]').length; i++)
+            {
+                if ($('select[id^="Goods_'+i+'__GOODS_TYPE_ID"]') != undefined) {
+                    for (var i = 0; i < $('select[id^="Goods_'+i+'__GOODS_TYPE_ID"]').length; i++) {
+                        var attrName = $($('select[id^="Goods_'+i+'__GOODS_TYPE_ID"]')[i]).attr('name');
+                        $('select[name="' + attrName + '"]').on('change', function () {
+                            $('#' + $(this).parent().parent().parent().attr('id') + ' #Goods_' + i +'__GOODS_SPEC_1').val($(this).val());
+                            $('#' + $(this).parent().parent().parent().attr('id') + ' #Goods_' + i +'__GOODS_TYPE_TEXT').val($(this).find('option:selected').text());
+                        });
+                    }
+                }
+
+                if ($('select[id^="Goods_0__GOODS_UNIT_ID"]') != undefined) {
+                    for (var i = 0; i < $('select[id^="Goods_' + i +'__GOODS_UNIT_ID"]').length; i++) {
+                        var attrName = $($('select[id^="Goods_' + i +'__GOODS_UNIT_ID"]')[i]).attr('name');
+                        $('select[name="' + attrName + '"]').on('change', function () {
+                            $('#' + $(this).parent().parent().parent().attr('id') + ' #Goods_' + i +'__GOODS_UNIT_TEXT').val($(this).find('option:selected').text());
+                        });
+                    }
+                }
+
+            }
+
+    }
+
+    function setFileName(objName)
+    { 
+            var validExts = new Array(".DOC", ".DOCX", ".ODT", ".ODF", ".ODS", ".XLS", ".XLSX", ".PDF", ".PPT", ".PPTX", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF", ".ZIP");
+
+            var fileExt = $('input[name="' + objName + '"]').val();
+            fileExt = fileExt.substring(fileExt.toLowerCase().lastIndexOf('.'));
+
+            if ($('input[name="' + objName + '"]')[0].files[0].size / 1024 / 1024 > 5) {
+                blockAlert("檔案大小不可超過5MB");
+                $('input[name="' + objName + '"]').val(null);
+                return false;
+            }
+        
+            if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+                blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+                $('input[name="' + objName + '"]').val(null);
+                return false;
+            }
+            else
+            {
+                $($('input[name="' + objName + '"]').siblings()[2]).val($('input[name="' + objName + '"]').val().replace(/C:\\fakepath\\/i, ''));
+                return true;
+            } 
+    }
+
+    function SetChangeField()
+    {
+        var fieldList = $('#FieldList').val().split(',');
+        var goodsFieldsList = $('#GoodFieldList').val().split(',');
+        goodsFieldsList.forEach(function (objId) {            
+            if ($('input[id="' + objId + '"][type="file"]').length > 0) {
+                $('#' + objId).removeAttr("disabled");
+                $('#' + objId).css("background-color", "#FF9797");
+            }
+            else {
+                $('#' + objId).removeAttr("disabled");
+                $('#' + objId).css("background-color", "#FF9797");
+            }
+        });
+
+        fieldList.forEach(function (objId) {
+
+            $('input').each(function () {
+                
+                if ($(this).attr('id') == objId) {
+                    $(this).removeAttr("disabled");
+                    $(this).css("background-color", "#FF9797");
+
+                    if (objId== 'TAX_ORG_CITY_CODE')
+                    {
+                        $('#TAX_ORG_CITY_CODE').removeAttr("readonly");
+                        $('#TAX_ORG_CITY_CODE').css("background-color", "#FF9797");
+                        $('#TAX_ORG_CITY_TEXT').removeAttr("readonly");
+                        $('#TAX_ORG_CITY_TEXT').css("background-color", "#FF9797");
+                        $('#TAX_ORG_CITY_DETAIL').removeAttr("readonly");
+                        $('#TAX_ORG_CITY_DETAIL').css("background-color", "#FF9797");
+                    } 
+
+                    if (objId == 'DATE_S_AC') {
+                        $('#DATE_S_AC_TW').removeAttr("disabled");
+                        $('#DATE_S_AC_TW').removeAttr("readonly");
+                        $('#DATE_S_AC_TW').css("background-color", "#FF9797");
+                    } 
+
+                    if (objId == 'DATE_E_AC') {
+                        $('#DATE_E_AC_TW').removeAttr("disabled");
+                        $('#DATE_E_AC_TW').removeAttr("readonly");
+                        $('#DATE_E_AC_TW').css("background-color", "#FF9797");
+                    } 
+
+                    if (objId == 'TEL_SEC') {
+                        $('#TEL_NO').removeAttr("disabled");
+                        $('#TEL_NO').css("background-color", "#FF9797");
+                        $('#TEL_EXT').removeAttr("disabled");
+                        $('#TEL_EXT').css("background-color", "#FF9797");
+                    }
+
+                    if (objId == 'FAX_SEC') {
+                        $('#FAX_NO').removeAttr("disabled");
+                        $('#FAX_NO').css("background-color", "#FF9797");
+                        $('#FAX_EXT').removeAttr("disabled");
+                        $('#FAX_EXT').css("background-color", "#FF9797");
+                    }
+                }
+
+                if (objId == 'TAX_ORG_EMAIL') {
+                    $('#MAIL_ACCOUNT').removeAttr("disabled");
+                    $('#MAIL_ACCOUNT').css("background-color", "#FF9797");
+                    $('#MAIL_DOMAIN').removeAttr("disabled");
+                    $('#MAIL_DOMAIN').css("background-color", "#FF9797");
+                    $('#DOMAINList').removeAttr("disabled");
+                    $('#DOMAINList').css("background-color", "#FF9797");
+                } 
+
+            });
+
+            $('select').each(function () {
+
+                if ($(this).attr('id') == objId) {
+                    $(this).removeAttr("disabled");
+                    $(this).css("background-color", "#FF9797");
+
+                    if (objId== 'TRN_PORT_ID')
+                    {
+                        $('#TRN_PORT_ID2').removeAttr("disabled");
+                        $('#TRN_PORT_ID2').css("background-color", "#FF9797");
+                    }
+
+                    if (objId == 'BEG_PORT_ID') {
+                        $('#BEG_PORT_ID2').removeAttr("disabled");
+                        $('#BEG_PORT_ID2').css("background-color", "#FF9797");
+                    }
+                }
+
+            }); 
+
+        });
+
+
+    }
+
+</script>

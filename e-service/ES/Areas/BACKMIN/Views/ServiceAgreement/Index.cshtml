@@ -1,0 +1,82 @@
+﻿@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "同意書管理";
+    ViewBag.FunctionTitle = "同意書管理";
+    ViewBag.Script = @"
+var categoryMenu = {
+    async: {
+        enable: true,
+        url: """ + Url.Action("GetCategory") + @""",
+        autoParam:[""id""],
+        dataFilter: categoryFilter
+    },
+    callback: {
+        onAsyncSuccess: categoryTreeOnAsyncSuccess
+    }
+};
+
+function categoryFilter(treeId, parentNode, childNodes) {
+    if (!childNodes) return null;
+    for (var i=0, l=childNodes.length; i<l; i++) {
+        childNodes[i].name = childNodes[i].name.replace(/\.n/g, '.');
+        childNodes[i].click = 'doServiceList('+childNodes[i].id+')';
+    }
+    return childNodes;
+}
+
+var firstCategoryAsyncSuccessFlag = true;
+function categoryTreeOnAsyncSuccess(event, treeId, treeNode) {
+    if(firstCategoryAsyncSuccessFlag) {
+        try {
+            var zTree = $.fn.zTree.getZTreeObj(treeId);
+            var nodes = zTree.getNodes();
+            var id = " + ViewBag.ExpandId + @";
+            var listId = " + ViewBag.ListId + @";
+
+            if ( listId != 0 ) doServiceList(listId);
+
+            if ( id == 0 || !nodes) return null;
+
+            for(var i=0; i<nodes.length; i++) {
+                if(nodes[i].id == id) {
+                    zTree.expandNode(nodes[i], true);
+                    break;
+                }
+            }
+
+            firstAsyncSuccessFlag = false;
+        } catch (ex) {}
+    }
+}
+
+function doServiceList(id) {
+    var url = '" + Url.Action("ServiceList") + @"/' + id + ' #detail1';
+    $('#detail').empty().load(url, function(data) {
+        if($('#detail').text().length == 0) {
+            jAlert('您的登入已逾時');
+        }
+    });
+    $('#list').empty();
+}
+
+$(function () {
+    $.fn.zTree.init($(""#categoryTree""), categoryMenu);
+});
+";
+}
+
+<div class="bread">
+    <i class="fas fa-home"></i>首頁 / 案件設定 / @ViewBag.FunctionTitle
+</div>
+<div class="col-sm-12 content">
+    <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+    <div class="form-blue form-horizontal">
+        <div style="float: left; width: 20%;">
+            <ul id="categoryTree" class="ztree"></ul>
+        </div>
+        <div style="float: left; width: 80%;">
+            <div id="detail"></div>
+        </div>
+    </div>
+</div>

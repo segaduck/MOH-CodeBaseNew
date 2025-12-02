@@ -1,0 +1,103 @@
+﻿@using ES.Commons
+@using ES.Services
+@using ES.Models
+@using ES.Models.ViewModels
+@using ES.Models.Entities
+@model ES.Models.GoodsDynamicGrid<Apply_001008_AthViewModel>
+
+@{
+    ShareCodeListModel dao = new ShareCodeListModel();
+    var IsDisabled = Model.IsReadOnly ? "pointer-events:none;background:#DDDDDD" : "";
+}
+
+
+<div id="GoodsDynamicGird001008Ath">
+    <h2 class="second-title">
+        @Html.HiddenFor(m => m.IsNewOpen)
+        @Html.HiddenFor(m => m.IsReadOnly)
+        @Html.HiddenFor(m => m.IsDeleteOpen)
+        @Html.HiddenFor(m => m.SourceModelName)
+
+        醫事人員或公共衛生師中文證書電子檔<span style="color:red">(* 號為必填欄位)</span>
+
+        @if (Model.IsNewOpen && !Model.IsReadOnly)
+        {
+            <button type="button" class="btn btn-save" id="btnAdd" onclick="addGoodRow@(Model.SourceModelIdFull)()">新增</button>
+        }
+    </h2>
+    <div id="goodsTable" class="table-responsive">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+            <thead>
+            <th width="80%"><span style="color:red" sr-only="必填">＊</span>附件檔案</th>
+            <th width="20%">刪除</th>
+            </thead>
+            <tbody>
+
+                @if (Model.GoodsList.ToCount() != 0)
+                {
+                    for (int i = 0; i < Model.GoodsList.Count; i++)
+                    {
+                        var item = Model.GoodsList[i];
+                        <tr style="border: none;">
+                            <td style="border: none;">
+                                @Html.FileUploadForTurbo(m => Model.GoodsList[i].FILE_1,true,false, new { @class = "form-control", style = IsDisabled })
+                            </td>
+                            <td style="border: none;">
+                                @if (Model.IsDeleteOpen && !Model.IsReadOnly)
+                                {
+
+                                    <button type="button" id="btnDelte_1" class="btn btn-clear" onclick="deleteGoodRow@(Model.SourceModelIdFull)(@(i))">
+                                        刪除
+                                    </button>
+
+                                }
+                                else
+                                {
+                                    @Html.Raw("&nbsp;")
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+    });
+
+    // 新增一列
+    function addGoodRow@(Model.SourceModelIdFull)() {
+        var url = "@Url.Action("addGoodRow001008Ath", "AJAX",new { area = "" })";
+        var parms = getDivDataJson("#GoodsDynamicGird001008Ath");
+        var a = "1";
+        debugger;
+        ajaxLoadMore(url, parms
+        , function (data) {
+            $("#GoodsDynamicGird001008Ath").html(data);
+            $("#GoodsDynamicGird001008Ath :input").each(function (i, obj) {
+                $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+            });
+        });
+    }
+
+    // 刪除此列
+    function deleteGoodRow@(Model.SourceModelIdFull)(idx) {
+        var url = "@Url.Action("deleteGoodRow001008Ath", "AJAX",new { area = "" })";
+        var parms = getDivDataJson("#GoodsDynamicGird001008Ath");
+        parms["idx"] = idx;
+
+        ajaxLoadMore(url, parms
+         , function (data) {
+             $("#GoodsDynamicGird001008Ath").html(data);
+             $("#GoodsDynamicGird001008Ath").html(data);
+             $("#GoodsDynamicGird001008Ath :input").each(function (i, obj) {
+                 $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                 $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+             });
+         });
+    }
+</script>

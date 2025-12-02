@@ -1,0 +1,469 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_001039FormModel
+@{
+    Layout = null;
+    ShareCodeListModel sc = new ShareCodeListModel();
+}
+
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申辦項目</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">醫師赴國外訓練英文保證函</p>
+        </div>
+        <label class="step-label col-sm-2" for="">申辦日期</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.APPLY_DATE_STR</p>
+            @Html.HiddenFor(m => m.APPLY_DATE_STR)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人中文姓名(與護照相同)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.CNAME, new { @id = "CNAME", @class = "form-control", placeholder = "請輸入申請人中文姓名(與護照相同)", @readonly = "readonly" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證編號/居留證號</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.PID, new { @id = "PID", @class = "form-control", maxlength = 10, placeholder = "請輸入身分證編號/居留證號", size = "10", @readonly = "readonly" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人英文姓名(與護照相同)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.ENAME, new { @id = "ENAME", @class = "form-control", placeholder = "請輸入申請人英文姓名(與護照相同)" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人性別</label>
+        <div class="col-sm-10">
+            <label class="radio-inline "><input type="radio" id="GENDER_M" name="GENDER" value="M" onchange="GENDERChange()">男</label>
+            <label class="radio-inline "><input type="radio" id="GENDER_F" name="GENDER" value="F" onchange="GENDERChange()">女</label>
+            <label class="radio-inline "><input type="radio" id="GENDER_O" name="GENDER" value="O" onchange="GENDERChange()">其他</label>
+            @Html.HiddenFor(m => m.GENDER)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人出生年月日</label>
+        <div class="col-sm-4">
+            @Html.DatePickerTWFor(x => x.BIRTHDAY_STR, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E.C.F.M.G.及格證書字號</label>
+        <div class="col-sm-10 ">
+            @Html.TextBoxFor(m => m.ECFMG, new { @id = "ECFMG", @class = "form-control", placeholder = "請輸入E.C.F.M.G.及格證書字號" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>訓練醫院及科別(請用英文填寫)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.HOSPITAL_DIVISION, new { @id = "HOSPITAL_DIVISION", @class = "form-control", placeholder = "請輸入訓練醫院及科別(請用英文填寫)" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>前往國家(中、英文)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.COUNTRY, new { @id = "COUNTRY", @class = "form-control", placeholder = "請輸入前往國家(中、英文)" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>事由</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.CAUSE, new { @id = "CAUSE", @class = "form-control", placeholder = "請輸入事由" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>通訊地址</label>
+        <div class="col-sm-10 ">
+            @Html.TextBoxFor(m => m.MAIL_ADDRESS, new { @id = "MAIL_ADDRESS", @class = "form-control", placeholder = "請輸入通訊地址" })
+        </div>
+    </div>
+
+    <h2 class="second-title">申辦資料</h2>
+
+    <div class='form-group'>
+        <label class='step-label col-sm-2' for=''><span style="color:red;">*</span>聯絡人姓名</label>
+        <div class="col-sm-3 ">
+            @Html.TextBoxFor(m => m.CONTACT_NAME, new { @id = "CONTACT_NAME", @class = "form-control", placeholder = "請輸入聯絡人姓名" })
+        </div>
+        <button type='button' class="btn btn-info" onclick="getMemberData()">同登入會員資料</button>
+    </div>
+    <div class='form-group'>
+        <label class='step-label col-sm-2' for=''>聯絡人電話</label>
+        <div class="col-sm-10">
+            <span>(</span>
+            @Html.TextBoxFor(m => m.CONTACT_TEL_0, new { @id = "CONTACT_TEL_0", @class = "form-10 form-normal", placeholder = "請輸入聯絡人電話-區碼" })
+            <span>)</span>
+            @Html.TextBoxFor(m => m.CONTACT_TEL_1, new { @id = "CONTACT_TEL_1", @class = "form-normal", placeholder = "請輸入聯絡人電話" })
+            <span>#</span>
+            @Html.TextBoxFor(m => m.CONTACT_TEL_2, new { @id = "CONTACT_TEL_2", @class = "form-normal", placeholder = "請輸入聯絡人電話-分機" })
+        </div>
+    </div>
+    <div class='form-group'>
+        <label class='step-label col-sm-2' for=''><span style="color:red;">*</span>聯絡人行動電話</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.CONTACT_MOBILE, new { @id = "CONTACT_MOBILE", @class = "form-control", placeholder = "請輸入聯絡人行動電話", maxlength = "10" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人E-MAIL</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.E_MAIL_1, new { @class = "form-normal", placeholder = "請輸入聯絡人E-MAIL帳號" })
+            @@
+            @Html.DropDownListFor(m => m.E_MAIL_2, sc.GetMailDomainList, new { @class = "form-normal", onchange = "doEmailChange()" })
+            @Html.TextBoxFor(m => m.E_MAIL_3, new { @class = "form-normal", placeholder = "請輸入聯絡人E-MAIL" })
+        </div>
+    </div>
+
+    <div class='form-group'>
+        <label class='step-label col-sm-2' for=''>聯絡人傳真</label>
+        <div class="col-sm-10">
+            <span>(</span>
+            @Html.TextBoxFor(m => m.CONTACT_FAX_0, new { @id = "CONTACT_FAX_0", @class = "form-10 form-normal", placeholder = "請輸入聯絡人傳真-區碼" })
+            <span>)</span>
+            @Html.TextBoxFor(m => m.CONTACT_FAX_1, new { @id = "CONTACT_FAX_1", @class = "form-normal", placeholder = "請輸入聯絡人傳真" })
+            <span>#</span>
+            @Html.TextBoxFor(m => m.CONTACT_FAX_2, new { @id = "CONTACT_FAX_2", @class = "form-normal", placeholder = "請輸入聯絡人傳真-分機" })
+        </div>
+    </div>
+
+    <h2 class="second-title">佐證文件檔案上傳 <span style="color:red;font-size:14px">(檔案大小5MB以下，請附上圖檔，例如：PDF、JPG、BMP、PNG、GIF、TIF)</span></h2>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">
+            佐證文件採合併檔案
+        </label>
+        <div class="col-sm-10">
+            <label class="radio-inline "><input type="radio" name="MERGEYN" value="Y" onchange="RadioChange()">是</label>
+            <label class="radio-inline "><input type="radio" name="MERGEYN" value="N" checked onchange="RadioChange()">否</label>
+            @Html.HiddenFor(m => m.IS_MERGE_FILE)
+            <br />
+            若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">我國評鑑合格醫院保證函（向本部保證申請人如期學成返國時，將聘僱為該科相當職位之醫師）</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE0, new { @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+            @Html.HiddenFor(m => m.FILE0_TEXT)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申請人自行提出書面保證函（保證學業完成如期返國）</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE1, new { @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+            @Html.HiddenFor(m => m.FILE1_TEXT)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">醫師證書影本</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE2, new { @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+            @Html.HiddenFor(m => m.FILE2_TEXT)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">國外契約或接受文件（正本或影本）</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE3, new { @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+            @Html.HiddenFor(m => m.FILE3_TEXT)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">E.C.F.M.G.及格證書影本</label>
+        <div class="col-sm-10">
+            @Html.HiddenFor(m => m.FILE4_TEXT)
+            @Html.TextBoxFor(m => m.FILE4, new { @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">國民身分證正面影本</label>
+        <div class="col-sm-10">
+            @Html.HiddenFor(m => m.FILE5_TEXT)
+            @Html.TextBoxFor(m => m.FILE5, new { @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">國民身分證反面影本</label>
+        <div class="col-sm-10">
+            @Html.HiddenFor(m => m.FILE6_TEXT)
+            @Html.TextBoxFor(m => m.FILE6, new { @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">護照影本或有關部會許可出國文件影本</label>
+        <div class="col-sm-10">
+            @Html.HiddenFor(m => m.FILE7_TEXT)
+            @Html.TextBoxFor(m => m.FILE7, new { @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">個人執業發展規劃書</label>
+        <div class="col-sm-10">
+            @Html.HiddenFor(m => m.FILE8_TEXT)
+            @Html.TextBoxFor(m => m.FILE8, new { @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">醫師赴國外訓練英文保證函申請表</label>
+        <div class="col-sm-10">
+            @Html.HiddenFor(m => m.FILE9_TEXT)
+            @Html.TextBoxFor(m => m.FILE9, new { @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+        </div>
+    </div>
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="doPreView()">存檔並預覽</button>
+        <button type="reset" class="btn btn-clear">清除資料</button>
+    </div>
+</div>
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+
+        if ($('#GENDER').val() == 'M') {
+            $('#GENDER_M').attr('checked', 'checked');
+        }
+        else if ($('#GENDER').val() == 'F') {
+            $('#GENDER_F').attr('checked', 'checked');
+
+        }
+        else {
+            $('#GENDER_O').attr('checked', 'checked');
+
+        }
+    });
+
+    // 地址
+    function loadDialogACC_ADDRCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doACC_ADDRSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#ACC_ADDR_CODE').val(retData.Id);
+                    $('#ACC_ADDR_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doACC_ADDRNameGet() {
+        var code = $('#ACC_ADDR_CODE');
+        console.log('ACC_ADDR_CODE');
+        var data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#ACC_ADDR_TEXT'),
+            'add': $('#ACC_ADDR_CODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogACC_ADDRCodeMapName(data);
+        }
+    }
+
+    // 轉至瀏覽
+    function doPreView() {
+        // 確認上傳檔案
+        var MERGE = $('input[name="MERGEYN"]:checked').val();
+        var FILE0 = $('#FILE0').val();
+        var FILE1 = $('#FILE1').val();
+        var FILE2 = $('#FILE2').val();
+        var FILE3 = $('#FILE3').val();
+        var FILE4 = $('#FILE4').val();
+        var FILE5 = $('#FILE5').val();
+        var FILE6 = $('#FILE6').val();
+        var FILE7 = $('#FILE7').val();
+        var FILE8 = $('#FILE8').val();
+
+        //性別
+        $('#GENDER').val($('input[name="GENDER"]:checked').val());
+
+        $('#IS_MERGE_FILE').val(MERGE);
+
+        if (MERGE == 'Y' && FILE1 == "" && FILE2 == "" && FILE3 == "" && FILE4 == "" && FILE5 == "" && FILE6 == "" && FILE7 == "" && FILE8 == "" && FILE0 == "") {
+            blockAlert("請至少上傳一個檔案 !", "提示訊息");
+        }
+        //else if (MERGE == 'N' && FILE0 == "") {
+        //    blockAlert("請上傳 我國評鑑合格醫院保證函 !", "提示訊息");
+        //}
+        //else if (MERGE == 'N' && FILE1 == "") {
+        //    blockAlert("請上傳 申請人自行提出書面保證函 !", "提示訊息");
+        //}
+        //else if (MERGE == 'N' && FILE2 == "") {
+        //    blockAlert("請上傳 醫師證書影本 !", "提示訊息");
+        //}
+        //else if (MERGE == 'N' && FILE3 == "") {
+        //    blockAlert("請上傳 國外契約或接受文件 !", "提示訊息");
+        //}
+        //else if (MERGE == 'N' && FILE4 == "") {
+        //    blockAlert("請上傳 E.C.F.M.G.及格證書影本 !", "提示訊息");
+        //}
+        //else if (MERGE == 'N' && FILE5 == "") {
+        //    blockAlert("請上傳 國民身分證正面影本 !", "提示訊息");
+        //}
+        //else if (MERGE == 'N' && FILE6 == "") {
+        //    blockAlert("請上傳 國民身分證反面影本 !", "提示訊息");
+        //}
+        //else if (MERGE == 'N' && FILE7 == "") {
+        //    blockAlert("請上傳 護照影本或有關部會許可出國文件影本 !", "提示訊息");
+        //}
+        //else if (MERGE == 'N' && FILE8 == "") {
+        //    blockAlert("請上傳 個人執業發展規劃書 !", "提示訊息");
+        //}
+        else {
+            var data = getFormSubmitableFields($("form[id=main_form]"));
+            ajaxLoadMore('@Url.Action("Apply")', data, function (retData) {
+                if (retData.status) {
+                    ajaxLoadMore('@Url.Action("PreView")', data, function (getHtml) {
+                        $('#form_tab').removeClass('active');
+                        $('#form').attr('class', 'tab-pane fade');
+                        $('#form_tab1').attr('class', 'active');
+                        $('#form1').attr('class', 'tab-pane fade active in');
+                        $("#form1").html(getHtml);
+
+                    });
+                }
+                else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+        }
+    }
+
+    // MAIL 選自訂
+    function doEmailChange() {
+        var ADM_MAIL = $('#E_MAIL_2').val();
+        if (ADM_MAIL == 0) $('#E_MAIL_3').removeAttr("readonly");
+        else {
+            $('#E_MAIL_3').attr("readonly", "readonly");
+            $('#E_MAIL_3').val('');
+        }
+    }
+
+    // 是否合併檔案
+    function RadioChange() {
+        $("#IS_MERGE_FILE").val($('input[name="MERGEYN"]:checked').val());
+    }
+
+    // 申請人性別
+    function GENDERChange() {
+        $("#GENDER").val($('input[name="GENDER"]:checked').val());
+    }
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".PDF", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.')).toUpperCase();
+
+        if (validExts.indexOf(fileExt) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        }
+        else {
+            $("#" + file.name + "_TEXT").val(file.files.item(0).name);
+            return true;
+        }
+
+    }
+
+    function getMemberData() {
+        var data = {
+            'url': '/Ajax/GetMemberData', 'msg': '查無該會員聯絡資料!!', 'arg': '', 'result': ''
+        };
+
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) {
+                data.result.val('');
+            }
+            else {
+                if (resp.data != '') {
+                    $.each(resp.data, function (i, item) {
+
+                        if (item.CODE == 'NAME') {
+                            $('#CONTACT_NAME').val(item.TEXT);
+                        }
+
+                        if (item.CODE == 'MOBILE') {
+                            $('#CONTACT_MOBILE').val(item.TEXT);
+                        }
+
+                        if (item.CODE == 'MAIL') {
+                            var mail = item.TEXT;
+
+                            if (mail != '') {
+
+                                $('#E_MAIL_1').val(mail.split('@@')[0]);
+
+                                $("#E_MAIL_2 option").filter(function () {
+                                    return (this.text == (mail.split('@@')[1]).replace('@@', '') || this.text == '自訂');
+                                }).attr('selected', true);
+
+                                $('#E_MAIL_3').val((mail.split('@@')[1]).replace('@@', ''));
+                            }
+                        }
+
+                        if (item.CODE == 'TEL') {
+
+                            if (item.TEXT != '') {
+                                $('#CONTACT_TEL_0').val(item.TEXT.split('-')[0])
+                                $('#CONTACT_TEL_1').val(item.TEXT.split('-')[1])
+
+                                if (item.TEXT.indexOf('#') > 0) {
+                                    $('#CONTACT_TEL_2').val(item.TEXT.split('#')[1])
+                                    $('#CONTACT_TEL_1').val($('#CONTACT_TEL_1').val().substring(0, $('#CONTACT_TEL_1').val().indexOf('#')));
+                                }
+                            }
+                        }
+
+                        if (item.CODE == 'FAX') {
+                            if (item.TEXT != '') {
+                                $('#CONTACT_FAX_0').val(item.TEXT.split('-')[0])
+                                $('#CONTACT_FAX_1').val(item.TEXT.split('-')[1])
+
+                                if (item.TEXT.indexOf('#') > 0) {
+                                    $('#CONTACT_FAX_2').val(item.TEXT.split('#')[1])
+                                    $('#CONTACT_FAX_1').val($('#CONTACT_FAX_1').val().substring(0, $('#CONTACT_FAX_1').val().indexOf('#')));
+                                }
+                            }
+                        }
+                    });
+                }
+                else {
+                    data.result.val('');
+                    blockAlert(data.msg);
+                }
+            }
+        });
+    }
+
+</script>

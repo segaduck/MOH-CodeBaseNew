@@ -1,0 +1,59 @@
+﻿@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout3.cshtml";
+
+    ViewBag.Title = "相關網站連結";
+    ViewBag.FunctionTitle = "相關網站連結";
+}
+<div class="bread">
+    <i class="fas fa-home"></i>首頁 / 前台管理 / @ViewBag.FunctionTitle
+</div>
+<div class="col-sm-12 content">
+    <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+    <div class="form-blue form-horizontal">
+        <div class="btnbar">
+            <a href="#" class="btn btn-save" onclick="document.location.href='@Url.Action("New", "Site")';">新增網站</a>
+        </div>
+    </div>
+    @if (ViewBag.List != null)
+    {
+        <div class="clearfix"></div>
+        <h2 class="second-title">查詢結果</h2>
+        <div class="table-responsive">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th width="5%">編輯</th>
+                        <th width="5%">項次</th>
+                        <th width="40%">網站名稱</th>
+                        <th width="45%">網址</th>
+                        <th width="5%">刪除</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.List.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="6" style="text-align: center;">查無資料</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        for (var i = 0; i < ViewBag.List.Count; i++)
+                        {
+                            ES.Areas.Admin.Models.SiteModel item = ViewBag.List[i];
+                            <tr>
+                                <td align="center">
+                                    <input type="button" class="btn btn-blue" value="編輯" onclick="document.location.href='@Url.Action("Edit", "Site", new { id=@item.SiteId })';" />
+                                </td>
+                                <td align="center">@(i + 1)</td>
+                                <td align="center">@item.Name</td>
+                                <td align="center"><a href="@Html.Raw(@item.Url)" target="_blank">@item.Url</a></td>
+                                <td align="center"><input type="button" class="btn btn-warning" value="刪除" onclick="document.location.href='@Url.Action("Delete", "Site", new { id = @item.SiteId })';" /></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

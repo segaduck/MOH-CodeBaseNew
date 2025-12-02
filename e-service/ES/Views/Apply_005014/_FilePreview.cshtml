@@ -1,0 +1,94 @@
+﻿@model ES.Models.ViewModels.Apply_005014ViewModel
+
+@{
+    ViewBag.Title = "_FilePreview";
+}
+
+@RenderGrid()
+
+@helper RenderGrid()
+{
+    if (Model.FileList != null && Model.FileList.Count > 0)
+    {
+        for (var i = 0; i < Model.FileList.Count; i++)
+        {
+            <div class="form-group">
+                <label class="step-label col-sm-2">上傳檔案 @(i + 1)</label>
+                <div class="col-sm-10">
+                    @{
+                        var item = Model.FileList[i];
+                    }
+                    @RenderDownloadField(item.FILE_NAME)
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        }
+    }
+    else
+    {
+        <div class="form-group">
+            <label class="step-label col-sm-2">上傳檔案</label>
+            <div class="col-sm-10">
+                <p class="form-control-static"> (無檔案) </p>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    }
+}
+
+@helper RenderDownloadField(string filename)
+{
+    bool isImg = true;
+    bool isPdf = true;
+    if (!string.IsNullOrEmpty(filename))
+    {
+        var fileExt = Path.GetExtension(filename).ToLower();
+        string shortFilename = Path.GetFileName(filename);
+        byte[] ba = System.Text.Encoding.UTF8.GetBytes(filename); ;
+        string base64filename = Convert.ToBase64String(ba);
+        string urlAttch = Url.Action("DownloadFileFromPath", "File", new { area = "", filepath = base64filename });
+        string urlInline = Url.Action("DownloadFileFromPath", "File", new { area = "", filepath = base64filename, downloadtype = "inline" });
+
+        switch (fileExt)
+        {
+            case ".jpg":
+            case ".jpeg":
+            case ".bmp":
+            case ".png":
+            case ".gif":
+                isImg = true;
+                isPdf = false;
+                break;
+            case ".pdf":
+                isImg = false;
+                isPdf = true;
+                break;
+            default:
+                isImg = false;
+                isPdf = false;
+                break;
+        }
+
+        if (isImg)
+        {
+            <a href="@urlAttch" class="" download>@shortFilename</a>
+            <a href="@urlInline" target="_blank">
+                <img src="@urlInline" style="width:100px" />
+            </a>
+        }
+        else if (isPdf)
+        {
+            <div class="form-control-static">
+                <a href="@urlAttch" class="form-control-static" download>@shortFilename</a>
+                <a href="@urlInline" class="btn btn-default" target="_blank">預覽</a>
+            </div>
+        }
+        else
+        {
+            <div class="form-control-static">
+                <a href="@urlAttch" class="form-control-static" target="_blank" download>@shortFilename</a>
+            </div>
+        }
+    }
+}
+

@@ -1,0 +1,33 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="EECOnline.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="EUSERVICE_tw_gov_etraining_elite_get_data" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://elite.etraining.gov.tw/lpf_wsv/get_data.asmx</Value>
+    </Setting>
+    <Setting Name="EUSERVICE_tw_gov_etraining_elite1_get_pay" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://elite.etraining.gov.tw/bliws/get_pay.asmx</Value>
+    </Setting>
+    <Setting Name="EUSERVICE_tw_gov_etraining_elite2_WebTimeTable" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://elite.etraining.gov.tw/ELIT/WebService/WebTimeTable.asmx</Value>
+    </Setting>
+    <Setting Name="EUSERVICE_tw_gov_etraining_elite3_WebAbsence" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://elite.etraining.gov.tw/ELIT/WebService/WebAbsence.asmx</Value>
+    </Setting>
+    <Setting Name="EUSERVICE_tw_gov_etraining_elite4_WebLeaveStatus" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://elite.etraining.gov.tw/ELIT/WebService/WebLeaveStatus.asmx</Value>
+    </Setting>
+    <Setting Name="EUSERVICE_tw_gov_etraining_yvtp_WebClass" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://yvtp.etraining.gov.tw/WebService/WebClass.asmx</Value>
+    </Setting>
+    <Setting Name="EUSERVICE_tw_gov_etraining_elite5_get_data" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://elite.etraining.gov.tw/trnapply/get_data.asmx</Value>
+    </Setting>
+    <Setting Name="EUSERVICE_WebReference_EUSERVICE" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://192.168.0.70:9000/WebServices/EECOnline.asmx</Value>
+    </Setting>
+    <Setting Name="EECOnline_tw_org_csh_sysint_MedRecApply" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">https://sysint.csh.org.tw/MedRecApply/MedRecApply.asmx</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

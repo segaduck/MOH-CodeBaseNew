@@ -1,0 +1,1388 @@
+﻿@using System.Web.Razor.Parser
+@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_001034ViewModel
+@{
+    ShareCodeListModel scList = new ShareCodeListModel();
+}
+
+@{
+    int i = 0;
+
+    foreach (var item in Model.Goods)
+    {
+        <div id=@Html.Raw("row"+@item.SRL_NO) data-group="goods">
+            <div class="form-group">
+                <label class='step-label col-sm-2'>序</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].SRL_NO, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class='step-label col-sm-2'><span style="color:red;">*</span>貨品類別（規格）：</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(x => x.Goods[i].GOODS_TYPE_ID, new SelectList(scList.GetGOODS_TYPEList, "Value", "Text", Model.Goods[i].GOODS_TYPE_ID), new { @class = "form-control", @disabled = "disabled" })
+                    @Html.HiddenFor(x=>x.Goods[i].GOODS_TYPE_TEXT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2"><span style="color:red;">*</span>貨品名稱</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].GOODS_NAME, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2"><span style="color:red;">*</span>申請數量</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].APPLY_CNT, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2"><span style="color:red;">*</span>貨品單位</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(x => x.Goods[i].GOODS_UNIT_ID, new SelectList(scList.GetGOODS_UNIT_IDList, "Value", "Text", Model.Goods[i].GOODS_UNIT_ID), new { @class = "form-control", @disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].GOODS_UNIT_TEXT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2"><span style="color:red;">*</span>型號</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].GOODS_MODEL, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2"><span style="color:red;">*</span>規格</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].GOODS_SPEC_1, new { @class = "form-normal form-inline", @size = 4, @disabled = "disabled" })
+                    @Html.TextBoxFor(x => x.Goods[i].GOODS_SPEC_2, new { @class = "form-normal form-inline", @disabled = "disabled" })
+                    <font color="red">（第二格非必填）</font>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2"><span style="color:red;">*</span>牌名</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].GOODS_BRAND, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">貨品輔助描述</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].GOODS_DESC, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <!--檢附文件類型 ˇ的勾選框 會與貨品類別(規格下拉連動 其他除外)-->
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型一</label>
+                <div class="col-sm-10">
+                    <label>
+                    @Html.CheckBoxFor(x=>x.Goods[i].DOC_TYP_01_CHK, new {  @disabled = "disabled" })
+                    醫院開業執照影本
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號一</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_01, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明一</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_01, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型二</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_02_CHK, new { @disabled = "disabled" })
+                        型錄（圖樣及說明書）一份
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號二</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_02, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明二</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_02, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型三</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_03_CHK, new { @disabled = "disabled" })
+                        原廠報價單一份
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號三</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_03, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明三</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_03, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型四</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_04_CHK, new { @disabled = "disabled" })
+                        醫療器材許可證明文件影本一份
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號四</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_04, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明四</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_04, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型五</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_05_CHK, new { @disabled = "disabled" })
+                        管理醫師：執業執照影本
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號五</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_05, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明五</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_05, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型六</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_06_CHK, new { @disabled = "disabled" })
+                        管理醫師：核子醫學科專科醫師證書影本<font style="color: red;">（必選或自行勾選時，請填寫下述二欄位）</font>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號六</label>
+                <div class="col-sm-10">                   
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_06, new { @class = "form-normal", @disabled = "disabled" })
+                    <font style="color: red;">（檢附證書代表之醫事人員或公共衛生師身分證字號）</font>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明六</label>
+                <font style="color: red;">（ex:證書字號）</font>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_06, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型七</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_07_CHK, new { @disabled = "disabled" })
+                        管理醫師：放射線（腫瘤）專科醫師證書影本
+                        <font style="color: red;">（必選或自行勾選時，請填寫下述二欄位）</font>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號七</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_07, new { @class = "form-normal", @disabled = "disabled" })
+                    <font style="color: red;">（檢附證書代表之醫事人員或公共衛生師身分證字號）</font>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明七</label>
+                <font style="color: red;">（ex:證書字號）</font>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_07, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型八</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_08_CHK, new { @disabled = "disabled" })
+                        專任輻射防護人員：認可證書影本
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號八</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_06, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明八</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_08, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型九</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_09_CHK, new { @disabled = "disabled" })
+                        專任輻射防護人員：在職證明影本
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號九</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_09, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明九</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_09, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型十</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_10_CHK, new { @disabled = "disabled" })
+                        專任醫學物理專業人員：醫學物理訓練證明影本
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號十</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_10, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明十</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_10, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型十一</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_11_CHK, new { @disabled = "disabled" })
+                        專任醫學物理專業人員：在職證明影本
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號十一</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_11, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明十一</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_11, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型十二</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_12_CHK, new { @disabled = "disabled" })
+                        專任運轉人員：運轉人員資格證明文件影本
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號十二</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_12, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明十二</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_12, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型十三</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_13_CHK, new { @disabled = "disabled" })
+                        專任運轉人員：在職證明影本
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號十三</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_13, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明十三</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_13, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型十四</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_14_CHK, new { @disabled = "disabled" })
+                        專任正子放射製藥專業人員：<br>
+                        具正子放射藥物製備一年以上工作經驗，或曾在國內外醫療機構接受正子放射藥物製備訓練三個月以上之證明文件
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號十四</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_14, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明十四</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_14, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型十五</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_15_CHK, new { @disabled = "disabled" })
+                        常駐工程師相關證明文件：<br>
+                        本國常駐工程師應有維修訓練三個月以上經驗，並取得證明文件。原廠常駐工程師應提出國外相同機組之維修訓練證明文件。
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號十五</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_15, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明十五</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_15, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型十六</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_16_CHK, new { @disabled = "disabled" })
+                        醫事放射師或醫事放射士：證書影本<font style="color: red;">（必選或自行勾選時，請填寫下述二欄位）</font>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號十六</label><font style="color: red;">（檢附證書代表之醫事人員或公共衛生師身分證字號）</font>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_16, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明十六</label>
+                <font style="color: red;">（ex: 證書字號）</font>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_16, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型十七</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_17_CHK, new { @disabled = "disabled" })
+                        醫事放射師或醫事放射士：執業執照影本
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號十七</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_17, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明十七</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_17, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型十八</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_18_CHK, new { @disabled = "disabled" })
+                        醫事放射師或醫事放射士：<br>
+                        應有一人以上具操作單光子斷層掃描設備一年以上之經驗，或曾在國內外 醫療機構接受正子斷層掃描設備操作訓練三個月以上之證明文件
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號十八</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_18, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明十八</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_18, new { @class = "form-control", @disabled = "disabled", @row = "3" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件類型十九</label>
+                <div class="col-sm-10">
+                    <label>
+                        @Html.CheckBoxFor(x => x.Goods[i].DOC_TYP_19_CHK, new { @disabled = "disabled" })
+                        醫院評鑑結果證明文件
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件字號十九</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_COD_19, new { @class = "form-control", @disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2">檢附文件說明十九</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(x => x.Goods[i].DOC_TXT_19, new { @class = "form-control", @disabled = "disabled" ,@row="3"})
+                </div>
+            </div>
+
+            @*<h2 class="second-title">佐證文件檔案上傳</h2>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型一</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                         Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                         Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().FirstOrDefault().APP_ID + "," +
+                         Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().FirstOrDefault().FILE_NO + "," +
+                         Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_01_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"1"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_01_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 1).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_01_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"1"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_01_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_01_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型二</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_02_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"2"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_02_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 2).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_02_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"2"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_02_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_02_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型三</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_03_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"3"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_03_FILE_SRC,
+                             new {Value=
+                              Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().FirstOrDefault().APP_ID + "," +
+                              Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().FirstOrDefault().FILE_NO + "," +
+                              Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                              Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 3).ToList().FirstOrDefault().SRC_NO}
+                            )
+                        }
+
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_03_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"3"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_03_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_03_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型四</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_04_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"4"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_04_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 4).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_04_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"4"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_04_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_04_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型五</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_05_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"5"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_05_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 5).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_05_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"5"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_05_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_05_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型六</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_06_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"6"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_06_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 6).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_06_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"6"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_06_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_06_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型七</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_07_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"7"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_07_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 7).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_07_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"7"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_07_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_07_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型八</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_08_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"8"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_08_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 8).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_08_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"8"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_08_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_08_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型九</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_09_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"9"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_09_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 9).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_09_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"9"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_09_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_09_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型十</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_10_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"10"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_10_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 10).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_10_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"10"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_10_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_10_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型十一</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_11_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"11"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_11_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 11).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_11_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"11"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_11_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_11_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型十二</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_12_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"12"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_12_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 12).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_12_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"12"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_12_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_12_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型十三</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_13_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"13"
+                            }
+                           )
+                        }
+                        else
+                        {
+
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_13_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 13).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_13_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"13"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_13_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_13_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型十四</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_14_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"14"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_14_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 14).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_14_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"14"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_14_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_14_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型十五</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_15_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"15"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_15_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_15_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"15"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_15_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_15_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型十六</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 15) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_15_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"15"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_16_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 16).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_15_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"15"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_16_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_16_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型十七</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_17_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"17"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_17_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 17).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_17_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"17"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_17_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_17_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型十八</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_18_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"18"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_18_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 18).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_18_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"18"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_18_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_18_FILE_NAME)
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">檢附文件類型十九</label>
+                <div class="col-sm-10">
+                    @if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().Count > 0)
+                    {
+                        @Html.FileDLForTurbo(x => x.APP_ID,
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().FirstOrDefault().SRC_FILENAME + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().FirstOrDefault().APP_ID + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().FirstOrDefault().FILE_NO + "," +
+                        Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().FirstOrDefault().SRC_NO)
+
+                        if (Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19) == null)
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_19_FILE_SRC,
+                            new
+                            {
+                                Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"19"
+                            }
+                           )
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.Goods[i].DOC_TYP_19_FILE_SRC,
+                            new {Value=
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().FirstOrDefault().APP_ID + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().FirstOrDefault().FILE_NO + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().FirstOrDefault().BATCH_INDEX + "," +
+                             Model.Files.Where(x => x.BATCH_INDEX == (i + 1) && x.SRC_NO == 19).ToList().FirstOrDefault().SRC_NO}
+                           )
+                        }
+
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(x => x.Goods[i].DOC_TYP_19_FILE_SRC,
+                        new
+                        {
+                            Value = Model.APP_ID + "," + "0," +(i + 1).ToString() + "," +"19"
+                        }
+                       )
+                    }
+
+                    @Html.TextBoxFor(x => x.Goods[i].DOC_TYP_19_FILE, new { @class = "form-control", type = "file", onchange = "setFileName($(this).attr('name'))", disabled = "disabled" })
+                    @Html.HiddenFor(x => x.Goods[i].DOC_TYP_19_FILE_NAME)
+
+                </div>
+            </div>*@
+        </div>
+
+        i++;
+    }
+
+}

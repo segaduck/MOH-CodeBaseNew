@@ -1,0 +1,448 @@
+﻿@model ES.Areas.BACKMIN.Models.Apply_005014ViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Preview";
+}
+
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink"><i class="fas fa-home"></i><a href="#">首頁</a> ／ <a href="#">申辦服務</a> ／ <a href="#">貨品進口專案申請</a></div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            <ul>
+                <li>填寫申報表件並上傳檔案</li>
+                <li class="active">預覽申辦表件</li>
+                <li>完成申報</li>
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h1 class="form-title title-bg-y">申辦表件預覽</h1>
+                <div class="form-set">
+                    <form class="form-horizontal" action="/action_page.php">
+                        @RenderBaseInfo()           @* 基本資料 *@
+                        <div>
+                            @RenderApplyItems()      @* 申請項目 *@
+                            @RenderApplyItems2()     @* 申請項目 *@
+                            @RenderAffidavit()      @* 一般切結書 & 萃取物(提取物)切結書 *@
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @RenderUploadFile() @* 上傳附件 *@
+        </div>
+        <!--form-->
+        <div class="form-set">
+            <div class="btn-bar text-center">
+                <a type="button" href="javascript:void(0)" class="btn btn-save" onclick="save()">確認送出</a>
+                <a type="button" href="javascript:void(0)" class="btn btn-clear" onclick="cancel()">返回修改</a>
+            </div>
+        </div>
+
+    </div>
+    <div class="clearfix"></div>
+</div>
+
+@helper RenderBaseInfo()
+{
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申辦項目</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">貨品進口專案申請</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申辦日期</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">  </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申請人Applicant</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.Apply.CHR_NAME </p>
+        </div>
+        <label class="step-label col-sm-2" for="">統一編號Unified code(個人申請案，則請填寫身分證字號)</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.Apply.IDN </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">地址Address</label>
+        <div class="col-sm-10">
+            <p class="form-control-static"> (@Model.Apply.ADDR_CODE) @(Model.Apply.ADDR_ZIP_ADDR)@(Model.Apply.ADDR) </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">電話Tel. No.</label>
+        <div class="col-sm-10">
+            <p class="form-control-static"> @Model.Apply.TEL </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">生產國別Country of origin</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.Detail.PRODUCTION_COUNTRY </p>
+        </div>
+        <label class="step-label col-sm-2" for="">賣方國家Country of seller</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.Detail.SELL_COUNTRY </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">起運國家Shipping port</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.Detail.TRANSFER_COUNTRY  @*美國USA*@</p>
+        </div>
+        <label class="step-label col-sm-2" for="">起運口岸</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.Detail.TRANSFER_PORT @* USAAAL:ALERT BAY*@</p>
+        </div>
+    </div>
+}
+
+@helper RenderApplyItems()
+{
+    <h2 class="second-title">申請項目</h2>
+    if (Model.ApplyItems != null && Model.ApplyItems.Count > 0)
+    {
+        for (int i = 0; i < Model.ApplyItems.Count; i++)
+        {
+            var item = Model.ApplyItems[i];
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">項目Item</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">@(i+1)</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">類型Type</label>
+                <div class="col-sm-4">
+                    @if (item.ITEM_TYPE == 1)
+                    {
+                        <p class="form-control-static">
+                            <span>中藥材萃取物作為食品原料者</span>
+                            @* 中藥材萃取物作為食品原料者 *@
+                        </p>
+                    }
+                    else if (item.ITEM_TYPE == 2)
+                    {
+                        <p class="form-control-static"> 其它 </p>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">貨名Commodities</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@item.COMMODITIES</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量Q'ty</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static"> @item.QTY @* 10 *@</p>
+                </div>
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量單位Unit</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static"> @item.UNIT @* 斤 *@ </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">備註1 Remarks</label>
+                <div class="col-sm-10">
+                    @*@if (item.REMARK1 == "Y")*@
+                    {
+                        @*<input type="checkbox" class="form-normal" disabled="">1<span> 申請H01免查驗(報單影本，報單號碼：</span><span>)</span><br>*@
+                        <div>
+                            1 <span> @*申請H01免查驗(報單影本，報單號碼： @item.REMARK1_ITEM1_COMMENT*@ </span><span>)</span><br>
+                        </div>
+                    }
+
+                    @*@if (item.REMARK1_ITEM2 == "1")
+                    {
+                        <span>中藥用</span>
+                    }
+
+                    @if (item.REMARK1_ITEM2 == "2")
+                    {
+                        <span>非中藥材用途:</span> @item.REMARK1_ITEM2_COMMENT
+                    }*@
+                    @*
+                        <input type="radio" class="form-normal" name="remark1" checked="" disabled="">中藥用
+                        <input type="radio" class="form-normal" name="remark1" disabled="">非中藥材用途:
+                        <input type="text" class="form-normal" readonly="">
+                    *@
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">備註2 Remarks</label>
+                <div class="col-sm-10">
+                    @*@if (item.REMARK2 == "Y")*@
+                    {
+                        <span> 2 自用原料藥：(1)藥品許可證影本(2)原料之檢驗規格、方法、檢驗成績書(載明批號、檢驗日期及認定人員之簽名)</span>
+                        @*<input type="checkbox" class="form-normal" disabled="">2<span> 自用原料藥：(1)藥品許可證影本(2)原料之檢驗規格、方法、檢驗成績書(載明批號、檢驗日期及認定人員之簽名)</span>*@
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">備註3 Remarks</label>
+                <div class="col-sm-10">
+                    @*@if (item.REMARK3_1 == "Y")
+                    {
+                        <span>3 非中藥用途貨品進口： </span>
+
+                        List<string> itemList = new List<string>();
+                        if (item.REMARK3_2 == "Y")
+                        {
+                            <div>食品: @item.REMARK3_2_COMMENT </div>
+                        }
+                        if (item.REMARK3_3 == "Y")
+                        {
+                            <div>研發: @item.REMARK3_3_COMMENT </div>
+                        }
+                        if (item.REMARK3_4 == "Y")
+                        {
+                            <div>試製: @item.REMARK3_4_COMMENT </div>
+                        }
+                        if (item.REMARK3_5 == "Y")
+                        {
+                            <div>其他: @item.REMARK3_5_COMMENT </div>
+                        }
+                    }*@
+
+                    @*<input type="checkbox" class="form-normal" disabled="">3<span>非中藥用途貨品進口： </span><br>
+                        <input type="checkbox" class="form-normal" disabled="">食品<span>:</span><br>
+                        <input type="checkbox" class="form-normal" disabled="">研發<span>:</span><br>
+                        <input type="checkbox" class="form-normal" disabled="">試製<span>:</span><br>
+                        <input type="checkbox" class="form-normal" disabled="">其他<span>:</span>*@
+                </div>
+            </div>
+        }
+    }
+}
+@helper RenderApplyItems2()
+{
+    <h2 class="second-title">申請項目</h2>
+if (Model.ApplyItems != null && Model.ApplyItems.Count > 0)
+{
+    for (int i = 0; i < Model.ApplyItems.Count; i++)
+    {
+        var item = Model.ApplyItems[i];
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">項目Item</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">@(i + 1)</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">類型Type</label>
+                <div class="col-sm-4">
+                    @if (item.ITEM_TYPE == 1)
+                    {
+                        <p class="form-control-static">
+                            <span>中藥材萃取物作為食品原料者</span>
+                            @* 中藥材萃取物作為食品原料者 *@
+                        </p>
+                    }
+                    else if (item.ITEM_TYPE == 2)
+                    {
+                        <p class="form-control-static"> 其它 </p>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">貨名Commodities</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@item.COMMODITIES</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量Q'ty</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static"> @item.QTY @* 10 *@</p>
+                </div>
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量單位Unit</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static"> @item.UNIT @* 斤 *@ </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">備註1 Remarks</label>
+                <div class="col-sm-10">
+                    @*@if (item.REMARK1 == "Y")*@
+                    {
+                    @*<input type="checkbox" class="form-normal" disabled="">1<span> 申請H01免查驗(報單影本，報單號碼：</span><span>)</span><br>*@
+                    <div>
+                        1 <span> @*申請H01免查驗(報單影本，報單號碼： @item.REMARK1_ITEM1_COMMENT*@ </span><span>)</span><br>
+                    </div>
+                    }
+
+                    @*@if (item.REMARK1_ITEM2 == "1")
+                        {
+                            <span>中藥用</span>
+                        }
+
+                        @if (item.REMARK1_ITEM2 == "2")
+                        {
+                            <span>非中藥材用途:</span> @item.REMARK1_ITEM2_COMMENT
+                        }*@
+                    @*
+                        <input type="radio" class="form-normal" name="remark1" checked="" disabled="">中藥用
+                        <input type="radio" class="form-normal" name="remark1" disabled="">非中藥材用途:
+                        <input type="text" class="form-normal" readonly="">
+                    *@
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">備註2 Remarks</label>
+                <div class="col-sm-10">
+                    @*@if (item.REMARK2 == "Y")*@
+                    {
+                    <span> 2 自用原料藥：(1)藥品許可證影本(2)原料之檢驗規格、方法、檢驗成績書(載明批號、檢驗日期及認定人員之簽名)</span>
+                    @*<input type="checkbox" class="form-normal" disabled="">2<span> 自用原料藥：(1)藥品許可證影本(2)原料之檢驗規格、方法、檢驗成績書(載明批號、檢驗日期及認定人員之簽名)</span>*@
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">備註3 Remarks</label>
+                <div class="col-sm-10">
+                    @*@if (item.REMARK3_1 == "Y")
+                        {
+                            <span>3 非中藥用途貨品進口： </span>
+
+                            List<string> itemList = new List<string>();
+                            if (item.REMARK3_2 == "Y")
+                            {
+                                <div>食品: @item.REMARK3_2_COMMENT </div>
+                            }
+                            if (item.REMARK3_3 == "Y")
+                            {
+                                <div>研發: @item.REMARK3_3_COMMENT </div>
+                            }
+                            if (item.REMARK3_4 == "Y")
+                            {
+                                <div>試製: @item.REMARK3_4_COMMENT </div>
+                            }
+                            if (item.REMARK3_5 == "Y")
+                            {
+                                <div>其他: @item.REMARK3_5_COMMENT </div>
+                            }
+                        }*@
+
+                    @*<input type="checkbox" class="form-normal" disabled="">3<span>非中藥用途貨品進口： </span><br>
+                        <input type="checkbox" class="form-normal" disabled="">食品<span>:</span><br>
+                        <input type="checkbox" class="form-normal" disabled="">研發<span>:</span><br>
+                        <input type="checkbox" class="form-normal" disabled="">試製<span>:</span><br>
+                        <input type="checkbox" class="form-normal" disabled="">其他<span>:</span>*@
+                </div>
+            </div>
+    }
+}
+}
+
+
+@helper RenderAffidavit()
+{
+    var dtl = Model.Detail;
+    <h2 class="second-title"> 一般切結書 </h2>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">出口國</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">@*@dtl.AFF1_EXPORT_COUNTRY*@</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">貨品名稱</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">@dtl.AFF1_COMMODITIES</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">貨品數量</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">@dtl.AFF1_QTY</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">報單號碼</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">@*@dtl.AFF1_SHEET_NO*@</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">報單號碼項次</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">@dtl.AFF1_NO</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">進口關</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">@*@dtl.AFF1_IMPORT_COUNTRY*@</p>
+        </div>
+    </div>
+
+    if (dtl.AFFIDAVIT2 == "Y")
+    {
+        <h2 class="second-title">萃取物(提取物)切結書</h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">出口國</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@*@dtl.AFF2_EXPORT_COUNTRY*@</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">貨品名稱</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@dtl.AFF2_COMMODITIES</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">原中藥材含量</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@*@dtl.AFF2_AMOUNT*@</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">貨品數量</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@dtl.AFF2_QTY</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">報單號碼</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@*@dtl.AFF2_SHEET_NO*@</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">報單號碼項次</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@dtl.AFF2_NO</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">進口關</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@*@dtl.AFF2_IMPORT_COUNTRY*@</p>
+            </div>
+        </div>
+    }
+}
+
+@helper RenderUploadFile()
+{
+    <div class="col-sm-12">
+        <h1 class="form-title title-bg-gray">上傳附件預覽</h1>
+        <div>
+            @Html.Partial("_FilePreview", Model)
+            @*<iframe width="100%" height="400px;" style="border:0px" src="../網站/中醫藥司-貨品進口專案申請-附件.pdf"></iframe>
+                <iframe width="100%" height="400px;" style="border:0px" src="../網站/中醫藥司-貨品進口專案申請-切結書.pdf"></iframe>
+                <iframe width="100%" height="400px;" style="border:0px" src="../網站/中醫藥司-貨品進口專案申請-專案申請切結.pdf"></iframe>*@
+        </div>
+    </div>
+}
+

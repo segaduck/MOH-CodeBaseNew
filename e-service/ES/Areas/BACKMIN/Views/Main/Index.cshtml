@@ -1,0 +1,407 @@
+﻿@using ES.DataLayers
+@using ES.Areas.Admin.Models
+@using ES.Commons
+@using System.Web
+@model MainModel
+@{
+    ViewBag.Title = "系統管理";
+    ViewBag.FunctionTitle = "系統管理";
+}
+
+<script src="~/Scripts/d3.v6.min.js"></script>
+
+<style type="text/css">
+    .pietooltip {
+        background: #eee;
+        box-shadow: 0 0 5px #999999;
+        color: #333;
+        display: none;
+        font-size: 12px;
+        font-family: sans-serif;
+        padding: 10px;
+        position:relative;
+        text-align: center;
+        width: 280px;
+        z-index: 10;
+    }
+
+    .label {
+        color: #333;
+    }
+
+    .legend {
+        font-size: 12px;
+        font-family: sans-serif;
+    }
+
+    rect {
+        stroke-width: 2;
+    }
+
+    .pie {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .data-path:hover {
+        cursor: pointer;
+    }
+
+    .data-text {
+        transition: transform 0.2s ease-in-out;
+        fill: #000;
+    }
+
+    .data-text__value {
+        font-size: 7rem;
+        transform: translateY(-0.5rem);
+        opacity: 0;
+    }
+
+    .data-text__name {
+        font-size: 13px;
+        transform: translateY(0.5rem);
+        opacity: 0;
+    }
+
+    .data-text--show {
+        transform: translateY(0);
+        animation: fadeGraphTextIn 0.5s forwards;
+    }
+
+    .data-text:hover {
+        user-select: none;
+    }
+
+    .legend-text {
+        fill: #fff;
+    }
+
+    @@keyframes fadeGraphTextIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    } 
+
+</style>
+
+<div class="col-sm-12 content">
+    <div class="main-content">   
+        歡迎使用衛生福利部線上申辦維護系統<br />
+        使用帳號：@ViewBag.Account，@ViewBag.LastLoginTime
+        <div class="col-sm-12 content">
+            <div class="row">
+                <div class="col-sm-6">
+                    <!-- 待辦事項 -->
+                    <h1 class="main-title"><i class="fas fa-list-ol"></i>待辦事項</h1>
+                    <div class="todo-list">
+                        <ul>
+                            @if (ViewBag.List != null && ViewBag.List.Count > 0)
+                            {
+                                foreach (Dictionary<string, object> item in ViewBag.List)
+                                {
+                                    if (Convert.ToInt32(item["TOTAL"]) > 0)
+                                    {
+                                        // 新收案件 OR 返回重新分文
+                                        if (Convert.ToInt32(item["ORD"]) == 1 || Convert.ToInt32(item["ORD"]) == 52)
+                                        {
+                                            <li><a href="@Url.Action("CaseSearch", "Assign",new {service_id= @item["SRV_ID"],flow_cd=item["FLOW_CD"]})">@item["TOTAL"]</a> 筆 @item["NAME"]-( @item["FLOW_CD_NAME"] )</li>
+                                        }
+                                        else
+                                        {
+                                            if (@item["FLOW_CD_NAME"].ToString().Trim() == "逾期")
+                                            {
+                                                <li><a href="@Url.Action("CaseSearch", "Case",new{service_id=@item["SRV_ID"],is_home_page="T",flow_cd="-1"})">@item["TOTAL"]</a> 筆 @item["NAME"]-( @item["FLOW_CD_NAME"] )</li>
+                                            }
+                                            else
+                                            {
+                                                <li><a href="@Url.Action("CaseSearch", "Case",new{service_id=@item["SRV_ID"],is_home_page="Y",flow_cd=item["FLOW_CD"]})">@item["TOTAL"]</a> 筆 @item["NAME"]-( @item["FLOW_CD_NAME"] )</li>                                                
+                                            }
+
+                                        }
+                                    } 
+                                }
+                            }
+                            else
+                            {
+                                <li>目前無待辦事項</li>
+                            }
+
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <!-- 最近使用功能 -->
+                    <h1 class="main-title"><i class="fas fa-history"></i>最近使用功能</h1>
+                    <div class="history-list">
+                        <ul>
+                            @foreach (var item in Model.VisitRecords)
+                            {
+                                <li><a href= '@Url.Action(@item.ACTION_NAME, @item.CONTROL_NAME)' > @Html.Raw(@item.APP_NAME) </a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!--最新公告 -->
+            <h1 class="main-title"><i class="fas fa-bullhorn"></i>最新公告</h1>
+            <div class="news-list">
+                @if (Model != null && Model.LatestMessages != null)
+                {
+                    foreach (var item in Model.LatestMessages)
+                    {
+                        <div class="news-set">
+                            <div class="news-data">@HelperUtil.DateTimeToString(item.TIME_S)</div>
+                            <div class="news-title"><a href='@Url.Action("Show","MessageBack",new { @id=item.MSG_ID})'>@item.TITLE</a></div>
+                        </div>
+
+                    }
+                }
+
+            </div>
+
+            <!-- 儀表板 -->
+            <h1 class="main-title"><i class="fas fa-chart-bar"></i>儀表板</h1>
+            <div class="chart-area">
+                <div class="chart-title"><a href='@Url.Action("CaseSearch","Main")'>年度線上申辦情形</a></div>
+                <div id="annualChart"></div>
+            </div>
+            <div class="chart-area">
+                <div class="chart-title">線上申辦類型分布</div>
+                <div id="pieChart"><div id="content"></div>
+            </div>
+
+            @Html.HiddenFor(x => x.barChartData)
+            @Html.HiddenFor(x => x.pieChartData)
+        </div>
+    </div>
+</div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        barChart();
+        pieChart();
+    });
+
+
+    function barChart() {
+        var height = 400;
+        var width = 400;
+
+        var margin = {
+            top: 30,
+            right: 0,
+            bottom: 30,
+            left: 40
+        };
+
+        var data = JSON.parse($('#barChartData').val());
+
+        var x = d3.scaleBand()
+            .domain(d3.range(data.length))
+            .range([margin.left, width - margin.right])
+            .padding(0.1);
+
+        var y = d3.scaleLinear()
+            .domain([0, d3.max(data, d => d.value)]).nice()
+            .range([height - margin.bottom, margin.top]);
+
+        var xAxis = g => g
+            .attr("transform", `translate(0,${height - margin.bottom})`)
+            .call(d3.axisBottom(x).tickFormat(i => data[i].name).tickSizeOuter(0));
+
+        var yAxis = g => g
+            .attr("transform", `translate(${margin.left},0)`)
+            .call(d3.axisLeft(y).ticks(null, data.format))
+            .call(g => g.select(".domain").remove())
+            .call(g => g.append("text")
+                .attr("x", -margin.left)
+                .attr("y", 10)
+                .attr("fill", "currentColor")
+                .attr("text-anchor", "start")
+                .text(data.y)); 
+
+        var key = function (d) {
+            return d.name;
+        };
+
+        d3.select("#annualChart").selectAll('svg').remove();
+        var svg = d3.select("#annualChart").append("svg")
+            .attr("viewBox", [0, 0, width, height])
+            .style("font", "10px sans-serif");
+
+        svg.append("g")
+            .attr("fill", '#a1d99b')
+            .selectAll("rect")
+            .data(data)
+            .join("rect")
+            .attr("x", (d, i) => x(i))
+            .attr("y", d => y(d.value))
+            .attr("height", d => y(0) - y(d.value))
+            .attr("width", x.bandwidth());
+
+        svg.selectAll("text")
+            .data(data, key)
+            .enter()
+            .append("text")
+            .text(function (d) {
+                if (d.value > 0) {
+                    return d.value;
+                }
+            })
+            .attr("text-anchor", "middle")
+            .attr("x", function (d, i) {
+                return x(i) + x.bandwidth() / 2;
+            })
+            .attr("y", function (d) {
+                return y(d.value) + 14;
+            })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "10px")
+            .attr("fill", "black");
+
+        svg.append("g").call(xAxis);
+        svg.append("g").call(yAxis);
+
+        return svg.node();
+    }
+
+    function pieChart() {
+        var data = JSON.parse($('#pieChartData').val());
+
+        var width = 358;
+        var height = 358;
+        var radius = Math.min(width, height) / 2;
+        var legendRectSize = 16;
+        var legendSpacing = 8;
+
+        var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+        var svg = d3.select('#pieChart')
+            .append('svg')
+            .attr('width', width * 2)
+            .attr('height', height * 2)
+            .append('g')
+            .attr('transform', 'translate(' + (width / 1.9) +
+                ',' + (height / 1.1) + ')');
+
+        var arc = d3.arc()
+            .innerRadius(0)
+            .outerRadius(radius);
+
+        var pie = d3.pie()
+            .value(function (d) {
+                return d.count;
+            })
+            .sort(null);
+
+        var tooltip = d3.select('#content')
+            .attr('class', 'pietooltip');
+
+        tooltip.append('div')
+            .attr('class', 'label');
+
+        tooltip.append('div')
+            .attr('class', 'count');
+
+        tooltip.append('div')
+            .attr('class', 'percent');
+
+        var path = svg.selectAll('path')
+            .data(pie(data))
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', function (d) {
+                return color(d.data.label);
+            })
+            .each(function (d) { this._current = d; });
+
+        path.on('mouseover', function (d) {
+            var total = d3.sum(data.map(function (d) {
+                return (d.enabled) ? d.count : 0;
+            }));
+
+            var percent = Math.round(1000 * d.currentTarget.__data__.data.count / total) / 10;
+            tooltip.select('.label').html(d.currentTarget.__data__.data.label);
+            tooltip.select('.count').html(d.currentTarget.__data__.data.count + ' 件');
+            tooltip.select('.percent').html(percent + '%');
+            tooltip.style('display', 'block');
+        });
+
+        path.on('mouseout', function () {
+            tooltip.style('display', 'none');
+        });
+
+        var legend = svg.selectAll('.legend')
+            .data(color.domain())
+            .enter()
+            .append('g')
+            .attr('class', 'legend')
+            .attr('transform', function (d, i) {
+                var height = legendRectSize + legendSpacing;
+                var offset = height * color.domain().length / 2;
+                var horz = 12 * legendRectSize;
+                var vert = i * height - offset+16;
+                return 'translate(' + horz + ',' + vert + ')';
+            });
+
+        legend.append('rect')
+            .attr('width', legendRectSize)
+            .attr('height', legendRectSize)
+            .style('fill', color)
+            .style('stroke', color)
+            .on('click', function (label) {
+                var rect = d3.select(this);
+                var enabled = true;
+                var totalEnabled = d3.sum(data.map(function (d) {
+                    return (d.enabled) ? 1 : 0;
+                }));
+
+                if (rect.attr('class') === 'disabled') {
+                    rect.attr('class', '');
+                } else {
+                    if (totalEnabled < 2) return;
+                    rect.attr('class', 'disabled');
+                    enabled = false;
+                }
+
+                pie.value(function (d) {
+                    if (d.label === label) d.enabled = enabled;
+                    return (d.enabled) ? d.count : 0;
+                });
+
+                path = path.data(pie(data));
+
+                path.transition()
+                    .duration(750)
+                    .attrTween('d', function (d) {
+                        var interpolate = d3.interpolate(this._current, d);
+                        this._current = interpolate(0);
+                        return function (t) {
+                            return arc(interpolate(t));
+                        };
+                    });
+            });
+
+        legend.append('text')
+            .attr('x', legendRectSize + legendSpacing)
+            .attr('y', legendRectSize - legendSpacing+4)
+            .text(function (d) {
+                return d;
+            });
+
+        return svg.node();
+    }
+
+</script>

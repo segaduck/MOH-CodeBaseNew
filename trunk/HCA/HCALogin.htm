@@ -1,0 +1,51 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>HCA醫事憑證 - 登入驗證</title>
+    <script type="text/javascript" charset="utf-8" src="HCAAPISVIAdapter.js"></script>
+    <script type="text/javascript" charset="utf-8" src="CheckAndLoad.js"></script>
+    <script type="text/javascript" charset="utf-8" src="AllComponentErrCode.js"></script>
+    <script type="text/javascript" charset="utf-8" src="HCALogin.js"></script>
+    <script type="text/javascript">
+        function init() {
+            mainForm.PIN.value = "";
+            CheckBrowserAndLoad("HCAAPI");
+        }
+
+        function doVerifyHCA(form) {
+            VerifyHCA(form.PIN.value,
+                function (data, cert) {  // success
+                    console.log(data);
+                    console.log(cert);
+
+                    // PIN 碼驗證成功
+                    // 取出所需的憑證資料, 串接到 hidden 欄位, 再 submit 到後端
+                    // 要再額外檢查: 憑證效期, 卡片持有者IDNO, 會員帳號綁定的憑證序號是否相同,...
+
+                    alert("PIN碼驗證成功, 請檢視 console log 以得知取得的欄位");
+                },
+                function (msg) {  // fail
+                    alert(msg);
+                });
+        }
+    </script>
+</head>
+<body onload="init();">
+
+    <form name="mainForm" method="POST" action="">
+        <h2>HCA醫事憑證登入</h2>
+        <label for="IDNO">身份證號：</label><input id="IDNO" name="IDNO" value="" autocomplete="off" /> <br />
+        <label for="PIN">憑證PIN碼：</label><input id="PIN" name="PIN" type="password" value="" autocomplete="off" /> <br /><br />
+        <input type="button" value="登入" onclick="doVerifyHCA(this.form)" />
+
+        <!--驗證成功後, 儲存憑證序號-->
+        <input type="hidden" name="SerialNumber" value="" />
+        <!--驗證成功後, 儲存憑證資料-->
+        <input type="hidden" name="Cert1" value="" />
+
+
+    </form>
+
+</body>
+
+</html>

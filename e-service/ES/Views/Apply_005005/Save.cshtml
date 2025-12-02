@@ -1,0 +1,55 @@
+﻿@using System.Web.Razor.Parser
+@using ES.Models
+@model ES.Models.ViewModels.Apply_005005FormModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+}
+
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink"><i class="fas fa-home"></i><a href="#">首頁</a> ／ <a href="#">申辦服務</a> ／ <a href="#">中藥GMP廠證明文件(英文)</a></div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            <ul>
+                <li>填寫申報表件並上傳檔案</li>
+                <li>預覽申辦表件</li>
+                <li>繳費</li>
+                <li class="active">完成申報</li>
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h1 class="form-title title-bg-y">完成申報</h1>
+            </div>
+        </div>
+        <!--form-->
+        <div class="form-set">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    @if (string.IsNullOrEmpty(Model.DOCYN))
+                    {
+                        <div class="col-sm-12" style="margin-top: 10px">
+                            敬啟者：<br/>
+                            貴公司申請中藥GMP廠證明文件(英文)(案號：@Model.APP_ID)一案，「人民申請案線上申辦服務系統」已收件，尚待貴公司繳納規費，請提供申請者聯絡資訊、申請案類別、案件編號及規費金額等資料，連同欲繳納之匯票或現金，寄到「115204臺北市南港區忠孝東路六段488號衛生福利部中醫藥司收」，敬請配合。
+                            <br/><br/>
+                            <div style="float: right">衛生福利部 中醫藥司</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-sm-12" style="margin-top: 10px">
+                            敬啟者：<br />
+                            貴公司已完成資料補件，將盡速辦理您的申辦案件，謝謝。
+                            <br /><br />
+                            <div style="float: right">衛生福利部 中醫藥司</div>
+                        </div>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</div>

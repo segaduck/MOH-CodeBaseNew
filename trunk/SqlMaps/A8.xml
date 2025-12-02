@@ -1,0 +1,358 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="A8"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <resultMaps>
+  </resultMaps>
+
+  <cacheModel id="WDASE-cache" implementation="MEMORY">
+    <flushInterval hours="1" />
+    <property name="Type" value="WEAK" />
+  </cacheModel>
+
+  <statements>
+
+    <!-- A8/C101M 查詢使用歷程 -->
+    <select id="queryC101MGrid" resultClass="EECOnline.Areas.A8.Models.C101MGridModel" parameterClass="EECOnline.Areas.A8.Models.C101MFormModel" cacheModel="WDASE-cache">
+      <![CDATA[
+       SELECT control_name,
+              action_name,
+              funcm_name,
+              funcm_link,
+              visit_record.userno,
+              status,
+              use_type,
+              urlwhere,
+              note,
+              visit_record.modtime,
+              amurole.modusername AS usernotext
+       FROM   visit_record
+              LEFT JOIN amurole
+                     ON amurole.userno = visit_record.userno
+       WHERE  1 = 1
+              AND visit_record.status = 1 
+              AND visit_record.modtime >= DATEADD( day , -3 , getdate() )
+       ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="apy_time_st">
+            <![CDATA[
+	            AND VISIT_RECORD.modtime >= #apy_time_st#
+              ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="apy_time_ed">
+            <![CDATA[
+                AND VISIT_RECORD.modtime <= #apy_time_ed#
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="username">
+            <![CDATA[
+                AND VISIT_RECORD.userno like '%' + #username# + '%'
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="usernameText">
+            <![CDATA[
+                AND AMUROLE.modusername like '%' + #usernameText# + '%'
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="use_type">
+            <![CDATA[
+				AND VISIT_RECORD.use_type = #use_type#
+				]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="urlwhere">
+            <![CDATA[
+				AND VISIT_RECORD.urlwhere = #urlwhere#
+				]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[
+      ORDER BY VISIT_RECORD.modtime desc
+      ]]>
+    </select>
+
+
+    <!-- A8/C102M 查詢異常偵錯 -->
+    <select id="queryC102MGrid" resultClass="EECOnline.Areas.A8.Models.C102MGridModel" parameterClass="EECOnline.Areas.A8.Models.C102MFormModel" cacheModel="WDASE-cache">
+      <![CDATA[
+      select control_name, action_name, funcm_name, funcm_link, VISIT_RECORD.userno, status, use_type, urlwhere, note,
+             VISIT_RECORD.modtime, AMUROLE.modusername as usernotext
+      from   VISIT_RECORD
+      left join AMUROLE on AMUROLE.userno = VISIT_RECORD.userno
+      where  1 = 1
+      and VISIT_RECORD.status = 0
+      and visit_record.modtime >= DATEADD( day , -3 , getdate() )
+       ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="apy_time_st">
+            <![CDATA[
+	              AND VISIT_RECORD.modtime >= #apy_time_st#
+              ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="apy_time_ed">
+            <![CDATA[
+                AND VISIT_RECORD.modtime <= #apy_time_ed#
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="username">
+            <![CDATA[
+                AND VISIT_RECORD.userno like '%' + #username# + '%'
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="usernameText">
+            <![CDATA[
+                AND AMUROLE.modusername like '%' + #usernameText# + '%'
+            ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="use_type">
+            <![CDATA[
+			        AND VISIT_RECORD.use_type = #use_type#
+			    ]]>
+          </isNotEmpty>
+          <isNotEmpty prepend="" property="urlwhere">
+            <![CDATA[
+			        AND VISIT_RECORD.urlwhere = #urlwhere#
+			    ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+
+      <![CDATA[
+      ORDER BY VISIT_RECORD.modtime desc
+      ]]>
+    </select>
+
+    <!-- A8/C103M 查詢信件 -->
+    <select id="queryC103MGrid" resultClass="EECOnline.Areas.A8.Models.C103MGridModel" parameterClass="EECOnline.Areas.A8.Models.C103MFormModel" cacheModel="WDASE-cache">
+      <![CDATA[
+      IF OBJECT_ID('TEMPDB..##RESULT') IS NOT NULL
+	      BEGIN
+		      DROP TABLE ##RESULT
+	      END
+
+      CREATE TABLE ##RESULT
+      (
+        status VARCHAR(MAX),
+        send_time VARCHAR(MAX),
+        moduser VARCHAR(MAX),
+        modusername VARCHAR(MAX),
+        mail VARCHAR(MAX),
+        mail_type VARCHAR(MAX),
+        subject VARCHAR(MAX),
+        body VARCHAR(MAX),
+      )
+
+      DECLARE @status VARCHAR(MAX) 
+      DECLARE @send_time VARCHAR(MAX)
+      DECLARE @moduser VARCHAR(MAX)
+      DECLARE @modusername VARCHAR(MAX)
+      DECLARE @mail VARCHAR(MAX)
+      DECLARE @mail_type VARCHAR(MAX)
+      DECLARE @subject VARCHAR(MAX)
+      DECLARE @body VARCHAR(MAX)
+      DECLARE @eservice_id VARCHAR(MAX)
+      
+      /* 查詢條件 */
+      DECLARE @WHERE_apy_time_st VARCHAR(MAX) = #apy_time_st#
+      DECLARE @WHERE_apy_time_ed VARCHAR(MAX) =  #apy_time_ed#
+      DECLARE @WHERE_usedMod VARCHAR(MAX) = #usedMod#
+      DECLARE @WHERE_usedModname VARCHAR(MAX) = #usedModname#
+      DECLARE @WHERE_usedfunc VARCHAR(MAX) = #usedfunc#
+      DECLARE @WHERE_usedModmail VARCHAR(MAX) = #usedModmail#
+      DECLARE @WHERE_mail_status VARCHAR(MAX) = #mail_status#
+      DECLARE @WHERE_UNIT_CD VARCHAR(MAX) = #unit_cd#
+      
+      DECLARE @WHERE VARCHAR(MAX) = ''
+      DECLARE @SQL VARCHAR(MAX) = ''
+      DECLARE @subject_where VARCHAR(MAX) = ''
+
+      /* WHERE */
+      SET @WHERE = ' where 1 = 1'
+        IF @WHERE_apy_time_st <> ''
+	         BEGIN
+	   	       SET @WHERE = @WHERE + ' and send_time >= ''' + @WHERE_apy_time_st + ''''
+	         END
+　      IF @WHERE_apy_time_ed <> ''
+	         BEGIN
+	   	       SET @WHERE = @WHERE + ' and send_time <= ''' + @WHERE_apy_time_ed + ''''
+	         END
+        IF @WHERE_usedMod <> ''
+	         BEGIN
+	   	       SET @WHERE = @WHERE + ' and moduser like ''%' + @WHERE_usedMod + '%'''
+	         END
+        IF @WHERE_usedModname <> ''
+	         BEGIN
+	   	       SET @WHERE = @WHERE + ' and modusername like ''%' + @WHERE_usedModname + '%'''
+	         END
+        IF @WHERE_usedfunc <> ''
+	         BEGIN
+	   	       SET @WHERE = @WHERE + ' and mail_type like ''%' + @WHERE_usedfunc + '%'''
+	         END
+        IF @WHERE_usedModmail <> ''
+	         BEGIN
+	   	       SET @WHERE = @WHERE + ' and mail like ''%' + @WHERE_usedModmail + '%'''
+	         END
+　      IF @WHERE_mail_status <> ''
+	         BEGIN
+	   	       SET @WHERE = @WHERE + ' and status  = ''' + @WHERE_mail_status + ''''
+	         END
+           
+        /*三日內資料*/
+         IF @WHERE_apy_time_st IS NULL and @WHERE_apy_time_ed IS NULL
+             SET @WHERE = @WHERE + ' and CONVERT(varchar,(CONVERT(int,SUBSTRING(send_time, 1,3))+ 1911)) +  CONVERT(varchar,substring(send_time,4,4))>= CONVERT(varchar, DATEADD(day, -3, getdate()), 112) '
+        
+        /* 判斷權限 */
+        IF @WHERE_UNIT_CD <> ''
+      		BEGIN
+      			SET @SQL = ' SELECT case status WHEN 1 THEN ''成功'' ELSE ''失敗''　END AS status,'
+      			SET @SQL = @SQL + ' send_time, moduser, modusername, mail, mail_type, subject, body, eservice_id'
+      			SET @SQL = @SQL + ' FROM amemaillog_email' 
+      			SET @SQL = @SQL + @WHERE
+      
+      			SET @SQL = 'DECLARE CUR CURSOR FOR ' + @SQL
+      			EXEC(@SQL) 
+      			
+      			OPEN CUR
+      
+      			FETCH NEXT FROM CUR INTO @status, @send_time, @moduser, @modusername, @mail, @mail_type, @subject, @body, @eservice_id
+      			WHILE @@FETCH_STATUS = 0 
+      
+      			BEGIN	  
+					    IF @WHERE_UNIT_CD in ('00','01')
+					    	BEGIN
+      		    		INSERT INTO ##RESULT
+      		    		VALUES
+      		    		 (
+      		    		   @status, @send_time, @moduser, @modusername, @mail, @mail_type, @subject, @body
+      		    		 )
+					    	END
+					    ELSE  
+					    	BEGIN
+					    		SET @subject_where = ''
+      		    				/* 忘記密碼 */
+      		    				IF @mail_type = '1'
+      		    					BEGIN
+      		    						/* 縣市 */
+      		    						IF (select unit_city_s from unit where unit_cd = @WHERE_UNIT_CD) is null
+      		    							BEGIN
+					    						    IF (select unit_city from unit where unit_cd = @WHERE_UNIT_CD ) = (select unit_city from unit where unit_cd = (select unit_cd from AMDBURM where userno = @moduser))
+					    						    	BEGIN
+					    						    		SET @subject_where = @subject
+					    						    	END
+                            END 
+      		    						/* 轄區 */
+      		    						ELSE
+      		    							BEGIN
+					    						    IF (select unit_city_s from unit where unit_cd = @WHERE_UNIT_CD ) = (select unit_city_s from unit where unit_cd = (select unit_cd from AMDBURM where userno = @moduser))
+					    						    	BEGIN
+					    						    		SET @subject_where = @subject
+					    						    	END
+      		    						    IF @subject_where <> '' and @status <> ''
+      		    						    	BEGIN
+      		    						    		INSERT INTO ##RESULT
+      		    						    		VALUES
+      		    						    		 (
+      		    						    		   @status, @send_time, @moduser, @modusername, @mail, @mail_type, @subject, @body
+      		    						    		 )
+      		    						    	END
+                            END 
+      		    					END
+      		    				/* 案件 */
+      		    				ELSE IF @mail_type = '2' or @mail_type = '3'
+      		    					BEGIN
+      		    						/* 縣市 */
+      		    						IF (select unit_city_s from unit where unit_cd = @WHERE_UNIT_CD) is null
+      		    							BEGIN
+					    						    IF @eservice_id like '%001008%' and @subject like '%歇業%'
+      		    									BEGIN
+      		    										SELECT @status = case status WHEN 1 THEN '成功' ELSE '失敗' END ,
+      		    											   @send_time = em.send_time, @moduser = em.moduser, @modusername = em.modusername,
+      		    											   @mail = em.mail, @mail_type = em.mail_type, @subject_where = em.subject, @body = em.body
+      		    										FROM amemaillog_email em
+      		    										LEFT JOIN APPLY_001008_BE a08 on a08.apy_not_deta_id = em.eservice_id
+      		    										WHERE 1 = 1
+      		    										AND em.modtime  = @send_time
+      		    										AND a08.apy_city = (select unit_city from unit where unit_cd = @WHERE_UNIT_CD )
+      		    									END
+      		    								ELSE IF @eservice_id like '%001008%' and @subject like '%執業%'
+      		    									BEGIN
+      		    										SELECT @status = case status WHEN 1 THEN '成功' ELSE '失敗' END ,
+      		    											   @send_time = em.send_time, @moduser = em.moduser, @modusername = em.modusername,
+      		    											   @mail = em.mail, @mail_type = em.mail_type, @subject_where = em.subject, @body = em.body
+      		    										FROM amemaillog_email em
+      		    										LEFT JOIN APPLY_001008_AF a08 on a08.apy_not_deta_id = em.eservice_id
+      		    										WHERE 1 = 1
+      		    										AND em.modtime  = @send_time
+      		    										AND a08.apy_city = (select unit_city from unit where unit_cd = @WHERE_UNIT_CD )
+      		    									END
+      		    								ELSE IF (select apy_city from APPLY where apy_id = @eservice_id) = (select unit_city from unit where unit_cd = @WHERE_UNIT_CD )
+      		    									BEGIN
+					    								    SET @subject_where = @subject
+      		    									END
+      		    								IF @subject_where <> '' and @status <> ''
+      		    										BEGIN
+      		    											INSERT INTO ##RESULT
+      		    											VALUES
+      		    											 (
+      		    											   @status, @send_time, @moduser, @modusername, @mail, @mail_type, @subject, @body
+      		    											 )
+      		    										END
+      		    							END
+      		    						/* 轄區 */
+      		    						ELSE 
+      		    							BEGIN
+      		    								IF @eservice_id like '%001008%' and @subject like '%(歇業)%'
+      		    									BEGIN
+      		    										SELECT @status = case status WHEN 1 THEN '成功' ELSE '失敗' END ,
+      		    											   @send_time = em.send_time, @moduser = em.moduser, @modusername = em.modusername,
+      		    											   @mail = em.mail, @mail_type = em.mail_type, @subject_where = em.subject, @body = em.body
+      		    										FROM amemaillog_email em
+      		    										LEFT JOIN APPLY_001008_BE a08 on a08.apy_not_deta_id = em.eservice_id
+      		    										WHERE 1 = 1
+      		    										AND em.modtime  = @send_time
+      		    										AND a08.apy_city_s = (select unit_city_s from unit where unit_cd = @WHERE_UNIT_CD )
+      		    									END
+      		    								ELSE IF @eservice_id like '%001008%' and @subject like '%(執業)%'
+      		    									BEGIN
+      		    										SELECT @status = case status WHEN 1 THEN '成功' ELSE '失敗' END ,
+      		    											   @send_time = em.send_time, @moduser = em.moduser, @modusername = em.modusername,
+      		    											   @mail = em.mail, @mail_type = em.mail_type, @subject_where = em.subject, @body = em.body
+      		    										FROM amemaillog_email em
+      		    										LEFT JOIN APPLY_001008_AF a08 on a08.apy_not_deta_id = em.eservice_id
+      		    										WHERE 1 = 1
+      		    										AND em.modtime  = @send_time
+      		    										AND a08.apy_city_s = (select unit_city_s from unit where unit_cd = @WHERE_UNIT_CD )
+      		    									END
+      		    								ELSE IF (select apy_city_s from APPLY where apy_id = @eservice_id) = (select unit_city_s from unit where unit_cd = @WHERE_UNIT_CD )
+      		    									BEGIN
+					    								    SET @subject_where = @subject
+      		    									END
+      		    								IF @subject_where <> '' and @status <> ''
+      		    									BEGIN
+      		    										INSERT INTO ##RESULT
+      		    										VALUES
+      		    										 (
+      		    										   @status, @send_time, @moduser, @modusername, @mail, @mail_type, @subject, @body
+      		    										 )
+      		    									END
+      		    							END
+      		    					END
+      		    	END
+      		    FETCH NEXT FROM CUR INTO  @status, @send_time, @moduser, @modusername, @mail, @mail_type, @subject, @body, @eservice_id
+      		  END
+      		END
+      CLOSE CUR
+      DEALLOCATE CUR
+      
+      SELECT * 
+      FROM   ##RESULT
+      order by ##RESULT.send_time　desc
+          
+      DROP TABLE ##RESULT
+      ]]>
+    </select>
+  </statements>
+</sqlMap>

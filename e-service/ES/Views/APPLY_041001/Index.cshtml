@@ -1,0 +1,42 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_041001FormModel
+
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+}
+@using (Html.BeginForm("Apply", "Apply_041001", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">全民健康保險爭議案件(權益案件及特約管理案件)線上申辦</a></div>
+            <div class="clearfix"></div>
+            <div class="step_map">
+                <ul>
+                    <li id="form_tab" class="active">填寫申辦表件並上傳檔案</li>
+                    <li id="form_tab1">預覽申辦表件</li>
+                    <li>完成申辦</li>
+                </ul>
+            </div>
+            <div class="tab-content" id="myTabContent">
+                <!--form-->
+                <div id="form" class="tab-pane fade active in">
+                    @Html.Partial("Apply")
+                </div>
+                <!--form1-->
+                <div id="form1" class="tab-pane fade">
+                    @Html.Partial("PreView")
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+
+    </div>
+}
+<script>
+       
+</script>

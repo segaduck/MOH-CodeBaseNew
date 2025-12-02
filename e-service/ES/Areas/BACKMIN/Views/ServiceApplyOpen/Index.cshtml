@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "設定開放時間";
+    ViewBag.FunctionTitle = "設定開放時間";
+}
+
+<div class="bread">
+    <i class="fas fa-home"></i><a href="#">首頁</a> / <a href="#">@ViewBag.FunctionTitle</a>
+</div>
+<h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+<div id="detail2">
+    <h2 class="second-title">設定開放時間</h2>
+    <div class="form-blue form-horizontal">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+            <thead>
+                <tr>
+                    <th>功能</th>
+                    <th>申辦項目名稱</th>
+                    <th>開放申請起日</th>
+                    <th>開放申請迄日</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Dictionary<string, object> item in ViewBag.List)
+                {
+                    <tr>
+                        <td>
+                            <a href="@Url.Action("Edit", "ServiceApplyOpen")"><img src="@Url.Action("Index", "Home", new { Area = "" })Images/icon/pencil-icone-8243-16.png" alt="設定" title="設定" border="0" /></a>
+                        </td>
+                        <td>@item["SRV_NAME"]</td>
+                        <td>@item["APP_SDATE"]</td>
+                        <td>@item["APP_EDATE"]</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

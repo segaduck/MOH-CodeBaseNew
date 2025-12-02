@@ -1,0 +1,199 @@
+﻿@using ES.Models;
+@model LoginViewModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "加入會員";
+    SessionModel sm = SessionModel.Get();
+    ViewBag.ReadMe1 = @"	【 衛生福利部網路會員服務規章 】
+　　親愛的網友，歡迎您使用衛生福利部入口網站各項服務並申請加入網路會員的行列，為保障您的使用權益，請於註冊成為「網路會員」之前，詳細閱覽以下規章內容。一旦您接受並註冊成為網路會員，即表示同意使用本網站提供之服務，並同意以下所有規章內容。
+一、網路會員公約
+ 1.承諾遵守中華民國相關法規及一切國際網際網路規定與慣例。
+ 2.不公布或傳送任何誹謗、侮辱、具威脅性、攻擊性、不雅、猥褻、不實、違反公共秩序或善良風俗或其他不法之文字、圖片或任何形式的檔案。
+ 3.不公布或傳送侵害他人名譽、隱私權、營業秘密、著作權、專利權、智慧財產權之訊息。
+ 4.不公布或傳送任何教唆或引人犯罪之訊息。
+ 5.不公布或傳送涉及國家安全的資料。
+ 6.不傳送或散佈任何形式之電腦病毒檔案。
+ 7.不在網站從事廣告或販賣商品行為，不使用本站電子郵件服務傳送連鎖信函、垃圾郵件或廣告信函。
+ 8.不從事干擾或中斷本站服務或連接至本站服務伺服器或網路的行為。
+ 9.不冒用他人名義偽造身份或電子郵件地址，也不做意圖導引他人對原始發信人產生錯誤認定之行為。
+10.不從事任何未經授權的商業行為或變相販賣本服務。
+11.本網站有正當理由認為不適當之行為。
+以上如有違反時，本網站有權視情況取消（或暫停）您的使用權並採用若干必要之措施。
+二、網路會員註冊義務及帳號密碼安全性
+ 1.維持並更新您個人資料，確保其正確、最新及完整。
+ 2.若您提供任何錯誤或不實的資料，本網站有權暫停或終止您的帳號，並拒絕您使用本服務之全部或一部份。
+ 3.維持帳號及密碼之機密安全，是本網站與您共同的責任。
+ 4.您的帳號及密碼遭到盜用或有其他任何安全問題發生時，您將立即通知本網站，且每次連線完畢，均會結束帳號使用以保護個人帳號不會遭到盜用或濫用。
+
+三、隱私權保護
+ 1.關於您的網路會員註冊及其他特定資料，將依照本網站規章受到保護與規範。
+ 2.當您註冊成為網路會員時，根據網站提供服務性質不同，我們會請您提供個人資訊，包括：姓名、暱稱、住址、電話、電子信箱及它相關必要資料。
+ 3.當您在本網站註冊成為網路會員後，所輸入的資料，僅供本網站依服務或活動設計參考使用。凡未經您主動註冊所產生的資料，例如使用者機器的 IP 位址、使用時間、使用的瀏覽器、瀏覽及點選紀錄等資料，僅供內部做為網站流量和整體網路使用行為分析，主要運用於評估及提昇本網站之服務品質。
+ 4.您可以選擇修改瀏覽器對 Cookies 的接受程度，如果選擇拒絕所有的 cookies，可能無法使用部份個人化服務，或是參與部份的活動。本網站會基於提供更好、更個人化的服務，以及方便您參與個人化的互動活動原則下，在您瀏覽器中寫入並讀取 Cookies。
+ 5.本網站有義務保護其網路會員隱私及個人資料，非經您本人同意不會自行修改、刪除或提供任何（或部份）網路會員個人資料及檔案。除非經過您事先同意或符合以下情況，本網站始得審慎為之。
+ 　(1) 中華民國司法檢調單位透過合法程序進行調閱。
+ 　(2) 違反網路會員規章且已造成脅迫性。
+ 　(3) 基於主動衍伸政府網站服務效益之考量。
+ 　(4) 保護其他網路會員之合法使用權益。
+ 　(5) 為保護本網站相關經營單位之權益。
+
+四、電子郵件服務
+ 1.本網站不對電子郵件的刪除或儲存失敗負責。
+ 2.當您註冊時若勾選「願意接受本站相關的訊息」，郵件系統會依照您的個人喜好需求以及網路服務內容變動情形，不定時向您的電子信箱發送服務訊息，您可以隨時上網終止本項服務。
+ 3.本項僅提供您針對已申請使用且開放SMTP/POP3郵件收發服務之電子信箱郵件主機，進行多郵件主機的網站web介面信件收發服務，不提供電子信箱申請服務。
+
+五、服務保證與責任歸屬
+ 1.因為設備保養、施工或突發性不可抗力因素發生時，本網站有權停止或中斷提供服務。
+ 2.對於網路會員使用各項服務、或無法使用各項服務所致生之任何直接、間接、衍生、或特別損害，不負任何賠償責任。
+ 3.本網站將盡可能提供最符合使用者期待之服務，並持續接受意見回饋及改進，但無法擔保服務一定能滿足所有使用者的要求
+ 4.本網站會盡最大努力維持服務的不中斷、即時性及正確性，並持續接受意見回饋及改進，但無法擔保服務完全不會中斷以及維持百分之百的即時性及正確性。
+
+六、準據與管轄法院
+ 1.本規章以中華民國法律（不含涉外民事法律適用法或其他類似法規）為準據法。
+ 2.就本規章涉及的一切爭訟，同意以台灣地方法院為第一審管轄法院。
+ 3.本規章若任何一部無效，不影響其他部份之效力。
+ 4.網路會員所發生的所有侵權行為，其法律責任，將自負民事與刑事責任，必要時得報請相關單位依法處理。
+
+七、網路會員服務規章之修改
+    本網站保留隨時修改本規章之權利，並將於修改規章時，於衛生福利部線上申辦網站會員註冊首頁公告修改之內容，不另行通知各網路會員。如果您不同意規章內之修改內容，請取消網路會員相關服務之申請，否則即視為同意並接受本規章之增訂或修改內容之作法。";
+}
+<script>
+    $('#lihead_Login').addClass("navMark-orange");
+</script>
+@using (Html.BeginForm("Index", "Login", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", @id = "main_form" }))
+{
+    @Html.HiddenFor(m => m.Hide_PinVerify, new { id = "Hide_PinVerify" })
+    @Html.HiddenFor(m => m.Hide_enccert, new { id = "Hide_enccert" })
+    @Html.HiddenFor(m => m.Hide_cadata, new { id = "Hide_cadata" })
+    @Html.HiddenFor(m => m.Hide_sign, new { id = "Hide_sign" })
+    @Html.HiddenFor(m => m.Hide_loginType, new { id = "Hid_logType" })
+    @Html.HiddenFor(m => m.lock_RPCTYPE, new { id = "lock_RPCTYPE" })
+    @Html.HiddenFor(m => m.Hid_RPCTYPE, new { id = "Hid_RPCTYPE" })
+
+    <div class="container-fluid">
+        <!--bread -->
+        <div class="col-sm-12">
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> > <a href="@(Url.Action("Index", "Member"))">會員專區</a> > <a href="#">@Html.Raw(ViewBag.Title)</a></div>
+        </div>
+        <!--news -->
+        <div class="col-sm-12">
+            <div class="index-note">
+                <h3 class="note-title note-titlebar-blue">加入會員</h3>
+                <div class="service-main">
+                    <div class="tab-content">
+                        <div class="form-set">
+                            <form action="/member-add.html">
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <p class="member-note">
+                                            歡迎您加入衛生福利部，網路會員的行列<br>
+                                            請確實閱讀網路會員服務規章，如果您已經了解並接受，請按「同意」，進行下一個步驟填寫註冊資料
+                                        </p>
+                                        <textarea class="form-control" rows="20">@Html.Raw(ViewBag.ReadMe1)</textarea>
+                                    </div>
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="btn-bar text-center">
+                                    <div class="">
+                                        @*<label class="control-label col-sm-3 right">個人／公司</label>*@
+                                        <span class="control-label title">加入會員： </span>
+                                        <input name="Rpcfname" type="radio" value="P" onclick="setRPCValue('P');" />
+                                        個人
+                                        <input name="Rpcfname" type="radio" value="C" onclick="setRPCValue('C');" />
+                                        公司(團體)
+                                    </div>
+                                </div>
+                                <p></p>
+                                <div class="clearfix"></div>
+                                <p></p>
+                                <div class="btn-bar text-center">
+                                    <button type="button" class="btn btn-save" onclick="doCheck()">同意</button>
+                                    <button type="button" class="btn btn-clear" onclick="doBack()">取消</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var vRPC = $('#Hid_RPCTYPE').val();
+        var vLock = $('#lock_RPCTYPE').val();
+        //blockAlert("請選擇 個人／公司");
+        if (vRPC == null || vRPC == "") { return; }
+        //blockAlert(vLock);
+        if (vRPC == "P") { $("input[name=Rpcfname][value='P']").attr('checked', true); }
+        if (vRPC == "C") { $("input[name=Rpcfname][value='C']").attr('checked', true); }
+        if (vLock == "True") {
+            $("input[name='Rpcfname']").each(function (i) {
+                $(this).attr('disabled', 'disabled');
+            });
+        }
+        if (vRPC != "P" && vRPC != "C") {
+            blockAlert("請選擇加入會員 個人／公司");
+            return;
+        }
+        $("input[name=Rpcfname][value='" + vRPC + "]").attr('checked', true);
+    });
+
+    // 同意
+    function doCheck() {
+        var vRPC = $('#Hid_RPCTYPE').val();
+        if (vRPC == null || vRPC == "") {
+            blockAlert("請選擇加入會員 個人／公司");
+            return;
+        }
+        if (vRPC != "P" && vRPC != "C") {
+            blockAlert("請選擇加入會員 個人／公司");
+            return;
+        }
+
+        var data = { "num": 1, "RPC": vRPC }
+        var vlogType = $("input#Hid_logType").val();
+        if (!vlogType) {
+            location.href = '@Url.Action("New", "Login")?' + $.param(data);
+        }
+        if (vlogType) {
+            var msg1 = "";
+            if (vlogType == "1" && !(vRPC == "P")) {
+                msg1 = "使用自然人憑證 加入會員請選擇個人!";
+                blockAlert(msg1);
+                return;
+            }
+            if (vlogType == "2" && !(vRPC == "C")) {
+                msg1 = "使用工商憑證 加入會員請選擇公司!";
+                blockAlert(msg1);
+                return;
+            }
+
+            msg1 += "\n vlogType:" + vlogType;
+            msg1 += "\n $(Hid_RPCTYPE).val():" + $('#Hid_RPCTYPE').val();
+            //blockAlert(msg1);
+            //return;
+            $('#Hid_RPCTYPE').val(vRPC);
+
+            @*var url = '@(Url.Action("New2", "Login"))';
+            goBackPage(url, data, 2, 'POST')*@
+            $('#main_form').prop("action", "@Url.Action("New2", "Login")");
+            $('#main_form').submit();
+        }
+    }
+
+    // 取消
+    function doBack() {
+        location.href = '@Url.Action("Index", "Login")'
+    }
+
+    function setRPCValue(id) {
+        //id 1/2
+        //switch (id) { case '1':break; case '2':break; }
+        $('#Hid_RPCTYPE').val(id);
+    }
+
+</script>

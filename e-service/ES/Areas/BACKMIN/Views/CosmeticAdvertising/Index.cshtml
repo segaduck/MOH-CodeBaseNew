@@ -1,0 +1,62 @@
+﻿@model ES.Areas.Admin.Models.CosmeticAdvertisingActionModel
+@{
+    ViewBag.Title = "化妝品廣告內容管理";
+    ViewBag.FunctionTitle = "化妝品廣告內容管理";
+
+    ViewBag.Script = @"
+        function doQuery(page) {
+            $('#ActionType').val('Query');
+            $('#NowPage').val(page);
+        }
+
+        function doDelete(id, word) {
+            if(confirm('確定要刪除['+word+']廣告字句嗎？')) {
+                $('#ActionType').val('Delete');
+                $('#ActionId').val(id);
+                $('#ActionForm').submit();
+            }
+        }
+    ";
+}
+
+<center>
+@using (Html.BeginForm("Index", "CosmeticAdvertising", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <table class="formTable1" style="width: 400px;">
+        <tr>
+            <th style="width: 130px;">@Html.DisplayNameFor(m => m.Word)</th>
+            <td>@Html.TextBoxFor(m => m.Word)</td>
+        </tr>
+    </table>
+    <div class="formButtomBar">
+        @Html.HiddenFor(m => m.NowPage)
+        @Html.HiddenFor(m => m.ActionType)
+        @Html.HiddenFor(m => m.ActionId)
+        <input type="submit" value="查詢" onclick="doQuery('1')" />
+        <input type="reset" value="重填" />
+    </div>
+}
+</center>
+<hr />
+<div>
+    <div style="float: left; padding-bottom: 5px;"><input type="button" value="新增廣告字句" onclick="document.location.href='@Url.Action("New", "CosmeticAdvertising")';" /></div>
+    @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+</div>
+<table class="gridTable1">
+    <tr>
+        <th style="width: 80px;">動作</th>
+        <th>不得刊登之廣告字句</th>
+    </tr>
+    @foreach (ES.Areas.Admin.Models.CosmeticAdvertisingModel item in ViewBag.List)
+    {
+        <tr>
+            <td>
+                <input type="button" value="修" onclick="$('#ActionType').val('Edit');$('#ActionId').val('@item.AdvId');$('#ActionForm').submit();" />
+                <input type="button" value="刪" onclick="doDelete('@item.AdvId', '@item.Word');" />
+            </td>
+            <td>@item.Word</td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,303 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model FlyPayModel
+
+@{
+    ViewBag.Title = "航班資料查詢";
+    ViewBag.FunctionTitle = "航班資料查詢";
+    var sm = ES.Models.SessionModel.Get();
+    var cdc = sm.UserInfo != null && sm.UserInfo.UserNo.Contains("cdccovid") ? true : false;
+}
+<div class="col-sm-12 content">
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <h1 class="main-title"><i class="fas fa-edit"></i>查詢條件</h1>
+
+    <div class="form-blue form-horizontal" id="searchForm">
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_FLIGHTDATE)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.QRY_FLIGHTDATE, new { @class = "form-normal", @style = "width: 20%;", @maxlength = 11 }) <span>~</span>
+                @Html.TextBoxFor(m => m.QRY_FLIGHTDATE_END, new { @class = "form-normal", @style = "width: 20%;", @maxlength = 11 })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_MAINDOCNO)</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.QRY_MAINDOCNO, new { @class = "form-control", @maxlength = 20 })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_STATUS)</label>
+            <div class="col-sm-2">
+                @Html.HiddenFor(m => m.QRY_STATUS)
+                <select class="form-control" id="sel_QRY_STATUS" onchange="$('#QRY_STATUS').val(this.value)">
+                    <option value="">請選擇</option>
+                    @if (Model.QRY_PAY_STATUSList != null)
+                    {
+                        foreach (ES.Areas.Admin.Models.Map map in Model.QRY_PAY_STATUSList)
+                        {
+                            @Html.Raw("<option value='" + map.GetString("QRY_PAY_STATUS") + "'>" + map.GetString("QRY_PAY_STATUS_NAME") + "</option>")
+                        }
+                    }
+                </select>
+            </div>
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_NEEDBACK)</label>
+            <div class="col-sm-2">
+                @Html.HiddenFor(m => m.QRY_NEEDBACK)
+                <select class="form-control" id="sel_QRY_NEEDBACK" onchange="$('#QRY_NEEDBACK').val(this.value)">
+                    <option value="">請選擇</option>
+                    @if (Model.QRY_NEED_BACKList != null)
+                    {
+                        foreach (ES.Areas.Admin.Models.Map map in Model.QRY_NEED_BACKList)
+                        {
+                            @Html.Raw("<option value='" + map.GetString("QRY_NEED_BACK") + "'>" + map.GetString("QRY_NEED_BACK_NAME") + "</option>")
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_PAYRESULT)</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.QRY_PAYRESULT, new { @class = "form-control", @maxlength = 20 })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_TRACENO)</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.QRY_TRACENO, new { @class = "form-control", @maxlength = 20 })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_ADDTIMES)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.QRY_ADDTIMES, new { @class = "form-normal", @style = "width: 20%;", @maxlength = 11 })
+                ~
+                @Html.TextBoxFor(m => m.QRY_ADDTIMEE, new { @class = "form-normal", @style = "width: 20%;", @maxlength = 11 })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_GRANTDATE1)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.QRY_GRANTDATE1, new { @class = "form-normal", @style = "width: 20%;", @maxlength = 11 })
+                ~
+                @Html.TextBoxFor(m => m.QRY_GRANTDATE2, new { @class = "form-normal", @style = "width: 20%;", @maxlength = 11 })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_FLYCONTRY)</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.QRY_FLYCONTRY, new { @class = "form-control", @maxlength = 20 })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_GUID)</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.QRY_GUID, new { @class = "form-control", @maxlength = 10 })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_SPRCODE)</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.QRY_SPRCODE, new { @class = "form-control", @maxlength = 10 })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_SECTION)</label>
+            <div class="col-sm-2">
+                @Html.HiddenFor(m => m.QRY_SECTION)
+                <select class="form-control" id="sel_QRY_SECTION" onchange="$('#QRY_SECTION').val(this.value)">
+                    <option value="">請選擇</option>
+                    @if (Model.QRY_SECTIONList != null)
+                    {
+                        foreach (ES.Areas.Admin.Models.Map map in Model.QRY_SECTIONList)
+                        {
+                            @Html.Raw("<option value='" + map.GetString("QRY_SECTION") + "'>" + map.GetString("QRY_SECTION_NAME") + "</option>")
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.QRY_BANKTYPE)</label>
+            <div class="col-sm-2">
+                @Html.HiddenFor(m => m.QRY_BANKTYPE)
+                <select class="form-control" id="sel_QRY_BANKTYPE" onchange="$('#QRY_BANKTYPE').val(this.value)">
+                    <option value="">請選擇</option>
+                    @if (Model.QRY_BANKTYPEList != null)
+                    {
+                        foreach (ES.Areas.Admin.Models.Map map in Model.QRY_BANKTYPEList)
+                        {
+                            @Html.Raw("<option value='" + map.GetString("QRY_BANKTYPE") + "'>" + map.GetString("QRY_BANKTYPE_NAME") + "</option>")
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="btnbar">
+            @*<input type="submit" class="btn btn-blue" onclick="doQuery('1')" value="查詢(菲)" />*@
+            @if (cdc)
+            {
+                <input type="submit" class="btn btn-blue" onclick="doQuery('2')" value="查詢(春)" />
+                <input type="button" class="btn btn-gray" onclick="doReset()" value="重填" />
+            }
+            else
+            {
+                <input type="submit" class="btn btn-blue" onclick="doQuery('11')" value="查詢" />
+                <input type="submit" class="btn btn-blue" onclick="doQuery('2')" value="查詢(春)" />
+                <input type="button" class="btn btn-gray" onclick="doReset()" value="重填" />
+                <input type="submit" class="btn btn-blue" onclick="doExport('11')" value="匯出" />
+                <input type="submit" class="btn btn-blue" onclick="doExport('2')" value="匯出(春)" />
+                <input type="submit" class="btn btn-blue" onclick="doExportSPR()" value="春節專案統計表" />
+            }
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+    <h2 class="second-title">查詢結果</h2>
+    <div class="table-responsive">
+        @if (Model.ProjectType == "2")
+        {
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <tr>
+                    @if (!cdc)
+                {
+                        <th>編輯</th>
+                    }
+                    <th>FIRSTNAME<br />MIDDLENAME<br />LASTNAME</th>
+                    <th>BIRTH</th>
+                    <th>MAINDOCNO</th>
+                    <th>抵達日期</th>
+                    <th>識別碼</th>
+                    <th>繳費狀態</th>
+                    <th>繳費編號</th>
+                    <th>授權碼</th>
+                    <th>撥款日期</th>
+                    <th>出境國家</th>
+                    <th>轉機國家</th>
+                    <th>春節專案<br />流水號</th>
+                    <th>地區(春節專案)</th>
+                    <th>銀行別</th>
+                </tr>
+                @{
+                    if (Model.grids != null && Model.grids.Count > 0)
+                    {
+                        foreach (var a in Model.grids)
+                        {
+                            string s_GRANTDATE = (a.GRANTDATE.HasValue ? a.GRANTDATE.Value.ToString("yyyy-MM-dd") : "");
+                            <tr>
+                                @if (!cdc)
+                                {
+                                    <td>
+                                        <a href="@Url.Action("EditBasic", "FlyPay", new { flyid = a.FLY_ID })" class="btn btn-save">詳細</a>
+                                    </td>
+                                }
+                                <td>@Html.Raw(a.FIRSTNAME)<br />@Html.Raw(a.MIDDLENAME)<br />@Html.Raw(a.LASTNAME)</td>
+                                <td>@Html.Raw(a.BIRTH)</td>
+                                <td>@Html.Raw(a.MAINDOCNO)</td>
+                                <td>@Html.Raw(a.FLIGHTDATE)</td>
+                                <td>@Html.Raw(a.GUID)</td>
+                                <td>@Html.Raw(a.STATUS)</td>
+                                <td>@Html.Raw(a.PAYRESULT)</td>
+                                <td>@Html.Raw(a.TRACENO)</td>
+                                <td>@Html.Raw(s_GRANTDATE)</td>
+                                <td>@Html.Raw(a.FLYCONTRY)</td>
+                                <td>@Html.Raw(a.FLYCONTRYTR)</td>
+                                <td>@Html.Raw(a.SPRCODE)</td>
+                                <td>@Html.Raw(a.SECTION_TEXT)</td>
+                                <td>@Html.Raw(a.BANKTYPE_TEXT)</td>
+                            </tr>
+                        }
+                    }
+                }
+            </table>
+                    }
+                    else if (Model.ProjectType == "11")
+                    {
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                            <tr>
+                                <th>編輯</th>
+                                <th>第一位入住者</th>
+                                <th>第二位入住者</th>
+                                <th>第三位入住者</th>
+                                <th>第四位入住者</th>
+                                <th>抵達日期</th>
+                                <th>識別碼</th>
+                                <th>繳費狀態</th>
+                                <th>繳費編號</th>
+                                <th>授權碼</th>
+                                <th>撥款日期</th>
+                                <th>出境國家</th>
+                                <th>轉機國家</th>
+                            </tr>
+                            @{
+                                if (Model.grids != null && Model.grids.Count > 0)
+                                {
+                                    foreach (var a in Model.grids)
+                                    {
+                                        string s_GRANTDATE = (a.GRANTDATE.HasValue ? a.GRANTDATE.Value.ToString("yyyy-MM-dd") : "");
+                                        <tr>
+                                            <td>
+                                                <a href="@Url.Action("EditSIM", "FlyPay", new { flyid = a.FLY_ID })" class="btn btn-save">詳細</a>
+                                            </td>
+                                            <td>@Html.Raw(a.FIRSTNAME)&nbsp;&nbsp;@Html.Raw(a.MIDDLENAME)&nbsp;&nbsp;@Html.Raw(a.LASTNAME)
+                                            <br />@Html.Raw(a.BIRTH)
+                                            <br />@Html.Raw(a.MAINDOCNO)</td>
+                                            <td>
+                                                @Html.Raw(a.FIRSTNAME2)&nbsp;&nbsp;@Html.Raw(a.MIDDLENAME2)&nbsp;&nbsp;@Html.Raw(a.LASTNAME2)
+                                                <br />@Html.Raw(a.BIRTH2)
+                                                <br />@Html.Raw(a.MAINDOCNO2)
+                                            </td>
+                                            <td>
+                                                @Html.Raw(a.FIRSTNAME3)&nbsp;&nbsp;@Html.Raw(a.MIDDLENAME3)&nbsp;&nbsp;@Html.Raw(a.LASTNAME3)
+                                                <br />@Html.Raw(a.BIRTH3)
+                                                <br />@Html.Raw(a.MAINDOCNO3)
+                                            </td>
+                                            <td>
+                                                @Html.Raw(a.FIRSTNAME4)&nbsp;&nbsp;@Html.Raw(a.MIDDLENAME4)&nbsp;&nbsp;@Html.Raw(a.LASTNAME4)
+                                                <br />@Html.Raw(a.BIRTH4)
+                                                <br />@Html.Raw(a.MAINDOCNO4)
+                                            </td>
+                                            <td>@Html.Raw(a.FLIGHTDATE)</td>
+                                            <td>@Html.Raw(a.GUID)</td>
+                                            <td>@Html.Raw(a.STATUS)</td>
+                                            <td>@Html.Raw(a.PAYRESULT)</td>
+                                            <td>@Html.Raw(a.TRACENO)</td>
+                                            <td>@Html.Raw(s_GRANTDATE)</td>
+                                            <td>@Html.Raw(a.FLYCONTRY)</td>
+                                            <td>@Html.Raw(a.FLYCONTRYTR)</td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </table>
+                                }
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#sel_QRY_STATUS').val('@this.Model.QRY_STATUS');
+        $('#sel_QRY_BANKTYPE').val('@this.Model.QRY_BANKTYPE');
+        $('#sel_QRY_SECTION').val('@this.Model.QRY_SECTION');
+        $('#QRY_FLIGHTDATE').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+3' });
+        $('#QRY_FLIGHTDATE_END').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+3' });
+
+        $('#QRY_GRANTDATE1').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+3' });
+        $('#QRY_GRANTDATE2').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+3' });
+
+        $('#QRY_ADDTIMES').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+3' });
+        $('#QRY_ADDTIMEE').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+3' });
+    });
+
+    function doReset() {
+        $('#searchForm').find('input[type="text"]').each(function () {
+            $(this).val('');
+        });
+        $('#searchForm').find('select').each(function () {
+            $(this).val('');
+        });
+        $('#searchForm').find('select').prev().val('');
+    }
+</script>

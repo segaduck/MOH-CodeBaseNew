@@ -1,0 +1,44 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "錯誤";
+    if (String.IsNullOrEmpty(ViewBag.Message))
+    {
+        Session["LastException"] = ViewBag.prgMessage;
+    }
+
+}
+
+<div>
+    <h1 class="text-danger">系統發生異常!</h1>
+    <p>@(ViewBag.Time)</p>
+    <p>處理您的要求時發生錯誤，請聯絡管理人員!</p>
+    @if (!String.IsNullOrEmpty(ViewBag.Message))
+    {
+        <div style="margin-top:20px">
+            <p>@(ViewBag.Message)</p>
+            @if (ViewBag.Exception != null)
+            {
+                Stack<string> trace = new Stack<string>();
+                Exception ex = (Exception)ViewBag.Exception;
+                trace.Push(ex.StackTrace);
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                    trace.Push(ex.StackTrace);
+                }
+                <pre>
+                @while (trace.Count > 0)
+                {
+                    string msg = trace.Pop();
+                    @Html.Raw( msg )       
+                    if (trace.Count > 0)
+                    {
+                        @("\n--- 內部例外狀況堆疊追蹤的結尾 ---\n")
+                    }
+                }
+                </pre>
+            }
+        </div>
+    }
+</div>
+

@@ -1,0 +1,483 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels
+@using ES.Commons;
+@model Apply_010001DocModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+}
+
+@using (Html.BeginForm("DocSave", "Apply_010001", FormMethod.Post, new { id = "main_form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink">
+                <i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">檔案應用申請</a>
+            </div>
+            <div class="clearfix"></div>
+            @Html.HiddenFor(m => m.FLOW_CD)
+            @Html.HiddenFor(m => m.DOC_FILE)
+            @Html.HiddenFor(m => m.DOC_ITEM)
+            @Html.HiddenFor(m=>m.APP_ID)
+            @if (Model.FLOW_CD == "2")
+            {
+                <div class="tab-content" id="myTabContent">
+                    <h1 class="form-title  title-bg-y">補件</h1>
+                    <div class="form-set">
+                        @Html.Raw(Model.MAILBODY)
+                    </div>
+                </div>
+            }
+            <div class="tab-content" id="myTabContent">
+                <!--ApplyForm-->
+                <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                <div class="form-set">
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">申辦項目</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">檔案應用申請</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請單位</label>
+                        <div class="col-sm-4">
+                            <p class="form-control-static">國民健康署</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">申辦日期</label>
+                        <div class="col-sm-4">
+                            <p class="form-control-static">@Model.ADD_TIME</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請角色</label>
+                        <div class="col-sm-4">
+                            @Html.HiddenFor(m => m.APP_ROLE)
+                            @if (Model.APP_ROLE == "0")
+                            {
+                                <label class="radio-inline "><input type="radio" name="optradio1" value="0" onchange="radioChang()" checked>自辦</label>
+                                <label class="radio-inline "><input type="radio" name="optradio1" value="1" onchange="radioChang()">代理</label>
+                            }
+                            else
+                            {
+                                <label class="radio-inline "><input type="radio" name="optradio1" value="0" onchange="radioChang()">自辦</label>
+                                <label class="radio-inline "><input type="radio" name="optradio1" value="1" onchange="radioChang()" checked>代理</label>
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名</label>
+                        <div class="col-sm-10">
+                            @Html.TextBoxFor(m => m.NAME, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出生年月日</label>
+                        <div class="col-sm-10">
+                            @Html.DatePickerTWFor(m => m.BIRTHDAY_AD, new { size = "10" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證明文件字號</label>
+                        <div class="col-sm-10">
+                            @Html.TextBoxFor(m => m.IDN, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>地址</label>
+                        <div class="col-sm-10 form-inline">
+                            @Html.TextBoxFor(m => m.TAX_ORG_CITY_CODE, new { @id = "TAX_ORG_CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @onblur= "doTAX_ORG_CITYNameGet('TAX_ORG_CITY_CODE')" })
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.TAX_ORG_CITY_TEXT, new { @id = "TAX_ORG_CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect('TAX_ORG_CITY_CODE')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.TAX_ORG_CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話</label>
+                        <div class="col-sm-10">
+                            @Html.TelForTurbo(m => m.TEL)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+                        <div class="col-sm-10">
+                            @Html.EmailForTurbo(m => m.MAIL)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>代理人</label>
+                        <div class="col-sm-10">
+                            @Html.HiddenFor(m => m.A_AGENT)
+                            @if (Model.A_AGENT == "0")
+                            {
+                                <label class="radio-inline "><input type="radio" name="optradio2" value="0" onchange="radioChang()" checked>自然人</label>
+                                <label class="radio-inline "><input type="radio" name="optradio2" value="1" onchange="radioChang()">法人</label>
+                            }
+                            else
+                            {
+                                <label class="radio-inline "><input type="radio" name="optradio2" value="0" onchange="radioChang()">自然人</label>
+                                <label class="radio-inline "><input type="radio" name="optradio2" value="1" onchange="radioChang()" checked>法人</label>
+                            }
+                        </div>
+                    </div>
+                    <div id="A_AGENT0" hidden>
+                        <h1 class="form-title  title-bg-y">自然人資料請填下列申請人欄位</h1>
+                        <div class="form-set">
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.E_NAME, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>與申請人關係</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.AE_RELATION, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出生年月日</label>
+                                <div class="col-sm-4">
+                                    @Html.DatePickerTWFor(m => m.E_BIRTHDAY_AD, new { size = "10" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證明文件字號</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.E_IDN, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>地址</label>
+                                <div class="col-sm-10 form-inline">
+                                    @Html.TextBoxFor(m => m.E_TAX_ORG_CITY_CODE, new { @id = "E_TAX_ORG_CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @onblur = "doTAX_ORG_CITYNameGet('E_TAX_ORG_CITY_CODE')" })
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.E_TAX_ORG_CITY_TEXT, new { @id = "E_TAX_ORG_CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect('E_TAX_ORG_CITY_CODE')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(m => m.E_TAX_ORG_CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話</label>
+                                <div class="col-sm-10">
+                                    @Html.TelForTurbo(m => m.E_TEL)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>代理人E-MAIL</label>
+                                <div class="col-sm-10">
+                                    @Html.EmailForTurbo(m => m.E_MAIL)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*必填</span>代理上傳委任書電子檔</label>
+                                <div class="col-sm-10">
+                                    @Html.FileDLForTurbo(m => m.FILE_01, Model.FILE_01, "N")
+                                    <input type="file" class="form-control" name="newFILE_01" id="newFILE_01" onchange="doGetFileNam(this)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="A_AGENT1" hidden>
+                        <h1 class="form-title  title-bg-y">管理人或代表人資料請填下列申請人欄位</h1>
+                        <div class="form-set">
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>法人、團體、事務所或營業所名稱</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.E_UNIT_NAME, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>地址</label>
+                                <div class="col-sm-10 form-inline">
+                                    @Html.TextBoxFor(m => m.E_UNIT_TAX_ORG_CITY_CODE, new { @id = "E_UNIT_TAX_ORG_CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @onblur = "doTAX_ORG_CITYNameGet('E_UNIT_TAX_ORG_CITY_CODE')" })
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.E_UNIT_TAX_ORG_CITY_TEXT, new { @id = "E_UNIT_TAX_ORG_CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect('E_UNIT_TAX_ORG_CITY_CODE')"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(m => m.E_UNIT_TAX_ORG_CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*必填</span>代理&lt;法人&gt;上傳登記證影本</label>
+                                <div class="col-sm-10">
+                                    @Html.FileDLForTurbo(m => m.FILE_02, Model.FILE_02, "N")
+                                    <input type="file" class="form-control" name="newFILE_02" id="newFILE_02" onchange="doGetFileNam(this)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @Html.EditorFor(m => m.APPFIL, "GoodsDynamicGrid010001")
+
+                <h1 class="form-title  title-bg-y">申請事由</h1>
+                <div class="form-set">
+                    @*<div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>使用檔卷原件事由</label>
+                        <div class="col-sm-10">
+                            @Html.TextAreaFor(m => m.APP_REASON, new { @class = "form-control", @cols = "80", @rows = "10" })
+                        </div>
+                    </div>*@
+                    <div class="form-group">
+                        @Html.HiddenFor(m=>m.CHECK_NO_LIST)
+                        <label class="step-label col-sm-2" for=""><span style="color: red;">*</span>申請目的及用途</label>
+                        <div class="col-sm-10" style="margin-top: 10px">
+                            <input type="checkbox" id="checkbox_3" onchange="checkboxChange()">歷史考證
+                            <input type="checkbox" id="checkbox_4" onchange="checkboxChange()">學術研究
+                            <input type="checkbox" id="checkbox_5" onchange="checkboxChange()">事證稽憑
+                            <input type="checkbox" id="checkbox_6" onchange="checkboxChange()">業務參考
+                            <input type="checkbox" id="checkbox_7" onchange="checkboxChange()">權益保障
+                            <input type="checkbox" id="checkbox_8" onchange="checkboxChange()">其他
+                        </div>
+                    </div>
+                    <div class="form-group" id="divChk" hidden>
+                        <label class="step-label col-sm-2" for="">申請目的及用途(其他)</label>
+                        <div class="col-sm-10" style="margin-top: 10px">
+                            @Html.TextBoxFor(m=>m.CHECK_NO_NOTE,new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-bar text-center">
+                    @if (Model.FLOW_CD == "2")
+                    {
+                        <button type="button" class="btn btn-save" onclick="doSave()">存檔</button>
+                    }
+                    <button type="button" class="btn btn-clear" onclick="doBack()">返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+
+    $(document).ready(function () {
+        //案件狀態控制
+        caseStatus();
+        //代理人選擇
+        radioChang();
+        //申請目的及用途初始值設定
+        chkSetting();
+        //地址綁定
+        doTAX_ORG_CITYNameGet("TAX_ORG_CITY_CODE");
+        doTAX_ORG_CITYNameGet("E_UNIT_TAX_ORG_CITY_CODE");
+        doTAX_ORG_CITYNameGet("E_TAX_ORG_CITY_CODE");
+    });
+
+    function caseStatus() {
+        if ($("#FLOW_CD").val() == "2") {
+            //補件
+            if ($("#DOC_ITEM").val() == "N") {
+                //補件選擇為檔案
+                itemDisable();
+                if ($("#DOC_FILE").val() == "FILE_1") {
+                    //自然人檔案上傳
+                    $("#newFILE_01").removeAttr("disabled");
+                }
+                else if ($("#DOC_FILE").val() == "FILE_2") {
+                    //法人檔案上傳
+                    $("#newFILE_02").removeAttr("disabled");
+                }
+            } else {
+                //補件選擇為欄位
+
+                if ($("#DOC_FILE").val() == "FILE_1") {
+                    //自然人檔案上傳
+                    $("#newFILE_01").removeAttr("disabled");
+                }
+                else if ($("#DOC_FILE").val() == "FILE_2") {
+                    //法人檔案上傳
+                    $("#newFILE_02").removeAttr("disabled");
+                }
+            }
+        } else {
+            //預覽
+            itemDisable();
+        }
+    }
+
+    function itemDisable() {
+        $("input").attr("disabled", "disabled");
+        $("select").attr("disabled", "disabled");
+        $("textarea").attr("disabled", "disabled");
+    }
+
+    function itemEnable() {
+        $("input").removeAttr("disabled");
+        $("select").removeAttr("disabled");
+        $("textarea").removeAttr("disabled");
+    }
+
+    function radioChang() {
+        if ($("input[name='optradio1']:checked").val() == "1") {
+            $("#APP_ROLE").val("1");
+            //代理
+            if ($("input[name='optradio2']:checked").val() == "0") {
+                //自然人
+                $("#A_AGENT0").show();
+                $("#A_AGENT1").hide();
+                $("#A_AGENT").val("0");
+            } else {
+                //法人
+                $("#A_AGENT0").hide();
+                $("#A_AGENT1").show();
+                $("#A_AGENT").val("1");
+            }
+        } else {
+            $("#APP_ROLE").val("0");
+            //自辦
+            $("#A_AGENT0").hide();
+            $("#A_AGENT1").hide();
+        }
+    }
+
+    function chkSetting() {
+        var chkitem = $("#CHECK_NO_LIST").val().split(',');
+        for (var i = 0; i < chkitem.length; i++) {
+            $("#checkbox_" + chkitem[i]).attr("checked", "checked");
+            if (chkitem[i] == "8") {
+                $("#divChk").show();
+            }
+        }
+    }
+
+    function checkboxChange() {
+        var chkList = "";
+        for (var i = 3; i <= 8; i++) {
+            if ($("#checkbox_" + i).prop("checked")) {
+                chkList += i + ",";
+            }
+            if (i == 8) {
+                if ($("#checkbox_" + i).prop("checked")) {
+                    $("#divChk").show();
+                } else {
+                    $("#divChk").hide();
+                    $("#CHECK_NO_NOTE").val("");
+                }
+            }
+        }
+        chkList = chkList.substring(0, chkList.length - 1);
+        $("#CHECK_NO_LIST").val(chkList);
+    }
+
+    // 申請項目
+    function doCHECKNOLstGetVal(i) {
+
+        var pid = $('input[type="checkbox"]', i).eq(0).prop('name');
+        var vid = pid.substring(0, pid.lastIndexOf("_")).replace("_", ".");
+        var ValArr = new Array();
+        $('input:checkbox:checked[name="' + pid + '"]').each(
+            function (i) {
+                ValArr[i] = this.value;
+            });
+        var ValArrtoStr = ValArr.join()
+        $('input[type= "hidden"][name="' + vid + '_Lst"]').val(ValArrtoStr);
+    }
+
+    // 地址
+    function doTAX_ORG_CITYSelect(codeID) {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    var code = $('#' + codeID);
+                    var ctiyTextId = code.attr("id").split("TAX_ORG_CITY_CODE")[0] + "TAX_ORG_CITY_TEXT";
+                    $('#' + codeID).val(retData.Id);
+                    $('#' + ctiyTextId).val(retData.Name);
+                }
+            });
+    }
+
+    // 地址
+    function loadDialogTAX_ORG_CITYCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    // 地址
+    function doTAX_ORG_CITYNameGet(codeID) {
+        var code = $('#' + codeID);
+        var ctiyTextId = code.attr("id").split("TAX_ORG_CITY_CODE")[0] + "TAX_ORG_CITY_TEXT";
+        var data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#' + ctiyTextId),
+            'add': $('#' + codeID)
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogTAX_ORG_CITYCodeMapName(data);
+        }
+    }
+
+    // 存檔
+    function doSave() {
+        itemEnable();
+        var dataApply = getFormSubmitableFieldsWithCheckbox($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("DocSave")',
+            dataApply,
+            function (response) {
+                if (response.status) {
+                    blockUI();
+                    var form = $("form[id=main_form]");
+                    form.attr('action', '@Url.Action("SaveAppDoc")').submit();
+                } else {
+                    caseStatus();
+                    blockAlert(response.message, "提示訊息");
+                }
+            });
+    }
+
+    // 返回
+      function doBack() {
+        location.href = '@Url.Action("Index","History")';
+    }
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".DOC", ".DOCX", ".ODT", ".ODF", ".ODS", ".XLS", ".XLSX", ".PDF", ".PPT", ".PPTX", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF", ".ZIP");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        }
+        else {
+            $('input[type="hidden"][name="' + file.name + '_TEXT"]').val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+</script>

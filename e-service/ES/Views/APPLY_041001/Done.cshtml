@@ -1,0 +1,51 @@
+﻿@using ES.Models;
+@using ES.Services;
+@using ES.Models.ViewModels;
+@model Apply_041001DoneModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+    SessionModel sm = SessionModel.Get();
+    ViewBag.Title = "全民健康保險爭議案件(權益案件及特約管理案件)線上申辦";
+}
+
+
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@ViewBag.Title</a></div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            <ul>
+                <li>填寫申辦表件並上傳檔案</li>
+                <li>預覽申辦表件</li>
+                <li class="active">完成申辦</li>
+            </ul>
+        </div>
+        <h1 class="form-title  title-bg-y">訊息</h1>
+        <div class="form-set">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    @sm.UserInfo.Member.NAME 您好：  <br />
+                    @switch (Model.status.TONotNullString())
+                    {
+                        case "1":
+                            @Html.Raw("您所提交的" + ViewBag.Title + "，已完成系統資料申辦及上傳流程。")
+                            break;
+                        case "2":
+                            @Html.Raw("您所提交的" + ViewBag.Title + "，已完成資料補件，將盡速辦理您的申辦案件，謝謝。")
+                            break;
+                        default:
+                            break;
+                    }
+
+                    <br />
+                    <div style="float:right">全民健康保險爭議審議會</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+
+</div>

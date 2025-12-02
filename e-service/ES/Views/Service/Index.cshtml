@@ -1,0 +1,172 @@
+﻿@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "表件下載"; //"服務項目";
+    ViewBag.Script = @"
+        function doFile(url) {
+            debugger;
+            alert(url);
+            return;
+            //window.open(url, '', 'width=400,height=300,scrollbars=yes')
+        }
+    ";
+}
+<script>
+    $('#lihead_Service').addClass("navMark-orange");
+</script>
+<div class="container-fluid">
+    <!--bread -->
+    <div class="col-sm-12">
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> > <a href="@(Url.Action("Index", "Service"))">@Html.Raw(ViewBag.Title)</a></div>
+    </div>
+    <!--news -->
+    <div class="col-sm-12">
+        <div class="index-note">
+            <h3 class="note-title">表件下載</h3>
+            <div class="service-main">
+                <ul class="nav nav-tabs nav-justified" role="tablist">
+                    @if (@ViewBag.List != null && @ViewBag.List.Count > 0)
+                    {
+                        for (int i = 0; i < ViewBag.List.Count; i++)
+                        {
+                            if (i == 0 || !ViewBag.List[i].UnitName.Equals(ViewBag.List[i - 1].UnitName))
+                            {
+                                var type = "#type" + (i + 1);                               
+                                if (i == 0)
+                                {
+                                    @*<li class="active"><a data-toggle="tab" href="@type">@ViewBag.List[i].UnitName</a></li>*@
+                                    <li class="nav-item"><a class="nav-link active" href="javascript:void(0);" role="tab" onclick="switchTab('@(type)', this)">@ViewBag.List[i].UnitName</a></li>
+                                }
+                                else
+                                {
+                                    @*<li><a data-toggle="tab" href="@type">@ViewBag.List[i].UnitName</a></li>*@
+                                    <li class="nav-item"><a class="nav-link" href="javascript:void(0);" role="tab" onclick="switchTab('@(type)', this);">@ViewBag.List[i].UnitName</a></li>
+                                }
+                            }
+                        }
+                    }
+                </ul>
+                <div class="tab-content">
+                    @if (@ViewBag.List != null && @ViewBag.List.Count > 0)
+                    {
+                        var count = 1;
+                        for (int i = 0; i < ViewBag.List.Count; i++)
+                        {
+                            if (i == 0 || !ViewBag.List[i].UnitName.Equals(ViewBag.List[i - 1].UnitName))
+                            {
+                                count = 1;
+                                var type = "type" + (i + 1);
+                                if (i == 0)
+                                {
+                                    @Html.Raw("<div id='" + type + "' class='tab-pane fade show in active'>")
+                                }
+                                else
+                                {
+                                    @Html.Raw("<div id='" + type + "' class='tab-pane fade'>")
+                                }
+                                @Html.Raw("<div class='table-responsive'>")
+                                @Html.Raw("<table width='100%' border='0' cellspacing='0' cellpadding='0' class='table-download table'>")
+                                @Html.Raw("<thead>")
+                                @Html.Raw("<tr>")
+                                @Html.Raw("<th>項次</th>")
+                                @Html.Raw("<th>申請項目</th>")
+                                @*@Html.Raw("<th>案件說明</th>")*@
+                                @Html.Raw("<th>書表下載</th>")
+                                @Html.Raw("<th>線上受理</th>")
+                                @*@Html.Raw("<th>相關規範</th>")*@
+                                @Html.Raw("</tr>")
+                                @Html.Raw("</thead>")
+                                @Html.Raw("<tbody>")
+                                @Html.Raw("<tr>")
+                            }
+                            @Html.Raw("<td>" + count + "</td>")
+                            count++;
+                            //申請項目
+                            @Html.Raw("<td onclick='document.location.href='" + @Url.Action("Notice", "Service", new { id = @ViewBag.List[i].ServiceId }) + "';' style='cursor:pointer;'>")@ViewBag.List[i].Name@Html.Raw("</td>")
+                            @*@Html.Raw("<td style='text-align: center;'>")
+
+                            if (@ViewBag.List[i].LeadMark == true)
+                            {
+                                //案件說明
+                                @Html.Raw("<a class='btn btn-comment' title='案件說明' href='"+@Url.Action("Notice", "ServiceLst", new { id = @ViewBag.List[i].ServiceId }) +"' style='cursor:pointer;');'>")
+                                @Html.Raw("<i class='fa fa-comment-alt'></i>")
+                                @Html.Raw("</a>")
+                            }
+                            @Html.Raw("</td>")*@
+                            @Html.Raw("<td style='text-align: center;'>")
+                            if (@ViewBag.List[i].FileMark)
+                            {
+                                //書表下載
+                                @*@Html.Raw("<a class='btn btn-download' title='書表下載' href='javascript:void(0)' style='cursor:pointer;' onclick='doFile('" + @Url.Action("File", "Service", new { id = @ViewBag.List[i].ServiceId }) + "');'>")*@
+                                @*@Html.Raw("<a class='btn btn-download' title='書表下載' href='javascript:void(0)' style='cursor:pointer;' onclick='window.open(('" + @Url.Action("File", "Service", new { id = @ViewBag.List[i].ServiceId }) + "', '', 'width=400,height=300,scrollbars=yes');'>")*@
+                                @Html.Raw("<a class='btn btn-download' title='書表下載' href='" + @Url.Action("File", "Service", new { id = @ViewBag.List[i].ServiceId }) + "'>")
+                                @Html.Raw("<i class='fa fa-download'></i>")
+                                @Html.Raw("</a>")
+                            }
+                            @Html.Raw("</td>")
+                            @Html.Raw("<td style='text-align: center;'>")
+                            if (@ViewBag.List[i].OnlineNMark)
+                            {
+                                //線上受理
+                                @Html.Raw("<a class='btn btn-pointer' title='線上申辦' href='" + @Url.Action("ApplyLoginCheck", "AJAX") + "?serviceId=" + @ViewBag.List[i].ServiceId + "'>")
+                                @Html.Raw("<i class='fas fa-mouse-pointer'></i>")
+                                @Html.Raw("</a>")
+                            }
+                            @Html.Raw("</td>")
+                            @*@Html.Raw("<td style='text-align: center;'>")
+                            if (@ViewBag.List[i].NormMark)
+                            {
+                                //相關規範
+                                @Html.Raw("<a class='btn btn-license' title='相關規範' href='javascript:void(0)' style='cursor:pointer;' onclick='doFile('" + @Url.Action("Norm", "Service", new { id = @ViewBag.List[i].ServiceId }) + "');'>")
+                                @Html.Raw("<i class='fa fa-license'></i>")
+                                @Html.Raw("</a>")
+                            }
+                            @Html.Raw("</td>")*@
+                            @Html.Raw("</tr>")
+                            var un = ViewBag.List.Count - 1 == i ? "" : ViewBag.List[i + 1].UnitName;
+                            if (!ViewBag.List[i].UnitName.Equals(un))
+                            {
+                                @Html.Raw("</tbody>")
+                                @Html.Raw("</table>")
+                                @Html.Raw("</div>")
+                                @Html.Raw("</div>")
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+</div>
+<script type="text/javascript">
+    function switchTab(tabId, linkElement) {
+        console.log(tabId);
+        // 移除所有 tab-pane 的 active 類別
+        var tabPanes = document.querySelectorAll('.tab-pane');
+        tabPanes.forEach(function (pane) {
+            pane.classList.remove('show', 'active');
+            pane.classList.remove('in', 'active');
+        });
+
+        // 隱藏所有 nav-link active 樣式
+        var tabLinks = document.querySelectorAll('.nav-link');
+        tabLinks.forEach(function (link) {
+            link.classList.remove('active');
+        });
+
+        // 顯示點選的 tab-pane
+        var targetTab = document.getElementById(tabId.replace('#', ''));
+        console.log(targetTab);
+        if (targetTab) {
+            targetTab.classList.add('show', 'active');
+            targetTab.classList.add('in', 'active');
+        }
+
+        // 加上 nav-link 的 active 樣式
+        if (linkElement) {
+            linkElement.classList.add('active');
+        }
+    }
+</script>

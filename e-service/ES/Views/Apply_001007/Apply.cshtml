@@ -1,0 +1,499 @@
+﻿@using ES.Models.Entities
+@using ES.Models
+@using ES.Commons;
+@model ES.Models.ViewModels.Apply_001007ViewModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "專科醫師證書補（換）發";
+    ShareCodeListModel srcList = new ShareCodeListModel();
+}
+<script type="text/javascript" src="~/Scripts/utility.js"></script>
+@using (Html.BeginForm("PreView", "Apply_001007", FormMethod.Post, new { id = "main_form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink">
+                <i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">專科醫師證書補（換）發</a>
+            </div>
+            <div class="clearfix"></div>
+            <div class="step_map">
+                <ul>
+                    <li id="Apply_Tab" class="active">填寫申報表件並上傳檔案</li>
+                    <li id="PreView_Tab">預覽申辦表件</li>
+                    <li id="Pay_Tab">繳費</li>
+                    <li>完成申報</li>
+                </ul>
+            </div>
+
+            <div class="tab-content" id="myTabContent">
+                <!--ApplyForm-->
+                <div id="ApplyForm" class="tab-pane fade active in">
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                    <div class="form-set">
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦項目</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">專科醫師證書補（換）發</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦日期</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static"> @Model.APPLY_DATE</p>
+                                @Html.HiddenFor(x => x.APPLY_DATE, new { @Value = @Model.APPLY_DATE })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.APPLY_NAME, new { @class = "form-control", @placeholder = "請輸入申請人姓名", @readonly = "readonly" })
+                            </div>
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證編號/居留證號</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.APPLY_PID, new { @class = "form-control", @placeholder = "請輸入身分證編號/居留證號", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出生年月日</label>
+                            <div class="col-sm-4">
+                                @Html.DatePickerTWFor(x => x.BIRTHDAY_AC, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>補(換)發</label>
+                            <div class="col-sm-4" style="margin-top:10px">
+                                <input type='radio' id="ActionTyp1" name='ActionTyp1' value='1' checked> 補發
+                                <input type='radio' id="ActionTyp2" name='ActionTyp2' value='2'> 換發
+                                @Html.HiddenFor(x => x.ACTION_TYPE)
+                                @Html.HiddenFor(x => x.ACTION_TYPE_TEXT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">核發日期</label>
+                            <div class="col-sm-4">
+                                @Html.DatePickerTWFor(x => x.ISSUE_DATE_AC, new { size = "10" })
+                            </div>
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>科別</label>
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(x => x.DIVISION, srcList.GetDivisionList, new { @class = "form-control" })
+                                @Html.HiddenFor(x => x.DIVISION_TEXT)
+                                <br />
+                                <span>口腔顎面外科、口腔病理科、齒顎矯正科，尚未開放線上申辦，請透過書面申辦。</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">證書字號</label>
+                            <div class="col-sm-10 form-inline">
+                                <!--option內容與科別連動-->
+                                @Html.DropDownListFor(x => x.LIC_CD, new List<SelectListItem>(), new { @class = "form-control" })
+                                專醫字第 @Html.TextBoxFor(x => x.LIC_NUM, new { @class = "form-normal", @placeholder = "", maxlength = "6" })號
+                                @Html.HiddenFor(x => x.LIC_CD_TEXT)
+                                @Html.HiddenFor(x => x.LIC_TYPE)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>補(換)發原因</label>
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(x => x.ACTION_RES, srcList.GetAction_ResList.Where(x => x.Value == "" || x.Value == "A" || x.Value == "E"), new { @class = "form-control" })
+                                @Html.HiddenFor(x => x.ACTION_RES_TEXT)
+                            </div>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.OTHER_RES, new { @class = "form-control", @placeholder = "請輸入補(換)發原因", @readonly = "readonly", maxlength = "15" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>通訊地址</label>
+                            <div class="col-sm-10 form-inline">
+                                @Html.TextBoxFor(x => x.CITY_CODE, new { @id = "CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號" })
+                                <div class="input-group">
+                                    @Html.TextBoxFor(x => x.CITY_TEXT, new { @id = "CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-info" onclick="doCITYSelect()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(x => x.CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+                                @Html.HiddenFor(x => x.FULL_ADDRESS)
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                            <label class="step-label col-sm-2" for="">電話</label>
+                            <div class="col-sm-10">
+                                <span></span>
+                                @Html.TextBoxFor(x => x.TEL_SEC, new { @class = "form-10 form-normal" })
+                                <span>-</span>
+                                @Html.TextBoxFor(x => x.TEL_NO, new { @class = "form-normal" })
+                                <span>#</span>
+                                @Html.TextBoxFor(x => x.TEL_EXT, new { @class = "form-10 form-normal" })
+                                @Html.HiddenFor(x => x.TEL)
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>行動電話</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.MOBILE, new { @class = "form-control", @maxlength = "10" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.MAIL_ACCOUNT, new { @class = "form-normal" })@@
+                                @Html.DropDownList("DOMAINList", srcList.GetMailDomainList, new { @class = "form-normal" })
+                                @Html.TextBoxFor(x => x.MAIL_DOMAIN, new { @class = "form-normal" })
+                                @Html.HiddenFor(x => x.MAIL)
+                            </div>
+                        </div>
+                        @*<h2 class="second-title">佐證文件檔案上傳</h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+            <div class="col-sm-10">
+                <label class="radio-inline "><input type="radio" name="optradio" checked>是</label>
+                <label class="radio-inline "><input type="radio" name="optradio">否</label>
+            </div>
+        </div>*@
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">繳費紀錄照片或pdf檔案</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.ATTACH_FILE, new { @class = "form-control", @type = "file", onchange = "setFileName($(this).attr('name'))" })
+                                @Html.HiddenFor(x => x.ATTACH_FILE_NAME)
+                                <br />
+                                <span style="color:red">(檔案大小5MB以下，請附上圖檔，例如：JPG、BMP、PNG、GIF、TIF)</span>
+                            </div>
+                        </div>
+
+                        <div class="btn-bar text-center">
+                            <button type="button" class="btn btn-save" onclick="doPreView()">存檔並預覽</button>
+                            <button type="reset" class="btn btn-clear">清除資料</button>
+                        </div>
+                        <p>若您欲變更證書之基本資料者，如姓名、性別、生日、國別、身分證/居留證字號，非屬本項申辦服務，請至<a href="https://eservice.mohw.gov.tw/ServiceLst/Notice?id=001006&ACT_TYPE=1&LST_ID=1" target="_self">醫事人員或公共衛生師證書改註申請</a>，謝謝！</p>
+
+                    </div>
+                </div>
+                <!--ApplyForm-->
+                <!--PreViewForm-->
+                <div id="PreViewForm" class="tab-pane fade">
+
+                </div>
+                <!--PreViewForm-->
+
+                <!--PayForm-->
+                <div id="PayForm" class="tab-pane fade">
+
+                </div>
+                <!--PayForm-->
+            </div>
+
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#ACTION_TYPE').val("1");
+        $('#ACTION_TYPE_TEXT').val("補發"); 
+
+        $('#DIVISION').change(function () {
+            GetLicNumList();
+        });
+
+        $('#ACTION_TYPE').change(function () { 
+            $('#ACTION_TYPE_TEXT').val($('#ACTION_TYPE option:selected').val());
+        }); 
+
+        $('#ACTION_RES').change(function () {
+
+            if ($('#ActionTyp2').is(':checked') && $('#ACTION_RES option:selected').val() == 'A') {
+                blockAlert('換發原因不可為遺失，請重新選擇!!', '訊息');
+                $('#ACTION_RES').val('');
+            }
+            else {
+                if ($('option:selected', this).val() == 'E') {
+                    $('#OTHER_RES').removeProp("readonly");
+                }
+                else {
+                    $('#OTHER_RES').prop("readonly", "readonly");
+                    $('#OTHER_RES').val('');
+                }
+                $('#ACTION_RES_TEXT').val($('#ACTION_RES option:selected').text());
+            }
+
+        }); 
+
+        $('#ActionTyp1').click(function () {
+            $('#ActionTyp1').attr("checked", "checked");
+            $('#ActionTyp2').removeAttr("checked");
+            $('#ACTION_TYPE').val("1");
+            $('#ACTION_TYPE_TEXT').val("補發"); 
+            $('#ACTION_RES').val('');            
+            $('select[id="ACTION_RES"] option[value="B"]').remove();
+            $('select[id="ACTION_RES"] option[value="C"]').remove();
+            $('select[id="ACTION_RES"] option[value="D"]').remove();
+            $('select[id="ACTION_RES"] option[value="E"]').remove();
+            $('select[id="ACTION_RES"]').append(new Option("遺失", "A"));
+            $('select[id="ACTION_RES"]').append(new Option("其他", "E"));
+            $('#OTHER_RES').attr('readonly', 'readonly')
+            $('#OTHER_RES').val('');
+        });
+
+        $('#ActionTyp2').click(function () {
+            $('#ActionTyp2').attr("checked", "checked");
+            $('#ActionTyp1').removeAttr("checked");
+            $('#ACTION_TYPE').val("2");
+            $('#ACTION_TYPE_TEXT').val("換發");
+            $('#ACTION_RES').val('');
+            $('select[id="ACTION_RES"] option[value="A"]').remove();
+            $('select[id="ACTION_RES"] option[value="E"]').remove();
+            $('select[id="ACTION_RES"]').append(new Option("破損", "B"));
+            $('select[id="ACTION_RES"]').append(new Option("護貝", "C"));
+            $('select[id="ACTION_RES"]').append(new Option("藥師法修正", "D"));
+            $('select[id="ACTION_RES"]').append(new Option("其他", "E"));
+            $('#OTHER_RES').attr('readonly', 'readonly')
+            $('#OTHER_RES').val('');
+            blockAlert("需將原領證書正本寄回衛生福利部醫事司", "訊息");
+        }); 
+
+        $('#DOMAINList').change(function () {
+            if ($('#DOMAINList option:selected').text() == '自訂' || $('#DOMAINList option:selected').text() == '請選擇') {
+                $('#MAIL_DOMAIN').val('');
+            }
+            else {
+                $('#MAIL_DOMAIN').val($('#DOMAINList option:selected').text());
+            }
+        });
+
+        $('#CITY_CODE').on('blur', doCITYNameGet);
+        doCITYNameGet();
+
+    });
+
+    function GetLicNumList() {
+        var code_pcd = $('#DIVISION');
+
+        var data = {
+            'url': '/Ajax/GetLicNumList', 'msg': '查無該證書字號!!', 'arg': { 'code_pcd': code_pcd.val() }, 'result': $('#DIVISION')
+        };
+
+        if ($.trim(data.arg.code_pcd) == '')
+            data.result.val('');
+        else {
+            code_pcd.val(data.arg.code_pcd);
+            loadLicNumList(data, 'LIC_CD');
+        }
+    };
+
+    function loadLicNumList(data, objectId) {
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) {
+                data.result.val('');
+            }
+            else {
+                if (resp.data != '') {
+                    $('#' + objectId).empty();
+                    $.each(resp.data, function (i, item) {
+                        $('#' + objectId).append('<option value=' + item.CODE + ' selected>' + item.TEXT + '</option>');
+                    });
+                }
+                else {
+                    data.result.val('');
+                    blockAlert(data.msg);
+                }
+            }
+        });
+    };
+
+    // 地址
+    function loadDialogCITYCodeMapName(data) {
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) data.box.val('');
+            else {
+                if (resp.data != '') data.box.val(resp.data);
+                else { data.box.val(''); data.add.val(''); blockAlert(data.msg); }
+            }
+        });
+    };
+
+    function doCITYSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢'; popupWindow({ 'width': 900 }, url, title, null, function (retData, doc) {
+            if (retData != null) {
+                $('#CITY_CODE').val(retData.Id);
+                $('#CITY_TEXT').val(retData.Name);
+            }
+        });
+    }
+
+    function doCITYNameGet() {
+        var code = $('#CITY_CODE');
+        var data = { 'url': '/Ajax/GetCityTown', 'msg': '查無該郵遞區號!!', 'arg': { 'CODE': code.val().toUpperCase() }, 'box': $('#CITY_TEXT'), 'add': $('#CITY_CODE') };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogCITYCodeMapName(data);
+        }
+    };
+
+    //預覽
+    function doPreView() {
+
+        if (validation())
+        {
+            $('#DIVISION_TEXT').val($('#DIVISION option:selected').text());
+            $('#LIC_CD_TEXT').val($('#LIC_CD option:selected').text());
+            $('#LIC_TYPE').val($('#DIVISION option:selected').val());
+
+            $('#FULL_ADDRESS').val($('#CITY_CODE').val() + $('#CITY_TEXT').val() + $('#CITY_DETAIL').val())
+
+            if ($('#TEL_SEC').val() == '' || $('#TEL_NO').val() == '') {
+                $('#TEL').val('');
+            }
+            else {
+                $('#TEL').val($('#TEL_SEC').val() + '-' + $('#TEL_NO').val())
+            }
+
+            if ($('#TEL').val() != '' && $('#TEL_EXT').val() != '') {
+                $('#TEL').val($('#TEL_SEC').val() + '-' + $('#TEL_NO').val() + '#' + $('#TEL_EXT').val());
+            }
+
+            $('#MAIL').val($('#MAIL_ACCOUNT').val() + '@@' + $('#MAIL_DOMAIN').val().replace('@@', ''));
+
+            var data = getFormDataToObject($("form[id=main_form]"));
+            ajaxLoadMore('@Url.Action("ApplyAjax")', data, function (retData) {
+                if (retData.status) {
+                    ajaxLoadMore('@Url.Action("PreView")', data, function (getHtml) {
+                        $('#Apply_Tab').removeClass('active');
+                        $('#ApplyForm').attr('class', 'tab-pane fade');
+
+                        $('#PreView_Tab').attr('class', 'active');
+                        $('#PreViewForm').attr('class', 'tab-pane fade active in');
+
+                        $("#PreViewForm").html(getHtml);
+
+                    });
+                }
+                else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+        }
+    }
+
+    function validation()
+    {
+        var msg = '';
+
+        if ($('#APPLY_NAME').val().trim() == '') {
+            msg += '請輸入申請人<br/>';
+        }
+
+        if ($('#APPLY_PID').val().trim()=='')
+        {
+            msg += '請輸入身分證編號/居留證號<br/>';
+        }
+
+        @*20210120 fix 因身分證/居留證號已改唯讀不提供編輯，暫時先拿掉先前寫的身分證格式檢核*@
+        //if (!checkID($('#APPLY_PID').val())) {
+        //    msg += '請輸入"正確"身分證編號/居留證號<br/>';
+        //}
+
+        if ($('#BIRTHDAY_AC').val().trim() == '') {
+            msg += '請輸入出生年月日<br/>';
+        }
+
+        //if ($('#ISSUE_DATE_AC').val().trim() == '') {
+        //    msg += '請輸入核發日期<br/>';
+        //}
+
+        if ($('#DIVISION option:selected').val().trim() == '') {
+            msg += '請選擇科別<br/>';
+        }
+
+        if ($('#DIVISION option:selected').val().trim() == 'C0700' 
+            || $('#DIVISION option:selected').val().trim() == 'C0701' 
+            || $('#DIVISION option:selected').val().trim() == 'C0900') {
+            msg += '很抱歉，您所選擇的類型，尚未開放線上申辦。<br/>';
+        }
+        //if ($('#LIC_CD option:selected').val() == undefined || $('#LIC_CD option:selected').val().trim() == '') {
+        //    msg += '請選擇證書<br/>';
+        //}
+
+        //if ($('#LIC_NUM').val().trim() == '') {
+        //    msg += '請輸入證書字號<br/>';
+        //}
+
+        if ($('#ACTION_RES option:selected').val().trim() == '') {
+            msg += '請選擇補(換)發原因<br/>';
+        }
+
+        if ($('#OTHER_RES').val().trim() == '' && $('#ACTION_RES').val()=='E') {
+            msg += '請輸入補(換)發原因<br/>';
+        } 
+
+        if ($('#CITY_CODE').val().trim() + $('#CITY_TEXT').val().trim() + $('#CITY_DETAIL').val().trim() == '')
+        {
+            msg += '請輸入通訊地址<br/>';
+        }
+
+        if ($('#TEL_SEC').val().trim() + $('#TEL_NO').val().trim() != '') {
+            //msg += '請輸入電話<br/>';
+            var telNo = $('#TEL_SEC').val().trim() + '-' + $('#TEL_NO').val().trim();
+            var telNum = '#' + $('#TEL_EXT').val().trim();
+            if (telNum != '#')
+            { telNo = telNo + telNum; }
+            if (!(telNo).match(/^(\d{2,4}-)(\d{6,8})?(#\d{1,6})?$/)) {
+                msg += '電話輸入格式不正確<br/>';
+            }
+        }
+
+        if ($('#MOBILE').val().trim()=='' ) {
+            msg += '請輸入行動電話<br/>';
+        }
+
+        if ($('#MAIL_ACCOUNT').val().trim() == '' || $('#MAIL_DOMAIN').val().trim() == '') {
+            msg += '請輸入完整E-MAIL<br/>';
+        }
+
+        //if ($('#ATTACH_FILE').val().trim() == '') {
+        //    blockAlert('請上傳繳費紀錄照片或pdf檔案', '訊息');
+        //    return false;
+        //}
+
+        if (msg != '') {
+            blockAlert(msg, '訊息');
+            return false;
+        }
+
+        return true;
+    }
+
+    function setFileName(objName)
+    {
+        //var validExts = new Array(".doc", ".docx", ".odt", ".odf", ".ods", ".xls", ".xlsx", ".pdf", ".ppt", ".pptx", ".jpg", ".bmp", ".png", ".gif", ".tif", ".zip");
+        var validExts = new Array(".PDF", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF");
+
+        var fileExt = $('input[name="' + objName + '"]').val();
+        fileExt = fileExt.substring(fileExt.toLowerCase().lastIndexOf('.'));
+
+        if ($('input[name="' + objName + '"]')[0].files[0].size / 1024 / 1024 > 5) {
+            blockAlert("檔案大小不可超過5MB");
+            $('input[name="' + objName + '"]').val(null);
+            return false;
+        }
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + objName + '"]').val(null);
+            return false;
+        }
+        else {
+            $('#ATTACH_FILE_NAME').val($('input[name="' + objName + '"]').val().replace(/C:\\fakepath\\/i, ''));
+            return true;
+        }
+    }
+
+</script>

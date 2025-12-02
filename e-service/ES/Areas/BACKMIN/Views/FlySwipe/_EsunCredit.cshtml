@@ -1,0 +1,14 @@
+﻿@using ES.Areas.Admin.Models;
+@model FlySwipeModel
+@{
+    ViewBag.Title = "單筆查詢";
+}
+
+<form id="fm" method="post" action="">
+    <textarea name="data" id="esdata" style="display:none">@(Model.es.data)</textarea>
+    <input type="hidden" name="mac" id="esmac" value="@Model.es.mac">
+    <input type="hidden" name="ksn" id="esksn" value="@Model.es.ksn" />
+    <div class="btnbar">
+        <button type="submit" class="btn btn-info">單筆查詢</button>
+    </div>
+</form>

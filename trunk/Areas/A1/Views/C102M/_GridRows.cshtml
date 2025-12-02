@@ -1,0 +1,32 @@
+﻿@using EECOnline.Areas.A1.Models;
+@using EECOnline.Services;
+@model C102MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        @Html.HiddenFor(x => x.Grid[i].keyid)
+        @Html.HiddenFor(x => x.Grid[i].hospital_code)
+        @Html.HiddenFor(x => x.Grid[i].hospital_name)
+        @Html.HiddenFor(x => x.Grid[i].his_type)
+        @Html.HiddenFor(x => x.Grid[i].his_type_name)
+
+        <tr>
+            <td align="center">@item.his_type_name</td>
+            <td align="center">
+                @Html.TextBoxFor(x => x.Grid[i].price, new { @class = "form-control" })
+            </td>
+            <td align="center">
+                @Html.DatePickerTWFor(x => x.Grid[i].show_date1, new { @style = "display: inline-flex;", placeholder = "yyy/mm/dd" }) ～
+                @Html.DatePickerTWFor(x => x.Grid[i].show_date2, new { @style = "display: inline-flex;", placeholder = "yyy/mm/dd" })
+            </td>
+            <td align="center">
+                <button class="btn" style="display: inline-flex" onclick="onCancel('@item.keyid')">
+                    <i class="bx bxs-trash" style="zoom:1.4"></i> 清除
+                </button>
+            </td>
+        </tr>
+    }
+}

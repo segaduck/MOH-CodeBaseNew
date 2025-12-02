@@ -1,0 +1,154 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_010001FormModel
+@{
+    Layout = null;
+}
+
+@Html.FrontControlForTurbo(Model, Model.IsNew)
+@Html.HiddenFor(x => x.A_AGENT)
+    @if (Model.IsNew)
+    {
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="doPreView()">存檔並預覽</button>
+            <button type="reset" class="btn btn-clear">清除資料</button>
+        </div>
+    }
+    else
+    {
+        <div class="form-set">
+            <div class="btn-bar text-center">
+                <button type="button" class="btn btn-save" onclick="doSave()">確認送出</button>
+                <button type="button" class="btn btn-clear" onclick="doBack()">返回修改</button>
+            </div>
+        </div>
+    }
+
+
+    <script>
+
+        $(document).ready(function () {
+            $('span button').removeAttr("disabled");
+            $('#CHECKNO_NOTE').parent().parent().css("display", "none");
+            $("#form_NPIN_FILE_01").children('label').html('<span style="color:red;" sr-only="必填">＊必填</span>代理上傳委任書電子檔');
+            $("#form_LPIN_FILE_02").children('label').html('<span style="color:red;" sr-only="必填">＊必填</span>代理<法人>上傳登記證影本');
+
+            $('input:checkbox[name="CHECKNO_SHOW"]').click(function () { doCHECKNOCHK(); });
+            $('input:radio[name="APP_ROLE"]').click(function () { doSELFChnage(); });
+            $('input:radio[name="A_AGENT"]').click(function () { doNPLPChange(); });
+            doSELFChnage();
+            doNPLPChange();
+            doMode();
+            doCHECKNOCHK();
+        });
+
+        // 轉至瀏覽
+        function doPreView() {
+            if ($('#CHECKNO_ITEMS').val().indexOf("8") >= 0) {
+                if ($('#CHECKNO_NOTE').val() == "") {
+                    blockAlert("請填入申請目的及用途(其他)")
+                }
+                else {
+                    $("#IsMode").val("1"); // 0:新增模式 / 1:瀏覽模式
+                    blockUI();
+                    var form = $("form[id=main_form]");
+                    form.attr('action', '@Url.Action("Apply")').submit();
+                }
+            }
+            else {
+                $("#IsMode").val("1"); // 0:新增模式 / 1:瀏覽模式
+                blockUI();
+                var form = $("form[id=main_form]");
+                form.attr('action', '@Url.Action("Apply")').submit();
+            }
+
+        }
+
+        // 送出
+        function doSave() {
+            blockUI();
+            var form = $("form[id=main_form]");
+            form.attr('action', '@Url.Action("Save")').submit();
+        }
+
+        // 返回
+        function doBack() {
+            blockUI();
+            $("#IsMode").val("0"); // 0:新增模式 / 1:瀏覽模式
+            var form = $("form[id=main_form]");
+            form.attr('action', '@Url.Action("Apply")').submit();
+        }
+
+        function doMode() {
+            var formTab = $("#form_tab");
+            var formTab1 = $("#form_tab1");
+            if ($("#IsMode").val() == "1") {
+                formTab.removeClass('active');
+                formTab1.attr('class', 'active');
+            }
+            else {
+                formTab.attr('class', 'active');
+                formTab1.removeClass('active');
+            }
+        }
+        function doSELFChnage() {
+            var SELF = $('input:radio:checked[name="APP_ROLE"]').val();
+            var ROLE1 = $('input:radio[name="A_AGENT"]');
+            var NP = $("#NP");
+            var LP = $("#LP");
+            ROLE1.attr("disabled", "disabled");
+            NP.attr("style", "display:none");
+            LP.attr("style", "display:none");
+            if (SELF == "1") {
+                ROLE1.removeAttr("disabled", "diabled");
+                doNPLPChange();
+            }
+        }
+        function doNPLPChange() {
+            var SELF = $('input:radio:checked[name="APP_ROLE"]').val();
+            var NPLP = $('input:radio:checked[name="A_AGENT"]').val();
+            var NP = $("#NP");
+            var LP = $("#LP");
+
+            NP.attr("style", "display:none");
+            LP.attr("style", "display:none");
+            if (NPLP == "0" && SELF == "1") {
+                NP.removeAttr("style");
+            }
+            if (NPLP == "1" && SELF == "1") {
+                LP.removeAttr("style");
+            }
+        }
+
+        // 申請項目
+        function doCHECKNOLstGetVal(i) {
+
+            var pid = $('input[type="checkbox"]', i).eq(0).prop('name');
+            var vid = pid.substring(0, pid.lastIndexOf("_")).replace("_", ".");
+            var ValArr = new Array();
+            $('input:checkbox:checked[name="' + pid + '"]').each(
+                function (i) {
+                    ValArr[i] = this.value;
+                });
+            var ValArrtoStr = ValArr.join()
+            $('input[type= "hidden"][name="' + vid + '_Lst"]').val(ValArrtoStr);
+        }
+
+        // 申請目的及用途
+        function doCHECKNOCHK() {
+
+            var ValArr = new Array();
+            $('input:checkbox:checked[name="CHECKNO_SHOW"]').each(function (i) {
+                ValArr[i] = this.value;
+            });
+            if (ValArr.indexOf("8") < 0) {
+                $('#dCHECKNO_NOTE').css("display", "none");
+            }
+            else {
+                $('#dCHECKNO_NOTE').css("display", "");
+            }
+            var ValArrtoStr = ValArr.join();
+            $('#CHECKNO_ITEMS').val(ValArrtoStr);
+        }
+
+    </script>

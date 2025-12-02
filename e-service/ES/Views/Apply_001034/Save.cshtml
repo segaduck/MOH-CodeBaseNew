@@ -1,0 +1,64 @@
+﻿@using ES.Models;
+@using ES.Services;
+@using ES.Models.ViewModels;
+@model Apply_001034ViewModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+    SessionModel sm = SessionModel.Get();
+}
+
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink">
+            <i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">危險性醫療儀器進口申請作業</a>
+        </div>
+        <div class="clearfix"></div>
+        @if (Model == null)
+        {
+            <div class="step_map">
+                <ul>
+                    <li>填寫申報表件並上傳檔案</li>
+                    <li>預覽申辦表件</li>
+                    <li class="active">完成申報</li>
+                </ul>
+            </div>
+        }
+
+        <!--form-->
+        <h1 class="form-title  title-bg-y">訊息</h1>
+        <div class="form-set">
+            <div class="form-group">
+                <div class="col-sm-12" style="margin-top:10px">
+                    @sm.UserInfo.Member.NAME，您好:<br />
+
+                    @if (Model == null)
+                    {
+                        @Html.Raw("您申請申請危險性醫療儀器進口，已完成系統資料填答及上傳流程，將盡速辦理您的申辦案件，謝謝。");
+                    }
+                    else
+                    {
+                        switch (Model.STATUS.TONotNullString())
+                        {
+                            case "A":
+                                @Html.Raw("您申請申請危險性醫療儀器進口，已完成資料補件共" + Model.AppDocCount.TONotNullString() + "件，將盡速辦理您的申辦案件，謝謝。");
+                                break;
+                            default:
+                                @Html.Raw("您申請申請危險性醫療儀器進口，已完成系統資料填答及上傳流程，將盡速辦理您的申辦案件，謝謝。");
+                                break;
+
+                        }
+                    }
+
+                    <p class="form-control-static" align="right">衛生福利部</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="clearfix"></div>
+
+</div>   

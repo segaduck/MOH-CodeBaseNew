@@ -1,0 +1,97 @@
+﻿@using Turbo.ReportTK;
+@using System.Collections;
+@using EECOnline.Models;
+@using EECOnline.Services;
+@using EECOnline.DataLayers;
+@using EECOnline.Models.Entities;
+@model Report
+@{
+    Layout = null;
+}
+
+<style>
+    .RptPage {
+        page-break-after: always;
+    }
+
+        .RptPage .title {
+            font-size: 28pt;
+            font-family: 標楷體;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .RptPage .content {
+            width: 100%;
+            font-size: 24pt;
+            font-family: 標楷體;
+            text-align: center;
+        }
+
+        .RptPage .memo {
+            width: 100%;
+            font-size: 14pt;
+            font-family: 標楷體;
+            text-align: left;
+        }
+
+        .RptPage .myfooter {
+            width: 100%;
+            font-size: 24pt;
+            font-family: 標楷體;
+            text-align: right;
+        }
+
+        .RptPage .ident {
+            padding-left: 0px;
+            padding-top: 5px;
+        }
+
+        .RptPage .info {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #000000;
+        }
+
+            .RptPage .info th {
+                border: 1px solid black;
+                font-size: 16pt;
+                line-height: 20pt;
+                font-family: 標楷體;
+            }
+
+            .RptPage .info td {
+                border: 1px solid black;
+                font-size: 16pt;
+                line-height: 20pt;
+                font-family: 標楷體;
+            }
+
+    #waterMark {
+        text-align: center;
+        width: 830px;
+        /*margin-left: 100px;*/
+        /*margin-top: 200px;*/
+        /*margin-bottom: 0px;*/
+        /*z-index: -10;*/
+        position: absolute;
+        opacity: 0.2;
+    }
+
+    /*
+    #square {
+        width: 100px;
+        height: 100px;
+        border: 1px solid black;
+        display: inline-block;
+    }
+    */
+</style>
+
+@{
+    var tmpStr = Model.Results.FirstOrDefault()["Report_HTML"].TONotNullString();
+}
+
+<div class="RptPage">
+    @Html.Raw(tmpStr)
+</div>

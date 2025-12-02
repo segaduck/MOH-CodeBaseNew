@@ -1,0 +1,65 @@
+﻿@using ES.Services;
+@using ES.Models.ViewModels;
+@model ApplyDonateViewModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "線上捐款";
+}
+<div class="container-fluid">
+    @using (Html.BeginForm("Index", "ApplyDonate", FormMethod.Post, new { id = "ActionForm", @class = "form-inline" }))
+    {
+    <!--bread -->
+        <div class="col-sm-12">
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> > <a href="@(Url.Action("Index", "ApplyDonate"))">線上捐款</a></div>
+        </div>
+    <!--news -->
+        <div class="col-sm-12">
+            <div class="index-note">
+                <h3 class="note-title note-titlebar-blue">線上捐款</h3>
+                <!-- news search bar -->
+                <div class="table-responsive">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-newsList table">
+                        <thead>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th align="center">捐款</th>
+                                <th align="center">專戶名稱</th>
+                                <th align="center">起訖日</th>
+                                <th align="center">專戶說明</th>
+                                <th align="center">附件</th>
+                            </tr>
+                            @if (Model.Grid != null && Model.Grid.Count > 0)
+                            {
+                                foreach (var item in Model.Grid)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="@Url.Action("Detail","ApplyDonate",new { srv_id_donate = item.SRV_ID_DONATE})" class="btn btn-info">捐款</a>
+                                        </td>
+                                        <td>@Html.Raw(item.NAME_CH)<br />@Html.Raw(item.NAME_ENG)</td>
+                                        <td>@Html.Raw(item.START_DATE.Value.ToString("yyyy/MM/dd"))~@Html.Raw(item.END_DATE.Value.ToString("yyyy/MM/dd"))</td>
+                                        <td>@Html.Raw(item.DESC_CH)<br />@Html.Raw(item.DESC_ENG)</td>
+                                        <td>
+                                            @if (item.FileGrid != null && item.FileGrid.Count > 0)
+                                            {
+                                                foreach (var file in item.FileGrid)
+                                                {
+                                                    var fileArry = file.ToSplit(',');
+                                                    <a href="#" class="btn btn-download" title="@fileArry[0]" onclick="doDownLoadFILE('@fileArry[0]','@fileArry[1]','@fileArry[2]','@fileArry[3]');">@fileArry[0]</a>
+                                                    <br />
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="clearfix"></div>
+
+</div>

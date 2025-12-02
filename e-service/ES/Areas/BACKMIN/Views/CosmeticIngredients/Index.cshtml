@@ -1,0 +1,73 @@
+﻿@model ES.Areas.Admin.Models.CosmeticIngredientsActionModel
+@{
+    ViewBag.Title = "一般化妝品成分管理";
+    ViewBag.FunctionTitle = "一般化妝品成分管理";
+
+    ViewBag.Script = @"
+        function doQuery(page) {
+            $('#ActionType').val('Query');
+            $('#NowPage').val(page);
+        }
+
+        function doDelete(id, word) {
+            if(confirm('確定要刪除['+word+']成分嗎？')) {
+                $('#ActionType').val('Delete');
+                $('#ActionId').val(id);
+                $('#ActionForm').submit();
+            }
+        }
+    ";
+}
+
+<center>
+@using (Html.BeginForm("Index", "CosmeticIngredients", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <table class="formTable1" style="width: 400px;">
+        <tr>
+            <th style="width: 130px;">@Html.DisplayNameFor(m => m.Content)</th>
+            <td>@Html.TextBoxFor(m => m.Content)</td>
+        </tr>
+    </table>
+    <div class="formButtomBar">
+        @Html.HiddenFor(m => m.NowPage)
+        @Html.HiddenFor(m => m.ActionType)
+        @Html.HiddenFor(m => m.ActionId)
+        <input type="submit" value="查詢" onclick="doQuery('1')" />
+        <input type="reset" value="重填" />
+    </div>
+}
+</center>
+<hr />
+<div>
+    <div style="float: left; padding-bottom: 5px;"><input type="button" value="新增化妝品成分" onclick="document.location.href='@Url.Action("New", "CosmeticIngredients")';" /></div>
+    @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+</div>
+<table class="gridTable1">
+    <tr>
+        <th style="width: 80px;">動作</th>
+        <th>成分</th>
+        <th style="width: 100px;">限量（％）</th>
+    </tr>
+    @foreach (ES.Areas.Admin.Models.CosmeticIngredientsModel item in ViewBag.List)
+    {
+        <tr>
+            <td>
+                <input type="button" value="修" onclick="$('#ActionType').val('Edit');$('#ActionId').val('@item.CosmeticId');$('#ActionForm').submit();" />
+                <input type="button" value="刪" onclick="doDelete('@item.CosmeticId', '@item.Content');" />
+            </td>
+            <td>@item.Content</td>
+            <td>
+            @if (item.Type.Equals("A"))
+            {
+                @item.Number1
+            }
+            else
+            {
+                @item.Number1@Html.Raw(" ～ ")@item.Number2
+            }
+            </td>
+        </tr>
+    }
+</table>

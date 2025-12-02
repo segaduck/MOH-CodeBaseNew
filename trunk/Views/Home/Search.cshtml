@@ -1,0 +1,1295 @@
+﻿@using EECOnline.Models;
+@using EECOnline.Models.Entities;
+@using EECOnline.Services;
+@using EECOnline.DataLayers;
+@using System.Collections;
+@model HomeViewModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    // 登入頁面顯示設定
+    string Active1 = (Model.UserLoginTab == "1") ? "active" : "";
+    string Active2 = (Model.UserLoginTab == "2") ? "active" : "";
+    string Active3 = (Model.UserLoginTab == "3") ? "active" : "";
+    string TabActive1 = (Model.UserLoginTab == "1") ? "active show" : "";
+    string TabActive2 = (Model.UserLoginTab == "2") ? "active show" : "";
+    string TabActive3 = (Model.UserLoginTab == "3") ? "active show" : "";
+    // 作用中的頁籤
+    string ActiveGridTab1 = "";
+    string ActiveGridTab2 = "";
+    string ActiveGridTab3 = "";
+    string ActiveGrid1 = "";
+    string ActiveGrid2 = "";
+    string ActiveGrid3 = "";
+    if (Model.SearchApply != null)
+    {
+        ActiveGridTab1 = (Model.SearchApply.ActiveGridTab == "1") ? "active" : "";
+        ActiveGridTab2 = (Model.SearchApply.ActiveGridTab == "2") ? "active" : "";
+        ActiveGridTab3 = (Model.SearchApply.ActiveGridTab == "3") ? "active" : "";
+        ActiveGrid1 = (Model.SearchApply.ActiveGridTab == "1") ? "active show" : "";
+        ActiveGrid2 = (Model.SearchApply.ActiveGridTab == "2") ? "active show" : "";
+        ActiveGrid3 = (Model.SearchApply.ActiveGridTab == "3") ? "active show" : "";
+    }
+    var OnOff = ConfigModel.level1OnOrOff;
+
+    // 取醫院代號
+    var Data_HospitalCode = "";
+    if (Model.SearchApplyDetail != null)
+    {
+        Data_HospitalCode = Model.SearchApplyDetail.hospital_code;
+    }
+
+    FrontDAO dao = new FrontDAO();
+    var GetSetups = dao.QueryForListAll<Hashtable>("Front.get_ApplyDetail_Pay_SETUP", null);
+    // 亞東
+    var TransRedirectAction = "https://" + dao.GetDataFromHashtableList(GetSetups, "PAY_EEC_DOMAINNAME") + dao.GetDataFromHashtableList(GetSetups, "PAY_EEC_REQUESTURL");
+    // 中山醫
+    var TransRedirectAction_csh = dao.GetDataFromHashtableList(GetSetups, "PAY_EEC_POST_URL_CSH");
+
+    var OpenResponsePage = "";
+    if (Model.ProcessStep == "3")
+    {
+        var getRP = dao.GetRow(new TblEEC_Hospital() { code = Model.SearchApplyDetail.hospital_code });
+        if (getRP != null && getRP.ResponsePage.TONotNullString() != "")
+        {
+            OpenResponsePage = getRP.ResponsePage;
+        }
+    }
+}
+<script src="~/Scripts/cert/HiPKICerts.js"></script>
+<script src="~/Scripts/cert/HiPKIErrorcode.js"></script>
+<style>
+    .time-out-div {
+        position: absolute;
+        margin-top: 1rem;
+        margin-left: 13rem;
+    }
+
+    .time-out-img {
+        margin-top: -0.3rem;
+    }
+</style>
+<div id="step1" style="display:none">
+    @if (Model.ProcessStep == "1")
+    {
+        <section id="step">
+            <div class="container">
+                <div class="row" role="tablist">
+                    <a class="accesskey" href="#aC" id="aC" accesskey="C" title="主要內容區">:::</a>
+                    <div class="col-sm-4">
+                        <div class="login-card cardBg-green">
+                            <a href="#loginTypeA" data-bs-toggle="tab" class="@Active1">
+                                <img src="~/assests/images/loginType-01.svg" alt="自然人憑證登入">
+                                <h1>自然人憑證登入<div class="note-xs">本服務需使用讀卡機，建議使用電腦操作。</div></h1>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="login-card cardBg-purple">
+                            <a href="#loginTypeB" data-bs-toggle="tab" class="@Active2">
+                                <img src="~/assests/images/loginType-02.svg" alt="行動自然人憑證登入(TW FidO)">
+                                <h1>行動自然人憑證登入(TW FidO)</h1>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="login-card cardBg-yellow">
+                            <a href="#loginTypeC" data-bs-toggle="tab" class="@Active3">
+                                <img src="~/assests/images/loginType-03.svg" alt="身分證字號＋健保卡">
+                                <h1>
+                                    身分證字號＋健保卡
+                                    <!--<div class="note-xs">本服務需使用讀卡機，建議使用電腦操作。</div>-->
+                                </h1>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="tab-content">
+                            <div class="tab-pane @TabActive1" id="loginTypeA">
+                                <div class="board">
+                                    <div class="board-green board-sup" style="min-height: 18rem;">
+                                        <h1 class="board-title">自然人憑證登入</h1>
+                                        @using (Html.BeginForm("Search", "Home", FormMethod.Post, htmlAttributes: new { id = "loginform1", @class = "board-form" }))
+                                        {
+                                            @Html.HiddenFor(x => x.ProcessStep)
+                                            @Html.HiddenFor(x => x.UserLoginTab)
+                                            @Html.HiddenFor(x => x.Search.user_idno4Last)
+                                            <div class="col-sm-12">
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="自然人憑證 PIN 碼是必填欄位" style="color: red;">*</label>
+                                                        自然人憑證 PIN 碼
+                                                    </label>
+                                                    <div class="col-md-6 col-sm-7">
+                                                        @Html.PasswordFor(x => x.Search.user_pincode, new { @class = "form-control", placeholder = "請插入您的自然人憑證並輸入PIN碼", autocomplete = "new-password" })
+                                                        <span class="eye-icon" href="javascript: void(0)" onclick="doOpenPd(this)" onkeypress="doOpenPd(this)" title="查看自然人憑證PIN碼" tabindex="0" style="position: absolute; top: 0.5rem; right: 1.7rem;">
+                                                            <i id="openPd" title="查看自然人憑證PIN碼" class="fas fa-eye" aria-hidden="true"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="驗證碼是必填欄位" style="color: red;">*</label>
+                                                        驗證碼
+                                                    </label>
+                                                    <div class="col-sm-2">
+                                                        <div class="form-floating" style="margin-right: 1rem;">
+                                                            @Html.TextBoxFor(m => m.Search.ValidateCode1, new { @class = "form-control", @placeholder = "請輸入驗證碼", maxlength = "10" })
+                                                            <label for="code">驗證碼</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-1 col-6" style="margin: initial; padding: initial; margin-right: 0.5rem;">
+                                                        <img id="vCode1" src="@Url.Action("GetValidateCode1", "Home")" alt="驗證碼" class="login-code" data-toggle="tooltip" data-placement="top" title="產生新驗證碼" style="margin-top: 0.5rem;" />
+                                                    </div>
+                                                    <div class="col-sm-1 col-6">
+                                                        <div class="help-link" style="text-align: center; display: inline-flex; margin-top: 0.5rem;">
+                                                            <a href="@Url.Action("VCodeAudio1", "Home")" target="frmPlayer" title="撥放語音驗證碼">
+                                                                <img id="playCode" alt="撥放語音驗證碼" src="~/images/speaker.svg" height="40" class="pull-right" />
+                                                            </a>
+                                                            <a href="javascript: void(0)" onclick="reloadValidCode1()">
+                                                                <img src="~/images/revision.svg" height="40" alt="重新產生驗證碼" title="重新產生驗證碼" />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <script type="text/javascript">
+                                                    function reloadValidCode1() {
+                                                        blockUI();
+                                                        $('#vCode1').attr("src", '@Url.Action("GetValidateCode1")' + "?rand=" + new Date().getMilliseconds());
+                                                    }
+                                                    $(function () {
+                                                        $('#vCode1').on("click", function (e) {
+                                                            reloadValidCode1();
+                                                        });
+                                                        $('#vCode1').on("load", function () {
+                                                            unblockUI();
+                                                        });
+                                                    });
+                                                </script>
+                                                <div class="btnBar">
+                                                    <button type="button" class="btn btn-apply" onclick="OnSearchLoginForm1_Login()">登入</button>
+                                                    <button type="button" class="btn btn-cancel" onclick="OnSearchLoginForm1_Clear()">清除</button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="board-gray board-sub">
+                                        <div class="help-note">
+                                            <p>注意事項：</p>
+                                            <ol>
+                                                <li>需使用憑證IC卡與讀卡機。</li>
+                                                <li>使用前需先申請憑證，申請憑證請依種類至各憑證管理中心辦理。</li>
+                                                <li>初次使用憑證登入，請務必安裝最新版本HICOS元件(2.1.9.6以上之版本)與跨平臺網頁元件方能完整支援自然人憑證之讀取及使用。<a href="https://moica.nat.gov.tw/download_1.html" target="_blank" title="HICOS元件下載">HICOS元件下載</a></li>
+                                                <li>若有自然人憑證相關問題，請洽<a href="https://moica.nat.gov.tw/main.html" target="_blank" title="內政部憑證管理中心">內政部憑證管理中心</a>。</li>
+                                                <li>若忘記PIN碼或鎖卡，請至<a href="https://moica.nat.gov.tw/unblockcard.html" target="_blank" title="憑證網站">憑證網站</a>處理。</li>
+                                            </ol>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane @TabActive2" id="loginTypeB">
+                                <div class="board">
+                                    <div class="board-purple board-sup" style="min-height: 23rem;">
+                                        <h1 class="board-title">行動自然人憑證登入</h1>
+                                        <div class="row">
+                                            <div class="col-md-9 col-sm-12">
+                                                @using (Html.BeginForm("Search", "Home", FormMethod.Post, htmlAttributes: new { id = "loginform2", @class = "board-form" }))
+                                                {
+                                                    @Html.HiddenFor(x => x.ProcessStep)
+                                                    @Html.HiddenFor(x => x.UserLoginTab)
+                                                    <div class="form-group row">
+                                                        <label for="" class="form-label col-sm-4">
+                                                            <label title="身分證字號是必填欄位" style="color: red;">*</label>
+                                                            身分證字號
+                                                        </label>
+                                                        <div class="col-sm-7">
+                                                            @Html.PasswordFor(x => x.Search.user_idno1, new { @class = "form-control", placeholder = "請輸入您的身分證字號", autocomplete = "new-password" })
+                                                            <span class="eye-icon" href="javascript: void(0)" onclick="doOpenPd(this)" onkeypress="doOpenPd(this)" title="查看身分證字號" tabindex="0" style="position: absolute; top: 0.5rem; right: 1.7rem;">
+                                                                <i id="openPd" title="查看身分證字號" class="fas fa-eye" aria-hidden="true"></i>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="pwd" class="form-label col-sm-4">
+                                                            <label title="出生年月日是必填欄位" style="color: red;">*</label>
+                                                            出生年月日
+                                                        </label>
+                                                        <div class="col-sm-8">
+                                                            <div class="row g-2">
+                                                                <div class="col-auto"><div class="form-control-plaintext">民國</div></div>
+                                                                <div class="col-auto">
+                                                                    @Html.TextBoxFor(x => x.Search.user_birthday_Y, new { @class = "form-control", style = "width:3.5rem;", placeholder = "YYY" })
+                                                                </div>
+                                                                <div class="col-auto"><div class="form-control-plaintext">年</div></div>
+                                                                <div class="col-auto">
+                                                                    @Html.TextBoxFor(x => x.Search.user_birthday_M, new { @class = "form-control", style = "width:3.5rem;", placeholder = "MM" })
+                                                                </div>
+                                                                <div class="col-auto"><div class="form-control-plaintext">月</div></div>
+                                                                <div class="col-auto">
+                                                                    @Html.TextBoxFor(x => x.Search.user_birthday_D, new { @class = "form-control", style = "width:3.5rem;", placeholder = "DD" })
+                                                                </div>
+                                                                <div class="col-auto"><div class="form-control-plaintext">日</div></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="" class="form-label col-sm-4">
+                                                            <label title="驗證碼是必填欄位" style="color: red;">*</label>
+                                                            驗證碼
+                                                        </label>
+                                                        <div class="col-sm-2">
+                                                            <div class="form-floating" style="margin-right: 1rem;">
+                                                                @Html.TextBoxFor(m => m.Search.ValidateCode2, new { @class = "form-control", @placeholder = "請輸入驗證碼", maxlength = "10" })
+                                                                <label for="code">驗證碼</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-1 col-6" style="margin: initial; padding: initial; margin-right: 2.1rem;">
+                                                            <img id="vCode2" src="@Url.Action("GetValidateCode2", "Home")" alt="驗證碼" class="login-code" data-toggle="tooltip" data-placement="top" title="產生新驗證碼" style="margin-top: 0.5rem;" />
+                                                        </div>
+                                                        <div class="col-sm-1 col-6">
+                                                            <div class="help-link" style="text-align: center; display: inline-flex; margin-top: 0.5rem;">
+                                                                <a href="@Url.Action("VCodeAudio2", "Home")" target="frmPlayer" title="撥放語音驗證碼">
+                                                                    <img id="playCode" alt="撥放語音驗證碼" src="~/images/speaker.svg" height="40" class="pull-right" />
+                                                                </a>
+                                                                <a href="javascript: void(0)" onclick="reloadValidCode2()">
+                                                                    <img src="~/images/revision.svg" height="40" alt="重新產生驗證碼" title="重新產生驗證碼" />
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <script type="text/javascript">
+                                                        function reloadValidCode2() {
+                                                            blockUI();
+                                                            $('#vCode2').attr("src", '@Url.Action("GetValidateCode2")' + "?rand=" + new Date().getMilliseconds());
+                                                        }
+                                                        $(function () {
+                                                            $('#vCode2').on("click", function (e) {
+                                                                reloadValidCode2();
+                                                            });
+                                                            $('#vCode2').on("load", function () {
+                                                                unblockUI();
+                                                            });
+                                                        });
+                                                    </script>
+                                                    <div class="form-group row">
+                                                        <div class="col-lg-4"></div>
+                                                        <div class="col-lg-8 col-md-12">
+
+                                                            <div class="btnBar">
+                                                                <button type="button" class="btn btn-apply" onclick="OnSearchLoginForm2_Login()">產生TW FidO登入QR Code</button>
+                                                                <button type="button" class="btn btn-cancel" onclick="OnSearchLoginForm2_Clear()">清除</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="col-md-2" style="display: none;">
+                                                <div class="code-box"><img src="~/assests/images/qrcode-sample.svg" alt="qrcode-sample"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="board-gray board-sub">
+                                        <div class="help-note">
+                                            <p>注意事項：</p>
+                                            <ol>
+                                                <li>若首次使用行動自然人，請先參考內政部教學進行插卡綁定：<a href="https://fido.moi.gov.tw/pt/main/teaching" target="_blank">https://fido.moi.gov.tw/pt/main/teaching</a></li>
+                                                <li>行動自然人憑證操作<a href="https://fido.moi.gov.tw/pt/qa" target="_blank">常見問題</a>。</li>
+
+                                            </ol>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane @TabActive3" id="loginTypeC">
+                                <div class="board">
+                                    <div class="board-yellow board-sup" style="min-height: 23rem;">
+                                        <h1 class="board-title">身分證字號＋健保卡</h1>
+                                        @using (Html.BeginForm("Search", "Home", FormMethod.Post, htmlAttributes: new { id = "loginform3", @class = "board-form" }))
+                                        {
+                                            @Html.HiddenFor(x => x.ProcessStep)
+                                            @Html.HiddenFor(x => x.UserLoginTab)
+                                            <div class="col-sm-12">
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="姓名是必填欄位" style="color: red;">*</label>
+                                                        姓名
+                                                    </label>
+                                                    <div class="col-md-6 col-sm-7">
+                                                        @Html.TextBoxFor(x => x.Search.user_name, new { @class = "form-control", placeholder = "請輸入您的姓名", })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="身分證字號是必填欄位" style="color: red;">*</label>
+                                                        身分證字號
+                                                    </label>
+                                                    <div class="col-md-6 col-sm-7">
+                                                        @Html.PasswordFor(x => x.Search.user_idno2, new { @class = "form-control", placeholder = "請輸入您的身分證字號", autocomplete = "new-password" })
+                                                        <span class="eye-icon" href="javascript: void(0)" onclick="doOpenPd(this)" onkeypress="doOpenPd(this)" title="查看身分證字號" tabindex="0" style="position: absolute; top: 0.5rem; right: 1.7rem;">
+                                                            <i id="openPd" title="查看身分證字號" class="fas fa-eye" aria-hidden="true"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="" class="form-label col-md-3 col-sm-4">
+                                                        <label title="驗證碼是必填欄位" style="color: red;">*</label>
+                                                        驗證碼
+                                                    </label>
+                                                    <div class="col-sm-2">
+                                                        <div class="form-floating" style="margin-right: 1rem;">
+                                                            @Html.TextBoxFor(m => m.Search.ValidateCode3, new { @class = "form-control", @placeholder = "請輸入驗證碼", maxlength = "10" })
+                                                            <label for="code">驗證碼</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-1 col-6" style="margin: initial; padding: initial; margin-right: 0.5rem;">
+                                                        <img id="vCode3" src="@Url.Action("GetValidateCode3", "Home")" alt="驗證碼" class="login-code" data-toggle="tooltip" data-placement="top" title="產生新驗證碼" style="margin-top: 0.5rem;" />
+                                                    </div>
+                                                    <div class="col-sm-1 col-6">
+                                                        <div class="help-link" style="text-align: center; display: inline-flex; margin-top: 0.5rem;">
+                                                            <a href="@Url.Action("VCodeAudio3", "Home")" target="frmPlayer" title="撥放語音驗證碼">
+                                                                <img id="playCode" alt="撥放語音驗證碼" src="~/images/speaker.svg" height="40" class="pull-right" />
+                                                            </a>
+                                                            <a href="javascript: void(0)" onclick="reloadValidCode3()">
+                                                                <img src="~/images/revision.svg" height="40" alt="重新產生驗證碼" title="重新產生驗證碼" />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <script type="text/javascript">
+                                                    function reloadValidCode3() {
+                                                        blockUI();
+                                                        $('#vCode3').attr("src", '@Url.Action("GetValidateCode3")' + "?rand=" + new Date().getMilliseconds());
+                                                    }
+                                                    $(function () {
+                                                        $('#vCode3').on("click", function (e) {
+                                                            reloadValidCode3();
+                                                        });
+                                                        $('#vCode3').on("load", function () {
+                                                            unblockUI();
+                                                        });
+                                                    });
+                                                </script>
+                                                <div class="btnBar">
+                                                    <button type="button" class="btn btn-apply" onclick="OnSearchLoginForm3_Login()">登入</button>
+                                                    <button type="button" class="btn btn-cancel" onclick="OnSearchLoginForm3_Clear()">清除</button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <!--<div class="board-gray board-sub">
+                                        <div class="help-note">
+                                            <p>注意事項：</p>
+                                            <ol>
+                                                <li>需使用健保卡與讀卡機。</li>
+                                                <li>使用前，請先完成健保卡註冊、瀏覽器設定及安裝必要元件等程序，相關資訊及設定方式請連結至<a href="https://cloudicweb.nhi.gov.tw/cloudic/system/Login.aspx" target="_blank">健保卡網路服務註冊網站</a>查詢，並依照健保卡網路註冊網站上所提供的「電腦環境說明」完成電腦環境檢測及設定。</li>
+                                            </ol>
+
+                                        </div>
+                                    </div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+</div>
+<div id="step2" style="display:none">
+    @if (Model.ProcessStep == "2")
+    {
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a class="accesskey" href="#aC" id="aC" accesskey="C" title="主要內容區">:::</a>
+                        <div class="user-bar">
+                            <div class="user-name">申請人<span>@Model.SearchApply.user_name_Text</span></div>
+                            <button type="button" class="btn btn-logout" onclick="OnLogout()">登出</button>
+                            <div class="time-out-div">
+                                <div class="data-timer">
+                                    <img class="time-out-img" src="~/images/stopwatch.svg"> 倒數&nbsp;<span class="data-timer-number"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    @using (Html.BeginForm("Search", "Home", FormMethod.Post, htmlAttributes: new { id = "SearchMainForm", @class = "board board-blue" }))
+                    {
+                        @Html.HiddenFor(x => x.ProcessStep)
+                        @Html.HiddenFor(x => x.UserLoginTab)
+
+                        @Html.HiddenFor(x => x.SearchApply.user_idno)
+                        @Html.HiddenFor(x => x.SearchApply.user_name)
+                        @Html.HiddenFor(x => x.SearchApply.ActiveGridTab)
+                        @Html.HiddenFor(x => x.SearchApply.DetailApplyNo)
+                        @Html.HiddenFor(x => x.SearchApply.DeleteApplyNo)
+                        <div class="orderList">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link @ActiveGridTab1" data-bs-toggle="tab" href="#orderList">近期訂單</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @ActiveGridTab2" data-bs-toggle="tab" href="#paymentOrder">交易中訂單</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @ActiveGridTab3" data-bs-toggle="tab" href="#orderHistory">歷史訂單</a>
+                                </li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <!-- Tab 1 -->
+                                <div class="tab-pane @ActiveGrid1" id="orderList">
+                                    <div class="d-flex justify-content-between">
+                                        <h1 class="flow-title" id="lbTabPage1">近三個月訂單</h1>
+                                        <div class="tab-select">
+                                            <div class="row">
+                                                <label class="form-label col-4">訂購區間</label>
+                                                <div class="col-8">
+                                                    @Html.DropDownListFor(x => x.SearchApply.Search1Filter,
+                                                    new SelectList(Model.SearchApply.Search1Filter_list, "Value", "Text", Model.SearchApply.Search1Filter),
+                                                    new { @class = "form-select", onchange = "OnSearch1FilterChange()" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive table-set" style="margin-right: 0rem; margin-left: 0rem;">
+                                        <table class="table table-blue">
+                                            <thead>
+                                                <tr>
+                                                    <th width="10%">訂單編號</th>
+                                                    <th width="15%">申請醫院</th>
+                                                    <th width="24%">申請病歷</th>
+                                                    <th width="09%">申請時間</th>
+                                                    <th width="09%">繳費金額</th>
+                                                    <th width="12%">繳費狀態</th>
+                                                    <th width="09%">繳費時間</th>
+                                                    <th width="12%">訂單明細</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="Div_SearchGrid1">
+                                                @Html.Partial("_GridRows_SearchGrid1", Model)
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- Tab 2 -->
+                                <div class="tab-pane @ActiveGrid2" id="paymentOrder">
+                                    <div class="d-flex justify-content-between">
+                                        <h1 class="flow-title">交易中訂單</h1>
+                                        <div class="tab-select">
+                                            <div class="row">
+                                                <label class="form-label col-4">訂購區間</label>
+                                                <div class="col-8">
+                                                    @Html.DropDownListFor(x => x.SearchApply.Search2Filter,
+                                                    new SelectList(Model.SearchApply.Search2Filter_list, "Value", "Text", Model.SearchApply.Search2Filter),
+                                                    new { @class = "form-select", onchange = "OnSearch2FilterChange()" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive table-set" style="margin-right: 0rem; margin-left: 0rem;">
+                                        <table class="table table-blue">
+                                            <thead>
+                                                <tr>
+                                                    <th width="10%">訂單編號</th>
+                                                    <th width="15%">申請醫院</th>
+                                                    <th width="24%">申請病歷</th>
+                                                    <th width="09%">申請時間</th>
+                                                    <th width="09%">繳費金額</th>
+                                                    <th width="12%">繳費狀態</th>
+                                                    <th width="09%">繳費時間</th>
+                                                    <th width="12%">訂單明細</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="Div_SearchGrid2">
+                                                @Html.Partial("_GridRows_SearchGrid2", Model)
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- Tab 3 -->
+                                <div class="tab-pane @ActiveGrid3" id="orderHistory">
+                                    <div class="d-flex justify-content-between">
+                                        <h1 class="flow-title">歷史訂單</h1>
+                                        <div class="tab-select">
+                                            <div class="row">
+                                                <label class="form-label col-sm-4">訂購區間</label>
+                                                <div class="col-sm-8">
+                                                    @Html.DropDownListFor(x => x.SearchApply.Search3Filter,
+                                                    new SelectList(Model.SearchApply.Search3Filter_list, "Value", "Text", Model.SearchApply.Search3Filter),
+                                                    new { @class = "form-select", onchange = "OnSearch3FilterChange()" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive table-set" style="margin-right: 0rem; margin-left: 0rem;">
+                                        <table class="table table-gray">
+                                            <thead>
+                                                <tr>
+                                                    <th width="10%">訂單編號</th>
+                                                    <th width="15%">申請醫院</th>
+                                                    <th width="24%">申請病歷</th>
+                                                    <th width="09%">申請時間</th>
+                                                    <th width="09%">繳費金額</th>
+                                                    <th width="12%">繳費狀態</th>
+                                                    <th width="09%">繳費時間</th>
+                                                    <th width="12%">訂單明細</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="Div_SearchGrid3">
+                                                @Html.Partial("_GridRows_SearchGrid3", Model)
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<div id="step3" style="display:none">
+    @if (Model.ProcessStep == "3")
+    {
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a class="accesskey" href="#aC" id="aC" accesskey="C" title="主要內容區">:::</a>
+                        <div class="user-bar">
+                            <div class="user-name">申請人<span>@Model.SearchApplyDetail.user_name_Text</span></div>
+                            <button type="button" class="btn btn-logout" onclick="OnLogout()">登出</button>
+                            <div class="time-out-div">
+                                <div class="data-timer">
+                                    <img class="time-out-img" src="~/images/stopwatch.svg"> 倒數&nbsp;<span class="data-timer-number"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    @using (Html.BeginForm("Login", "Home", FormMethod.Post, htmlAttributes: new { id = "SearchDetailForm", @class = "board board-blue" }))
+                    {
+                        @Html.HiddenFor(x => x.ProcessStep)
+                        @Html.HiddenFor(x => x.UserLoginTab)
+
+                        @Html.HiddenFor(x => x.SearchApplyDetail.user_idno)
+                        @Html.HiddenFor(x => x.SearchApplyDetail.user_name)
+                        @Html.HiddenFor(x => x.SearchApplyDetail.Search1Filter)
+                        @Html.HiddenFor(x => x.SearchApplyDetail.Search2Filter)
+                        @Html.HiddenFor(x => x.SearchApplyDetail.Search3Filter)
+                        @Html.HiddenFor(x => x.SearchApplyDetail.ActiveGridTab)
+                        @Html.HiddenFor(x => x.SearchApply.DetailApplyNo)
+
+                        <div>
+                            <h1 class="board-title">付款項目</h1>
+                            <div class="table-responsive table-set" style="margin-left: 0rem;">
+                                <table class="table table-blue">
+                                    <thead>
+                                        <tr>
+                                            <th width="10%">訂單編號</th>
+                                            <th width="15%">申請日期</th>
+                                            <th width="20%">醫院名稱</th>
+                                            <th width="20%">病歷類型</th>
+                                            <th width="10%">應付金額</th>
+                                            <th width="25%">繳款狀態</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            @Html.HiddenFor(x => x.SearchApplyDetail.keyid)
+                                            @Html.HiddenFor(x => x.SearchApplyDetail.apply_no)
+                                            @Html.HiddenFor(x => x.SearchApplyDetail.apply_no_sub)
+                                            @Html.HiddenFor(x => x.SearchApplyDetail.user_idno)
+                                            @Html.HiddenFor(x => x.SearchApplyDetail.hospital_code)
+                                            @Html.HiddenFor(x => x.SearchApplyDetail.hospital_name)
+                                            @Html.HiddenFor(x => x.SearchApplyDetail.his_types)
+                                            @Html.HiddenFor(x => x.SearchApplyDetail.pay_deadline)
+                                            @Html.HiddenFor(x => x.SearchApplyDetail.payed)
+                                            @Html.HiddenFor(x => x.SearchApplyDetail.payed_datetime)
+                                            string strTypes = "";
+                                            int sumPrice = 0;
+                                            if (Model.SearchApplyDetail.DetailPrice.ToCount() > 0)
+                                            {
+                                                strTypes = string.Join("<br />",
+                                                    Model.SearchApplyDetail.DetailPrice
+                                                    .Where(x => x.his_type.TONotNullString() != "")
+                                                    .OrderBy(x => x.keyid)
+                                                    .Select(x => x.his_type_name + x.Get_Api_A1_Remark)
+                                                    .ToList()
+                                                );
+                                                sumPrice = Model.SearchApplyDetail.DetailPrice
+                                                    .Sum(x => x.price ?? 0);
+                                                for (int j = 0; j < Model.SearchApplyDetail.DetailPrice.Count; j++)
+                                                {
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].keyid)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].apply_no)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].apply_no_sub)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].user_idno)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].hospital_code)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].hospital_name)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].his_type)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].his_type_name)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].price)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].pay_deadline)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].payed)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].payed_datetime)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].isprovide)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].provide_datetime)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].provide_bin)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].provide_ext)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].ec_date)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].ec_dateText)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].ec_note)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].ec_dept)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].ec_doctor)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].ec_docType)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].ec_system)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].ec_fileName)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].ec_success)
+                                                    @Html.HiddenFor(x => x.SearchApplyDetail.DetailPrice[j].ec_success_yn)
+                                                }
+                                            }
+                                        }
+                                        <tr>
+                                            <td style="padding: 0.5rem">@Model.SearchApplyDetail.apply_no_sub</td>
+                                            <td style="padding: 0.5rem">@Model.SearchApplyDetail.createdatetime_Text_NoTime</td>
+                                            <td style="padding: 0.5rem">@Model.SearchApplyDetail.hospital_name</td>
+                                            <td style="padding: 0.5rem">@Html.Raw(strTypes)</td>
+                                            <td style="padding: 0.5rem"><div class="price">@sumPrice</div></td>
+                                            <td style="padding: 0.5rem">
+                                                @if (Model.SearchApplyDetail.payed == "Y")
+                                                {
+                                                    <div class="timeMark">@Model.SearchApplyDetail.payed_datetime_Text 已付款</div>
+                                                }
+                                                else
+                                                {
+                                                    <span>@Model.SearchApplyDetail.pay_deadline_Text 截止</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="btnBar text-center">
+                                    @if (Model.SearchApplyDetail.payed != "Y")
+                                    {
+                                        if (Data_HospitalCode == "1131010011H")
+                                        {
+                                            // 亞東
+                                            <button type="button" class="btn btn-apply" onclick="SearchDetail_PayBtn()">確認付款，進行線上刷卡</button>
+                                            <br />
+                                            <div id="DIV_SearchDetail_PayHint" style="display: none; margin-top: 0.5rem;">
+                                                系統轉送中，如未自動轉至付費頁面，請 <input type="button" value="點此" onclick="SearchDetail_PayBtnSubmit()" /> 前往信用卡付費頁面。
+                                            </div>
+                                        }
+                                        else
+                                        if (Data_HospitalCode == "1317040011H")
+                                        {
+                                            // 中山醫
+                                            <button type="button" class="btn btn-apply" onclick="SearchDetail_PayBtn_csh()">確認付款，進行線上刷卡</button>
+                                        }
+                                        else
+                                        if (Data_HospitalCode == "1317050017H")
+                                        {
+                                            // 中國醫
+
+                                        }
+                                        else
+                                        {
+                                            // 其他 EEC
+                                            <button type="button" class="btn btn-apply" onclick="SearchDetail_PayBtn()">確認付款，進行線上刷卡</button>
+                                            <br />
+                                            <div id="DIV_SearchDetail_PayHint" style="display: none; margin-top: 0.5rem;">
+                                                系統轉送中，如未自動轉至付費頁面，請 <input type="button" value="點此" onclick="SearchDetail_PayBtnSubmit()" /> 前往信用卡付費頁面。
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; color: red; margin-bottom: 0.5rem;">
+                            <strong>
+                                電子病歷申請並繳費完成後，醫院端五個工作日內會將電子病歷上傳，若您於五個工作日後仍未看到您所申請之電子病歷，可逕洽申請醫院詢問。謝謝。
+                            </strong>
+                        </div>
+                        <!-- 付款紀錄 -->
+                        if (Model.SearchApplyDetail.payed == "Y")
+                        {
+                            var listDetailPrice = Model.SearchApplyDetail.DetailPrice
+                                .Where(x => x.payed.TONotNullString() == "Y" && x.his_type.TONotNullString() != "")
+                                .OrderBy(x => x.keyid)
+                                .ToList();
+                            var ckAllResume = (listDetailPrice.ToCount() == listDetailPrice.Where(m => m.CheckHisViewReady).ToCount()) && listDetailPrice.ToCount() != 0;
+
+                            <div class="board-gray board-sub" style="margin-bottom: 1rem; border-radius: 1.5rem 1.5rem 1.5rem 1.5rem;">
+                                <h2 class="board-title" style="margin-left: 1rem;">
+                                    本次訂單申請病歷明細
+
+                                    @if (ckAllResume)
+                                    {
+                                        if (Data_HospitalCode == "1131010011H")
+                                        {
+                                            // 亞東
+                                            <button style="background-color: bisque; "
+                                                    onclick="OnSearchGridDetailPrint01('@Model.SearchApplyDetail.apply_no_sub')">
+                                                繳費證明請點我下載
+                                            </button>
+                                        }
+                                        else
+                                        if (Data_HospitalCode == "1317040011H")
+                                        {
+                                            // 中山醫
+                                            <button style="background-color: bisque; "
+                                                    onclick="OnSearchGridDetailPrint02('@Model.SearchApplyDetail.apply_no_sub')">
+                                                繳費證明請點我下載
+                                            </button>
+                                        }
+                                        else
+                                        if (Data_HospitalCode == "1317050017H")
+                                        {
+                                            // 中國醫
+
+                                        }
+                                        else
+                                        {
+                                            // 其他 EEC
+                                            <button style="background-color: bisque; "
+                                                    onclick="OnSearchGridDetailPrint01('@Model.SearchApplyDetail.apply_no_sub')">
+                                                繳費證明請點我下載
+                                            </button>
+                                        }
+                                    }
+                                </h2>
+
+                                <div class="table-responsive table-set" style="margin-left: 0rem;">
+                                    <table class="table table-gray">
+                                        <thead>
+                                            <tr>
+                                                <th width="10%">訂單編號</th>
+                                                <th width="15%">申請日期</th>
+                                                <th width="20%">醫院名稱</th>
+                                                <th width="20%">病歷類型</th>
+                                                <th width="10%">電子病歷</th>
+                                                <th width="25%">說明</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @Html.HiddenFor(x => x.SearchApplyDetail.HisView_keyid)
+
+                                            @if (listDetailPrice.ToCount() <= 0)
+                                            {
+                                                <tr>
+                                                    <td colspan="6">- 無 -</td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                foreach (var rowPrice in listDetailPrice)
+                                                {
+                                                    <tr>
+                                                        <td style="padding: 0.5rem">@Model.SearchApplyDetail.apply_no_sub</td>
+                                                        <td style="padding: 0.5rem">@Model.SearchApplyDetail.createdatetime_Text_NoTime</td>
+                                                        <td style="padding: 0.5rem">@Model.SearchApplyDetail.hospital_name</td>
+                                                        <td style="padding: 0.5rem">@(rowPrice.his_type_name)@(rowPrice.Get_Api_A1_Remark)</td>
+                                                        <td style="padding: 0.5rem">
+                                                            @if (rowPrice.CheckHisViewReady)
+                                                            {
+                                                                <a class="btn btn-view" onclick="OnHisView('@rowPrice.keyid')">瀏覽病歷</a>
+                                                                if (!string.IsNullOrEmpty(OpenResponsePage))
+                                                                {
+                                                                    <a href="@OpenResponsePage" target="_blank">滿意度調查表</a>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>病歷產製中</span>
+                                                            }
+                                                        </td>
+                                                        <td style="text-align: left;">
+                                                            @if (rowPrice.ec_success_yn == "成功" && rowPrice.ec_reason.TONotNullString() != "")
+                                                            {
+                                                                <span>@rowPrice.ec_reason</span>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                    <div class="help-note">
+                                        *本平台已收到您的款項，病歷產製約需 3-7 個工作天，請您耐心等候，謝謝。
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div style="text-align: center; color: red; margin-bottom: 2rem;">
+                            <strong>
+                                請注意：您所申請之病歷檔案，經申請醫院端製檔完成提供下載與查閱後，將不受理取消退費之要求，謝謝。<br />
+                                電子病歷一經線上繳費付款完成即進入病歷檔案產製階段，因此歉難受理退費，謝謝。
+                            </strong>
+                        </div>
+                        <div class="btnBar text-center" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                            <button type="button" class="btn btn-cancel" onclick="OnSearchDetailForm_Back()">回上頁</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@* 付款用 form *@
+@if (Data_HospitalCode == "1131010011H")
+{
+    // 亞東
+    <div style="display: none;">
+        <form id="TransRedirect" name="TransRedirect" method="post" action="@TransRedirectAction">
+            <input type="hidden" name="Others" value="" />
+            <input type="hidden" name="KEY" id="KEY" value="" />
+        </form>
+    </div>
+}
+else
+if (Data_HospitalCode == "1317040011H")
+{
+    // 中山醫
+    <div style="display: none;">
+        <form id="TransRedirect" name="TransRedirect" method="post" accept-charset="Big5" action="@TransRedirectAction_csh">
+            <input type="hidden" name="MerchantID" id="MerchantID" value="" />
+            <input type="hidden" name="TerminalID" id="TerminalID" value="" />
+            <input type="hidden" name="merID" id="merID" value="" />
+            <input type="hidden" name="MerchantName" id="MerchantName" value="" />
+            <input type="hidden" name="purchAmt" id="purchAmt" value="" />
+            <input type="hidden" name="lidm" id="lidm" value="" />
+            <input type="hidden" name="AutoCap" id="AutoCap" value="" />
+            <input type="hidden" name="AuthResURL" id="AuthResURL" value="" />
+        </form>
+    </div>
+}
+else
+if (Data_HospitalCode == "1317050017H")
+{
+    // 中國醫
+
+}
+else
+{
+    // 其他 EEC
+    <div style="display: none;">
+        <form id="TransRedirect" name="TransRedirect" method="post" action="@TransRedirectAction">
+            <input type="hidden" name="Others" value="" />
+            <input type="hidden" name="KEY" id="KEY" value="" />
+        </form>
+    </div>
+}
+
+@* EEC 病歷產 PDF 用 *@
+<div style="display: none;">
+    <form name="reportQuery" id="reportQuery" action="" method="post" novalidate="novalidate" class="form-horizontal">
+        @Html.Hidden("RptId")
+        @Html.Hidden("Key")
+    </form>
+</div>
+
+<script type="text/javascript">
+
+    var onOff = '@(OnOff)';
+
+    $(document).ready(function () {
+        OnStepProcess('@Model.ProcessStep');
+        OnSearchLoginForm1_Clear();
+        OnSearchLoginForm2_Clear();
+        OnSearchLoginForm3_Clear();
+        @* EEC 病歷產 PDF 用 *@
+        var tmpKey1 = '@Model.TempDatas["RptId"].TONotNullString()';
+        var tmpKey2 = '@Model.TempDatas["Key"].TONotNullString()';
+        if (tmpKey1 !== "" && tmpKey2 !== "") {
+            $("#reportQuery #RptId").val(tmpKey1);
+            $("#reportQuery #Key").val(tmpKey2);
+            $("form[name=reportQuery]").attr("action", "@Url.Content("~/Report/PDF")").submit();
+        }
+    });
+
+    function OnStepProcess(StepStr) {
+        // Hide
+        document.getElementById("step1").style.display = "none";
+        document.getElementById("step2").style.display = "none";
+        document.getElementById("step3").style.display = "none";
+        // Show
+        document.getElementById("step" + StepStr).style.display = "block";
+    }
+
+    // 自然人憑證 登入
+    @*function OnSearchLoginForm1_Login() {
+        var form = $("form[id=loginform1]");
+        form.attr('action', '@Url.Action("SearchLoginForm1")').submit();
+    }*@
+
+     // 自然人憑證 清除
+    function OnSearchLoginForm1_Clear() {
+        $("#Search_user_pincode").val("");
+        $("#Search_ValidateCode1").val("");
+    }
+
+     // 登入
+    function OnSearchLoginForm1_Login() {
+        var msg = "";
+        var PinCode = $("input#Search_user_pincode").val();
+        if (!PinCode) {
+            msg += "請輸入正確的PIN 密碼，不可為空。<br/>";
+        }
+        if (msg != "") {
+            blockAlert(msg);
+            return false;
+        }
+
+        if (onOff == '1') {
+            // 呼叫自然人跨平台元件驗證Pin碼
+            CertValidation(PinCode, CertCallback);
+        }
+        else {
+            CertCallbackOff(PinCode);
+        }
+
+
+
+    }
+
+        //自然人跨平台元件驗證後會呼叫這個 function
+    function CertCallback(certData, rtnCode, msg) {
+        //debugger;
+            if (rtnCode != 0) {
+                blockAlert(msg, "憑證驗證失敗");
+                return;
+            }
+            if (!certData) {
+                blockAlert("跨平台元件 CertValidation() 失敗: 沒有回傳憑證資料!");
+                return;
+        }
+            var name = "";
+            var serial = "";
+            var lastfour = certData.subjectID;
+            var dnPairs = certData.subjectDN.split(",");
+            for (var i = 0; i < dnPairs.length; i++) {
+                var tokens = dnPairs[i].split("=");
+                if (tokens.length == 2) {
+                    //console.log("tokens[0]:" + tokens[0] + ",tokens[1]:" + tokens[1]);
+                    if (tokens[0].toUpperCase() == "CN".toUpperCase() || tokens[0].toUpperCase() == "O".toUpperCase()) {
+                        name = tokens[1];
+                    }
+                    else if (tokens[0].toUpperCase() == "serialNumber".toUpperCase()) {
+                        serial = tokens[1];
+                    }
+                }
+            }
+            if (serial == "" && lastfour != "" && lastfour.length == 8) { serial = lastfour; }
+
+            //var msg = 'name=' + name + '\nserialnumber=' + serial + '\nlast four=' + lastfour;
+            var msg1 = name + '~~' + serial + '~~' + lastfour;
+            //console.log(msg1);
+        var formObj = $("form#loginform1");
+        $("input#Search_user_idno4Last").val(lastfour);
+            //formObj.find("#SsoKey").val(serial);
+            //formObj.find("#Hide_enccert").val(certData.certB64);
+            //formObj.find("#Hide_cadata").val(msg1);
+            //formObj.find("#Hide_PinVerify").val("Ok");
+            certVerifyOk = 1;
+            if (console) { console.log("Cert Verfify Success"); }
+            formObj.attr('action', '@Url.Action("SearchLoginForm1")').submit();
+    }
+
+        //自然人跨平台元件驗證後會呼叫這個 function
+    function CertCallbackOff(pinCode) {
+        var formObj = $("form#loginform1");
+        $("input#Search_user_pincode").val(pinCode);
+        $("input#Search_user_idno4Last").val(pinCode);
+        formObj.attr('action', '@Url.Action("SearchLoginForm1")').submit();
+    }
+
+    // 行動自然人憑證 登入
+    function OnSearchLoginForm2_Login() {
+        var form = $("form[id=loginform2]");
+        form.attr('action', '@Url.Action("SearchLoginForm2")').submit();
+    }
+
+    // 行動自然人憑證 清除
+    function OnSearchLoginForm2_Clear() {
+        $("#Search_user_idno1").val("");
+        $("#Search_user_birthday_Y").val("");
+        $("#Search_user_birthday_M").val("");
+        $("#Search_user_birthday_D").val("");
+        $("#Search_ValidateCode2").val("");
+    }
+
+    // 身分證字號＋健保卡 登入
+    function OnSearchLoginForm3_Login() {
+        var form = $("form[id=loginform3]");
+        form.attr('action', '@Url.Action("SearchLoginForm3")').submit();
+    }
+
+    // 身分證字號＋健保卡 清除
+    function OnSearchLoginForm3_Clear() {
+        $("#Search_user_idno2").val("");
+        $("#Search_user_cardpwd").val("");
+        $("#Search_ValidateCode3").val("");
+    }
+
+    function OnSearch1FilterChange() {
+        document.getElementById("lbTabPage1").innerText = "近期訂單";
+        if ($("#SearchApply_Search1Filter").val() === '1') document.getElementById("lbTabPage1").innerText = "近一個月訂單";
+        if ($("#SearchApply_Search1Filter").val() === '3') document.getElementById("lbTabPage1").innerText = "近三個月訂單";
+        if ($("#SearchApply_Search1Filter").val() === '6') document.getElementById("lbTabPage1").innerText = "近六個月訂單";
+        Refresh_SearchGrid('@Url.Action("Refresh_SearchGrid1", "Home")', 'Div_SearchGrid1');
+    }
+
+    function OnSearch2FilterChange() {
+        Refresh_SearchGrid('@Url.Action("Refresh_SearchGrid2", "Home")', 'Div_SearchGrid2');
+    }
+
+    function OnSearch3FilterChange() {
+        Refresh_SearchGrid('@Url.Action("Refresh_SearchGrid3", "Home")', 'Div_SearchGrid3');
+    }
+
+    function Refresh_SearchGrid(ActionURL, ActionTGT) {
+        blockUI();
+        $.ajax({
+            method: 'POST', url: ActionURL, data: new FormData(document.getElementById("SearchMainForm")),
+            cache: false, processData: false, contentType: false,
+            success: function (resp) {
+                if (resp) {
+                    $("#" + ActionTGT).html(resp);
+                    unblockUI();
+                }
+            }
+        });
+    }
+
+    function OnSearchGridDetail(ActiveGridTab, DetailApplyNo) {
+        $("#SearchApply_ActiveGridTab").val(ActiveGridTab);
+        $("#SearchApply_DetailApplyNo").val(DetailApplyNo);
+        var form = $("form[id=SearchMainForm]");
+        form.attr('action', '@Url.Action("SearchGridDetail", "Home")').submit();
+    }
+
+    //亞東套印
+    function OnSearchGridDetailPrint01(DetailApplyNo) {
+        //debugger;
+        blockMessage("密碼為您的身分證字號", null, o01(DetailApplyNo));
+    }
+    function o01(DetailApplyNo) {
+        $("#SearchApply_DetailApplyNo").val(DetailApplyNo);
+        var form = $("form[id=SearchDetailForm]");
+        form.attr('action', '@Url.Action("SearchGridDetailPrint01", "Home")').submit();
+    }
+
+    //中山套印
+    function OnSearchGridDetailPrint02(DetailApplyNo) {
+        //debugger;
+        blockMessage("密碼為您的身分證字號", null, o02(DetailApplyNo));
+    }
+    function o02(DetailApplyNo) {
+        $("#SearchApply_DetailApplyNo").val(DetailApplyNo);
+        var form = $("form[id=SearchDetailForm]");
+        form.attr('action', '@Url.Action("SearchGridDetailPrint02", "Home")').submit();
+    }
+
+    function OnSearchGridDelete(ActiveGridTab, DeleteApplyNo) {
+        blockConfirm("是否確認要刪除訂單？", "請確認", function () {
+            $("#SearchApply_ActiveGridTab").val(ActiveGridTab);
+            $("#SearchApply_DeleteApplyNo").val(DeleteApplyNo);
+            var form = $("form[id=SearchMainForm]");
+            form.attr('action', '@Url.Action("SearchGridDelete", "Home")').submit();
+        });
+    }
+
+    @* 去取得付款用的 SessionKey *@
+    function SearchDetail_PayBtn() {
+        $("#KEY").val("");
+        $.ajax({
+            method: 'POST',
+            url: '@Url.Action("Get_Pay_STKey", "Home")',
+            data: new FormData(document.getElementById('SearchDetailForm')),
+            cache: false, processData: false, contentType: false,
+            success: function (resp) {
+                if (resp) {
+                    $("#KEY").val(resp.data);  // 回填
+                    if ($("#KEY").val() != "") {
+                        $('#TransRedirect').submit();
+                        document.getElementById("DIV_SearchDetail_PayHint").style.display = "block";  // 顯示出來
+                    }
+                    if (!resp.status) {
+                        blockAlert(resp.message, "連接失敗");
+                    }
+                }
+            }
+        });
+    }
+
+    function SearchDetail_PayBtnSubmit() {
+        if ($("#KEY").val() != "") {
+            $('#TransRedirect').submit();
+        }
+    }
+    @*
+    function OnSearchDetailForm_Payment() {
+        var x = document.getElementById("Div_SearchDetailForm_Payment");
+        if (x.style.display === "block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "block";
+        };
+    }
+    *@
+
+    function SearchDetail_PayBtn_csh() {
+        $("#MerchantID").val("");
+        $("#TerminalID").val("");
+        $("#merID").val("");
+        $("#MerchantName").val("");
+        $("#purchAmt").val("");
+        $("#lidm").val("");
+        $("#AutoCap").val("");
+        $("#AuthResURL").val("");
+        $.ajax({
+            method: 'POST',
+            url: '@Url.Action("SearchDetailPayForm_Send_csh", "Home")',
+            data: new FormData(document.getElementById('SearchDetailForm')),
+            cache: false, processData: false, contentType: false,
+            success: function (resp) {
+                if (resp && resp.data) {
+                    // 回填
+                    $("#MerchantID").val(resp.data.MerchantID);
+                    $("#TerminalID").val(resp.data.TerminalID);
+                    $("#merID").val(resp.data.merID);
+                    $("#MerchantName").val(resp.data.MerchantName);
+                    $("#purchAmt").val(resp.data.purchAmt);
+                    $("#lidm").val(resp.data.lidm);
+                    $("#AutoCap").val(resp.data.AutoCap);
+                    $("#AuthResURL").val(resp.data.AuthResURL);
+                    if ($("#lidm").val() != "" && $("#purchAmt").val() != "" && $("#purchAmt").val() > 0) {
+                        $('#TransRedirect').submit();
+                    }
+                    if (!resp.status) {
+                        blockAlert(resp.message, "連接失敗");
+                    }
+                }
+            }
+        });
+    }
+
+    function OnSearchDetailForm_Back() {
+        var form = $("form[id=SearchDetailForm]");
+        form.attr('action', '@Url.Action("SearchGridDetail_Back", "Home")').submit();
+    }
+
+    // 瀏覽病歷
+    function OnHisView(keyid) {
+        $("#SearchApplyDetail_HisView_keyid").val(keyid);
+        var form = $("form[id=SearchDetailForm]");
+        form.attr('action', '@Url.Action("SearchGridDetail_HisView", "Home")').submit();
+        @*
+        // 等待程序遮罩 - by.Senya
+        blockUI();
+        var CookieStr = "CheckHasBeenDownloaded=OK";  // 餅乾的關鍵字
+        var downloadTimer = window.setInterval(function () {
+            console.log(document.cookie);
+            if ((document.cookie.indexOf(CookieStr) != -1)) {
+                unblockUI();
+                window.clearInterval(downloadTimer);
+            }
+        }, 1000);
+        *@
+    }
+
+    // 登出
+    function OnLogout() {
+        window.location.href='@Url.Action("Search", "Home")';
+    }
+
+    // 檢視密碼
+    function doOpenPd(even) {
+        if ($(even).children().attr('class') == 'fas fa-eye') {
+            $(even).prev().attr('type', 'text');
+        } else {
+            $(even).prev().attr('type', 'password');
+        }
+        $(even).children().toggleClass('fa-eye').toggleClass('fa-eye-slash');
+    }
+
+</script>
+
+<script>
+    @{
+        int timeout = 60;
+    }
+    var __ssTimeout = {
+        //timeout   系統登入逾時時間，單位：秒
+        //counter   倒數計時計數器。
+        //hint      登入即將過期提醒訊息的彈出時間點。單位：秒
+        //hintFired 是否顯示過登入即將過期訊息。
+        "timerId": undefined,
+        "redirectUrl": "@(Url.Action("Search", "Home"))",
+        "board": $("span.data-timer-number"),
+        "timeout": parseInt("@(timeout * 20)", 10),
+        "counter": parseInt("@(timeout * 20)", 10),
+        "hint": 300,
+        "hintFired": 0,
+        refreshBoard: function () {
+            if (this.counter > 0) {
+                //20171214 修正 IE11 不支援 Math.trunc 方法問題
+                var m = (Math.trunc) ? Math.trunc(this.counter / 60) : Math.floor(this.counter / 60);
+                var s = this.counter % 60;
+                m = ((m < 10) ? "0" : "") + m;
+                s = ((s < 10) ? "0" : "") + s;
+                this.board.text([m, ":", s].join(""));
+            }
+            else {
+                this.board.text("00:00");
+            }
+        },
+        resetCount: function () {
+            this.counter = this.timeout;
+            this.hintFired = 0;
+            this.refreshBoard();
+        },
+        countDown: function () {
+            var self = this;
+            if (this.counter <= 0) {
+                blockAlert("您的登入已經過期，請重新登入系統！", "登入逾時", function () {
+                    window.location.href = self.redirectUrl;
+                });
+                return;
+            }
+
+            this.timerId = setTimeout(function () { self.countDown(); }, 1000);
+            if (this.counter > 0) this.counter--;
+            this.refreshBoard();
+
+            if (this.counter <= this.hint && this.hintFired == 0) {
+                this.hintFired = 1;
+                //blockConfirm("您的登入即將過期，要延長時間嗎？", "", function () { self.resetCount(); }, null, "延長", "不延長");
+            }
+        }
+    }
+    $(document).ready(function () {
+        if ('@Model.ProcessStep' !== '1') {
+            __ssTimeout.countDown();
+        }
+    });
+</script>

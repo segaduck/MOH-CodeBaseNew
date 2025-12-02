@@ -1,0 +1,38 @@
+﻿@using Turbo.ReportTK
+@model Report
+@{
+    ViewBag.Title = "報表-" + Model.Name;
+    Layout = "~/Views/Shared/_MainLayout_NoHeader.cshtml";
+}
+<style>
+    .mark-red {
+        font-size: 14pt;
+        font-weight: bold;
+    }
+    .report-condition {
+        margin-left: 15px;
+    }
+    .report-condition-name {
+        color: #009;
+        font-weight: bold;
+    }
+    .report-condition-name span {
+        color: #900;
+        font-weight: bold;
+    }
+</style>
+<div class="mark-red">
+    查無資料!
+</div>
+<div>
+    <p>@Model.Name</p>
+    <p>查詢條件:</p>
+    <p>
+        @ReportLayoutHelper.DisplayConditions(Model.Query.Conditions, Model.QueryParmTexts)
+    </p>
+    <br /><br />
+    <p>
+        <button class="btn btn-info" onclick="javascript: history.go(-1)">返回前頁</button>
+    </p>
+</div>
+

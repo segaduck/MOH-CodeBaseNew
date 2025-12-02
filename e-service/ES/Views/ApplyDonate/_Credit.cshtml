@@ -1,0 +1,21 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_007001FormModel
+@{
+    ShareCodeListModel sc = new ShareCodeListModel();
+    string s_env = Model.PayModel.IsWebTestEnvir1 ?? "";
+    string epost1 = "https://epos.ctbcbank.com/mauth/SSLAuthUI.jsp";
+    if (s_env.Equals("Y")) { epost1 = "https://testepos.ctbcbank.com/mauth/SSLAuthUI.jsp"; }
+}
+
+<!--信用卡捐款--><!--WebATM-->
+<div id="Creditform">
+    <form id="fm" method="post" action="@Html.Raw(epost1)">
+        <input type="hidden" name="merID" value="@Model.PayModel.UrlmerId">
+        <input type="hidden" name="URLEnc" value="@Model.PayModel.enc.EncodeData">
+        <input type="hidden" name="merchantID" value="@Model.PayModel.enc.MerchantID" />
+        <div class="btn-bar text-center">
+            <button type="submit" class="btn btn-info"><i class="fas fa-credit-card"></i>前往繳款</button>
+        </div>
+    </form>
+</div>

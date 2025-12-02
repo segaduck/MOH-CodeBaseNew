@@ -1,0 +1,23 @@
+﻿@model ES.Areas.Admin.Models.CosmeticAdvertisingEditModel
+@{
+    ViewBag.Title = "化妝品廣告內容管理（修改）";
+    ViewBag.FunctionTitle = "化妝品廣告內容管理 - 修改";
+}
+@using (Html.BeginForm("Edit", "CosmeticAdvertising"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <table class="formTable1">
+        <tr>
+            <th style="width: 120px;"><span class="formRequired">*</span> @Html.LabelFor(m => m.Word)</th>
+            <td>@Html.TextBoxFor(m => m.Word, new { style = "width: 60%;", maxlength = "50" }) @Html.ValidationMessageFor(m=>m.Word)</td>
+        </tr>
+    </table>
+    <div class="formButtomBar">
+        @Html.HiddenFor(m => m.AdvId)
+        <input type="submit" value="存檔" />
+        <input type="reset" value="重填" />
+        <input type="button" value="返回" onclick="document.location.href='@Url.Action("Index", "CosmeticAdvertising")';" />
+    </div>
+}

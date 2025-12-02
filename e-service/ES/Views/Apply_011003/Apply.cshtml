@@ -1,0 +1,839 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@using ES.Commons;
+@model Apply_011003FormModel
+@{
+    Layout = null;
+    ShareCodeListModel sc = new ShareCodeListModel();
+}
+
+@Html.HiddenFor(m => m.APP_ID)
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申辦項目</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">社會工作實務經驗年資審查線上申辦</p>
+        </div>
+        <label class="step-label col-sm-2" for="">申辦日期</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.ADD_TIME</p>
+            @Html.HiddenFor(m => m.ADD_TIME)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請種類：依「專門職業及技術人員高等考試社會工作師考試規則」第六條申請部分科目免試</label>
+        <div class="col-sm-10">
+            <label class="radio-inline "><input type="radio" name="ISMEET" value="1" checked onchange="RadioISMEETChange()">符合第一款(國內社會工作實務經驗五年以上，有中央主管機關審查合格之證明文件。)</label>
+            <label class="radio-inline "><input type="radio" name="ISMEET" value="2" onchange="RadioISMEETChange()">符合第二款(外國社會工作師證書及國內社會工作實務經驗一年以上，有中央主管機關審查合格之證明文件。)</label>
+            <label class="radio-inline "><input type="radio" name="ISMEET" value="3" onchange="RadioISMEETChange()">符合第三款(曾任公立或依法立案之私立專科以上學校講師三年以上、助理教授或副教授二年以上、教授一年以上，<br /> &nbsp;&nbsp;講授前條第一項所列學科至少二科，並有國內社會工作實務經驗一年以上，有中央主管機關審查合格之證明文件。)</label>
+            @Html.HiddenFor(m => m.ISMEET)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名</label>
+        <div class="col-sm-10">
+            <p class="form-control-static"> @Model.NAME</p>
+            @Html.HiddenFor(m => m.NAME)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出生年月日</label>
+        <div class="col-sm-10">
+            <p class="form-control-static"> @Model.BIRTHDAY</p>
+            @Html.HiddenFor(x => x.BIRTHDAY)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>國民身分證統一編號</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.IDN</p>
+            @Html.HiddenFor(m => m.IDN)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>性別</label>
+        <div class="col-sm-4">
+            <label class="radio-inline "><input type="radio" value="M" name="SEX_CD" onchange="RadioSEXChange()">男</label>
+            <label class="radio-inline "><input type="radio" value="F" name="SEX_CD" onchange="RadioSEXChange()">女</label>
+            <label class="radio-inline "><input type="radio" value="O" name="SEX_CD" onchange="RadioSEXChange()">其他</label>
+            @Html.HiddenFor(m => m.SEX_CD)
+        </div>
+    </div>
+    <!--網站電話-->
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話(公)</label>
+        <div class="col-sm-10">
+            <span>(</span>
+            @Html.TextBoxFor(m => m.TEL, new { @id = "TEL", @class = "form-normal", placeholder = "", size = "5", maxlength = "3" })
+            <span>)</span>
+            @Html.TextBoxFor(m => m.TEL_0, new { @id = "TEL_0", @class = "form-normal", placeholder = "" })
+            <span>#</span>
+            @Html.TextBoxFor(m => m.TEL_1, new { @id = "TEL_1", @class = "form-normal", placeholder = "", size = "7" })
+            <br />
+            <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話(宅)</label>
+        <div class="col-sm-10">
+            <span>(</span>
+            @Html.TextBoxFor(m => m.FAX, new { @id = "FAX", @class = "form-normal", placeholder = "", size = "5", maxlength = "3" })
+            <span>)</span>
+            @Html.TextBoxFor(m => m.FAX_0, new { @id = "FAX_0", @class = "form-normal", placeholder = "" })
+            <span>#</span>
+            @Html.TextBoxFor(m => m.FAX_1, new { @id = "FAX_1", @class = "form-normal", placeholder = "", size = "7" })
+            <br />
+            <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>行動電話</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.MOBILE, new { @class = "form-normal", maxlength = "11" })
+            <span>範例：0912-234567</span>
+            <br />
+            <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+        </div>
+    </div>
+    <!--網站地址-->
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>通訊地址(含郵遞區號，請填目前服務單位或可收掛號信件之地址)</label>
+        <div class="col-sm-10 form-inline">
+            @Html.TextBoxFor(m => m.ADDR_CODE, new { @id = "ADDR_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號" })
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.ADDR_TEXT, new { @id = "ADDR_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-info" onclick="doADDRSelect()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </span>
+            </div>
+            @Html.TextBoxFor(m => m.ADDR_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.MAIL, new { @class = "form-normal" })
+            @@
+            @Html.DropDownListFor(m => m.MAIL_0, sc.GetMailDomainList, new { @class = "form-normal", onchange = "doEmailChange()" })
+            @Html.TextBoxFor(m => m.MAIL_1, new { @class = "form-normal" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>學歷證明<br>(擇一勾選)</label>
+        <div class="col-sm-10">
+            <label class="radio-inline "><input type="radio" name="EDUCATION" value="1" checked onchange="doEDUCATIONChange()">1.中華民國一百零二年起，經考選部依「<a href="https://wwwc.moex.gov.tw/main/ExamLaws/wfrmExamLaws.aspx?kind=3&menu_id=320&laws_id=88" target="_blank">專技人員社會工作師考試應考資格第五條審議通過並公告名單</a>」所列學校之畢業證書影本</label>
+            <label class="radio-inline "><input type="radio" name="EDUCATION" value="2" onchange="doEDUCATIONChange()">2.非考選部公告之學校系所(學分證明) (如檢附成績單，請清楚標記15學科(如螢光筆劃記)，以利審查)</label>
+            <label class="radio-inline "><input type="radio" name="EDUCATION" value="3" onchange="doEDUCATIONChange()">3.經教育部承認之國外專科以上社會工作相關科、系、組、所、學位學程畢業證書影本</label>
+            @Html.HiddenFor(m => m.EDUCATION)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>學歷-學校名稱<br>(請填全銜)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.SCHOOL, new { @id = "SCHOOL", @class = "form-control", placeholder = "請輸入學校名稱 ", maxlength = "64" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>學歷-系(組)所名稱</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.OFFICE, new { @id = "OFFICE", @class = "form-control", placeholder = "請輸入系(組)所名稱 ", maxlength = "64" })
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>學歷-畢業年月</label>
+        <div class="col-sm-10">
+            @Html.DropDownListFor(m => m.GRADUATION, sc.YEAR_list, new { @class = "form-normal" })
+            <label>年</label>
+            @Html.DropDownListFor(m => m.GRADUATION_MONTH, sc.MONTH_list, new { @class = "form-normal" })
+            <label>月</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">
+            考試通知書-通知年月
+        </label>
+        <div class="col-sm-10">
+            @Html.DropDownListFor(m => m.NOTICEDAY_YEAR, sc.YEAR_list_Blank, new { @class = "form-normal" })
+            <label>年</label>
+            @Html.DropDownListFor(m => m.NOTICEDAY_MONTH, sc.MONTH_list_Blank, new { @class = "form-normal" })
+            <label>月</label>
+        </div>
+    </div>
+    <h2 class="second-title">服務經歷<a href="javascript:void(0)" onclick="doAdd()" class="btn btn-save">新增</a> &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red"><strong>請從最早的工作經歷開始填寫&nbsp;&nbsp;(提醒您檔案總體大小，上傳多項檔案大小總限制為10MB，若檔案總體大小超過限制，請縮小各項檔案尺寸，避免出現違規偵測。)</strong></span></h2>
+    <div id="RowTable">
+        <div id="row1" data-group="Row">
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><button type="button" id="btnDelte_1" class="btn btn-clear" onclick="deleteRow($(this))">刪除</button>序號</label>
+                <div class="col-sm-10">
+                    <p id="SEQ_NO" class="form-control-static">1</p>
+                    @Html.HiddenFor(m => m.SRVLIST[0].SEQ_NO)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>服務經歷-服務單位名稱<br />(請填全銜)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.SRVLIST[0].SRV_NAM, new { @id = "SRV_NAM", @class = "form-control", maxlength = "50" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>服務經歷-職稱</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.SRVLIST[0].SRV_TITLE, new { @id = "SRV_TITLE", @class = "form-control", maxlength = "50" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>服務經歷-服務年資</label>
+                <div class="col-sm-10 form-inline">
+                    <div class="col-sm-10">
+                        <div class="date datepicker-outline input-group" tagid="SRV_SYEAR_TW">
+                            <input class="datepickerinput" id="SRV_SYEAR" name="SRVLIST[0].SRV_SYEAR_AD" type="hidden" value="">
+                            <input class="form-control" id="SRV_SYEAR_TW" name="SRVLIST[0].SRV_SYEAR_AD_TW" size="10" type="text" value="">
+                            <span class="input-group-btn"><a class="open-datepicker btn-info btn" role="button"><i class="fa fa-calendar" style="color: white" aria-hidden="true"></i><span class="sr-only">calendar</span></a></span>
+                        </div>
+                        <span>&nbsp;至&nbsp;</span>
+                        <div class="date datepicker-outline input-group" tagid="SRV_EYEAR_TW">
+                            <input class="datepickerinput" id="SRV_EYEAR" name="SRVLIST[0].SRV_EYEAR_AD" type="hidden" value="">
+                            <input class="form-control" id="SRV_EYEAR_TW" name="SRVLIST[0].SRV_EYEAR_AD_TW" size="10" type="text" value="">
+                            <span class="input-group-btn"><a class="open-datepicker btn-info btn" role="button"><i class="fa fa-calendar" style="color: white" aria-hidden="true"></i><span class="sr-only">calendar</span></a></span>
+                        </div>
+                        <br />
+                        <span>服務於公立機構之經歷，起迄年月日請與服務證明開立之日期一致；服務於私立機構或團體之經歷，起迄年月日請與勞保投保明細加保及退保日期一致</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>服務證明正本彩色檔</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.SRVLIST[0].FILE_PICRGB, new { @id = "FILE_PICRGB", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                    @Html.HiddenFor(m => m.SRVLIST[0].FILE_PICRGB_TEXT)
+                </div>
+            </div>
+
+            <div class="form-group" id="opt3-1">
+                <label class="step-label col-sm-2" style="font-weight:bold" for="">勞工保險被保險人投保明細表影本<br />(服務證明為團體或私立機構開具者需附)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.SRVLIST[0].FILE_LABOR, new { @id = "FILE_LABOR", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                    @Html.HiddenFor(m => m.SRVLIST[0].FILE_LABOR_TEXT)
+                </div>
+            </div>
+            <div class="form-group" id="opt3-2">
+                <label class="step-label col-sm-2" style="font-weight:bold" for="">服務單位立案或法人登記證書影本<br />(服務證明為團體或私立機構開具者需附)</label>
+                <div class="col-sm-10">
+                    <span>特殊需求:</span>
+                    @Html.CheckBoxFor(m => m.SRVLIST[0].SRVLST_DEMAND_1, new { })是
+                    @Html.TextBoxFor(m => m.SRVLIST[0].SRVLST_DEMAND_1_TEXT, new { @id = "SRVLST_DEMAND_1_TEXT", @class = "form-control", placeholder = "請輸入特殊需求，最多輸入 100 個字元", maxlength = "100" })
+                    @Html.TextBoxFor(m => m.SRVLIST[0].FILE_LEGAL, new { @id = "FILE_LEGAL", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                    @Html.HiddenFor(m => m.SRVLIST[0].FILE_LEGAL_TEXT)
+                </div>
+            </div>
+            <div class="form-group" id="opt3-3">
+                <label class="step-label col-sm-2" style="font-weight:bold" for="">服務單位章程影本<br />(服務證明為團體或私立機構開具者需附)</label>
+                <div class="col-sm-10">
+                    <span>特殊需求:</span>
+                    @Html.CheckBoxFor(m => m.SRVLIST[0].SRVLST_DEMAND_2, new { })是
+                    @Html.TextBoxFor(m => m.SRVLIST[0].SRVLST_DEMAND_2_TEXT, new { @id = "SRVLST_DEMAND_2_TEXT", @class = "form-control", placeholder = "請輸入特殊需求，最多輸入 100 個字元", maxlength = "100" })
+                    @Html.TextBoxFor(m => m.SRVLIST[0].FILE_CHARTER, new { @id = "FILE_CHARTER", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                    @Html.HiddenFor(m => m.SRVLIST[0].FILE_CHARTER_TEXT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">服務單位認可有案證明文件</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.SRVLIST[0].FILE_SRVPROVE, new { @id = "FILE_SRVPROVE", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                    @Html.HiddenFor(m => m.SRVLIST[0].FILE_SRVPROVE_TEXT)
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2 class="second-title">佐證文件檔案上傳<span style="color:red">&nbsp;&nbsp;(提醒您檔案總體大小，上傳多項檔案大小總限制為10MB，若檔案總體大小超過限制，請縮小各項檔案尺寸，避免出現違規偵測。)</span></h2>
+    <!--網站 佐證文件採合併檔案-->
+    <div id="main_file">
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+            <div class="col-sm-10">
+                <label class="radio-inline "><input type="radio" name="MERGEYN" value="Y" onchange="RadioChange()">是</label>
+                <label class="radio-inline "><input type="radio" name="MERGEYN" value="N" checked onchange="RadioChange()">否</label>
+                @Html.HiddenFor(m => m.MERGEYN)
+                <br />
+                若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>國民身分證正面影本</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_FIDC, new { @id = "FILE_FIDC", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_FIDC_TEXT)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>國民身分證背面影本</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_BIDC, new { @id = "FILE_BIDC", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_BIDC_TEXT)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>最近一年內半身脫帽照片一張</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_PIC, new { @id = "FILE_PIC", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_PIC_TEXT)
+            </div>
+        </div>
+        <div class="form-group" id="EDUCATION_SEQ_1">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>中華民國一百零二年起，經考選部依「專技人員社會工作師考試應考資格第五條審議通過並公告名單」所列學校之畢業證書影本</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_GRAD, new { @id = "FILE_GRAD", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_GRAD_TEXT)
+            </div>
+        </div>
+        <div class="form-group" style="display:none;" id="EDUCATION_SEQ_2">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>非考選部公告之學校系所(報考專門職業及技術人員高等考試社會工作師考試之考試通知書影本)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_NOTI, new { @id = "FILE_NOTI", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_NOTI_TEXT)
+            </div>
+        </div>
+        <div class="form-group" style="display:none;" id="EDUCATION_SEQ_22">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>非考選部公告之學校系所(畢業證書影本)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_NOTI2, new { @id = "FILE_NOTI2", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_NOTI2_TEXT)
+            </div>
+        </div>
+        <div class="form-group" style="display:none;" id="EDUCATION_SEQ_23">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>非考選部公告之學校系所(學分證明) (如檢附成績單，請清楚標記15學科(如螢光筆劃記)，以利審查)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_NOTI3, new { @id = "FILE_NOTI3", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_NOTI3_TEXT)
+            </div>
+        </div>
+        <div class="form-group" style="display:none;" id="EDUCATION_SEQ_24">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>非考選部公告之學校系所(實習證明)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_NOTI4, new { @id = "FILE_NOTI4", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_NOTI4_TEXT)
+            </div>
+        </div>
+        <div class="form-group" style="display:none;" id="EDUCATION_SEQ_3">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>經教育部承認之國外專科以上社會工作相關科、系、組、所、學位學程畢業證書影本</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_GRADOFF, new { @id = "FILE_GRADOFF", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_GRADOFF_TEXT)
+            </div>
+        </div>
+        <div class="form-group" id="opt3-4" hidden>
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>公立或立案之私立專科以上學校教學之證明文件</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_SCHOOL, new { @id = "FILE_SCHOOL", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_SCHOOL_TEXT)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">戶籍謄本或戶口名簿<br />(改過姓名者需附)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_DOMICILE, new { @id = "FILE_DOMICILE", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_DOMICILE_TEXT)
+            </div>
+        </div>
+        <div class="form-group" id="DIVFONSRV" hidden>
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>國外社會工作師或相當資格證明文件</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_FONSRV, new { @id = "FILE_FONSRV", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_FONSRV_TEXT)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">其他附件(申請人自行列舉)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FILE_OTHER, new { @id = "FILE_OTHER", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+                @Html.HiddenFor(m => m.FILE_OTHER_TEXT)
+            </div>
+        </div>
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="doPreView()">存檔並預覽</button>
+            <button type="reset" class="btn btn-clear" onclick="doReset()">清除資料</button>
+        </div>
+    </div>
+
+    <input type="hidden" id="rowCount" value="1" />
+    <input type="hidden" id="emptyRow" value="" />
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('input[name="SEX_CD"][value = ' + $("#SEX_CD").val() + ']').attr('checked', true)
+        // 地址
+        $('#ADDR_CODE').on('blur', doADDRNameGet); doADDRNameGet();
+
+        $('#emptyRow').val($('#row1').html());
+
+        doEDUCATIONChange();
+        RadioISMEETChange();
+        RadioSEXChange();
+        RadioChange();
+
+        $('#SRV_SYEAR_Date').datetimepicker({
+            format: "YYYY/MM/DD",
+            defaultDate: new Date(),
+            locale: "zh-tw"
+        });
+
+        $('#row1 input[name="SRVLIST[0].SEQ_NO"').val('1');
+
+        $('#RowTable div[id^="row"]').find("div.date").each(function () {
+            initDatePicker(this);
+        });
+
+        blockAlert("提醒您檔案總體大小，上傳多項檔案大小總限制為10MB，若檔案總體大小超過限制，請縮小各項檔案尺寸，避免出現違規偵測。","系統提醒");
+    });
+
+    // 地址
+    function loadDialogADDRCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doADDRSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#ADDR_CODE').val(retData.Id);
+                    $('#ADDR_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doADDRNameGet() {
+        var code = $('#ADDR_CODE');
+        var data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#ADDR_TEXT'),
+            'add': $('#ADDR_CODE')
+        };
+        if ($.trim(data.arg.CODE) == '') { data.box.val(''); $('#ADDR_CODE').val('') }
+        else {
+            code.val(data.arg.CODE);
+            loadDialogADDRCodeMapName(data);
+        }
+    }
+
+    // 轉至瀏覽
+    function doPreView() {
+        var data = getFormSubmitableFieldsWithCheckbox($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("Apply")', data, function (retData) {
+            if (retData.status) {
+                ajaxLoadMore('@Url.Action("PreView")', data, function (getHtml) {
+                    $('#form_tab').removeClass('active');
+                    $('#form').attr('class', 'tab-pane fade');
+                    $('#form_tab1').attr('class', 'active');
+                    $('#form1').attr('class', 'tab-pane fade active in');
+                    $("#form1").html(getHtml);
+                    $('input[type="file"]').each(function () {
+                    });
+                });
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+        //if (validfile()) {
+        // 確認上傳檔案
+        //var grid = '';
+        //var MERGE = $('input[name="MERGEYN"]:checked').val();
+        //var FILE_FIDC = $('#FILE_FIDC').val();
+        //var FILE_BIDC = $('#FILE_BIDC').val();
+        //var FILE_PIC = $('#FILE_PIC').val();
+        //var FILE_GRAD = $('#FILE_GRAD').val();
+        //var FILE_NOTI = $('#FILE_NOTI').val();
+        //var FILE_GRADOFF = $('#FILE_GRADOFF').val();
+        //var FILE_FONSRV = $('#FILE_FONSRV').val();
+        //var FILE_SCHOOL = $('#FILE_SCHOOL').val();
+        //var FILE_DOMICILE = $('#FILE_DOMICILE').val();
+        //var FILE_OTHER = $('#FILE_OTHER').val();
+        //var EDUCATION = $('#EDUCATION').val();
+        //var ISMEET = $("#ISMEET").val();
+        //var ct = "";
+        //var Msg = "";
+        //$("#main_file input[type='file']").each(function (item) {
+        //    if (($($(this)[0]).length > 0)) { ct = "1" }
+        //});
+        //if (MERGE == 'Y' && ct == "") {
+        //    blockAlert("請至少上傳一個檔案 !", "提示訊息");
+        //}
+        //else {
+        //    if (MERGE == 'N' && FILE_FIDC == "") {
+        //        Msg += "請上傳國民身分證正面影本 ! \r\n";
+        //    }
+        //    if (MERGE == 'N' && FILE_BIDC == "") {
+        //        Msg += "請上傳國民身分證背面影本 ! \r\n";
+        //    }
+        //    if (MERGE == 'N' && FILE_PIC == "") {
+        //        Msg += "請上傳最近一年內半身脫帽照片一張 ! \r\n";
+        //    }
+        //    if (MERGE == 'N' && FILE_GRAD == "" && EDUCATION=="1") {
+        //        Msg += "請上傳中華民國一百零二年起，經考選部依「專技人員社會工作師考試應考資格第五條審議通過並公告名單」所列學校之畢業證書影本 ! \r\n";
+        //    }
+        //    if (MERGE == 'N' && FILE_NOTI == "" && EDUCATION == "2") {
+        //        Msg += "請上傳報考專門職業及技術人員高等考試社會工作師考試之考試通知書影本 ! \r\n";
+        //    }
+        //    if (MERGE == 'N' && FILE_GRADOFF == "" && EDUCATION == "3") {
+        //        Msg += "請上傳經教育部承認之國外專科以上社會工作相關科、系、組、所、學位學程畢業證書影本 ! \r\n";
+        //    }
+        //    if (MERGE == 'N' && ISMEET == "2" && FILE_FONSRV == "") {
+        //        Msg += "請上傳國外社會工作師或相當資格證明文件 ! \r\n";
+        //    }
+        //    if (MERGE == 'N' && ISMEET == "3" && FILE_SCHOOL == "") {
+        //        Msg += "請上傳公立或立案之私立專科以上學校教學之證明文件 ! \r\n";
+        //    }
+        //    //if (MERGE == 'N' && FILE_DOMICILE == "") {
+        //    //    Msg += "請上傳戶籍謄本或戶口名簿 ! \r\n";
+        //    //}
+        //}
+        //if (Msg == "") {
+
+        //}
+        //else {
+        //    blockAlert(Msg, "提示訊息");
+        //}
+        //}
+    }
+
+    // MAIL 選自訂
+    function doEmailChange() {
+        var MAIL = $('#MAIL_0').val();
+        if (MAIL == 0) $('#MAIL_1').removeAttr("readonly");
+        else {
+            if (MAIL == 1) $('#MAIL_1').val('gmail.com');
+            if (MAIL == 2) $('#MAIL_1').val('yahoo.com.tw');
+            if (MAIL == 3) $('#MAIL_1').val('outlook.com');
+            $('#MAIL_1').attr("readonly", "readonly");
+            $('#MAIL_1').val('');
+        }
+    }
+
+    // 學歷證明
+    function doEDUCATIONChange() {
+        var EDUCATION = $('input[name="EDUCATION"]:checked').val();
+        if (EDUCATION == 1) {
+            $('#EDUCATION').val('1');
+            $('#EDUCATION_SEQ_1').css("display", "");
+            $('#EDUCATION_SEQ_2').css("display", "none");
+            $('#EDUCATION_SEQ_22').css("display", "none");
+            $('#EDUCATION_SEQ_23').css("display", "none");
+            $('#EDUCATION_SEQ_24').css("display", "none");
+            $('#EDUCATION_SEQ_3').css("display", "none");
+            $('#FILE_GRADOFF').val(''); $('#FILE_NOTI').val('');
+            $('#EDUCATION_SEQ_2').find('input').each(function () {
+                $(this).val('');
+            });
+            $('#EDUCATION_SEQ_22').find('input').each(function () {
+                $(this).val('');
+            });
+            $('#EDUCATION_SEQ_23').find('input').each(function () {
+                $(this).val('');
+            });
+            $('#EDUCATION_SEQ_24').find('input').each(function () {
+                $(this).val('');
+            });
+            $('#EDUCATION_SEQ_3').find('input').each(function () {
+                $(this).val('');
+            });
+        }
+        else if (EDUCATION == 2) {
+            $('#EDUCATION').val('2');
+            $('#EDUCATION_SEQ_2').css("display", "");
+            $('#EDUCATION_SEQ_22').css("display", "");
+            $('#EDUCATION_SEQ_23').css("display", "");
+            $('#EDUCATION_SEQ_24').css("display", "");
+            $('#EDUCATION_SEQ_1').css("display", "none");
+            $('#EDUCATION_SEQ_3').css("display", "none");
+            $('#FILE_GRAD').val('');
+            $('#FILE_GRADOFF').val('');
+            $('#EDUCATION_SEQ_1').find('input').each(function () {
+                $(this).val('');
+            });
+            $('#EDUCATION_SEQ_3').find('input').each(function () {
+                $(this).val('');
+            });
+        }
+        else if (EDUCATION == 3) {
+            $('#EDUCATION').val('3');
+            $('#EDUCATION_SEQ_3').css("display", "");
+            $('#EDUCATION_SEQ_1').css("display", "none");
+            $('#EDUCATION_SEQ_2').css("display", "none");
+            $('#EDUCATION_SEQ_22').css("display", "none");
+            $('#EDUCATION_SEQ_23').css("display", "none");
+            $('#EDUCATION_SEQ_24').css("display", "none");
+            $('#FILE_GRAD').val('');
+            $('#FILE_NOTI').val('');
+            $('#EDUCATION_SEQ_2').find('input').each(function () {
+                $(this).val();
+            });
+            $('#EDUCATION_SEQ_22').find('input').each(function () {
+                $(this).val();
+            });
+            $('#EDUCATION_SEQ_23').find('input').each(function () {
+                $(this).val();
+            });
+            $('#EDUCATION_SEQ_24').find('input').each(function () {
+                $(this).val();
+            });
+            $('#EDUCATION_SEQ_1').find('input').each(function () {
+                $(this).val('');
+            });
+        };
+    }
+
+    // 性別
+    function RadioSEXChange() {
+        $("#SEX_CD").val($('input[name="SEX_CD"]:checked').val());
+    }
+
+    // 是否合併檔案
+    function RadioChange() {
+        $("#MERGEYN").val($('input[name="MERGEYN"]:checked').val());
+    }
+
+    // 申請種類
+    function RadioISMEETChange() {
+        $("#ISMEET").val($('input[name="ISMEET"]:checked').val());
+        if ($("#ISMEET").val() == "1") {
+            $("#DIVFONSRV").hide();
+            $("#opt3-4").hide();
+        }
+
+        if ($("#ISMEET").val() == "2") {
+            $("#DIVFONSRV").show();
+            $("#opt3-4").hide();
+        }
+
+        if ($("#ISMEET").val() == "3") {
+            $("#DIVFONSRV").hide();
+            $("#opt3-4").show();
+        }
+    }
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".DOC", ".DOCX", ".ODT", ".ODF", ".ODS", ".XLS", ".XLSX", ".PDF", ".PPT", ".PPTX", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF", ".ZIP");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        }
+        else {
+            $('input[type="hidden"][name="' + file.name + '_TEXT"]').val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+    //function validfile() {
+    //    var grid = '';
+
+    //    for (i = 0; i < $('#RowTable div[id^="row"]').length; i++) {
+    //        var msg = '';
+    //        // '序號'
+    //        var SEQ_NO = $('#' + $($('#RowTable div[id^="row"]')[i]).attr('id') + ' #SEQ_NO').text();
+    //        // 服務經歷-服務單位名稱
+    //        var SRV_NAM = $('#' + $($('#RowTable div[id^="row"]')[i]).attr('id') + ' #SRV_NAM').val().trim();
+    //        if (SRV_NAM == '') {
+    //            msg += '請輸入服務經歷-服務單位名稱</br>';
+    //        }
+    //        // 服務經歷-職稱
+    //        var SRV_TITLE = $('#' + $($('#RowTable div[id^="row"]')[i]).attr('id') + ' #SRV_TITLE').val().trim();
+    //        if (SRV_TITLE == '') {
+    //            msg += '請輸入服務經歷-職稱</br>';
+    //        }
+
+    //        // 服務單位立案或法人登記證書影本的特殊需求
+    //        var SRVLST_DEMAND_1 = $('input[name="SRVLIST[' + i + '].SRVLST_DEMAND_1"]').prop("checked");
+    //        var SRVLST_DEMAND_1_TEXT = $('input[name="SRVLIST[' + i + '].SRVLST_DEMAND_1_TEXT"]').val();
+    //        if (SRVLST_DEMAND_1 && SRVLST_DEMAND_1_TEXT == '') {
+    //            msg += '請輸入服務單位立案或法人登記證書影本的特殊需求</br>';
+    //        }
+
+    //        // 服務單位章程影本的特殊需求
+    //        var SRVLST_DEMAND_2 = $('input[name="SRVLIST[' + i + '].SRVLST_DEMAND_2"]').prop("checked");
+    //        var SRVLST_DEMAND_2_TEXT = $('input[name="SRVLIST[' + i + '].SRVLST_DEMAND_2_TEXT"]').val();
+    //        if (SRVLST_DEMAND_2 && SRVLST_DEMAND_2_TEXT == '') {
+    //            msg += '請輸入服務單位章程影本的特殊需求</br>';
+    //        }
+
+    //        var FILE_PICRGB = $('#FILE_PICRGB').val();
+    //        if (FILE_PICRGB == '') {
+    //            msg += '請上傳服務證明正本彩色檔一份檔案</br>';
+    //        }
+    //        //var FILE_SRVPROVE = $('#FILE_SRVPROVE').val();
+    //        //if (FILE_SRVPROVE == '') {
+    //        //    msg += '請上傳服務單位認可有案證明文件一份檔案</br>';
+    //        //}
+    //        //var FILE_LABOR = $('#FILE_LABOR').val();
+    //        //if (FILE_LABOR == '') {
+    //        //    msg += '請上傳勞工保險被保險人投保明細表影本一份檔案</br>';
+    //        //}
+    //        //var FILE_LEGAL = $('#FILE_LEGAL').val();
+    //        //if (FILE_LEGAL == '') {
+    //        //    msg += '請上傳服務單位立案或法人登記證書影本一份檔案</br>';
+    //        //}
+    //        //var FILE_CHARTER = $('#FILE_CHARTER').val();
+    //        //if (FILE_CHARTER == '') {
+    //        //    msg += '請上傳服務單位章程影本一份檔案</br>';
+    //        //}
+    //        if (msg != "") {
+    //            grid += '<tr style="width:100%;border-width:1px;border-style:solid"><td>序號:' + SEQ_NO + '</tr></td>';
+    //            grid += '<tr style="width:100%;border-width:1px;border-style:solid"><td>' + msg + '</tr></td>';
+    //        }
+    //    }
+
+    //    grid = '<table style="width:100%;border-width:1px;border-style:solid">' + grid + '</table>';
+    //    if (msg != '') {
+    //        blockAlert(grid, '訊息');
+    //        return false;
+    //    }
+    //    else {
+    //        return true;
+    //    }
+    //}
+
+    function doReset() {
+        $('#RowTable div[id^="row"]').remove();
+        $('#rowCount').val(0);
+        addGoodRow();
+    }
+
+    function doAdd() {
+        var rowCount = parseInt($('#rowCount').val(), 10) + 1;
+
+        $('#RowTable').append('<div id=\"row' + rowCount + '\" data-group=\"Row\">' + $('#emptyRow').val().replace(/btnDelte_1/gi, 'btnDelte_' + rowCount).replace(/SRVLIST_0/gi, 'SRVLIST_' + parseInt($('#rowCount').val(), 10)).replace(/SRVLIST\[0\]/gi, 'SRVLIST[' + parseInt($('#rowCount').val(), 10) + ']') + '</div>');
+        $('#row' + rowCount + ' #SEQ_NO').text(rowCount);
+        $('#row' + rowCount + ' #SEQ_NO').val(rowCount);
+        $('#row' + rowCount + ' input[name="SRVLIST[' + (rowCount - 1) + '].SEQ_NO"]').val(rowCount);
+        $('#rowCount').val(rowCount);
+
+        $('#RowTable div[id^="row"]').find("div.date").each(function () {
+            initDatePicker(this);
+        });
+    }
+
+    function deleteRow(obj) {
+        var rowId = $('#' + $(obj).attr('id')).parent().parent().parent().attr('id');
+        var cntrow = 0;
+        $('div[id^="row"]').each(function () {
+            cntrow++;
+        })
+        if (cntrow > 1) {
+            $('#RowTable #' + rowId).remove();
+
+            var fileSet = $('#RowTable div[id^="row"] input[type="file"]');
+
+            if ($('#RowTable').data('group', 'Row') == null || $('#RowTable').data('group', 'Row') == undefined) {
+                $('#rowCount').val(0);
+            }
+            else {
+                var count = 1;
+                for (i = 0; i < $('#RowTable div[id^="row"]').length; i++) {
+
+                    $($('#RowTable div[id^="row"]')[i]).attr('id', 'row' + count);
+                    $('#' + $($('#RowTable div[id^="row"]')[i]).attr('id') + ' #SEQ_NO').text(count);
+
+                    $($('#RowTable div[id^="row"]')[i]).find('input[type="text"]').each(function () {
+                        $(this).attr('name', $(this).attr('name').replace(/SRVLIST_[0-9]/gi, 'SRVLIST_' + i).replace(/SRVLIST\[[0-9]\]/gi, 'SRVLIST[' + i + ']'));
+                    })
+
+                    $($('#RowTable div[id^="row"]')[i]).find('textarea').each(function () {
+                        $(this).attr('name', $(this).attr('name').replace(/SRVLIST_[0-9]/gi, 'SRVLIST_' + i).replace(/SRVLIST\[[0-9]\]/gi, 'SRVLIST[' + i + ']'));
+                    })
+
+                    $($('#RowTable div[id^="row"]')[i]).find('input[type="checkbox"]').each(function () {
+                        $(this).attr('name', $(this).attr('name').replace(/SRVLIST_[0-9]/gi, 'SRVLIST_' + i).replace(/SRVLIST\[[0-9]\]/gi, 'SRVLIST[' + i + ']'));
+                    })
+
+                    $($('#RowTable div[id^="row"]')[i]).find('input[type="hidden"]').each(function () {
+                        $(this).attr('name', $(this).attr('name').replace(/SRVLIST_[0-9]/gi, 'SRVLIST_' + i).replace(/SRVLIST\[[0-9]\]/gi, 'SRVLIST[' + i + ']'));
+                    })
+
+                    $($('#RowTable div[id^="row"]')[i]).find('select').each(function () {
+                        $(this).attr('name', $(this).attr('name').replace(/SRVLIST_[0-9]/gi, 'SRVLIST_' + i).replace(/SRVLIST\[[0-9]\]/gi, 'SRVLIST[' + i + ']'));
+                    })
+
+                    count++;
+                }
+
+                $('#rowCount').val((count - 1));
+
+                count = 0
+                var rowCount = 1
+                var cnt = 0;
+                $(fileSet).each(function () {
+
+                    var newcnt = parseInt(cnt / 5)
+                    var pnam = ($(this)[0].name).replace(/SRVLIST\[[0-9]\]/gi, 'SRVLIST[' + newcnt + ']');
+
+                    var tagName = pnam;
+                    var tagId = pnam.replace(/SRVLIST\[[0-9]\]./gi, '');
+
+                    $($((fileSet)[cnt])[0]).attr('id', tagId)
+                    $($((fileSet)[cnt])[0]).attr('name', tagName)
+                    cnt++;
+                })
+
+                count = 1;
+                var rowCount = 0;
+                for (i = 0; i < $('#RowTable div[id^="row"]').length; i++) {
+
+                    var destObjId = $($('#RowTable div[id^="row"]')[i]).attr('id')
+
+                    $('#' + $($('#RowTable div[id^="row"]')[i]).attr('id') + ' input[name^="SRVLIST[' + i + '].SRL_NO"]').val(count);
+
+                    for (j = 0; j < $('#' + destObjId + ' input[type="file"]').length; j++) {
+                        var newObj = $(fileSet)[rowCount];
+                        $($($($('#' + destObjId + ' input[type="file"]')[j]))[0]).replaceWith($(newObj)[0]);
+                        setHiddenFileName($($('#' + destObjId + ' input[type="file"]')[j]).attr('name'));
+                        rowCount++
+                    }
+
+                    count++;
+                }
+            }
+        }
+        else {
+            blockAlert('服務經歷不得少於一筆!');
+        }
+    }
+
+    function setHiddenFileName(objName) {
+        $($('input[name="' + objName + '"]').siblings()[0]).val($('input[name="' + objName + '"]').val().replace(/C:\\fakepath\\/i, ''));
+    }
+
+    function paddingLeft(str, lenght) {
+        if (str.length >= lenght)
+            return str;
+        else
+            return paddingLeft("0" + str, lenght);
+    }
+</script>

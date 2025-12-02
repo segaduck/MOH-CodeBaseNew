@@ -1,0 +1,53 @@
+﻿@model ES.Areas.Admin.Models.MessageBackShowModel
+
+@{
+    ViewBag.Title = "最新公告";
+    string s_msgtype = "";
+    switch (@Model.MESSAGE_TYPE)
+    {
+        case "P":
+            s_msgtype = "<span class=\"newsTag-blue\">繳費公告</span>";
+            break;
+        case "I":
+            s_msgtype = "<span class=\"newsTag-red\">重要公告</span>";
+            break;
+        case "S":
+            s_msgtype = "<span class=\"newsTag-red\" style=\"color: orange\">停機公告</span>";
+            break;
+    }
+    string s_title = s_msgtype + Model.Title; //ES.Utils.CheckUtils.GetHtmlEncode();
+}
+@using (Html.BeginForm("Show", "MessageBack", FormMethod.Post, new { id = "ActionForm", enctype = "multipart/form-data" }))
+{
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 後台管理 / @ViewBag.Title
+    </div>
+    <div class="col-sm-12 content">
+
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.Title</h1>
+        <h2 class="second-title"><span class="newsTag-blue">@Html.DisplayNameFor(m => m.Title) : </span>@Html.Raw(s_title)</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.UnitName)：@Model.UnitName</label>
+                <div class="col-sm-10">
+                    @if (Model != null)
+                    {
+                        var startTime = Model.StartTime != null ? ((DateTime)Model.StartTime).ToString("yyyy/MM/dd HH:mm") : "";
+                        var endTime = Model.EndTime != null ? ((DateTime)Model.EndTime).ToString("yyyy/MM/dd HH:mm") : "";
+                        <p class="form-control-static"> @Html.Raw("起迄時間：" + startTime + "～" + endTime)</p>
+                    }
+                </div>
+            </div>
+            <div class="form-group form-inline">
+                <label class="main-label col-sm-2" for="">內容</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Html.Raw(ES.Utils.CheckUtils.GetHtmlEncode(Model.Content).Replace("  ", "&nbsp;&nbsp;").Replace("\n", "<br />"))</p>
+                </div>
+            </div>
+            <div class="btnbar">
+                <a href="~/BACKMIN/" class="btn btn-pager" onclick="">返回</a>
+            </div>
+        </div>
+
+    </div>
+}

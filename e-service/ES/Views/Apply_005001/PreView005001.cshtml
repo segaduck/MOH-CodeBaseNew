@@ -1,0 +1,380 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_005001FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+}
+
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">申辦項目</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">產銷證明書</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">申請日期</label>
+            <div class="col-sm-10">
+                @Html.BLATYPForTurbo(m => m.APP_TIME_TW, Model.APP_TIME_TW)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申辦份數</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">@Model.PAYCOUNT</p>
+            </div>
+            <label class="step-label col-sm-2" for="">繳費金額</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">@Model.PAYAMOUNT</p>
+            </div>
+        </div>
+        <h2 class="second-title">申請基本資料</h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>公司名稱</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.NAME</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">@Model.CNT_NAME</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.TEL</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">傳真</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.FAX</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.EMAIL</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">
+                <span style="color: red;">*</span>藥品許可執照字號(中文)
+            </label>
+            <div class="col-sm-10">
+                @Model.PL_CD_TEXT 第 @Model.PL_Num 號
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥品許可執照字號(英文)</label>
+            <div class="col-sm-10">
+                @Model.PL_CD_E - @Model.PL_Num_E
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠名稱(中文)</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.MF_CNT_NAME</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠名稱(英文)</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.MF_CNT_NAME_E</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span> 製造廠地址(中文)</label>
+            <div class="col-sm-10 form-inline">
+                <p class="form-control-static">
+                    @Model.TAX_ORG_CITY_CODE
+                    @Model.TAX_ORG_CITY_TEXT
+                    @Model.TAX_ORG_CITY_DETAIL
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠地址(英文)</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.MF_ADDR_E</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥品名稱(中文)</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.DRUG_NAME</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">藥品名稱(英文)</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">@Model.DRUG_NAME_E</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">登載外銷品名</label>
+            <div class="col-sm-10">
+                @if (Model.IS_DRUG_ABROAD_CHECK)
+                {
+                    <input type="checkbox" readonly="readonly" disabled="disabled" checked />
+                }
+                else
+                {
+                    <input type="checkbox" readonly="readonly" disabled="disabled" />
+                }
+                <span>非必填欄位，可勾選是否登載外銷品名。</span>
+            </div>
+        </div>
+        @if (Model.IS_DRUG_ABROAD_CHECK)
+        {
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">勾選外銷品名</label>
+                <div class="col-sm-10">
+                </div>
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">請勾選欲申請之外銷品名。</div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">外銷品名(中文)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.DRUG_ABROAD_NAME</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">外銷品名(英文)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.DRUG_ABROAD_NAME_E</p>
+                </div>
+            </div>
+        }
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型(中文)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.DOSAGE_FORM</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型(英文)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.DOSAGE_FORM_E</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2"><span style="color:red;">*</span>核准日期(中文)</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">@Model.ISSUE_DATE_TW</p>
+                </div>
+                <label class="step-label col-sm-2">核准日期(英文)</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">@Model.ISSUE_DATE</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">顯示有效日期</label>
+                <div class="col-sm-10">
+                    @if (Model.IS_EXPIR_DATE_CHECK)
+                    {
+                        <input type="checkbox" readonly="readonly" disabled="disabled" checked />
+                    }
+                    else
+                    {
+                        <input type="checkbox" readonly="readonly" disabled="disabled" />
+                    }
+                    <span>非必填欄位，倘有需要刊載藥品許可證有效日期才勾選。</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">有效日期(中文)</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">@Model.EXPIR_DATE_TW</p>
+                </div>
+                <label class="step-label col-sm-2" for="">有效日期(英文)</label>
+                <div class="col-sm-4">
+                    <p class="form-control-static">@Model.EXPIR_DATE</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>處方說明(中文)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.MF_CONT</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>處方說明(英文)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.MF_CONT_E</p>
+                </div>
+            </div>
+            @if (Model.IS_PREVIEW)
+            {
+                <div class="form-group">
+                    @Html.EditorFor(m => m.DI, "GoodsDynamicGrid005001")
+                </div>
+            }
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">是否為濃縮製劑</label>
+                <div class="col-sm-10">
+                    @if (Model.IS_Concentrate_CHECK)
+                    {
+                        <input type="checkbox" readonly="readonly" disabled="disabled" checked />
+                    }
+                    else
+                    {
+                        <input type="checkbox" readonly="readonly" disabled="disabled" />
+                    }
+                    <span>是</span>
+                </div>
+            </div>
+            @if (Model.IS_Concentrate_CHECK)
+            {
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>生藥與浸膏比例(中文)</label>
+                    <div class="col-sm-10">
+                        以上生藥製成浸膏
+                        @Model.PC_SCALE_1
+                        @Model.PC_SCALE_1E
+                        (生藥與浸膏比例
+                        @Model.PC_SCALE_21
+                        :
+                        @Model.PC_SCALE_22
+                        =
+                        @Model.PC_SCALE_23
+                        :
+                        @Model.PC_SCALE_24
+                        )
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>生藥與浸膏比例(英文)</label>
+                    <div class="col-sm-10">
+                        Above raw herbs equivalent to
+                        @Model.PC_SCALE_1
+                        @Model.PC_SCALE_1E
+                        herbal extract. (Ratio of raw herbs and extract
+                        @Model.PC_SCALE_21
+                        :
+                        @Model.PC_SCALE_22
+                        =
+                        @Model.PC_SCALE_23
+                        :
+                        @Model.PC_SCALE_24
+                        )
+                    </div>
+                </div>
+            }
+            @if (Model.IS_Concentrate_CHECK)
+            {
+                <div class="form-group">
+                    @Html.EditorFor(m => m.PC, "GoodsDynamicGrid005001Pc")
+                </div>
+            }
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">登載效能、適應症</label>
+                <div class="col-sm-10">
+                    @if (Model.IS_EFFICACY_CHECK)
+                    {
+                        <input type="checkbox" readonly="readonly" disabled="disabled" checked />
+                    }
+                    else
+                    {
+                        <input type="checkbox" readonly="readonly" disabled="disabled" />
+                    }
+                    <span>1.效能</span>
+                    @if (Model.IS_INDIOCATION_CHECK)
+                    {
+                        <input type="checkbox" readonly="readonly" disabled="disabled" checked />
+                    }
+                    else
+                    {
+                        <input type="checkbox" readonly="readonly" disabled="disabled" />
+                    }
+                    <span>2.適應症</span>
+                </div>
+            </div>
+            @if (Model.IS_INDIOCATION_CHECK)
+            {
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">適應症(中文)</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.INDIOCATION</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">適應症(英文)</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.INDIOCATION_E</p>
+                    </div>
+                </div>
+            }
+            @if (Model.IS_EFFICACY_CHECK)
+            {
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">效能(中文)</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.EFFICACY</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">效能(英文)</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.EFFICACY_E</p>
+                    </div>
+                </div>
+            }
+            <h2 class="second-title">佐證文件檔案上傳</h2>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+                <div class="col-sm-10">
+                    @if (Model.RADIOYN == "Y")
+                    {
+                        <label class="radio-inline "><input type="radio" readonly="readonly" disabled="disabled" checked />是</label>
+                        <label class="radio-inline "><input type="radio" readonly="readonly" disabled="disabled" />否</label>
+                    }
+                    else
+                    {
+                        <label class="radio-inline "><input type="radio" readonly="readonly" disabled="disabled" />是</label>
+                        <label class="radio-inline "><input type="radio" readonly="readonly" disabled="disabled" checked />否</label>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">藥品許可證影本(正面)</label>
+                <div class="col-sm-10">
+                    @Html.ImageHoverForTurbo(m => m.File_1, Model.Name_File_1)
+                    @*@if (Model.File_1 != null)
+                    {
+                        @Html.FrontFileDLForTurbo(m => m.File_1_FILENAME)
+                        @Html.HiddenFor(m => m.File_1_FILENAME)
+                    }*@
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">藥品許可證影本(反面)</label>
+                <div class="col-sm-10">
+                    @Html.ImageHoverForTurbo(m => m.File_2, Model.Name_File_2)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">處方之中藥材中英文對照表</label>
+                <div class="col-sm-10">
+                    @Html.ImageHoverForTurbo(m => m.File_3, Model.Name_File_3)
+                </div>
+            </div>
+            <div class="btn-bar text-center">
+                <button type="button" class="btn btn-save" onclick="send_preview()">確認送出</button>
+                <button type="button" class="btn btn-clear" onclick="back_preview()">返回修改</button>
+                <button type="button" class="btn btn-clear" onclick="preview_pay()">套印證明書</button>
+            </div>
+        </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('[data-hover!=\"\"]').hover();
+    });
+</script>

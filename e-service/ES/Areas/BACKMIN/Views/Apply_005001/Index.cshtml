@@ -1,0 +1,1186 @@
+﻿@using DocumentFormat.OpenXml.Vml.Spreadsheet
+@using ES.Services
+@model ES.Areas.BACKMIN.Models.Apply_005001ViewModel
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+@*<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.min.js"></script>*@
+
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ES.Models.ShareCodeListModel dropdown = new ES.Models.ShareCodeListModel();
+}
+
+@using (Html.BeginForm("Index", "Apply_005001", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form" }))
+{
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件分文及處理 / 案件處理 / 產銷證明書
+    </div>
+    <div class="col-sm-12 content">
+        @Html.HiddenFor(m => m.Form.IS_CASE_LOCK)
+        <!-- H1 title -->
+        <h1 class="main-title"><i class="fas fa-edit"></i>案件審理作業</h1>
+        <div class="table-responsive">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th colspan="2">基本資料檔</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="20%"><div align="center">申辦項目：</div></td>
+                        <td width="80%"><div align="left">產銷證明書</div></td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">申辦日期：</div></td>
+                        <td>@Model.Form.APP_TIME_TW</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">預計完成日：</div></td>
+                        <td>@Model.Form.APP_EXT_DATE_TW</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">案件承辦人姓名：</div></td>
+                        <td>@Model.Form.ADMIN_NAME</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">公文文號：</div></td>
+                        <td>@Model.Form.MOHW_CASE_NO</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">案件編號：</div></td>
+                        <td>@Model.Form.APP_ID</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">系統狀態：</div></td>
+                        <td>@Model.Form.APPLY_STATUS</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">公司名稱：</div></td>
+                        <td>@Model.Form.NAME</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">聯絡人：</div></td>
+                        <td>@Model.Form.CNT_NAME</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">電話：</div></td>
+                        <td>@Model.Form.TEL</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">傳真：</div></td>
+                        <td>@Model.Form.FAX
+                    </tr>
+                    <tr>
+                        <td><div align="center">E-MAIL：</div></td>
+                        <td>@Model.Form.EMAIL</td>
+                        @Html.HiddenFor(m => m.Form.EMAIL)
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--1-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#basicData' href='#basicData'>
+                    <a>基本資料檔(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='basicData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-horizontal">
+                        <div class="form-blue">
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">申辦項目</label>
+                                <div class="col-sm-4">
+                                    <div class="form-control-static">產銷證明書</div>
+                                </div>
+                                <label class="main-label col-sm-2" for="">申辦日期</label>
+                                <div class="col-sm-4">
+                                    <div class="form-control-static">@Model.Form.APP_TIME_TW</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">案件編號</label>
+                                <div class="col-sm-10">
+                                    <div class="form-control-static">@Model.Form.APP_ID</div>
+                                    @Html.HiddenFor(m => m.Form.APP_ID)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">系統狀態</label>
+                                <div class="col-sm-10">
+                                    <div class="form-control-static">@Model.Form.APPLY_STATUS</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">申辦份數</label>
+                                <div class="col-sm-4">
+                                    <div class="form-control-static">@Model.Form.PAYCOUNT</div>
+                                    @Html.HiddenFor(m => m.Form.PAYCOUNT)
+                                </div>
+                                <label class="main-label col-sm-2" for="">繳費金額</label>
+                                <div class="col-sm-4">
+                                    <div class="form-control-static">@Model.Form.PAYAMOUNT</div>
+                                    @Html.HiddenFor(m => m.Form.PAYAMOUNT)
+                                </div>
+                            </div>
+                            <h2 class="second-title">申請基本資料</h2>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.PL_CD)
+                                    <div class="col-sm-4">
+                                        @Html.HiddenFor(m => m.Form.PL_CD_TEXT)
+                                        @Html.DropDownListFor(m => m.Form.PL_CD, dropdown.PList, new { @class = "form-control", onchange = "PLChange()" })
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <div class="form-control-static">第</div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        @Html.HiddenFor(m => m.Form.PL_Num)
+                                        @Html.TextBoxFor(m => m.Form.PL_Num, new { @class = "form-control", placeholder = "請輸入數字", maxlength = "10" })
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <div class="form-control-static">號</div>
+                                    </div>
+                                    @Html.NoteForTurbo(m => m.Detail.PL_CD)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.PL_CD_E)
+                                    <div class="col-sm-4">
+                                        @Html.HiddenFor(m => m.Form.PL_CD_E_TEXT)
+                                        @Html.DropDownListFor(m => m.Form.PL_CD_E, dropdown.PList_E, new { @class = "form-control", onchange = "PLENChange()" })
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <div class="form-control-static">第</div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        @Html.HiddenFor(m => m.Form.PL_Num_E)
+                                        @Html.TextBoxFor(m => m.Form.PL_Num_E, new { @class = "form-control", placeholder = "請輸入數字", maxlength = "10" })
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <div class="form-control-static">號</div>
+                                    </div>
+                                    @Html.NoteForTurbo(m => m.Detail.PL_CD_E)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.MF_CNT_NAME)
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.Form.MF_CNT_NAME, new { @id = "MF_CNT_NAME", @class = "form-control" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.MF_CNT_NAME)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.MF_CNT_NAME_E)
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.Form.MF_CNT_NAME_E, new { @id = "MF_CNT_NAME_E", @class = "form-control" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.MF_CNT_NAME_E)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.TAX_ORG_CITY_CODE)
+                                    <div class="col-sm-10 form-inline">
+                                        @Html.TextBoxFor(m => m.Form.TAX_ORG_CITY_CODE, new { @id = "TAX_ORG_CITY_CODE", @class = "form-10 form-normal form-white", size = 10, placeholder = "郵遞區號" })
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(m => m.Form.TAX_ORG_CITY_TEXT, new { @id = "TAX_ORG_CITY_TEXT", @class = "form-normal form-white", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect()" id="ADDR_SEARCH"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                            </span>
+                                        </div>
+                                        @Html.TextBoxFor(m => m.Form.TAX_ORG_CITY_DETAIL, new { @class = "form-normal form-white", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.TAX_ORG_CITY_CODE)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.MF_ADDR_E)
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.Form.MF_ADDR_E, new { @id = "MF_ADDR_E", @class = "form-control" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.MF_ADDR_E)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.DRUG_NAME)
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.Form.DRUG_NAME, new { @id = "DRUG_NAME", @class = "form-control" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.DRUG_NAME)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.DRUG_NAME_E)
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.Form.DRUG_NAME_E, new { @id = "DRUG_NAME_E", @class = "form-control" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.DRUG_NAME_E)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.DRUG_ABROAD_CHECK)
+                                    <div class="col-sm-10">
+                                        @Html.CheckBoxFor(m => m.Form.IS_DRUG_ABROAD_CHECK, new { @id = "addProduct", @onclick = "addProductFun()" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.DRUG_ABROAD_CHECK)
+                            </div>
+                            <div class="form-group" id="choseProduct">
+                                <label class="main-label col-sm-2" for="">勾選外銷品名</label>
+                                <div class="col-sm-10">請勾選欲申請之外銷品名。</div>
+                            </div>
+                            <div class="form-group" id="choseProduct1">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.DRUG_ABROAD_NAME)
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.Form.DRUG_ABROAD_NAME, new { @id = "DRUG_ABROAD_NAME", @class = "form-control" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.DRUG_ABROAD_NAME)
+                            </div>
+                            <div class="form-group" id="choseProduct2">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.DRUG_ABROAD_NAME_E)
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.Form.DRUG_ABROAD_NAME_E, new { @id = "DRUG_ABROAD_NAME_E", @class = "form-control" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.DRUG_ABROAD_NAME_E)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.DOSAGE_FORM)
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.Form.DOSAGE_FORM, new { @id = "DOSAGE_FROM", @class = "form-control" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.DOSAGE_FORM)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.DOSAGE_FORM_E)
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.Form.DOSAGE_FORM_E, new { @id = "DOSAGE_FROM_E", @class = "form-control" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.DOSAGE_FORM_E)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.ISSUE_DATE)
+                                    <div class="col-sm-4">
+                                        @Html.DatePickerTWFor(m => m.Form.ISSUE_DATE, new { size = "10" })
+                                    </div>
+                                    <label class="main-label col-sm-2" for="">核准日期(英文)</label>
+                                    <div class="col-sm-4" >
+                                        <input type="text" class="form-control" id="form_ISSUE_DATE_E" readonly>
+                                    </div>
+                                    @Html.NoteForTurbo(m => m.Detail.ISSUE_DATE)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.EXPIR_DATE_CHECK)
+                                    <div class="col-sm-10">
+                                        @Html.CheckBoxFor(m => m.Form.IS_EXPIR_DATE_CHECK, new { @id = "addDate", @onclick = "addDateFun()" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.EXPIR_DATE_CHECK)
+                            </div>
+
+                            <div class="form-group" id="choseDate">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.EXPIR_DATE)
+                                    <div class="col-sm-4">
+                                        @Html.DatePickerTWFor(m => m.Form.EXPIR_DATE, new { size = "10" })
+                                    </div>
+                                    <label class="main-label col-sm-2" for="">有效日期(英文)</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="form_EXPIR_DATE_E" readonly>
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.EXPIR_DATE)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.MF_CONT)
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.Form.MF_CONT, new { @id = "MF_CONT", @class = "form-control" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.MF_CONT)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.MF_CONT_E)
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(m => m.Form.MF_CONT_E, new { @id = "MF_CONT", @class = "form-control" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.MF_CONT_E)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.INGREDIENT_CONTENT)
+                                    <div class="col-sm-10">
+                                        @Html.EditorFor(m => m.DI, "GoodsDynamicGrid005001")
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.INGREDIENT_CONTENT)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.Concentrate_CHECK)
+                                    <div class="col-sm-10">
+                                        @Html.CheckBoxFor(m => m.Form.IS_Concentrate_CHECK, new { @id = "IsConcentrate", @onclick = "IsConcentrateFun()" })
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.Concentrate_CHECK)
+                            </div>
+                            <div id="divConcentrate">
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        @Html.NoteLabelForTurbo(m => m.Form.PC_SCALE)
+                                        <div class="col-sm-10">
+                                            以上生藥製成浸膏
+                                            @Html.TextBoxFor(m => m.Form.PC_SCALE_1, new { @class = "form-normal form-10", @placeholder = "輸入分量", @onchange = "PCSCALEFun(this)" })
+                                            @Html.TextBoxFor(m => m.Form.PC_SCALE_1E, new { @class = "form-normal form-10", @placeholder = "輸入單位", @onchange = "PCSCALEFun(this)" })
+                                            (生藥與浸膏比例
+                                            @Html.TextBoxFor(m => m.Form.PC_SCALE_21, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)" })
+                                            :
+                                            @Html.TextBoxFor(m => m.Form.PC_SCALE_22, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)" })
+                                            =
+                                            @Html.TextBoxFor(m => m.Form.PC_SCALE_23, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)" })
+                                            :
+                                            @Html.TextBoxFor(m => m.Form.PC_SCALE_24, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)" })
+                                            )
+                                        </div>
+                                    </div>
+                                    @Html.NoteForTurbo(m => m.Detail.PC_SCALE)
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        @Html.NoteLabelForTurbo(m => m.Form.PC_SCALE_EN)
+                                        <div class="col-sm-10">
+                                            Above raw herbs equivalent to
+                                            @Html.TextBoxFor(m => m.Form.PC_SCALE_1, new { @class = "form-normal form-10", @placeholder = "輸入分量", @onchange = "PCSCALEFun(this)" })
+                                            @Html.TextBoxFor(m => m.Form.PC_SCALE_1E, new { @class = "form-normal form-10", @placeholder = "輸入單位", @onchange = "PCSCALEFun(this)" })
+                                            herbal extract. (Ratio of raw herbs and extract
+                                            @Html.TextBoxFor(m => m.Form.PC_SCALE_21, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)" })
+                                            :
+                                            @Html.TextBoxFor(m => m.Form.PC_SCALE_22, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)" })
+                                            =
+                                            @Html.TextBoxFor(m => m.Form.PC_SCALE_23, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)" })
+                                            :
+                                            @Html.TextBoxFor(m => m.Form.PC_SCALE_24, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)" })
+                                            )
+                                        </div>
+                                    </div>
+                                    @Html.NoteForTurbo(m => m.Detail.PC_SCALE_EN)
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        @Html.NoteLabelForTurbo(m => m.Form.EXCIPIENT)
+                                        <div class="col-sm-10">
+                                            @Html.EditorFor(m => m.PC, "GoodsDynamicGrid005001Pc")
+                                        </div>
+                                    </div>
+                                    @Html.NoteForTurbo(m => m.Detail.EXCIPIENT)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.INDIOCATION_AND_EFFICACY)
+                                    <div class="col-sm-10">
+                                        @Html.CheckBoxFor(m => m.Form.IS_EFFICACY_CHECK, new { @id = "addA", @onclick = "addAFun()" })
+                                        <span>1.效能</span>
+                                        @Html.CheckBoxFor(m => m.Form.IS_INDIOCATION_CHECK, new { @id = "addB", @onclick = "addBFun()" })
+                                        <span>2.適應症</span>
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.INDIOCATION_AND_EFFICACY)
+                            </div>
+
+                            <div id="choseB">
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        @Html.NoteLabelForTurbo(m => m.Form.INDIOCATION)
+                                        <div class="col-sm-10">
+                                            @Html.TextBoxFor(m => m.Form.INDIOCATION, new { @id = "INDIOCATION", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    @Html.NoteForTurbo(m => m.Detail.INDIOCATION)
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        @Html.NoteLabelForTurbo(m => m.Form.INDIOCATION_E)
+                                        <div class="col-sm-10">
+                                            @Html.TextBoxFor(m => m.Form.INDIOCATION_E, new { @id = "INDIOCATION_E", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    @Html.NoteForTurbo(m => m.Detail.INDIOCATION_E)
+                                </div>
+                            </div>
+
+                            <div id="choseA">
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        @Html.NoteLabelForTurbo(m => m.Form.EFFICACY)
+                                        <div class="col-sm-10">
+                                            @Html.TextBoxFor(m => m.Form.EFFICACY, new { @id = "EFFICACY", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    @Html.NoteForTurbo(m => m.Detail.EFFICACY)
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        @Html.NoteLabelForTurbo(m => m.Form.EFFICACY_E)
+                                        <div class="col-sm-10">
+                                            @Html.TextBoxFor(m => m.Form.EFFICACY_E, new { @id = "EFFICACY_E", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    @Html.NoteForTurbo(m => m.Detail.EFFICACY_E)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--2-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#ApplyData' href='#ApplyData'>
+                    <a>上傳應附檔案(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='ApplyData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-horizontal">
+                        <div class="form-blue">
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">佐證文件採合併檔案</label>
+                                <div class="col-sm-10">
+                                    @if (Model.Form.RADIOYN == "Y")
+                                    {
+                                        <label class="radio-inline "><input type="radio" name="MERGEYN" value="Y" checked onchange="RadioChange()" disabled>是</label>
+                                        <label class="radio-inline "><input type="radio" name="MERGEYN" value="N" onchange="RadioChange()" disabled>否</label>
+                                    }
+                                    else
+                                    {
+                                        <label class="radio-inline "><input type="radio" name="MERGEYN" value="Y" onchange="RadioChange()" disabled>是</label>
+                                        <label class="radio-inline "><input type="radio" name="MERGEYN" value="N" checked onchange="RadioChange()" disabled>否</label>
+                                    }
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.File_1_Name)
+                                    <div class="col-sm-10">
+                                        @Html.FileDLForTurbo(m => m.Form.File_1, Model.Form.FILE1_TEXT)
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.File_1_Name)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.File_2_Name)
+                                    <div class="col-sm-10">
+                                        @Html.FileDLForTurbo(m => m.Form.File_2, Model.Form.FILE2_TEXT)
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.File_2_Name)
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.NoteLabelForTurbo(m => m.Form.File_3_Name)
+                                    <div class="col-sm-10">
+                                        @Html.FileDLForTurbo(m => m.Form.File_3, Model.Form.FILE3_TEXT)
+                                    </div>
+                                </div>
+                                @Html.NoteForTurbo(m => m.Detail.File_3_Name)
+                            </div>
+                            <div class="btnbar">
+                                <button type="button" class="btn btn-blue" onclick="GetZip('@Model.Form.APP_ID')">檔案打包下載</button>
+                                <button type="button" class="btn btn-blue" onclick="preview_pay()">套印證明書</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--3-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#PayData' href='#PayData'>
+                    <a>繳費情形(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='PayData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-horizontal">
+                        <div class="form-blue">
+                            @Html.PayBackForTurbo(@Model.Form.PAY_METHOD, @Model.Form.PAY_A_FEE.TONotNullString())
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">繳費日期</label>
+                                <div class="col-sm-4">
+                                    @if (Model.Form.PAY_STATUS == "Y")
+                                    {
+                                        @Html.DatePickerTWFor(m => m.Form.PAY_ACT_TIME, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                                        @Html.CheckBoxFor(m => m.Form.IS_PAY_STATUS, new { onclick = "payCheck(this)", @disabled = "disabled" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DatePickerTWFor(m => m.Form.PAY_ACT_TIME, new { size = "10", @readonly = "readonly", @disabled = "disabled" })
+                                        @Html.CheckBoxFor(m => m.Form.IS_PAY_STATUS, new { onclick = "payCheck(this)" })
+                                    }
+                                    <span>已繳費</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--4-->
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#ReviewData' href='#ReviewData'>
+                    <a>案件進度歷程(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='ReviewData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-horizontal">
+                        <div class="form-blue">
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">案件進度</label>
+                                <div class="col-sm-4">
+                                    <input type="text" class="form-control" value="" readonly="readonly" id="CASE_PROCSEE">
+                                    @Html.HiddenFor(m => m.Form.CODE_CD_TEXT)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">案件狀態修改</label>
+                                <div class="col-sm-4">
+                                    @Html.DropDownListFor(m => m.Form.CODE_CD, dropdown.GetStatuListForUnitCD7, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">公文文號</label>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(m => m.Form.MOHW_CASE_NO, new { @class = "form-control", placeholder = "" })
+                                </div>
+                                <button type="button" class="btn btn-blue" id="MoCaseBtn" onclick='GetMOHW_CASE_NO("7", "@Model.Form.APP_ID")'>取得公文文號</button>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">公文日期</label>
+                                <div class="col-sm-4">
+                                    @Html.DatePickerTWFor(m => m.Form.MOHW_CASE_DATE, new { size = "10" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">案件歷程記錄</label>
+                                <div class="col-sm-10">
+                                    @Html.LogForTurbo(Model.Form.APP_ID, "APPLY_005001,APPLY_PAY,APPLY_005001_DI,APPLY_005001_PC,OFFICIAl_DOC")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="doSave()">存檔</button>
+            <button type="button" class="btn btn-gray" onclick="doBack()">返回</button>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Form_ISSUE_DATE').on('blur', changeISSUE_DATE);
+        $('#Form_EXPIR_DATE').on('blur', changeEXPIR_DATE);
+        addDateFun();
+        IsConcentrateFun();
+        addAFun();
+        addBFun();
+        addProductFun();
+        PLChange();
+        $('#form_ISSUE_DATE_E').val($('#Form_ISSUE_DATE').val());
+        $('#form_EXPIR_DATE_E').val($('#Form_EXPIR_DATE').val());
+        if ($("#Form_CSEE_TYPE").val() == "Y") {
+            $("input[name='optradio'][value='Y']").attr("checked", "checked");
+        } else {
+            $("input[name='optradio'][value='N']").attr("checked", "checked");
+        }
+
+        if ($("#Form_RADIOUSAGE").val() == "1") {
+            $("input[name='optradio1'][value='1']").attr("checked", "checked");
+            $("#Description").hide();
+        }
+        else if ($("#Form_RADIOUSAGE").val() == "2") {
+            $("input[name='optradio1'][value='2']").attr("checked", "checked");
+            $("#Description").show();
+        }
+        else if ($("#Form_RADIOUSAGE").val() == "3") {
+            $("input[name='optradio1'][value='3']").attr("checked", "checked");
+            $("#Description").show();
+        }
+
+        $("#CASE_PROCSEE").val($("select#Form_CODE_CD :selected").text());
+        $("#Form_CODE_CD_TEXT").val($("select#Form_CODE_CD :selected").val());
+
+        //CODE_CD=0 結案(回函核准)，CODE_CD=1 收件，CODE_CD=2 申請資料待確認，CODE_CD=3 審查中，CODE_CD=4 申請案補件中
+        //CODE_CD=10 已收案，處理中，CODE_CD=20 結案(歉難同意)，$("#Form_IS_CASE_LOCK").val() == "True"=>案件過期前台鎖定，後台開啟修改
+
+        //CODE_CD=0 結案(回函核准)=>無法修改狀態(全欄位鎖定無法修改)
+        if ($('#Form_CODE_CD option:selected').val() == '0') {
+            caseLock();
+        }
+        //CODE_CD=1 收件=>不需設定
+        else if ($('#Form_CODE_CD option:selected').val() == '1') {
+            //下拉選單變更
+            //$("#Form_CODE_CD [value='3']").remove();//CODE_CD=3 審查中隱藏
+        }
+        //CODE_CD=2 申請資料待確認=>無法修改狀態，備註欄位需顯示
+        else if ($('#Form_CODE_CD option:selected').val() == '2') {
+            //下拉選單變更
+            //$("#Form_CODE_CD [value='1']").remove();//CODE_CD=1 收件隱藏
+
+            if ($("#Form_IS_CASE_LOCK").val() != "True") {
+                //caseLock();
+                showDetail();
+            }
+        }
+        //CODE_CD=3 審查中=>不需設定
+        else if ($('#Form_CODE_CD option:selected').val() == '3') {
+            //下拉選單變更
+            //$("#Form_CODE_CD [value='1']").remove();//CODE_CD=1 收件隱藏
+        }
+        //CODE_CD=4 申請案補件中=>無法修改狀態，備註欄位需顯示
+        else if ($('#Form_CODE_CD option:selected').val() == '4') {
+            //下拉選單變更
+            //$("#Form_CODE_CD [value='1']").remove();//CODE_CD=1 收件隱藏
+            if ($("#Form_IS_CASE_LOCK").val() != "True") {
+                //caseLock();
+                showDetail();
+            }
+        }
+        //CODE_CD=10 已收案，處理中=>不需設定
+        else if ($('#Form_CODE_CD option:selected').val() == '10') {
+            //下拉選單變更
+            //$("#Form_CODE_CD [value='1']").remove();//CODE_CD=1 收件隱藏
+        }
+        //CODE_CD=20 結案(歉難同意)=>無法修改狀態(全欄位鎖定無法修改)
+        else if ($('#Form_CODE_CD option:selected').val() == '20') {
+            caseLock();
+        }
+        $('#Chk_DRUG_ABROAD_CHECK_1').on('click', BlurChk_DRUG_ABROAD_CHECK_1);
+        $('#Chk_EXPIR_DATE_CHECK_1').on('click', BlurChk_EXPIR_DATE_CHECK_1);
+        $('#Chk_Concentrate_CHECK_1').on('click', BlurChk_Concentrate_CHECK_1);
+        $('#Chk_INDIOCATION_AND_EFFICACY_1').on('click', BlurChk_INDIOCATION_AND_EFFICACY_1);
+    });
+
+    // 取公文號
+    function GetMOHW_CASE_NO(UNIT_CD, APP_ID) {
+        var data = {
+            "UNIT_CD": UNIT_CD,
+            "APP_ID": APP_ID
+        }
+        ajaxLoadMore('/AJAX/GetMOHW_CASE_NO',
+            data,
+            function (retData) {
+                if (retData.status) {
+                    $('#Form_MOHW_CASE_NO').val(retData.message);
+                    $('#Form_MOHW_CASE_DATE').val(Date.now);
+                } else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+    }
+
+    function PLChange() {
+        $("#Form_PL_CD_TEXT").val($("#Form_PL_CD :selected").text());
+        $("#Form_PL_CD_E_TEXT").val($("#Form_PL_CD :selected").val());
+        $("#Form_PL_CD_E").val($("#Form_PL_CD :selected").val());
+    }
+
+    //存檔按鈕
+    function doSave() {
+        var ErrMsg = "";
+        //繳費驗證(繳費勾選需填寫日期)
+        if ($('#Form_IS_PAY_STATUS').prop('checked')) {
+            if ($('#Form_PAY_ACT_TIME').val() == "") {
+                ErrMsg += "請填寫繳費日期!\r\n";
+            }
+        }
+
+        if ($("#Form_CODE_CD").val() == "0" || $("#Form_CODE_CD").val() == "20") {
+            var re = /^[0-9]+$/;
+            if (!re.test($('#Form_MOHW_CASE_NO').val())) {
+                ErrMsg += "請填寫輸入公文文號 ! \r\n";
+            }
+        }
+
+        if ($("#Form_CODE_CD").val() == "2" || $("#Form_CODE_CD").val() == "4") {
+            var chklist = "";
+            $('input:checkbox:checked').each(function (i) {
+                chklist = "0"
+            })
+            if (chklist=="") {
+                ErrMsg += "請填寫至少勾選一筆補件 ! \r\n";
+            }
+        }
+
+        $('input:checkbox:checked').each(function (i) {
+            if ((this.id).substring(0, 3) == "Chk") {
+                var pname = $(this).parent().text()
+                var pid = "#" + (this.id).substring(4) + "_Note";
+                if ($(pid).val() == "") {
+                    ErrMsg += "請填寫" + pname.replace(/\r\n|\n/g, "").replace(/\s+/g, "") + "補件備註 ! \r\n";
+                }
+            }
+        });
+
+
+
+        ErrMsg += checkItem();
+
+        if (ErrMsg == "") {
+            //儲存
+            @*var form = $("form[id=main_form]");
+            form.attr('action', '@Url.Action("Save")').submit();*@
+            var dataApply = getFormSubmitableFieldsWithCheckbox($("form[id=main_form]"));
+            ajaxLoadMore('@Url.Action("Save")',
+                dataApply,
+                function (retData) {
+                    if (retData.status) {
+                        blockMessage(retData.message,
+                            "提示訊息",
+                            function () {
+                                blockUI();
+                                var id = $("#Form_APP_ID").val();
+                                location.href = "Apply_005001?appid=" + id + "&srvid=005001";
+                            });
+                    }
+                    else {
+                        blockAlert(retData.message, "提示訊息");
+                    }
+                });
+        } else {
+            blockAlert(ErrMsg, "提示訊息");
+        }
+
+    }
+
+    //已繳費勾選按鈕
+    function payCheck(check) {
+        if (check.checked) {
+            $("#Form_PAY_ACT_TIME_TW").removeAttr("readonly");
+            $("#Form_PAY_ACT_TIME_TW").parent().removeAttr("disabled");
+        } else {
+            $("#Form_PAY_ACT_TIME_TW").attr("readonly", "readonly");
+            $("#Form_PAY_ACT_TIME_TW").parent().attr("disabled", "disabled");
+            $('#Form_PAY_ACT_TIME_TW').val("");
+            $('#Form_PAY_ACT_TIME').val("");
+        }
+    }
+
+    //打包下載
+    function GetZip(APP_ID) {
+        var data = {
+            "APP_ID": APP_ID,
+            "CASENAME": "產銷證明書"
+        }
+        var url = '/GetZIP/GetZIP?' + $.param(data);
+        location.href = url;
+    }
+
+    //欄位鎖定
+    function caseLock() {
+        //勾選方框移除
+        $('input[id^="Chk"]').each(function (item) {
+            $(this).remove();
+        });
+
+        $('input[name^="Form."]').each(function () {
+            if ($(this).attr("type") == "hidden") {
+                $(this).attr('disabled', 'disabled');
+            } else {
+                $(this).attr('disabled', 'disabled');
+            }
+        });
+
+        $("#ADDR_SEARCH").attr('disabled', 'disabled');
+
+        //存檔按鈕
+        $(".btn-save").hide();
+
+        //取得公文文號
+        $("#MoCaseBtn").attr("disabled", "disabled");
+
+        $("input[type='radio']").attr('disabled', 'disabled');
+
+        $("select").attr('disabled', 'disabled');
+    }
+
+    //顯示備註欄位
+    function showDetail() {
+        $('input[name^=Detail]').each(function (item) {
+            if ($(this).val() != "") {
+                $(this).parent().parent().show();
+                $(this).attr('disabled', 'disabled');
+            }
+        });
+    }
+
+    //欄位驗證
+    function checkItem() {
+        var ErrMsg = "";
+        var count = 0;
+
+        $('input[name^="Form."][type="text"]').each(function () {
+            if ($(this).prop("id") == "Form_MOHW_CASE_NO" || $(this).prop("id") == "Form_PAY_ACT_TIME_TW"
+                || $(this).prop("id") == "Form_MOHW_CASE_DATE_TW") {
+                //公文文號
+                //繳費日期
+            } else {
+                if ($(this).val() == "") {
+                    if ($(this).attr("id") == "DRUG_NAME_E" || $(this).attr("id") == "DRUG_ABROAD_NAME" || $(this).attr("id") == "DRUG_ABROAD_NAME_E" ||
+                        $(this).attr("id") == "Form_EXPIR_DATE_TW" || $(this).attr("id") == "Form_PC_SCALE_1" || $(this).attr("id") == "Form_PC_SCALE_1E" ||
+                        $(this).attr("id") == "Form_PC_SCALE_2E" ||$(this).attr("id") == "Form_PC_SCALE_21" || $(this).attr("id") == "Form_PC_SCALE_22" || $(this).attr("id") == "Form_PC_SCALE_23" ||
+                        $(this).attr("id") == "Form_PC_SCALE_24" || $(this).attr("id") == "INDIOCATION" || $(this).attr("id") == "INDIOCATION_E" ||
+                        $(this).attr("id") == "EFFICACY" || $(this).attr("id") == "EFFICACY_E") {
+                        //跳過
+                    } else {
+                        $(this).css("background-color", "#FF9797");
+                        count++;
+                    }
+                }
+            }
+        });
+
+
+        if ($("#addProduct").prop("checked")) {
+            // 外銷品名 中文 英文 則一填寫
+            if ($("#DRUG_ABROAD_NAME").val() == "" && $("#DRUG_ABROAD_NAME_E").val() == "") {
+                $("#DRUG_ABROAD_NAME").css("background-color", "#FF9797");
+                $("#DRUG_ABROAD_NAME_E").css("background-color", "#FF9797");
+                count++;
+            }
+        }
+
+        if ($("#Form_IS_EXPIR_DATE_CHECK").prop("checked")) {
+            if ($("#Form_EXPIR_DATE_TW").val() == "") {
+                $("#Form_EXPIR_DATE_TW").css("background-color", "#FF9797");
+                count++;
+            }
+        }
+
+        if ($("#Form_IS_Concentrate_CHECK").prop("checked")) {
+            if ($("#Form_PC_SCALE_1").val() == "") {
+                $("#Form_PC_SCALE_1").css("background-color", "#FF9797");
+                count++;
+            }
+            if ($("#Form_PC_SCALE_1E").val() == "") {
+                $("#Form_PC_SCALE_1E").css("background-color", "#FF9797");
+                count++;
+            }
+            if ($("#Form_PC_SCALE_2E").val() == "") {
+                $("#Form_PC_SCALE_2E").css("background-color", "#FF9797");
+                count++;
+            }
+            if ($("#Form_PC_SCALE_21").val() == "") {
+                $("#Form_PC_SCALE_21").css("background-color", "#FF9797");
+                count++;
+            }
+            if ($("#Form_PC_SCALE_22").val() == "") {
+                $("#Form_PC_SCALE_22").css("background-color", "#FF9797");
+                count++;
+            }
+            if ($("#Form_PC_SCALE_23").val() == "") {
+                $("#Form_PC_SCALE_23").css("background-color", "#FF9797");
+                count++;
+            }
+            if ($("#Form_PC_SCALE_24").val() == "") {
+                $("#Form_PC_SCALE_24").css("background-color", "#FF9797");
+                count++;
+            }
+        }
+
+        if ($("#Form_IS_EFFICACY_CHECK").prop("checked")) {
+            if ($("#EFFICACY").val() == "") {
+                $("#EFFICACY").css("background-color", "#FF9797");
+                count++;
+            }
+            if ($("#EFFICACY_E").val() == "") {
+                $("#EFFICACY_E").css("background-color", "#FF9797");
+                count++;
+            }
+        }
+
+        if ($("#Form_IS_INDIOCATION_CHECK").prop("checked")) {
+            if ($("#INDIOCATION").val() == "") {
+                $("#INDIOCATION").css("background-color", "#FF9797");
+                count++;
+            }
+            if ($("#INDIOCATION_E").val() == "") {
+                $("#INDIOCATION_E").css("background-color", "#FF9797");
+                count++;
+            }
+        }
+
+        if (count > 0) {
+            ErrMsg += "粉色欄位請勿空白\r\n";
+        }
+        return ErrMsg;
+    }
+
+    //案件類型變更
+    function radioChang() {
+        $("#Form_CSEE_TYPE").val($("input[name='optradio']:checked").val());
+    }
+
+    // 地址
+    function loadDialogTAX_ORG_CITYCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doTAX_ORG_CITYSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#TAX_ORG_CITY_CODE').val(retData.Id);
+                    $('#TAX_ORG_CITY_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doTAX_ORG_CITYNameGet() {
+        var code = $('#TAX_ORG_CITY_CODE');
+        console.log('TAX_ORG_CITY_CODE');
+        var data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#TAX_ORG_CITY_TEXT'),
+            'add': $('#TAX_ORG_CITY_CODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogTAX_ORG_CITYCodeMapName(data);
+        }
+    }
+
+    //套表列印
+    function preview_pay() {
+        var data = getFormSubmitableFieldsWithCheckbox($("form[id=main_form]"));
+        $.fileDownload('@Url.Action("PreviewApplyForm")', {
+            httpMethod: 'post',
+            data: data,
+            prepareCallback: function (url) {
+
+            }
+        });
+    }
+
+    //登載外銷品名
+    function addProductFun() {
+        if ($("#addProduct").prop("checked")) {
+            $("#choseProduct").show();
+            $("#choseProduct1").show();
+            $("#choseProduct2").show();
+        } else {
+            $("#choseProduct").hide();
+            $("#choseProduct1").hide();
+            $("#choseProduct2").hide();
+            $("#choseProduct").val("");
+            $("#choseProduct1").find('input[type="text"]').each(function () {
+                $(this).val('');
+            });
+            $("#choseProduct2").find('input[type="text"]').each(function () {
+                $(this).val('');
+            });
+            $('input[name="radioDRUG"]').prop("checked", false);
+            $('#Chk_DRUG_ABROAD_NAME_1').prop("checked", false);
+            DRUG_ABROAD_NAME_1SH(Chk_DRUG_ABROAD_NAME_1)
+            $('#Chk_DRUG_ABROAD_NAME_E_1').prop("checked", false);
+            DRUG_ABROAD_NAME_E_1SH(Chk_DRUG_ABROAD_NAME_E_1)
+        }
+    }
+
+    //顯示有效日期
+    function addDateFun() {
+        if ($("#addDate").prop("checked")) {
+            $("#choseDate").show();
+        } else {
+            $("#choseDate").hide();
+            $("#choseDate").find('input[type="text"]').each(function () {
+                $(this).val('');
+            });
+            $('#Chk_EXPIR_DATE_1').prop("checked", false);
+            EXPIR_DATE_1SH(Chk_EXPIR_DATE_1)
+        }
+    }
+
+    //是否為濃縮製劑
+    function IsConcentrateFun() {
+        if ($("#IsConcentrate").prop("checked")) {
+            $("#divConcentrate").show();
+        } else {
+            $("#divConcentrate").hide();
+            $("#chosePC").hide();
+            $("#divConcentrate").find('input[type="text"]').each(function () {
+                $(this).val('');
+            })
+            $('#Chk_PC_SCALE_1').prop("checked", false);
+            PC_SCALE_1SH(Chk_PC_SCALE_1)
+            $('#Chk_PC_SCALE_EN_1').prop("checked", false);
+            PC_SCALE_EN_1SH(Chk_PC_SCALE_EN_1)
+            $('#Chk_EXCIPIENT_1').prop("checked", false);
+            EXCIPIENT_1SH(Chk_EXCIPIENT_1)
+        }
+    }
+
+    //效能
+    function addAFun() {
+        if ($("#addA").prop("checked")) {
+            $("#choseA").show();
+        }
+        else {
+            $("#choseA").hide();
+            $("#choseA").find('input[type="text"]').each(function () {
+                $(this).val('');
+            });
+            $('#Chk_EFFICACY_1').prop("checked", false);
+            EFFICACY_1SH(Chk_EFFICACY_1)
+            $('#Chk_EFFICACY_E_1').prop("checked", false);
+            EFFICACY_E_1SH(Chk_EFFICACY_E_1)
+        }
+    }
+
+    //適應症
+    function addBFun() {
+        if ($("#addB").prop("checked")) {
+            $("#choseB").show();
+        } else {
+            $("#choseB").hide();
+            $("#choseB").find('input[type="text"]').each(function () {
+                $(this).val('');
+            });
+            $('#Chk_INDIOCATION_1').prop("checked", false);
+            INDIOCATION_1SH(Chk_INDIOCATION_1)
+            $('#Chk_INDIOCATION_E_1').prop("checked", false);
+            INDIOCATION_E_1SH(Chk_INDIOCATION_E_1)
+        }
+    }
+
+    //生藥與浸膏比例文字連動
+    function PCSCALEFun(item) {
+        $("input[name='" + item.name + "']").val(item.value);
+    }
+
+    //藥商許可執照字號
+    function PLNumFun(item) {
+        $("#PL_Num_E").val(item.value);
+    }
+
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index", "Case")';
+    }
+
+    function BlurChk_DRUG_ABROAD_CHECK_1() {
+        if ($("#Chk_DRUG_ABROAD_CHECK_1").prop("checked")) {
+            $('#addProduct').prop("checked", "checked");
+            addProductFun();
+            $('#Chk_DRUG_ABROAD_NAME_1').prop("checked", "checked");
+            $('#Chk_DRUG_ABROAD_NAME_E_1').prop("checked", "checked");
+            DRUG_ABROAD_NAME_1SH(this);
+            DRUG_ABROAD_NAME_E_1SH(this);
+        }
+    }
+
+    function BlurChk_EXPIR_DATE_CHECK_1() {
+        if ($("#Chk_EXPIR_DATE_CHECK_1").prop("checked")) {
+            $('#addDate').prop("checked", "checked");
+            addDateFun();
+            $('#Chk_EXPIR_DATE_1').prop("checked", "checked");
+            EXPIR_DATE_1SH(this);
+        }
+    }
+
+    function BlurChk_Concentrate_CHECK_1() {
+        if ($("#Chk_Concentrate_CHECK_1").prop("checked")) {
+            $('#IsConcentrate').prop("checked", "checked");
+            IsConcentrateFun();
+            $('#Chk_PC_SCALE_1').prop("checked", "checked");
+            $('#Chk_PC_SCALE_EN_1').prop("checked", "checked");
+            $('#Chk_EXCIPIENT_1').prop("checked", "checked");
+            PC_SCALE_1SH(this);
+            PC_SCALE_EN_1SH(this);
+            EXCIPIENT_1SH(this);
+        }
+    }
+
+    function BlurChk_INDIOCATION_AND_EFFICACY_1() {
+        if ($("#Chk_INDIOCATION_AND_EFFICACY_1").prop("checked")) {
+
+            $('#addB').prop("checked", "checked");
+            $('#addA').prop("checked", "checked");
+            addBFun();
+            addAFun();
+            $('#Chk_EFFICACY_1').prop("checked", "checked");
+            $('#Chk_EFFICACY_E_1').prop("checked", "checked");
+            $('#Chk_INDIOCATION_1').prop("checked", "checked");
+            $('#Chk_INDIOCATION_E_1').prop("checked", "checked");
+            EFFICACY_1SH(this);
+            EFFICACY_E_1SH(this);
+            INDIOCATION_1SH(this);
+            INDIOCATION_E_1SH(this);
+        }
+    }
+
+    function changeISSUE_DATE() {
+        var newDate = $('#Form_ISSUE_DATE').val();
+        console.log(newDate);
+        $('#form_ISSUE_DATE_E').val(newDate);
+    }
+    function changeEXPIR_DATE() {
+        var newDate = $('#Form_EXPIR_DATE').val();
+        console.log(newDate);
+        $('#form_EXPIR_DATE_E').val(newDate);
+    }
+</script>

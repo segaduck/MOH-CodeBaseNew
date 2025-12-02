@@ -1,0 +1,537 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_005001FormModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+}
+
+@using (Html.BeginForm("Apply", "Apply_005001", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink">
+                <i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">產銷證明書</a>
+            </div>
+            <div class="clearfix"></div>
+            <div class="step_map">
+                <ul>
+                    <li id="apply" class="active">填寫申報表件並上傳檔案</li>
+                    <li id="preview">預覽申辦表件</li>
+                    <li id="pay">繳費</li>
+                    <li id="save">完成申報</li>
+                </ul>
+            </div>
+            <div class="tab-content" id="myTabContent">
+                <div id="form" class="tab-pane fade active in">
+                    @Html.Partial("Apply")
+                </div>
+                <div id="form1" class="tab-pane fade">
+                    @Html.Partial("PreView005001")
+                </div>
+                <div id="form2" class="tab-pane fade">
+                    @Html.Partial("Pay")
+                </div>
+                <div id="form3" class="tab-pane fade">
+                    @Html.Partial("Save")
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        $('#ISSUE_DATE').on('blur', ChangeISSUE_DATE_TW_AC);
+        $('#EXPIR_DATE').on('blur', ChangeEXPIR_DATE_TW_AC);
+        addDateFun();
+        IsConcentrateFun();
+        addAFun();
+        addBFun();
+        addProductFun();
+        $('#TAX_ORG_CITY_CODE').on('blur', doTAX_ORG_CITYNameGet);
+        doTAX_ORG_CITYNameGet();
+        $("#RADIOYN").val("N");
+        PLChange();
+        CalculationVal();
+    });
+
+
+
+    //製造廠許可編號查詢按鈕
+    function search() {
+        var dataApply = getFormDataToObject($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("getGMPData")', dataApply, function (resp) {
+            if (resp.status) {
+                //介接成功，帶回頁面
+                console.log(resp.message);
+                $("#MF_CNT_NAME").val(resp.data.製造廠名稱);
+
+                ajaxLoadMore('/Ajax/GetCityTownZip',
+                    { Address: resp.data.製造廠地址 },
+                    function (retData) {
+                        if (retData.status) {
+                            $("#TAX_ORG_CITY_CODE").val(retData.data);
+                            $("#TAX_ORG_CITY_DETAIL").val(retData.message);
+                            $("#TAX_ORG_CITY_CODE").blur();
+                        } else {
+                            $("#TAX_ORG_CITY_DETAIL").val(resp.data.製造廠地址);
+                            blockAlert(retData.message, "提示訊息");
+                        }
+                    });
+
+                $("#DRUG_NAME").val(resp.data.中文品名);
+                $("#DRUG_NAME_E").val(resp.data.英文品名);
+                $("#DOSAGE_FORM").val(resp.data.藥品劑型);
+                //var strDate = toTaiwanDate(resp.data.發證日期, '/');
+                $("#ISSUE_DATE_TW").val(resp.data.發證日期);
+                $("#ISSUE_DATE_TW").blur();
+                //var strDate2 = toTaiwanDate(resp.data.有效日期, '/');
+                $("#EXPIR_DATE_TW").val(resp.data.有效日期);
+                $("#EXPIR_DATE_TW").blur();
+                $("#MF_CONT").val(resp.data.處方說明);
+                if (resp.data.效能 != "") {
+                    $("#addA").attr("checked", "checked");
+                    addAFun();
+                    $("#EFFICACY").val(resp.data.效能);
+                }
+                if (resp.data.適應症 != "") {
+                    $("#addB").attr("checked", "checked");
+                    addBFun();
+                    $("#INDIOCATION").val(resp.data.適應症);
+                }
+                if (resp.data.成分說明.length > 0) {
+                    changeItemDI(resp.data.成分說明);
+                }
+                if (resp.data.外銷品名.length > 0) {
+                    changeItemDRUG(resp.data.外銷品名);
+                }
+                blockAlert("已取回資料", "提示訊息");
+
+            } else {
+                blockAlert(resp.message, "提示訊息");
+            }
+        });
+    }
+
+    //介接成分內容變更
+    function changeItemDI(data) {
+
+        $("#GoodsDynamicGird005001").parent().append("<div id='tempDiv'></div>");
+        $("#tempDiv").append("<h2 class='second-title'></h2>");
+        $("#tempDiv").append("<div id='goodsTable' class='table-responsive'></div>");
+        $("#tempDiv h2").append('<input data-val="true" data-val-required="IsNewOpen 欄位是必要項。" id="DI_IsNewOpen" name="DI.IsNewOpen" type="hidden" value="True">');
+        $("#tempDiv h2").append('<input data-val="true" data-val-required="IsReadOnly 欄位是必要項。" id="DI_IsReadOnly" name="DI.IsReadOnly" type="hidden" value="False">');
+        $("#tempDiv h2").append('<input data-val="true" data-val-required="IsDeleteOpen 欄位是必要項。" id="DI_IsDeleteOpen" name="DI.IsDeleteOpen" type="hidden" value="True">');
+        $("#tempDiv h2").append('<input id="DI_SourceModelName" name="DI.SourceModelName" type="hidden" value="DI">成分內容&nbsp;');
+        $("#tempDiv h2").append('<button type="button" class="btn btn-save" id="btnAdd" onclick="addGoodRow()">新增</button><br>');
+        $("#tempDiv div").append('<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table"></table>');
+        $("#tempDiv div table").append('<thead></thead>');
+        $("#tempDiv div table thead").append('<tr></tr>');
+        $("#tempDiv div table thead tr").append('<th width="5%">上下</th>');
+        $("#tempDiv div table thead tr").append('<th width="25%"><span style="color:red" sr-only="必填">＊</span>成分內容(中文)</th>');
+        $("#tempDiv div table thead tr").append('<th width="25%"><span style="color:red" sr-only="必填">＊</span>生藥名</th>');
+        $("#tempDiv div table thead tr").append('<th width="20%">份量</th>');
+        $("#tempDiv div table thead tr").append('<th width="20%">單位</th>');
+        $("#tempDiv div table thead tr").append('<th width="5%">刪除</th>');
+        $("#tempDiv div table").append('<tbody></tbody>');
+        for (var i = 0; i < data.length; i++) {
+            var innerText = '<tr style="border: none;">' +
+                                '<td style="border: none;">' +
+                                    '<button type="button" id="DI_btnUp_1" class="btn btn-clear" onclick="UpGoodRow(' + (i + 1) + ')" name="DI.">上</button>' +
+                                    '<button type="button" id="DI_btnDown_1" class="btn btn-clear" onclick="DownGoodRow(' + (i + 1) + ')" name="DI.">下</button>' +
+                                '</td>' +
+                                '<td style="border: none;">' +
+                                    '<input data-val="true" data-val-number="欄位 SRL_NO 必須是數字。" id="DI_GoodsList_' + i + '__SRL_NO" name="DI.GoodsList[' + i + '].SRL_NO" type="hidden" value="' + (i + 1) + '">' +
+                                    '<input class="form-control" data-val="true" data-val-required="成分內容 成分內容(中文) 欄位是必要項。" id="DI_GoodsList_' + i + '__DI_NAME" name="DI.GoodsList[' + i + '].DI_NAME" style="" type="text" value="' + data[i].成分內容 + '">' +
+                                '</td>' +
+                                '<td style="border: none;">' +
+                                    '<input class="form-control" data-val="true" data-val-required="成分內容 生藥名 欄位是必要項。" id="DI_GoodsList_' + i + '__DI_ENAME" name="DI.GoodsList[' + i + '].DI_ENAME" style="" type="text" value="">' +
+                                '</td>' +
+                                '<td style="border: none;">' +
+                                    '<input class="form-control" id="DI_GoodsList_' + i + '__DI_CONT" name="DI.GoodsList[' + i + '].DI_CONT" style="" type="text" value="' + data[i].份量 + '">' +
+                                '</td>' +
+                                '<td style="border: none;">' +
+                                    '<input class="form-control" id="DI_GoodsList_' + i + '__DI_UNIT" name="DI.GoodsList[' + i + '].DI_UNIT" style="" type="text" value="' + data[i].單位 + '">' +
+                                '</td>' +
+                                '<td style="border: none;">' +
+                                    '<button type="button" id="DI_btnDelte_1" class="btn btn-clear" onclick="deleteGoodRow(' + (i + 1) + ')" name="DI.">刪除</button>' +
+                                '</td>' +
+                            '</tr>';
+
+            $("#tempDiv div table tbody").append(innerText);
+        }
+
+        $("#GoodsDynamicGird005001").remove();
+        $("#tempDiv").attr("id", "GoodsDynamicGird005001");
+    }
+
+    //介接外銷品名變更
+    function changeItemDRUG(data) {
+        $('#divDRUG').text('');
+        var innerText = '';
+        for (var i = 0; i < data.length; i++) {
+            innerText += "<br /><label class='radio-inline '><input type='radio' name='radioDRUG' onchange=\"radioDRUGChange('" + data[i].外銷中文品名 + "','" + data[i].外銷英文品名 + "')\">外銷品名(中文):" + data[i].外銷中文品名 + ";外銷品名(英文):" + data[i].外銷英文品名 + "</label >";
+        }
+        $("#divDRUG").append(innerText);
+    }
+
+    function radioDRUGChange(val1, val2) {
+        $('#DRUG_ABROAD_NAME').val(val1);
+        $('#DRUG_ABROAD_NAME_E').val(val2);
+    }
+
+    //計算繳費金額(n*1500)
+    function CalculationVal() {
+        $("#PAYAMOUNT").val($("#PAYCOUNTSELECT :selected").val() * 1500);
+        $("#PAYCOUNT").val($("#PAYCOUNTSELECT :selected").val());
+
+        $("#pay_paycount").val($("#PAYCOUNTSELECT :selected").val());
+        $("#pay_payamount").val($("#PAYCOUNTSELECT :selected").val() * 1500);
+    }
+
+    //明細頁面返回
+    function Detail_back() {
+
+    }
+
+    //申請頁面送出
+    function send_apply() {
+        var dataApply = getFormSubmitableFieldsWithCheckbox($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("Apply")',
+            dataApply,
+            function (retData) {
+                if (retData.status) {
+                    var data = getFormSubmitableFieldsWithCheckbox($("form[id=main_form]"));
+                    ajaxLoadMore('@Url.Action("PreView")',
+                        data,
+                        function (getHtml) {
+                            $('#apply').removeClass('active');
+                            $('#preview').attr('class', 'active');
+                            $('#form').attr('class', 'tab-pane fade');
+                            $('#form1').attr('class', 'tab-pane fade active in');
+                            $("#form1").html(getHtml);
+                        });
+                }
+                else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+    }
+
+    //預覽頁面返回
+    function back_preview() {
+        $('#traTablePre tbody tr').empty();
+        $('#conTablePre tbody tr').empty();
+        $("#TRA_ITEM").val("");
+        $("#TRA_ITEM_CD").val("");
+        $("#CON_ITEM").val("");
+        $("#CON_ITEM_CD").val("");
+        $('#preview').removeClass('active');
+        $('#apply').attr('class', 'active');
+        $('#form1').attr('class', 'tab-pane fade');
+        $('#form').attr('class', 'tab-pane fade active in');
+    }
+
+    //預覽頁面送出
+    function send_preview() {
+        $('#preview').removeClass('active');
+        $('#pay').attr('class', 'active');
+        $('#form1').attr('class', 'tab-pane fade');
+        $('#form2').attr('class', 'tab-pane fade active in');
+    }
+
+    //繳費頁面返回
+    function back_pay() {
+        $('#pay').removeClass('active');
+        $('#apply').attr('class', 'active');
+        $('#form2').attr('class', 'tab-pane fade');
+        $('#form').attr('class', 'tab-pane fade active in');
+    }
+
+    //繳費頁面送出
+    function send_pay() {
+        if ($("input[name='PAY_METHOD']:checked").val() == undefined) {
+            blockAlert("請選擇繳費方式!", "提示訊息");
+        } else {
+            blockUI();
+            var form = $("form[id=main_form]");
+            form.attr('action', '@Url.Action("Save")').submit();
+        }
+    }
+
+    //套表列印
+    function preview_pay() {
+        var dataApply = getFormSubmitableFieldsWithCheckbox($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("Apply")',
+            dataApply,
+            function (retData) {
+                if (retData.status) {
+                    var data = getFormSubmitableFieldsWithCheckbox($("form[id=main_form]"));
+                    $.fileDownload('@Url.Action("PreviewApplyForm")',
+                        {
+                            httpMethod: 'post',
+                            data: data,
+                            prepareCallback: function (url) {
+
+                            }
+                        });
+                } else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+    }
+
+    // 地址
+    function loadDialogTAX_ORG_CITYCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doTAX_ORG_CITYSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#TAX_ORG_CITY_CODE').val(retData.Id);
+                    $('#TAX_ORG_CITY_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doTAX_ORG_CITYNameGet() {
+        var code = $('#TAX_ORG_CITY_CODE');
+        console.log('TAX_ORG_CITY_CODE');
+        var data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#TAX_ORG_CITY_TEXT'),
+            'add': $('#TAX_ORG_CITY_CODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogTAX_ORG_CITYCodeMapName(data);
+        }
+    }
+
+    function PLChange() {
+        $("#PL_CD_TEXT").val($("#PL_CD :selected").text());
+        $("#PL_CD_E_TEXT").val($("#PL_CD :selected").val());
+        $("#PL_CD_E").val($("#PL_CD :selected").val());
+    }
+
+    function PLENChange() {
+        $("#PL_CD_E_TEXT").val($("#PL_CD_E :selected").text());
+    }
+
+    function RadioChange() {
+        $("#RADIOYN").val($('input[name="optradio"]:checked').val());
+    }
+
+    //登載外銷品名
+    function addProductFun() {
+        if ($("#addProduct").prop("checked")) {
+            $("#choseProduct").show();
+            $("#choseProduct1").show();
+            $("#choseProduct2").show();
+        } else {
+            $("#choseProduct").hide();
+            $("#choseProduct1").hide();
+            $("#choseProduct2").hide();
+            $("#choseProduct").val("");
+            $("#choseProduct1").find('input[type="text"]').each(function () {
+                $(this).val('');
+            });
+            $("#choseProduct2").find('input[type="text"]').each(function () {
+                $(this).val('');
+            });
+            $('input[name="radioDRUG"]').attr("checked", false);
+        }
+    }
+
+    //顯示有效日期
+    function addDateFun() {
+        if ($("#addDate").prop("checked")) {
+            $("#choseDate").show();
+        } else {
+            $("#choseDate").hide();
+            $("#choseDate").find('input[type="text"]').each(function () {
+                $(this).val('');
+            })
+        }
+    }
+
+    //是否為濃縮製劑
+    function IsConcentrateFun() {
+        if ($("#IsConcentrate").prop("checked")) {
+            $("#divConcentrate1").show();
+            $("#divConcentrate2").show();
+            $("#chosePC").show();
+        } else {
+            $("#divConcentrate1").hide();
+            $("#divConcentrate2").hide();
+            $("#chosePC").hide();
+            $("#divConcentrate1").val("");
+            $("#divConcentrate2").val("");
+            $("#divConcentrate1").find('input[type="text"]').each(function () {
+                $(this).val('');
+            })
+            $("#divConcentrate2").find('input[type="text"]').each(function () {
+                $(this).val('');
+            })
+            $("#GoodsDynamicGird005001Pc").find('input[type="text"]').each(function () {
+                $(this).val('');
+            })
+        }
+    }
+
+    //效能
+    function addAFun() {
+        if ($("#addA").prop("checked")) {
+            $("#choseA1").show();
+            $("#choseA2").show();
+        } else {
+            $("#choseA1").hide();
+            $("#choseA2").hide();
+            $("#choseA1").find('input[type="text"]').each(function () {
+                $(this).val('');
+            });
+            $("#choseA2").find('input[type="text"]').each(function () {
+                $(this).val('');
+            });
+        }
+    }
+
+    //適應症
+    function addBFun() {
+        if ($("#addB").prop("checked")) {
+            $("#choseB1").show();
+            $("#choseB2").show();
+        } else {
+            $("#choseB1").hide();
+            $("#choseB2").hide();
+            $("#choseB1").find('input[type="text"]').each(function () {
+                $(this).val('');
+            });
+            $("#choseB2").find('input[type="text"]').each(function () {
+                $(this).val('');
+            });
+
+        }
+    }
+
+    //生藥與浸膏比例文字連動
+    function PCSCALEFun(item) {
+        $("input[name='" + item.name + "']").val(item.value);
+    }
+
+    //藥商許可執照字號
+    function PLNumFun(item) {
+        $("#PL_Num_E").val(item.value);
+    }
+
+    function fileChange(sender) {
+        // 可接受的附檔名
+        var validExts = new Array(".DOC",
+             ".DOCX",
+             ".ODT",
+             ".ODF",
+             ".ODS",
+             ".XLS",
+             ".XLSX",
+             ".PDF",
+             ".PPT",
+             ".PPTX",
+            ".JPG",
+             ".JPEG",
+             ".BMP",
+             ".PNG",
+             ".GIF",
+             ".TIF",
+             ".ZIP");
+
+        var fileExt = sender.value;
+        fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            sender.value = null;
+            $("#Name_" + sender.name).val('');
+            return false;
+        } else {
+            $("#Name_" + sender.name).val(sender.files.item(0).name);
+            return true;
+        }
+    }
+
+    function ChangeISSUE_DATE_TW_AC() {
+        var date = $('#ISSUE_DATE').val();
+        console.log(date);
+       $('#ISSUE_DATE_TW_AC').val(date);
+    }
+    function ChangeEXPIR_DATE_TW_AC() {
+        var date = $('#EXPIR_DATE').val();
+        console.log(date);
+        $('#EXPIR_DATE_TW_AC').val(date);
+    }
+
+    //function fileChange(objName) {
+    //    var validExts = new Array(".doc",
+    //        ".docx",
+    //        ".odt",
+    //        ".odf",
+    //        ".ods",
+    //        ".xls",
+    //        ".xlsx",
+    //        ".pdf",
+    //        ".ppt",
+    //        ".pptx",
+    //        ".jpg",
+    //        ".bmp",
+    //        ".png",
+    //        ".gif",
+    //        ".tif",
+    //        ".zip");
+
+    //    var fileExt = $('input[name="' + objName + '"]').val();
+    //    fileExt = fileExt.substring(fileExt.toLowerCase().lastIndexOf('.'));
+
+    //    var errMsg = "";
+
+    //    if ($('input[name="' + objName + '"]')[0].files[0].size / 1024 / 1024 > 5) {
+    //        errMsg += "檔案大小不可超過5MB\n";
+    //    }
+
+    //    if (validExts.indexOf(fileExt) < 0) {
+    //        errMsg += "檔案類型錯誤，可接受的副檔名有：" + validExts.toString() + "\n";
+    //    }
+
+    //    if (errMsg != "") {
+    //        blockAlert(errMsg);
+    //        $('input[name="' + objName + '"]').val(null);
+    //        return false;
+    //    } else {
+    //        $($('input[name="' + objName + '"]').siblings()[0]).val($('input[name="' + objName + '"]').val().replace(/C:\\fakepath\\/i, ''));
+    //        return true;
+    //    }
+    //}
+
+</script>

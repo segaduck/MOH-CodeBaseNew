@@ -1,0 +1,352 @@
+﻿@using EECOnline.Models
+@using EECOnline.Models.Entities
+@using EECOnline.Services
+@using EECOnline.Commons
+@using EECOnline.DataLayers
+@using Turbo.ReportTK
+@using Newtonsoft.Json
+@{
+
+    // 判斷是否由 ReportTK.Controller 查詢檢核失敗導過來, 抓取錯誤訊息
+    Report report = (Report)Session[Turbo.Controllers.ReportController.REPORT_SESSION_KEY];
+    var reportErrMessage = string.Empty;
+    var reportParms = new System.Collections.Hashtable();
+    if (report != null)
+    {
+        if (!string.IsNullOrEmpty(report.ResultMessage))
+        {
+            reportErrMessage = report.ResultMessage;
+            //讀取後清空 report.ResultMessage
+            report.ResultMessage = "";
+        }
+        if (report.QueryParms != null && report.QueryParms.Count > 0)
+        {
+            foreach (string key in report.QueryParms.Keys)
+            {
+                reportParms[key] = report.QueryParms[key];
+            }
+            //讀取後清空 report.QueryParms
+            report.QueryParms.Clear();
+        }
+        // 回存 Report Session
+        Session[Turbo.Controllers.ReportController.REPORT_SESSION_KEY] = report;
+    }
+
+    //嚐試取得 HTTP 請求導向來源功能編號
+    var redirectFromPRGID2 = RedirectToResult.GetRedirectFromLabel(this.Request);
+
+    //取得目前程式功能模組路徑及名稱顯示資訊
+    SessionModel sm = SessionModel.Get();
+    Session["USERNAME"] = sm.UserInfo.User.username;
+    var Header = ApplicationModel.GetHeader();
+    Session["ROUTENAME"] = Header;
+
+}
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <title>衛生福利部｜民眾線上申辦電子病歷服務平台管理系統</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=8,9,edge,chrome=1">
+    <meta name="google-site-verification" content="xO1rl3yyV9pA8bYEEbsrQHV6bsvYiN-OmygfyITWAyQ">
+    <meta name="description" content="衛生福利部｜民眾線上申辦電子病歷服務平台管理系統">
+    <meta name="keywords" content="衛生福利部,民眾,線上申辦,電子病歷,申辦,醫療院所, 進度查詢, 線上繳費">
+    <meta name="author" content="東柏資訊">
+    <meta name="copyright" content="本網頁著作權屬衛生福利部所有">
+    <meta name="robots" content="all">
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta data-n-head="ssr" name="theme-color" content="#0066cc">
+
+    <!--ray add-->
+    <!-- Styles -->
+    @Styles.Render("~/Scripts/highcharts/highcharts.css")
+    @Styles.Render("~/Content/base.css")
+    <link href="/Content/jquery-confirm.min.css" rel="stylesheet" />
+    <link href="/Content/bootstrap.css" rel="stylesheet" />
+    <link href="/Content/bootstrap-treeview.css" rel="stylesheet" />
+    <link href="/Content/font-awesome-4.7.0.min.css" rel="stylesheet" />
+    <link href="/Content/fontawesome-5.6.3.css" rel="stylesheet" />
+    <link href="/Content/base_back.css" rel="stylesheet" />
+    <link href="/Content/toastr.min.css" rel="stylesheet" />
+    <link href="/vendor/turbotech-v1.0/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/css.all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="~/css/boxicons.min.css">
+
+    <!-- Scripts -->
+    @*@Scripts.Render("~/bundles/jquery")*@
+    <script src="/Scripts/jquery-2.1.3.js"></script>
+    <script src="/Scripts/jquery-confirm.min.js"></script>
+    <script src="/Scripts/jquery.blockUI.js"></script>
+    <script src="/Scripts/jquery-ui.js"></script>
+    <script src="/Scripts/bootstrap.js"></script>
+    <script src="/Scripts/bootstrap-treeview.js"></script>
+    <script src="/Scripts/respond.js"></script>
+    <script src="/Scripts/global.js"></script>
+    <script src="/Scripts/print.js"></script>
+    <script src="/Scripts/polyfill/pointer_events_polyfill.js"></script>
+    <script src="/Scripts/ckeditor/ckeditor.js"></script>
+    <script src="/Scripts/toastr.min.js"></script>
+    @Scripts.Render("~/bundles/globaljs")
+    @Scripts.Render("~/Scripts/highcharts/highcharts.js")
+    @Scripts.Render("~/Scripts/highcharts/data.js")
+    @Scripts.Render("~/Scripts/highcharts/drilldown.js")
+    @Scripts.Render("~/Scripts/highcharts/exporting.js")
+    @Scripts.Render("~/Scripts/highcharts/exporting-data.js")
+    @Scripts.Render("~/Scripts/highcharts/accessibility.js")
+    @Scripts.Render("~/Scripts/echarts.min.js")
+
+
+    <!--20180827 加入解決 IE 10 以下不支援 CSS3 pointer-events:none 設定問題（https://github.com/kmewhort/pointer_events_polyfill）-->
+    @Scripts.Render("~/bundles/modernizr")
+
+    @*@Scripts.Render("~/bundles/select2")
+        @Scripts.Render("~/Content/select2")*@
+    @*<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>*@
+    <script type="text/javascript">
+
+        @* 前一個頁面最後錯誤或結果訊息 *@
+        var lastErrorMessage = '@Html.Raw(sm.LastErrorMessage)';
+        var lastResultMessage = '@Html.Raw(sm.LastResultMessage)';
+        var redirectUrl = '@Html.Raw(sm.RedirectUrlAfterBlock)';
+        var reportErrMessage = '@Html.Raw(reportErrMessage)';
+
+        function RedirectAfterPopup(redirectUrlPost) {
+            if ((redirectUrlPost != undefined) && (redirectUrlPost != "")) { redirectUrl = redirectUrlPost; }
+            if (redirectUrl.length > 0) {
+                @*有指定 RedirectUrlAfterBlock, 進行重導動作 *@
+                var form = $("form[name=RedirAfterBlockResult]");
+                var p = redirectUrl.indexOf("?");
+                if (p > 0) {
+                    var parms = redirectUrl.substring(p + 1).split("&");
+                    redirectUrl = redirectUrl.substring(0, p);
+                    for (var i = 0; i < parms.length; i++) {
+                        var ptoken = parms[i].split("=");
+                        if (ptoken.length == 2) {
+                            var input = document.createElement("input");
+                            $(input).attr("type", "hidden");
+                            $(input).attr("name", ptoken[0]);
+                            $(input).attr("value", ptoken[1]);
+
+                            form.append(input);
+                        }
+                        else {
+                            debugTrace("RedirectUrlAfterBlock: parameter syntax error '" + parms[i] + "'");
+                        }
+                    }
+                }
+                form.attr("action", redirectUrl);
+                form.submit();
+            }
+            else {
+                //20180530 加入使用 HTTP Get 方式導向指定網址
+                redirectUrl = "@Html.Raw(sm.RedirectUrlAfterBlockViaGet)";
+                if (redirectUrl.length > 0) location.href = redirectUrl;
+            }
+        }
+
+        $(document).ready(function () {
+
+            @* blockUI 引用的 loading image *@
+            // globalSetting.processingImg = "@Url.Content("~/images/processing.gif")";
+
+            @*Report 查詢導回來時的各個查詢條件 binding*@
+            var reportParms = $.parseJSON('@Html.Raw(JsonConvert.SerializeObject(reportParms))');
+            $.each(reportParms, function (key, value) {
+                $("input[name$='" + key + "']")
+                    .each(function (idx) {
+                        var name = $(this).attr("name");
+                        if (name == key || name.lastIndexOf("." + key) > -1) {
+                            debugTrace(this);
+                            $(this).val(value);
+                        }
+                    })
+                    .trigger('blur');
+                $("select[name$='" + key + "']")
+                    .each(function (idx) {
+                        var name = $(this).attr("name");
+                        if (name = key || name.lastIndexOf("." + key) > -1) {
+                            debugTrace(this);
+                            $(this).val(value);
+                        }
+                    })
+                    .trigger('change');
+            });
+
+            @* 前一個頁面最後錯誤或結果訊息 popup 處理*@
+            if (lastErrorMessage) {
+                blockAlert(lastErrorMessage, "錯誤訊息", function () {
+                    RedirectAfterPopup()
+                });
+            }
+            else if (lastResultMessage) {
+                blockMessage(lastResultMessage, null, function () {
+                    RedirectAfterPopup()
+                });
+            }
+            else if (reportErrMessage) { @*報表核檢或結果訊息*@
+                blockAlert(reportErrMessage, "錯誤訊息", function () {
+                    RedirectAfterPopup()
+                });
+            }
+            else {
+                @* 前一個表單 Post 後的 Validation Summary 訊息顯示 *@
+                @*var IsValid = '@(ViewData.ModelState.IsValid)';
+                var validationMsg = $("#ValidationSummary").html();
+                if (IsValid == 'False' && validationMsg) {
+                    blockAlert(validationMsg, "表單檢核訊息");
+                }*@
+            }
+
+            @* 設定  div[class='wrap'] 的 min-height *@
+            $("div.wrap").css("min-height",
+                $("div.container-fluid").innerHeight()
+                - $("div.header").outerHeight()
+                - $("div.type-bar").outerHeight() +200
+                );
+
+        });
+    </script>
+
+    <style>
+        .form-group .required .control-label:after {
+            content: "*";
+            color: red;
+        }
+
+        .form-group content.required .control-label:after {
+            color: red;
+            content: "*";
+            position: absolute;
+            margin-left: -15px;
+        }
+
+        .form-group.required.control-label:after {
+            color: red;
+            content: "*";
+            position: absolute;
+            margin-left: -10px;
+        }
+    </style>
+</head>
+<body id="main-bg">
+    <section>
+        @Html.Partial("_Back_MainHeader")
+    </section>
+
+    @Html.Partial("_Back_LeftMenu")
+
+    <section class="home-section">
+        <div class="main-content">
+            <div class="bored-bar">
+                @{
+                    var pathHome = Url.Action("Index", "C102M", new { area = "Login" });
+                }
+                <i class="bx bxs-home"></i>
+                <a href="@pathHome">首頁</a>
+                @if (sm.LastActionFunc != null && sm.LastActionPath.TONotNullString() != "")
+                {
+                    var tmp = sm.LastActionPath.TONotNullString().Split('/').ToList();
+                    if (tmp.ToCount() >= 1)
+                    {
+                        var dao = new BackApplyDAO();
+                        var obj = dao.GetRow(new TblAMFUNCM() { modules = " ", sysid = tmp[0] });
+                        if (obj != null)
+                        {
+                            <span>&nbsp;/&nbsp;&nbsp;<a href="@pathHome">@obj.prgname</a></span>
+                        }
+                    }
+                    <span>&nbsp;/&nbsp;&nbsp;@sm.LastActionFunc.prgname</span>
+                }
+            </div>
+            @RenderBody()
+        </div>
+    </section>
+
+    @Html.Partial("_DatePickerTW")
+    @Html.Partial("_CommonDialog")
+
+    @* Validation Summary *@
+    <div class="hide" id="ValidationSummary">@Html.ValidationSummary()</div>
+    <form name="RedirAfterBlockResult" action="" method="POST"></form>
+
+    <!-- sidebar -->
+    <script>
+        let mynav = document.getElementById("sideNav");
+
+        window.onscroll = function () { scrollFunction() };
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 110 || document.documentElement.scrollTop > 110) {
+                mynav.style.top = "10px ";
+            } else {
+                mynav.style.top = "auto";
+            }
+        }
+    </script>
+    <script>
+
+        $(document).ready(function () {
+            // 打開左側選單
+            sideMenuMaps();
+
+            // 更改enter為tab
+            $("input").not($(":button")).keypress(function (evt) {
+                if (evt.keyCode == 13) {
+                    if ($(this).attr("type") !== 'submit') {
+                        var fields = $(this).parents('form:eq(0),body').find('button, input, textarea, select');
+                        var index = fields.index(this);
+                        if (index > -1 && (index + 1) < fields.length) {
+                            fields.eq(index + 1).focus();
+                        }
+                        $(this).blur();
+                        return false;
+                    }
+                }
+            });
+        });
+
+        function myFunction() {
+            var x = document.getElementById("leftNavs");
+            if (x.className === "leftnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "leftnav";
+            }
+        }
+
+        /* Loop through all dropdown buttons to toggle between hiding and showing its dropdown content - This allows the user to have multiple dropdowns without any conflict */
+        var dropdown = document.getElementsByClassName("dropdown-btn");
+        var i;
+
+        for (i = 0; i < dropdown.length; i++) {
+            dropdown[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var dropdownContent = this.nextElementSibling;
+                if (dropdownContent.style.display === "block") {
+                    dropdownContent.style.display = "none";
+                } else {
+                    dropdownContent.style.display = "block";
+                }
+            });
+        }
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                if ($(this).attr("type") !== 'submit') {
+                    var fields = $(this).parents('form:eq(0),body').find('button, input, textarea, select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    $(this).blur();
+                    return false;
+                }
+            }
+        });
+    </script>
+    <script src="~/Scripts/slidenav.js"></script>
+</body>
+</html>

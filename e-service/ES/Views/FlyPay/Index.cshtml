@@ -1,0 +1,785 @@
+﻿@using CTCB.Crypto;
+@model ES.Models.FlyPayModel
+@{
+    Layout = "~/Views/Shared/_FlyPayLayout.cshtml";
+}
+<section class="spr-form js-observers" id="checkForm">
+    <div class="container-xxl">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-section">
+                    <div class="spr-form-heading">
+                        <h2 class="ch">集中檢疫所預約注意事項：</h2>
+                        <h2 class="en">Reservation Instructions</h2>
+                    </div>
+                    <div class="form-img">
+                        <div class="bb-pattern-diagonal-lines-md text--primary w--10rem h--10rem opt--32"></div>
+                        <img src="images/3d-Icon-ecommercia-011.png" alt="集中檢疫所預約注意事項">
+                    </div>
+                    <div class="bb-pattern-diagonal-lines-md h--1rem mb-24 text--lightgrey opt--32"></div>
+                    <form id="checkForm" action="" method="post">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group form-group-lg">
+                                    <ul class="form-check-list bb-pattern-horizontal-lines-lg">
+                                        <li class="form-check-list-item">
+                                            集中檢疫所現有3天或7天入住方案可選擇，經選定並刷卡付費完成後，無法更換及退款。<br>
+                                            <p class="pl-24 text--grey">The Collective Quarantine Facilities provide two options: 3-day or 7-day options. After payment by credit card, the plan cannot be changed or refunded.</p>
+                                        </li>
+                                        <li class="form-check-list-item">
+                                            收費為每人每日新臺幣 <strong>2,000</strong> 元整。<br>
+                                            <p class="pl-24 text--grey">The daily cost per person is <strong>NT$2,000</strong></p>
+                                        </li>
+                                        <li class="form-check-list-item">
+                                            集中檢疫所無法選擇地點。<br>
+                                            <p class="pl-24 text--grey">Unable to choose the city or place of the Collective Quarantine Facilities by yourself.</p>
+                                        </li>
+                                        <li class="form-check-list-item">
+                                            集中檢疫所並非一般旅館，原則僅提供基本之「單人房」設施環境供檢疫使用，檢疫期間採一人一室。<br>
+                                            <p class="pl-24 text--grey">The Collective Quarantine Facilities is not a general hotel. In principle, only basic single room facilities are provided and one person per room during the stay.</p>
+                                        </li>
+                                        <li class="form-check-list-item">
+                                            入住集中檢疫所及完成檢疫離開之交通，均需自行安排防疫計程車，並負擔所有交通費用。<br>
+                                            <p class="pl-24 text--grey">For the transportation of check-in and leave the Collective Quarantine Facilities, you need to arrange epidemic prevention taxi by yourself, and the expenses shall be borne by yourself.</p>
+                                        </li>
+                                    </ul>
+                                    <div class="bb-pattern-diagonal-lines-md h--1rem mb-24 text--lightgrey opt--32"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group form-group-lg">
+                            <div class="form-check">
+                                <input type="checkbox" class="chk-inp" id="checkedAttention">
+                                <label for="checkedAttention" class="chk-lab">
+                                    <i class="checkbox checkbox--lg"></i>
+                                    <font>
+                                        本人已了解 <strong class="underline-wava-secondary">
+                                            集中檢疫所之預約注意事項
+                                        </strong>
+                                        ，並同意繳費。 <br>
+                                        <font>
+                                            I understand all the <strong class="underline-wava-secondary">reservation instructions</strong> and agree to pay.
+                                        </font>
+                                    </font>
+                                </label>
+                            </div>
+                            <button type="button" class="n--btn btn--3d--dark btn--block btn--lg" id="CheckOut">
+                                <font>前往訂房 Next</font>
+                                <i class="tu-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@using (Html.BeginForm("", "", FormMethod.Post, new { ID = "ActionForm", @class = "n-v-hidden d-block " }))
+            {
+    <div class="col-md-12 js-observers">
+        <div class="form-section" id="lt_form">
+            <div class="spr-form-heading">
+                <h2 class="ch underline-writen-v1">入住者資料</h2>
+                <h2 class="en">Resident Information</h2> @* Enter Your Details *@
+            </div>
+            <div class="form-img-pen">
+                <div class="bb-pattern-dots-md text--primary w--10rem h--6rem opt--66"></div>
+                <img src="images/pen.png" alt="入住者資料">
+            </div>
+            <input id="payBasic_isUsing" name="payBasic.isUsing" type="hidden" value="Y">
+            <div id="payBasic">
+                <div class="form-remark remark-info">
+                    <div class="in-bk-mid form-remark-img">
+                        <div class="remind-people-v3" style="background-image:url('images/3d-Icon-ecommercia-02.png')"></div>
+                    </div>
+                    <div class="in-bk-mid form-remark-txt">
+                        <p class="para">
+                            <font class="re-mark">
+                                入住者資料 (Resident Information)：
+                            </font>
+                        </p>
+                        <ul>
+                            <li>
+                                1.所有入住者資料須全數填寫，以俾利安排檢疫所。<br>
+                                <small>The information of the residents must be completed to expedite the arrangement of the Collective Quarantine Facilities.
+                                </small>
+                            </li>
+                            <li>
+                                2.單次刷卡入住者資料填寫上限為 4 筆。<br>
+                                <small>Each reservation is limited to four persons.
+                                </small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bb-pattern-dots-sm h--1rem mb-4 text--dark opt--36"></div>
+                <div class="row" id="arrRow">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="payBasic_ArDate">
+                                <strong class="text--danger">*</strong>
+                                抵達檢疫所日期 / Arrival Date at the Collective Quarantine Facilities
+                            </label>
+                            <div class="input--bt-line-group">
+                                @Html.TextBoxFor(x => x.payBasic.ArDate, new
+                                       {
+                                           @class = "form-control dpDate t-datepicker-v1",
+                                           @placeholder = "YYYY-MM-DD"
+                                       })
+                                <i class="tu-calendar input-icon" aria-hidden="true"></i>
+                                <span class="bt-line"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="payBasic_livedays">
+                                <strong class="text--danger">*</strong>
+                                選擇方案 / Selection Of Packages
+                            </label>
+                            <div class="form-group">
+                                <div class="radio_wrap_v2">
+                                    <input type="radio" id="payBasic_livedays_v1" value="3" name="payBasic.livedays" class="check_input" onchange="doCalculate();" checked>
+                                    <label for="payBasic_livedays_v1" class="check_wrap-label">
+                                        <i class="check_mark"></i>
+                                        <font class="txt">3 天方案 (每 1 位費用為新台幣 6,000 元)<br /> 3-day(NT $6,000 per person)</font>
+                                    </label>
+                                    <input type="radio" id="payBasic_livedays_v2" value="7" name="payBasic.livedays" class="check_input" onchange="doCalculate();">
+                                    <label for="payBasic_livedays_v2" class="check_wrap-label">
+                                        <i class="check_mark"></i>
+                                        <font class="txt">7 天方案 (每 1 位費用為新台幣 14,000 元)<br /> 7-day(NT $14,000 per person)</font>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row user-list" id="userList">
+                    <div class="form-group-float-btns" id="floatBtnBox">
+                        <button type="button" class="btn--add n--btn btn--3d--tertiary btn--sm" id="Add">
+                            <i class="tu-plus-circle " aria-hidden="true"></i>
+                            <font>
+                                Add Another Person.<br>
+                                填寫下一筆入住者資料
+                            </font>
+                        </button>
+                    </div>
+                    @for (var i = 0; i < Model.paylist.Count; i++)
+                    {
+                        <div id="pay@(i)" class="user-item col-12 n-v-hidden-card">
+                            @if (i > 0)
+                            {
+                                <h4 class="form-sub-heading">第 @((i + 1).ToString()) 人 @((i + 1).ToString()) Persons</h4>
+                            }
+                            else
+                            {
+                                <h4 class="form-sub-heading">第 @((i + 1).ToString()) 人 @((i + 1).ToString()) Person</h4>
+                            }
+                            @if (i > 0)
+                            {
+                                <button type="button" class="btn--delete n--btn btn--inverse--danger btn--sm" id="delete-@(i)">
+                                    <i class="tu-delete" aria-hidden="true"></i>
+                                    <font>
+                                        Delete This Detail.<br>
+                                        刪除此筆資料
+                                    </font>
+                                </button>
+                            }
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="paylist_@(i)__firstname">
+                                            <strong class="text--danger">*</strong>
+                                            名字 / First Name
+                                        </label>
+                                        <div class="input--bt-line-group">
+                                            @Html.TextBoxFor(x => x.paylist[i].firstname, new
+                                                   {
+                                                       @placeholder = "Fisrt name.",
+                                                       @class = "form-control",
+                                                   })
+                                            <i class="tu-alert-circle input-icon" aria-hidden="true"></i>
+                                            <font class="tooltip tooltip-bottom-right n-tooltip--v1">請輸入護照之英文名字</font>
+                                            <span class="bt-line"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="paylist_@(i)__middlename">
+                                            中間名 / Middle Name
+                                        </label>
+                                        <div class="input--bt-line-group">
+                                            @Html.TextBoxFor(x => x.paylist[i].middlename, new
+                                                   {
+                                                       @placeholder = "Middle name.",
+                                                       @class = "form-control",
+                                                   })
+                                            <i class="tu-alert-circle input-icon" aria-hidden="true"></i>
+                                            <font class="tooltip tooltip-bottom-right n-tooltip--v1">輸入護照之英文名字</font>
+                                            <span class="bt-line"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="payBasic_lastname">
+                                            <strong class="text--danger">*</strong>
+                                            姓氏 / Last Name
+                                        </label>
+                                        <div class="input--bt-line-group">
+                                            @Html.TextBoxFor(x => x.paylist[i].lastname, new
+                                                   {
+                                                       @placeholder = "Last Name",
+                                                       @class = "form-control"
+                                                   })
+                                            <i class="tu-alert-circle input-icon" aria-hidden="true"></i>
+                                            <font class="tooltip tooltip-bottom-right n-tooltip--v1">請輸入護照之英文名字</font>
+                                            <span class="bt-line"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label for="paylist_@(i)__mainno">
+                                            <strong class="text--danger">*</strong>
+                                            護照號碼 / Passport No.
+                                        </label>
+                                        <div class="input--bt-line-group">
+                                            @Html.TextBoxFor(x => x.paylist[i].mainno, new
+                                                   {
+                                                       @class = "form-control",
+                                                       @placeholder = "passport number.(請輸入護照之號碼)",
+                                                       @onkeyup = "value=value.replace(/[\\W]/g,'')",
+                                                       @inputmode="email",
+                                                       @onbeforepaste = "clipboardData.setData('text',clipboardData.getData('text').replace(/[^\\d]/g,''))",
+                                                   })
+                                            <i class="tu-alert-circle input-icon" aria-hidden="true"></i>
+                                            <font class="tooltip tooltip-bottom-right n-tooltip--v1">請輸入護照之號碼</font>
+                                            <span class="bt-line"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="paylist_@(i)__birth">
+                                            <strong class="text--danger">*</strong>
+                                            出生年月日 / Birth Day
+                                        </label>
+                                        <div class="input--bt-line-group">
+                                            @Html.TextBoxFor(x => x.paylist[i].birth, new
+                                                   {
+                                                       @class = "form-control dpDate t-datepicker-v1",
+                                                       @placeholder = "YYYY-MM-DD",
+                                                       @onchange = "doCalculate()",
+                                                       @data_type = "change-month-year",
+                                                       @inputmode = "numeric",
+                                                   })
+                                            <i class="tu-calendar input-icon" aria-hidden="true"></i>
+                                            <span class="bt-line"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="flytype">
+                                <strong class="text--danger">*</strong>
+                                出境國家 / Country Where You Boarded
+                            </label>
+                            <div class="input--bt-line-group">
+                                @Html.DropDownListFor(x => x.payBasic.dirct, Model.payBasic.dirct_list, new { @class = "form-control js-select-2", @data_search = "true", data_placeholder = "-- 請選擇國家 / Country Where You Boarded --" })
+                                <span class="bt-line"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group" id="dirctBasic">
+                            <label for="payBasic_dirct_tr">
+                                轉機國家 / Country of Transit
+                            </label>
+                            @Html.DropDownListFor(x => x.payBasic.dirct_tr_copy, Model.payBasic.dirct_list, new { @class = "form-control", style = "display:none" })
+                            <button type="button" class="btn--add n--btn btn--inverse--primary btn--xs" onclick="doAddDirct()" id="AddDirct">
+                                <i class="tu-plus-circle" aria-hidden="true"></i>
+                                <font>新增一筆</font>
+                            </button>
+                            <div class="input--bt-line-group">
+                                @Html.DropDownListFor(x => x.payBasic.dirct_tr, Model.payBasic.dirct_list, new { @class = "form-control js-select-2", @data_search = "true", data_placeholder = "-- 請選擇國家 / Country of Transit --" })
+                                <span class="bt-line"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                <div class="col-md-12 js-observers">
+                    <div class="check-form" id="">
+                        <div class="spr-form-heading">
+                            <h2 class="ch">確認付款資訊</h2>
+                            <h2 class="en">Confirm Payment Information</h2>
+                        </div>
+                        <div class="form-img-pay">
+                            <div class="bb-pattern-diagonal-stripes-sm text--tertiary w--10rem h--10rem opt--24"></div>
+                            <img src="/images/payments.png" alt="確認付款資訊">
+                        </div>
+                        <div class="form-group">
+                            <div class="total-item">
+                                <div class="total-icon">
+                                    <i class="tu-f-dollar-coin"></i>
+                                    <i class="tu-f-dollar-coin"></i>
+                                    <i class="tu-f-dollar-coin"></i>
+                                </div>
+                                <div class="total-group">
+                                    <label class="total-lab">
+                                        應繳費金額為新台幣 <br />
+                                        The Payable Amount Is NT.
+                                    </label>
+                                </div>
+                                <div class="total-val" id="CalculateResult">0</div>
+                            </div>
+                        </div>
+                        <div class="form-group form-btn-row" align="center">
+                            <button type="button" class="n--btn btn--3d--primary btn--lg payment-btn" onclick="doCheckOut('A')" id="CheckOutA">
+                                <h4>確認付款 Confirm Payment</h4>
+                                <div class="payment-txt">
+                                    <h5>信用卡 Credit Card</h5>
+                                    <h6>VISA、MASTER、JCB</h6>
+                                </div>
+                                <div class="payment-kind">
+                                    <img src="images/pay_visa.svg" alt="visa" width="65" height="35">
+                                    <img src="images/pay_master.svg" alt="Master" width="65" height="35">
+                                    <img src="images/pay_jcb.svg" alt="jcb" width="65" height="35">
+                                </div>
+                            </button>
+                            <button type="button" class="n--btn btn--3d--primary btn--lg payment-btn" onclick="doCheckOut('B')" id="CheckOutB">
+                                <h4>確認付款 Confirm Payment</h4>
+                                <div class="payment-txt">
+                                    <h5>銀聯卡 Credit Card</h5>
+                                    <h6>UnionPay</h6>
+                                </div>
+                                <div class="payment-kind">
+                                    <img src="images/pay_unionPay.svg" alt="visa" width="65" height="35">
+                                </div>
+                            </button>
+                        </div>
+                        @Html.HiddenFor(m => m.language)
+                        @Html.HiddenFor(x => x.isEsun)
+                        @Html.HiddenFor(x => x.crdtype)
+                        @Html.HiddenFor(x => x.payBasic.RAN)
+                        @Html.HiddenFor(x => x.flytype)
+                    </div>
+                </div>
+}
+<div class="col-md-12 col-lg-12 hidden">
+    <div class="form-section" id="check_form2" align="center">
+        <div id="CreditEsun" style="display:none">
+            @Html.Partial("_CreditEsun")
+        </div>
+        <div id="ChBankEsun" style="display:none" align="center">
+            @Html.Partial("_ChBankEsun")
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var arD = $("#payBasic_ArDate");
+    // 抵達日期 遮罩
+    arD.mask("9999-99-99");
+    $.TUDatepicker.init(arD, {
+        dateFormat: 'yy-mm-dd',
+        minDate: new Date(),
+        changeMonth: true,
+        changeYear: true,
+        changeYear: true,
+        showOtherMonths: false
+    });
+    // 出生日
+    var bthD0 = $("#paylist_0__birth");
+    var bthD1 = $("#paylist_1__birth");
+    var bthD2 = $("#paylist_2__birth");
+    var bthD3 = $("#paylist_3__birth");
+    var pickerArr = [bthD0, bthD1, bthD2, bthD3];
+    pickerArr.forEach(function(item, i) {
+        $.TUDatepicker.init(item, {
+        dateFormat: 'yy-mm-dd',
+        minDate: new Date('1900-01-01'),
+        maxDate: new Date().toJSON().slice(0, 10).replace(/-/g, '-'),
+        changeMonth: true,
+        changeYear: true,
+        changeYear: true,
+        yearRange: '1900:y',
+        showOtherMonths: false,
+        defaultDate: '-12y'
+        });
+        item.mask("9999-99-99");
+    });
+
+    $("#ActionForm").validate({
+        ignore: ".radio_wrap",
+        rules: {
+            "paylist[0].firstname": {
+                required: true,
+            },
+            "paylist[0].lastname": {
+                required: true,
+            },
+            "paylist[0].birth": {
+                required: true,
+                dpDate: false
+            },
+            "paylist[0].mainno": {
+                required: true,
+            },
+            "payBasic.dirct": {
+                required: true,
+            },
+            "payBasic.ArDate": {
+                required: true,
+                dpDate: false
+            },
+        },
+        messages: {
+            "paylist[0].firstname": {
+                required: "未填寫您的名字<br>First Name Is Mandatory",
+            },
+            "paylist[0].lastname": {
+                required: "未填寫您的姓氏<br>Last Name Is Mandatory",
+            },
+            "paylist[0].birth": {
+                required: "未填寫您的出生年月日<br>Birth Day Is Mandatory",
+            },
+            "paylist[0].mainno": {
+                required: "未填寫您的護照號碼<br>Passport No Is Mandatory",
+            },
+            "payBasic.dirct": {
+                required: "請選擇您的出境國家<br>Country Where You Boarded Is Mandatory",
+            },
+            "payBasic.ArDate": {
+                required: "未填寫您的抵達檢疫所日期<br>Arrival Date at the Collective Quarantine Facilities",
+            },
+        },
+        errorClass: 'error_lab',
+        errorElement: 'label',
+        errorElementClass: 'error_group',
+        highlight: function (element, errorClass, validClass, errorElementClass) {
+            $(element).parent().next('label').addClass(this.settings.errorClass);
+            $(element).parents('.form-group').addClass(this.settings.errorElementClass);
+        },
+        unhighlight: function (element, errorClass, validClass, errorElementClass) {
+            $(element).parent().next('label').removeClass(this.settings.errorClass)
+            $(element).parents('.form-group').removeClass(this.settings.errorElementClass);
+        },
+        errorPlacement: function (errorElementClass, element) {
+            errorElementClass.insertAfter(element.parent());
+        },
+    });
+
+    function doCheckOut(crdtype) {
+        var msg = doCalculate();
+        console.log(msg);
+        if (msg != "") {
+            return false;
+        }
+        var crdlang = '1';
+        $('#crdtype').val(crdtype);
+        var total = $("#CalculateResult").text();
+        if ($("#ActionForm").valid()) {
+            blockConfirm("應繳費金額為新台幣" + total + "元整，請再次確認資料是否正確!<br>The payable amount is NT $" + total + ". Please reconfirm whether the information is correct.", " 確認訊息 Confirm Message.", function () {
+                // 繳費語言
+                $('#language').val(crdlang);
+                var url = '@(Url.Action("Index", "FlyPay", new { area = "" }))';
+                var FormData = getFormDataJson("#ActionForm");
+                ajaxLoadMore(url, FormData, function (resp) {
+                    if (resp.status == false) {
+                        crdlang != "1" ? blockAlert(resp.message) : blockAlertChn(resp.message);
+                    }
+                    else {
+                        $('#paylist_0__lastname').attr("readonly", "readonly");
+                        $('#paylist_0__middlename').attr("readonly", "readonly");
+                        $('#paylist_0__firstname').attr("readonly", "readonly");
+                        $('#paylist_0__birth').attr("disabled", "disabled");
+                        $('#paylist_0__mainno').attr("readonly", "readonly");
+                        $('#paylist_1__lastname').attr("readonly", "readonly");
+                        $('#paylist_1__middlename').attr("readonly", "readonly");
+                        $('#paylist_1__firstname').attr("readonly", "readonly");
+                        $('#paylist_1__birth').attr("disabled", "disabled");
+                        $('#paylist_1__mainno').attr("readonly", "readonly");
+                        $('#paylist_2__lastname').attr("readonly", "readonly");
+                        $('#paylist_2__middlename').attr("readonly", "readonly");
+                        $('#paylist_2__firstname').attr("readonly", "readonly");
+                        $('#paylist_2__birth').attr("disabled", "disabled");
+                        $('#paylist_2__mainno').attr("readonly", "readonly");
+                        $('#paylist_3__lastname').attr("readonly", "readonly");
+                        $('#paylist_3__middlename').attr("readonly", "readonly");
+                        $('#paylist_3__firstname').attr("readonly", "readonly");
+                        $('#paylist_3__birth').attr("disabled", "disabled");
+                        $('#paylist_3__mainno').attr("readonly", "readonly");
+                        $('#payBasic_dirct_tr').attr("disabled", "disabled");
+                        $('#payBasic_dirct').attr("disabled", "disabled");
+                        $('#payBasic_ArDate').attr("disabled", "disabled");
+                        var btnCheckOutC = $('#CheckOutC');
+                        btnCheckOutC.attr("disabled", "disabled");
+                        // 一般信用卡
+                        if (crdtype == "A") {
+                            $("#CreditEsun").html(resp);
+                            SubmitBank();
+                        }
+                        // 銀聯卡
+                        if (crdtype == "B") {
+                            $("#ChBankEsun").html(resp);
+                            SubmitChBank();
+                        }
+                    }
+                });
+            }, null, crdlang != "1" ? "Confirm" : "確認 Confirm", crdlang != "1" ? "Cancel" : "取消 Cancel")
+        }
+        else {
+            $('html, body').animate({
+                scrollTop: ($('.error_lab').offset().top - 300)
+            }, 250);
+            return false;
+        }
+    }
+    function SubmitChBank() {
+        $('#fmChBank').submit();
+    }
+    function SubmitBank() {
+        $('#fmCredit').submit();
+    }
+
+    var i = 0;
+
+    function doAddDirct() {
+        var dirct = $("#dirctBasic");
+        var dirctP = dirct.parent();
+        var dirctDropCopy = $("#payBasic_dirct_tr_copy");
+        var dirctListNum = $("select[dynamic=Y]").length;
+        var dirctListNewNum = dirctListNum;
+        var dirctHtml = '';
+        dirctHtml += '<div class="sub-form-row">';
+        dirctHtml += '<div class="sub-form-group" id="DydirctBasic' + i + '">';
+        dirctHtml += '<label for="">';
+        dirctHtml += '<button type="button" class="btn--remove n--btn btn--inverse--danger btn--xxs" onclick="doDeDirct(\'DydirctBasic' + i + '\')" id="DeDirct">';
+        dirctHtml += '<i class="tu-minus-circle" aria-hidden="true"></i> <font>刪除此筆</font></button>';
+        dirctHtml += '</label>';
+        dirctHtml += '<select class="form-control js-select-2"  data-search="true" data-placeholder="-- 請選擇國家 / Country of Transit --" dynamic="Y" id="payBasic_dirct_tr_list[' + i + ']" name="payBasic.dirct_tr_list[' + i + ']">';
+        dirctHtml += dirctDropCopy.html();
+        dirctHtml += '</select>';
+        dirctHtml += '</div>';
+        dirctHtml += '</div>';
+
+        dirct.append(dirctHtml);
+        // selectRefresh(i);
+        $.TUSelect2.init('select.js-select-2');
+        i++;
+    }
+
+    @* function selectRefresh(num) {
+        var select = $('#DydirctBasic' + num + ' > select');
+        select.select2({
+            width: '100%',
+            placeholder: '請選擇國家',
+            searchInputPlaceholder: '請輸入關鍵字搜尋',
+            language: {
+                noResults: function () {
+                    return "找不到符合的資料 No Results Found.";
+                }
+            }
+        });
+    } *@
+
+    function doDeDirct(dyId) {
+        $("#" + dyId).attr("style", "display:none");
+        $("#" + dyId).find("select").val('');
+    }
+
+    function doCalculate() {
+        // 檢核
+        var msg = "";
+        var peopleCnt = 0;
+        var perPay = $("[name='payBasic.livedays']:checked").val();
+        var first_firstname = $('#paylist_0__firstname').val();
+        var first_lastname = $('#paylist_0__lastname').val();
+        var first_birth = $('#paylist_0__birth').val();
+        var first_mainno = $('#paylist_0__mainno').val();
+        var second_firstname = $('#paylist_1__firstname').val();
+        var second_lastname = $('#paylist_1__lastname').val();
+        var second_birth = $('#paylist_1__birth').val();
+        var second_mainno = $('#paylist_1__mainno').val();
+        var third_firstname = $('#paylist_2__firstname').val();
+        var third_lastname = $('#paylist_2__lastname').val();
+        var third_birth = $('#paylist_2__birth').val();
+        var third_mainno = $('#paylist_2__mainno').val();
+        var forth_firstname = $('#paylist_3__firstname').val();
+        var forth_lastname = $('#paylist_3__lastname').val();
+        var forth_birth = $('#paylist_3__birth').val();
+        var forth_mainno = $('#paylist_3__mainno').val();
+        var CalculateResult = $("#CalculateResult").val();
+        if (first_firstname == "" || first_lastname == "" || first_mainno == "" || first_birth == "") {
+            blockAlert("請輸入第一筆入住者完整資訊");
+            return "MsgError";
+        } else {
+            if (_calculateAge(first_birth) >= 12) {
+                peopleCnt++;
+            }
+        }
+        if ((second_firstname != "" || second_lastname != "" || second_mainno != "" || second_birth != "")
+            && (second_firstname == "" || second_lastname == "" || second_mainno == "" || second_birth == "")) {
+            blockAlert("請輸入第二筆入住者完整資訊");
+            return "MsgError";
+        } else {
+            if (_calculateAge(second_birth) >= 12) {
+                peopleCnt++;
+            }
+        }
+        if ((third_firstname != "" || third_lastname != "" || third_mainno != "" || third_birth != "")
+            && (third_firstname == "" || third_lastname == "" || third_mainno == "" || third_birth == "")) {
+            blockAlert("請輸入第三筆入住者完整資訊");
+            return "MsgError";
+        } else {
+            if (_calculateAge(third_birth) >= 12) {
+                peopleCnt++;
+            }
+        }
+        if ((forth_firstname != "" || forth_lastname != "" || forth_mainno != "" || forth_birth != "")
+            && (forth_firstname == "" || forth_lastname == "" || forth_mainno == "" || forth_birth == "")) {
+            blockAlert("請輸入第四筆入住者完整資訊");
+            return "MsgError";
+        } else {
+            if (_calculateAge(forth_birth) >= 12) {
+                peopleCnt++;
+            }
+        }
+        console.log(peopleCnt);
+        if (peopleCnt == 0) {
+            blockAlert("請確認至少其中1人必須為12歲以上需付費的年齡");
+            return "MsgError";
+        }
+        else {
+            var dayMoney = perPay == "3" ? "6000" : "14000";
+            $("#CalculateResult").text(peopleCnt * dayMoney);
+        }
+        return msg;
+    }
+    // 計算年紀
+    function _calculateAge(birthday) { // birthday is a date
+        var today = new Date();
+        var birthDate = new Date(birthday);
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
+    // DOMContentLoaded init
+    document.addEventListener("DOMContentLoaded", function () {
+        var checkForm = document.getElementById("checkForm");
+        var checkBtn = document.getElementById("CheckOut");
+        checkBtn.addEventListener("click", JsUtils.debounce(function(event) {
+
+        var userInformation = document.getElementById("ActionForm");
+        var checkedAttention = document.getElementById("checkedAttention");
+
+        if (checkedAttention.checked == true) {
+            JsUtils.fadeOut(checkForm)
+            checkForm.classList.add("n-v-hidden");
+            JsUtils.fadeIn(userInformation)
+            userInformation.classList.remove("n-v-hidden");
+            JsUtils.scrollTo(userInformation);
+        } else {
+            rMain.toast('請確認您已了解集中檢疫所之預定規則，並&nbsp;<big class="text--secondary">勾選</big>&nbsp;同意繳費。', 'error', 1500)
+        }
+        }, 250), false);
+
+        // 新增按鈕
+        // 新增按鈕
+        var floatObserver = new scrollObserver(
+          "floatBtnBox", "arrRow",
+          "form-group-float-btns-sticky", {
+              root: document.getElementById('payBasic'),
+              rootMargin: '',
+              threshold: [1, 0]
+          });
+
+        // Card 列表
+        var nodeCardList = [];
+        var nodeCardNavList = [];
+        var userList = document.getElementById('userList');
+        var payCard = userList.getElementsByClassName('user-item');
+        var payCardNav = document.getElementsByClassName('observer-nav-li');
+
+        nodeCardList.push(payCard);
+        nodeCardNavList.push(payCardNav);
+
+        // 載入時 顯示第一筆
+        payCard[0].classList.toggle("n-v-hidden-card");
+        payCard[0].classList.toggle("n-v-visible-card");
+
+        // AddItemBtn
+        // Click
+        var addItemBtn = document.getElementById('Add');
+        addItemBtn.addEventListener("click", JsUtils.debounce(function (event) {
+
+            event.preventDefault();
+
+            var hideItem = document.getElementsByClassName('user-item n-v-hidden-card');
+            var hideItemLen = hideItem.length;
+
+            if (hideItemLen !== 0) {
+                var hideItemFisrt = hideItem[0];
+                hideItemFisrt.classList.toggle("n-v-hidden-card");
+                hideItemFisrt.classList.toggle("n-v-visible-card");
+                JsUtils.scrollTo(hideItemFisrt);
+            } else {
+                var msg = "The limit for online payment is four people.\n";
+                // 單筆線上繳納上限為四位入住者。
+                blockAlert(msg);
+                event.stopPropagation();
+            }
+        }, 200), false);
+
+        // DeleteItemBtn
+        // Click
+        for (var d = 1; d < 4; d++) {
+            var deleteItemBtn = JsUtils.children(payCard[d], '.btn--delete');
+
+            deleteItemBtn[0].addEventListener("click", JsUtils.debounce(function (event) {
+
+                event.preventDefault();
+                var that = this;
+                var thisItem = that.parentElement;
+                var from, to, duration;
+
+                function hideItem(items) {
+                    var items = thisItem;
+                    var itemIndex = thisItem.id.replace(/\D*/gi, '');
+
+                    thisItem.classList.toggle("n-v-hidden-card");
+                    thisItem.classList.toggle("n-v-visible-card");
+
+                    var formEl = thisItem.getElementsByTagName("input");
+                    var formElLen = formEl.length;
+                    // 刪除清空裡面數值
+                    for (var f = 0; f < formElLen; f++) {
+                        formEl[f].value = '';
+                    };
+                }
+
+                JsUtils.animate(from, to, duration, hideItem(thisItem));
+                JsUtils.scrollTo(thisItem.previousElementSibling)
+            }, 200), false);
+        }
+    });
+</script>

@@ -1,0 +1,327 @@
+﻿@using ES.Commons
+@using ES.Services
+@using ES.Models
+@using ES.Models.ViewModels
+@using ES.Models.Entities
+@model ES.Models.GoodsDynamicGrid<Apply_001008_PrViewModel>
+
+@{
+    ShareCodeListModel dao = new ShareCodeListModel();
+    var IsDisabled = Model.IsReadOnly ? "pointer-events:none;background:#EEEEEE" : "";
+}
+<div id="GoodsDynamicGird001008Pr">
+    <h2 class="second-title">
+        @Html.HiddenFor(m => m.IsNewOpen)
+        @Html.HiddenFor(m => m.IsReadOnly)
+        @Html.HiddenFor(m => m.IsDeleteOpen)
+        @Html.HiddenFor(m => m.SourceModelName)
+
+        專科證書(口腔顎面外科、口腔病理科、齒顎矯正科，尚未開放線上申辦，請透過書面申辦。)
+        @if (Model.IsNewOpen && !Model.IsReadOnly)
+        {<span style="color:red">(* 號為必填欄位)</span>}
+
+        @if (Model.IsNewOpen && !Model.IsReadOnly)
+        {
+            <button type="button" class="btn btn-save" id="btnAdd" onclick="addGoodRow@(Model.SourceModelIdFull)()">新增</button>
+        }
+    </h2>
+    <div id="goodsTable" class="table-responsive">
+        <table id="PrGrid" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+            <thead>
+                @if (Model.IsNewOpen && !Model.IsReadOnly)
+                {
+                <th width="15%"><span style="color:red" sr-only="必填">＊</span>專科證書</th>
+                <th width="13%"><span style="color:red" sr-only="必填">＊</span>證書字號</th>
+                <th width="15%"><span style="color:red" sr-only="必填">＊</span>核發日期</th>
+                <th width="15%"><span style="color:red" sr-only="必填">＊</span>有效期間(起)</th>
+                <th width="15%"><span style="color:red" sr-only="必填">＊</span>有效期間(迄)</th>
+                <th width="10%"><span style="color:red" sr-only="必填">＊</span>申請份數</th>
+                <th width="12%"><span style="color:red" sr-only="必填">＊</span>開立證明格式</th>
+                <th width="5%">刪除</th>
+            }
+            else
+            {
+                <th width="15%">專科證書</th>
+                <th>證書字號</th>
+                <th width="15%">核發日期</th>
+                <th width="15%">有效期間(起)</th>
+                <th width="15%">有效期間(迄)</th>
+                <th width="10%">申請份數</th>
+                <th width="12%">開立證明格式</th>
+                @*<th width="5%">刪除</th>*@
+            }
+                </thead>
+                <tbody>
+                    @if (Model.GoodsList.ToCount() != 0)
+                    {
+                        for (int i = 0; i < Model.GoodsList.Count; i++)
+                        {
+                            var item = Model.GoodsList[i];
+                            <tr style="border: none;">
+                                <td style="border: none;">
+                                    @Html.DropDownListFor(m => Model.GoodsList[i].PR_LIC_TYPE, new SelectList(dao.GetDivisionList, "Value", "Text", Model.GoodsList[i].PR_LIC_TYPE), new { @class = "form-control formbar-bg", style = "width:150px;" + IsDisabled })
+                                </td>
+                                <td style="border: none;">
+                                    @Html.TextBoxFor(m => Model.GoodsList[i].PR_LIC_NUM, new { @class = "form-control", style = IsDisabled })
+                                </td>
+                                <td style="border: none;">
+                                    @Html.DatePickerTWFor(m => Model.GoodsList[i].PR_ISSUE_DATE_AD, new { size = "10", style = IsDisabled })
+                                </td>
+                                <td style="border: none;">
+                                    @Html.DatePickerTWFor(m => Model.GoodsList[i].PR_EF_DATE_S_AD, new { size = "10", style = IsDisabled })
+                                </td>
+                                <td style="border: none;">
+                                    @Html.DatePickerTWFor(m => Model.GoodsList[i].PR_EF_DATE_E_AD, new { size = "10", style = IsDisabled })
+                                </td>
+                                <td style="border: none;">
+                                    @Html.TextBoxFor(m => Model.GoodsList[i].PR_COPIES, new { @class = "form-control decimal-only", style = IsDisabled })
+                                    <br /><a href="javascript:void(0)" onclick="window.open('@Url.Action("PayMemo","Apply_001008")', 'PayMemo', 'width=500,height=500');" title="瀏覽計算方式範例">瀏覽計算方式範例</a>
+                                </td>
+                                <td style="border: none;">
+                                    @Html.DropDownListFor(m => Model.GoodsList[i].PR_TYPE_CD, new SelectList(new ShareCodeListModel().CERT_TYPECD_list, "Value", "Text", Model.GoodsList[i].PR_TYPE_CD), new { @class = "form-control formbar-bg", style = "width:150px;" + IsDisabled })
+                                </td>
+                                <td style="border: none;">
+                                    @if (Model.IsDeleteOpen && !Model.IsReadOnly)
+                                    {
+                                        <button type="button" id="btnDelte_1" class="btn btn-clear" onclick="deleteGoodRow@(Model.SourceModelIdFull)(@(i))">
+                                            刪除
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw("&nbsp;")
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <span style="color:red;">申請專科證書者，應一併上傳醫事人員中文證書及專科中文證書電子檔。</span>
+    </div>
+
+    <script type="text/javascript">
+        function resetHeightPr() {
+            var isReadOnly = '@(Model.IsReadOnly ? "Y" : "N")';
+
+            if (isReadOnly == "N") {
+                //在編輯模式下，先以加大grid顯示高度解決無法看到整個calendar的問題
+                $("#GoodsDynamicGird001008Pr").removeAttr("style");
+                $("#GoodsDynamicGird001008Pr #goodsTable").removeAttr("style");
+
+                $("#GoodsDynamicGird001008Pr").height($("#GoodsDynamicGird001008Pr").height() + 250);
+                $("#GoodsDynamicGird001008Pr #goodsTable").height($("#GoodsDynamicGird001008Pr #goodsTable").height() + 250);
+            }
+        }
+
+        $(document).ready(function () {
+            //限制只能輸入數字
+            $('.decimal-only').decimalOnly();
+
+            //resetHeightPr();
+            //列印份數
+            $("#GoodsDynamicGird001008Pr").find("input[name*='PR_COPIES']").each(function () {
+                $(this).on("blur", function () {
+                    doChkCopies(this, "申請份數");
+                })
+            });
+
+            //證書開立格式
+            //$("#GoodsDynamicGird001008Pr").find("input:radio[name*='PR_TYPE_CD']").each(function () {
+            //    //debugger;
+            //    $(this).on("click", function () {
+            //        doCountMoney();
+            //    })
+            //});
+
+            $("#GoodsDynamicGird001008Pr").find("select[name*='PR_TYPE_CD']").each(function () {
+                $(this).on("change", function () {
+                    doCountMoney();
+                })
+            });
+
+            //處於唯讀模式時，日期欄位輸入框也要改以灰色底樣式呈現
+            var isReadOnly = '@(Model.IsReadOnly ? "Y" : "N")';
+            var disabledStyle = '@IsDisabled';
+            if (isReadOnly) {
+                $("#GoodsDynamicGird001008Pr div.date input").each(function (i, obj) {
+                    $("input[type='text'][id='" + obj.id + "']").attr("style", $("input[type='text'][id='" + obj.id + "']").attr("style") + disabledStyle);
+                });
+            }
+        });
+
+        // 新增一列
+        function addGoodRow@(Model.SourceModelIdFull)() {
+            var url = "@Url.Action("addGoodRow001008Pr", "AJAX",new { area = "" })";
+            var parms = getDivDataJson("#GoodsDynamicGird001008Pr");
+
+            var sourceModelNameFull = '@(Model.SourceModelNameFull)';
+            var sourceModelIdFull = '@(Model.SourceModelIdFull)';
+            var chgName = "";
+            var chgId = "";
+
+            ajaxLoadMore(url, parms
+            , function (data) {
+                $("#GoodsDynamicGird001008Pr").html(data);
+                $("#GoodsDynamicGird001008Pr input").each(function (i, obj) {
+                    chgName = (obj.name.indexOf(sourceModelNameFull) == 0 ? obj.name : sourceModelNameFull + obj.name);
+                    chgId = (obj.id.indexOf(sourceModelIdFull) == 0 ? obj.id : sourceModelIdFull + obj.id
+                        );
+
+                    $("#" + obj.id).attr("name", chgName);
+                    $("#" + obj.id).attr("id", chgId);
+
+                    @*$("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                    $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);*@
+                });
+
+                $("#GoodsDynamicGird001008Pr select").each(function (i, obj) {
+                    chgName = (obj.name.indexOf(sourceModelNameFull) == 0 ? obj.name : sourceModelNameFull + obj.name);
+                    chgId = (obj.id.indexOf(sourceModelIdFull) == 0 ? obj.id : sourceModelIdFull + obj.id
+                        );
+
+                    $("#" + obj.id).attr("name", chgName);
+                    $("#" + obj.id).attr("id", chgId);
+
+                    @*$("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                    $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);*@
+                });
+
+                $("#GoodsDynamicGird001008Pr div.date").each(function () {
+                    initDatePicker(this);
+                });
+
+                $("#GoodsDynamicGird001008Pr div.date input").each(function (i, obj) {
+                    chgName = (obj.name.indexOf(sourceModelNameFull) == 0 ? obj.name : sourceModelNameFull + obj.name);
+                    chgId = (obj.id.indexOf(sourceModelIdFull) == 0 ? obj.id : sourceModelIdFull + obj.id
+                        );
+
+                    $("input[id='" + obj.id + "']").attr("name", chgName);
+                    $("input[id='" + obj.id + "']").attr("id", chgId);
+
+                    @*$("input[id='" + obj.id + "']").attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                    $("input[id='" + obj.id + "']").attr("id", '@(Model.SourceModelIdFull)' + obj.id);*@
+                });
+
+                $("#GoodsDynamicGird001008Pr input:radio").each(function (i, obj) {
+                    chgName = (obj.name.indexOf(sourceModelNameFull) == 0 ? obj.name : sourceModelNameFull + obj.name);
+                    chgId = (obj.id.indexOf(sourceModelIdFull) == 0 ? obj.id : sourceModelIdFull + obj.id
+                        );
+
+                    $("input:radio[name='" + obj.name + "']").attr("name", chgName);
+                    $("input:radio[id='" + obj.id + "']").attr("id", chgId);
+
+                    @*$("input:radio[name='" + obj.name + "']").attr("name", '@(Model.SourceModelNameFull)' + obj.name.replaceAll('@(Model.SourceModelNameFull)', ''));
+                    $("input:radio[id='" + obj.id + "']").attr("id", '@(Model.SourceModelIdFull)' + obj.id);*@
+                });
+
+                //列印份數
+                $("#GoodsDynamicGird001008Pr").find("input[name*='PR_COPIES']").each(function () {
+                    $(this).on("blur", function () {
+                        //doChkCopies(this, "申請份數");
+                    })
+                });
+
+                //證書開立格式
+                $("#GoodsDynamicGird001008Pr").find("input:radio[name*='PR_TYPE_CD']").each(function () {
+                    $(this).on("click", function () {
+                        doCountMoney();
+                    })
+                });
+
+                //resetHeightPr();
+            });
+        }
+
+        // 刪除此列
+        function deleteGoodRow@(Model.SourceModelIdFull)(idx) {
+            var url = "@Url.Action("deleteGoodRow001008Pr", "AJAX",new { area = "" })";
+            var parms = getDivDataJson("#GoodsDynamicGird001008Pr");
+            parms["idx"] = idx;
+
+            var sourceModelNameFull = '@(Model.SourceModelNameFull)';
+            var sourceModelIdFull = '@(Model.SourceModelIdFull)';
+            var chgName = "";
+            var chgId = "";
+
+            ajaxLoadMore(url, parms
+             , function (data) {
+                 $("#GoodsDynamicGird001008Pr").html(data);
+                 $("#GoodsDynamicGird001008Pr").html(data);
+
+                 doCountMoney();
+
+                 $("#GoodsDynamicGird001008Pr input").each(function (i, obj) {
+                     chgName = (obj.name.indexOf(sourceModelNameFull) == 0 ? obj.name : sourceModelNameFull + obj.name);
+                     chgId = (obj.id.indexOf(sourceModelIdFull) == 0 ? obj.id : sourceModelIdFull + obj.id
+                         );
+
+                     $("#" + obj.id).attr("name", chgName);
+                     $("#" + obj.id).attr("id", chgId);
+
+                     @*$("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                     $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);*@
+                 });
+
+                 $("#GoodsDynamicGird001008Pr select").each(function (i, obj) {
+                     chgName = (obj.name.indexOf(sourceModelNameFull) == 0 ? obj.name : sourceModelNameFull + obj.name);
+                     chgId = (obj.id.indexOf(sourceModelIdFull) == 0 ? obj.id : sourceModelIdFull + obj.id
+                         );
+
+                     $("#" + obj.id).attr("name", chgName);
+                     $("#" + obj.id).attr("id", chgId);
+
+                     @*$("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                     $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);*@
+                 });
+
+                 $("#GoodsDynamicGird001008Pr div.date").each(function () {
+                     initDatePicker(this);
+                 });
+
+                 $("#GoodsDynamicGird001008Pr div.date input").each(function (i, obj) {
+                     chgName = (obj.name.indexOf(sourceModelNameFull) == 0 ? obj.name : sourceModelNameFull + obj.name);
+                     chgId = (obj.id.indexOf(sourceModelIdFull) == 0 ? obj.id : sourceModelIdFull + obj.id
+                         );
+
+                     $("input[id='" + obj.id + "']").attr("name", chgName);
+                     $("input[id='" + obj.id + "']").attr("id", chgId);
+
+                     @*$("input[id='" + obj.id + "']").attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                     $("input[id='" + obj.id + "']").attr("id", '@(Model.SourceModelIdFull)' + obj.id);*@
+                 });
+
+                 $("#GoodsDynamicGird001008Pr input:radio").each(function (i, obj) {
+                     chgName = (obj.name.indexOf(sourceModelNameFull) == 0 ? obj.name : sourceModelNameFull + obj.name);
+                     chgId = (obj.id.indexOf(sourceModelIdFull) == 0 ? obj.id : sourceModelIdFull + obj.id
+                         );
+
+                     $("input:radio[name='" + obj.name + "']").attr("name", chgName);
+                     $("input:radio[id='" + obj.id + "']").attr("id", chgId);
+
+                     @*$("input:radio[name='" + obj.name + "']").attr("name", '@(Model.SourceModelNameFull)' + obj.name.replaceAll('@(Model.SourceModelNameFull)', ''));
+                     $("input:radio[id='" + obj.id + "']").attr("id", '@(Model.SourceModelIdFull)' + obj.id);*@
+                 });
+
+                 //列印份數
+                 $("#GoodsDynamicGird001008Pr").find("input[name*='PR_COPIES']").each(function () {
+                     //debugger;
+                     $(this).on("blur", function () {
+                         //doChkCopies(this, "申請份數");
+                     })
+                 });
+
+                 //證書開立格式
+                 $("#GoodsDynamicGird001008Pr").find("input:radio[name*='PR_TYPE_CD']").each(function () {
+                     $(this).on("click", function () {
+                         doCountMoney();
+                     })
+                 });
+
+                 doCountMoney();
+
+                 //resetHeightPr();
+             });
+        }
+    </script>

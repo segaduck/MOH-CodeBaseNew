@@ -1,0 +1,52 @@
+﻿@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "相關規範管理";
+    ViewBag.FunctionTitle = "相關規範管理";
+}
+<div class="bread">
+    <i class="fas fa-home"></i>首頁 / 案件設定 / @ViewBag.FunctionTitle
+</div>
+<div class="col-sm-12 content">
+    <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+    <div id="detail2">
+        <h2 class="second-title">案件說明</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">案件編號</label>
+                <div class="col-sm-4">
+                    <div class="form-control">@ViewBag.Dict["SRV_ID"]</div>
+                </div>
+                <label class="main-label col-sm-2" for="">案件名稱</label>
+                <div class="col-sm-4">
+                    <div class="form-control">@ViewBag.Dict["NAME"]</div>
+                </div>
+            </div>
+            <h2 class="second-title">檔案維護</h2>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th style="width: 120px;">動作</th>
+                        <th>檔案標題</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Dictionary<string, object> item in ViewBag.List)
+                    {
+                        <tr>
+                            <td>
+                                <input type="button" class="btn btn-save" value="修改" onclick="document.location.href='@Url.Action("Edit", "ServiceNorm", new { id = @ViewBag.Dict["SRV_ID"], fid = @item["FILE_ID"] })';" />
+                                <input type="button" class="btn btn-warning" value="刪除" onclick="jConfirm('確定要刪除這個檔案嗎？', function() { document.location.href='@Url.Action("Delete", "ServiceNorm", new { id = @ViewBag.Dict["SRV_ID"], fid = @item["FILE_ID"] })'; });" />
+                            </td>
+                            <td>@Html.ActionLink(@item["TITLE"].ToString(), "Download", new { id = @item["SRV_ID"], fid = @item["FILE_ID"] }, null)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="btnbar">
+                <input type="button" class="btn btn-save" value="新增" onclick="document.location.href='@Url.Action("New", new { id = @ViewBag.Dict["SRV_ID"] })';" />
+                <input type="button" class="btn btn-gray" value="返回" onclick="document.location.href='@Url.Action("Index", new { id = @ViewBag.Dict["SC_ID"] })';" />
+            </div>
+        </div>
+    </div>
+</div>

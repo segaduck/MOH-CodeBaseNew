@@ -1,0 +1,120 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model ES.Areas.Admin.Models.StatisticsPaytypeModel
+<link href="../../../../Content/Report/TableStyle.css" rel="stylesheet" type="text/css" />
+@{
+                /**/
+
+                Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+                ViewBag.Title = "繳費方式統計";
+                ViewBag.FunctionTitle = "繳費方式統計";
+}
+<div class="form-blue form-horizontal">
+    <div class="btnbar">
+        <a href="#" onclick="javascript:history.back();"><span>回上一頁</span></a>
+    </div>
+</div>
+<div class="clearfix"></div>
+<h2 class="second-title">
+    分類：@ViewBag.NAME
+    統計區間：
+    @Html.Raw(this.Model.Sdate)
+    到
+    @Html.Raw(this.Model.Fdate)
+</h2>
+<div class="table-responsive">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+        <thead>
+            <tr>
+                <th>項次</th>
+                <th>案件分類</th>
+                <th align="right">信用卡</th>
+                <th align="right">匯（支）票</th>
+                <th align="right">劃撥</th>
+                <th align="right">臨櫃</th>
+                <th align="right">超商</th>
+                <th align="right">合計</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                List<Map> li = ViewBag.List;
+                if (li.Count == 0)
+                {
+                    <tr>
+                        <td colspan="8">
+                            此範圍無資料可統計
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    int i = 0;
+                    int CREDITCARD = 0, DRAFT = 0, TRANSFER = 0, COUNTER = 0, STORE = 0, TATOL = 0;
+                    foreach (Map m in li)
+                    {
+                        i++;
+                        <tr>
+                            <td>
+                                @i.
+                            </td>
+                            <td>
+                                @m.GetString("NAME")
+                            </td>
+                            <td align="right">
+                                @m.GetString("CREDITCARD")
+                            </td>
+                            <td align="right">
+                                @m.GetString("DRAFT")
+                            </td>
+                            <td align="right">
+                                @m.GetString("TRANSFER")
+                            </td>
+                            <td align="right">
+                                @m.GetString("COUNTER")
+                            </td>
+                            <td align="right">
+                                @m.GetString("STORE")
+                            </td>
+                            <td align="right">
+                                @m.GetString("TATOL")
+                            </td>
+                        </tr>
+                        CREDITCARD += int.Parse(m.GetString("CREDITCARD"));
+                        DRAFT += int.Parse(m.GetString("DRAFT"));
+                        TRANSFER += int.Parse(m.GetString("TRANSFER"));
+                        COUNTER += int.Parse(m.GetString("COUNTER"));
+                        STORE += int.Parse(m.GetString("STORE"));
+                        TATOL += int.Parse(m.GetString("TATOL"));
+                    }
+                    i++;
+                    <tr>
+                        <td>
+                            總計
+                        </td>
+                        <td></td>
+                        <td align="right">
+                            @CREDITCARD
+                        </td>
+                        <td align="right">
+                            @DRAFT
+                        </td>
+                        <td align="right">
+                            @TRANSFER
+                        </td>
+                        <td align="right">
+                            @COUNTER
+                        </td>
+                        <td align="right">
+                            @STORE
+                        </td>
+                        <td align="right">
+                            @TATOL
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

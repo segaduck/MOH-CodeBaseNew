@@ -1,0 +1,19 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model ApplyDonateViewModel
+<h2 class="second-title">上傳附件預覽</h2>
+<div class="form-group">
+    <div class="col-sm-12">
+        <div class="col-sm-10">
+            @if (Model.Detail != null && Model.Detail.FileList != null && Model.Detail.FileList.Count > 0)
+            {
+                for (var i = 0; i < Model.Detail.FileList.Count; i++)
+                {
+                    @Html.HiddenFor(m => m.Detail.FileList)
+                    @Html.FileDLForTurbo(m => m.Detail.FileList[i], Model.Detail.FileList[i],"N")
+                    <br />
+                }
+            }
+        </div>
+    </div>
+</div>

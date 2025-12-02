@@ -1,0 +1,272 @@
+﻿@using System.Text
+@using EECOnline.Models
+@using EECOnline.DataLayers
+@using EECOnline.Services
+@using Omu.ValueInjecter;
+@using EECOnline.Models.Entities
+@{
+    SessionModel sm = SessionModel.Get();
+    string mainMenuType = ConfigModel.MainMenuType;
+    string OnOrOff = ConfigModel.OnOrOff;
+    // 最外層未有程式連結的節點
+    IList<AMFUNCM> BigFuncModules = ApplicationModel.GetClamFuncsOutAll();
+    // 有程式連結的節點
+    IList<AMFUNCM> funcModules = new List<AMFUNCM>();
+    // 依權限給予節點
+    foreach (var item in sm.RoleFuncs)
+    {
+        // 第一層
+        var firstFuncCode = item.SYSID + "| " + "| " + "| ";
+
+        var firstFunc = BigFuncModules.Where(m =>
+        m.SYSID + "|" +
+        m.MODULES + "|" +
+        m.SUBMODULES + "|" +
+        m.PRGID == firstFuncCode).FirstOrDefault();
+
+        if (!funcModules.Contains(firstFunc) && firstFunc != null) { funcModules.Add(firstFunc); }
+
+        // 第二層
+        var secFuncCode = item.SYSID + "|" + item.MODULES + "| " + "| ";
+
+        var secFunc = BigFuncModules.Where(m =>
+        m.SYSID + "|" +
+        m.MODULES + "|" +
+        m.SUBMODULES + "|" +
+        m.PRGID == secFuncCode).FirstOrDefault();
+
+        if (!funcModules.Contains(secFunc) && secFunc != null) { funcModules.Add(secFunc); }
+
+        // 第三層
+        var thrFuncCode = item.SYSID + "|" + item.MODULES + "|" + item.SUBMODULES + "| ";
+
+        var thrFunc = BigFuncModules.Where(m =>
+       m.SYSID + "|" +
+       m.MODULES + "|" +
+       m.SUBMODULES + "|" +
+       m.PRGID == thrFuncCode).FirstOrDefault();
+
+        if (!funcModules.Contains(thrFunc) && thrFunc != null) { funcModules.Add(thrFunc); }
+
+        AMFUNCM func = new AMFUNCM();
+        func.InjectFrom(item);
+        funcModules.Add(func);
+    }
+
+    foreach (var item in funcModules.Where(m => m.PRGID.TONotNullString() != " "))
+    {
+        item.PRGID = OnOrOff + item.PRGID;
+    }
+
+}
+@functions{
+    /// <summary>
+    /// 建立第二層以後節點
+    /// 並以字串回傳組成的 li, ul 等 html 內容
+    /// </summary>
+    /// <param name="funcModules">系統功能項目集合</param>
+    /// <param name="branch1">目前第一層功能項目</param>
+    /// <returns></returns>
+    private string MakeTree(IList<TblAMFUNCM> funcModules)
+    {
+        string html = "";
+        // 第一層
+        var branchGroup1 = funcModules.Where(m => m.SYSID.TONotNullString() != " " && m.MODULES.TONotNullString() == " " && m.SUBMODULES.TONotNullString() == " " && m.PRGID.TONotNullString() == " ").ToList();
+
+        foreach (var branch1 in branchGroup1)
+        {
+            html += "<li class='branch'>";//start
+            html += "<a href='#' id='" + branch1.SYSID + "| | | 'title='" + branch1.PRGNAME + "' >" + branch1.PRGNAME + "</a> ";
+            // 第二層
+            var branchGroup2 = funcModules.Where(m => m.SYSID == branch1.SYSID && m.MODULES.TONotNullString() != " " && m.SUBMODULES.TONotNullString() == " " && m.PRGID.TONotNullString() == " ");
+            html += "<ul>";
+            //有第二層父節點
+            foreach (var branch2 in branchGroup2)
+            {
+                html += "<li class=\"branch\" style=\"display: list-item;\">";
+                html += string.Format("<a href = \"#\" id=\"{0}|{1}| | \" title = \"{2}\">{3}</a > ", branch2.SYSID, branch2.MODULES, branch2.PRGNAME, branch2.PRGNAME);
+                //有第三層
+                var branchGroup3 = funcModules.Where(m => m.SYSID == branch2.SYSID && m.MODULES == branch2.MODULES && m.SUBMODULES.TONotNullString() != " " && m.PRGID.TONotNullString() == " ");
+                html += "<ul>";
+
+                if (branchGroup3.ToCount() > 0)
+                {
+                    foreach (var branch3 in branchGroup3)
+                    {
+
+                        html += "<li class=\"branch\" style=\"display: list-item;\">";
+                        html += string.Format("<a href = \"#\" id=\"{0}|{1}|{2}| \" title = \"{3}\">{4}</a > ", branch3.SYSID, branch3.MODULES, branch3.SUBMODULES, branch3.PRGNAME, branch3.PRGNAME);
+                        //第三層
+                        var branchGroup4 = funcModules.Where(m => m.SYSID == branch3.SYSID && m.MODULES == branch3.MODULES && m.SUBMODULES.TONotNullString() == branch3.SUBMODULES && m.PRGID.TONotNullString() != " ");
+
+                        foreach (var branch4 in branchGroup4)
+                        {
+                            html += "<ul>";
+                            html += "<li style = \"display:list-item; \">";
+                            html += "<i class=\"leaf-marker glyphicon glyphicon-map-marker\"></i>";
+                            html += string.Format("<a href = \"/{0}\" id=\"{1}|{2}|{3}|{4}\" title=\"{5}\">{6}</a></li>", branch4.PRGID, branch4.SYSID, branch4.MODULES, branch4.SUBMODULES, branch4.PRGID, branch4.PRGNAME, branch4.PRGNAME);
+                            html += "</ul>";
+                        }
+                        html += "</li>";
+                    }
+                }
+                //沒有第三層
+                else
+                {
+                    //沒有第二層父節點
+                    var branchGroup3No = funcModules.Where(m => m.SYSID == branch2.SYSID && m.MODULES == branch2.MODULES && m.PRGID.TONotNullString() != " ");
+                    foreach (var branch3no in branchGroup3No)
+                    {
+                        html += "<li style = \"display:list-item; \">";
+                        html += "<i class=\"leaf-marker glyphicon glyphicon-map-marker\"></i>";
+                        html += string.Format("<a href = \"/{0}\" id=\"{1}|{2}| |{3}\" title=\"{4}\">{5}</a></li>", branch3no.PRGID, branch3no.SYSID, branch3no.MODULES, branch3no.PRGID, branch3no.PRGNAME, branch3no.PRGNAME);
+                    }
+                }
+                html += "</ul>";
+                html += "</li>";
+            }
+
+            html += "</ul>";
+            html += "</li>";//end
+        }
+
+        return string.Format(html);
+    }
+        }
+<!-- Sidebar Left Menu -->
+<!--20180920 加入「系統主功能表類型」判斷-->
+<link rel="stylesheet" type="text/css" href="~/Scripts/treemenu/treemenu.css" />
+<script type="text/javascript" src="~/Scripts/treemenu/sessionstorage.js"></script>
+<script type="text/javascript" src="~/Scripts/treemenu/treemenu.js"></script>
+<style type="text/css">
+    .mainMenu {
+        width: auto;
+        overflow-x: auto;
+        overflow-y: auto;
+        border: 1px solid #FBFBFB;
+        background-color: #FDFDFD;
+        padding: 6px 0px 0px 0px;
+    }
+</style>
+
+<div class="navbg">
+    <div style="position: fixed;width:17.3%;">
+        <h4 class="menu-header"><img src="~/images/icon-arrow.svg">功能選單</h4>
+        <div class="mainMenu">
+            <ul id="mainMenu" style="" class="tree">
+                <li class="branch">
+                    <a href="~/" title="回首頁">回首頁</a>
+                </li>
+                @Html.Raw(this.MakeTree(funcModules))
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // hide any visible sub-menu
+    // 註：只有 markupDefaultMenu() 方法才會呼叫這個方法。
+    function hideAllPopMenu(activeMenu) {
+        //debugTrace("hideAllPopMenu: activeMenu=" + activeMenu);
+        $(".navigation ul li").each(function () {
+            var menu = $(this);
+            if (menu.prop("id").startsWith(activeMenu)
+                    || activeMenu.startsWith(menu.prop("id"))
+                ) {
+                // 目前作用中 menu 或 子項/母項, 返回
+                return;
+            }
+
+            menu.find("a")
+                    .css("background", "");
+
+            menu.find("ul")
+                    .css("visibility", "hidden")
+                    .css("background", "")
+                    .css("color", "#555555");
+        });
+
+    }
+
+    //20180920 顯示預設樣式的系統主功能表
+    function markupDefaultMenu() {
+        var activeMenu = "";
+        // binding menu click
+        $(".navigation ul li").click(function (e) {
+            var liE = $(this);
+            if (liE.hasClass("has-sub")) {
+                activeMenu = liE.prop("id");
+                hideAllPopMenu(activeMenu);
+
+                liE.find("a")
+                    .css("background", "#00aacf")
+
+                var sub = liE.find("ul:first");
+                sub.css("z-index", "510")
+                    .css("visibility", "visible")
+                    .css("background", "#00aacf")
+                    .css("color", "#ffffff");
+            }
+            e.preventDefault(); // stop event propagation
+        });
+
+        $(document).click(function (e) {
+            //debugTrace("document click");
+            var target = $(e.target);
+            //debugTrace(target);
+            if (target.is("a")) {
+                //判斷是否為選單項目點選
+                var elParent = $(e.target).parent();
+                //debugTrace(elParent);
+                if ($(elParent).hasClass("menu-node")) {
+                    if (target.is("a") && !$(elParent).hasClass("has-sub")) {
+                        var url = target.prop("href");
+                        if (!url.toLowerCase().startsWith("javascript:")) {
+                            debugTrace("trigger A link: " + url);
+                            blockUI();
+                            window.location.href = url;
+                        }
+                        else {
+                            //用 eval() 去執行 javascript:XXXXXX
+                            var func = url.substr(11);
+                            debugTrace("trigger A handler: " + func);
+                            eval(func);
+                        }
+                    }
+                }
+                else {
+                    activeMenu = "";
+                }
+            }
+            else {
+                activeMenu = "";
+            }
+            hideAllPopMenu(activeMenu);
+        });
+    }
+
+    //20180920 顯示樹型結構的系統主功能表
+    function markupTreeMenu() {
+        var elm = $("ul#mainMenu");
+        if (elm) {
+            elm.treeMenu(null);
+            elm.showMenu();
+        };
+    }
+
+    $(document).ready(function () {
+        try {
+            //20180920 判斷功能表類型以顯示對應的系統主功能表
+            var menuType = "@(mainMenuType)";
+            switch (menuType) {
+                case "1": markupTreeMenu(); break;
+                default: markupDefaultMenu(); break;
+            }
+        }
+        catch (ex) {
+            blockAlert(ex.message);
+        }
+    });
+</script>
+<!-- /#sidebar-wrapper -->

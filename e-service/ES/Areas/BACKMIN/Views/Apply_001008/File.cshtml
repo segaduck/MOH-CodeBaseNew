@@ -1,0 +1,161 @@
+﻿@using ES.Services;
+@using ES.Areas.Admin.Models;
+@using ES.Models.ViewModels;
+@model ES.Areas.Admin.Models.Apply_001008FormModel
+@{
+    ViewBag.SRV_NAME = "醫事人員或公共衛生師請領英文證明書";//醫事人員請領英文證明書
+}
+
+
+<div class='panel panel-info'>
+    <div class='panel-heading'>
+        <h2 class='panel-title' data-toggle='collapse' data-parent='#ApplyData' href='#ApplyData'>
+            <a>上傳應附檔案(點擊展開)</a>
+        </h2>
+    </div>
+    <div id='ApplyData' class='panel-collapse collapse'>
+        <div class='panel-body'>
+            <div class="form-blue">
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">佐證文件採合併檔案</label>
+                    <div class="col-sm-10">
+                        <label class="radio-inline "><input type="radio" name="MERGEYN" value="Y" @(Model.MERGEYN == "Y" ? "checked" : "") disabled>是</label>
+                        <label class="radio-inline "><input type="radio" name="MERGEYN" value="N" @(Model.MERGEYN != "Y" ? "checked" : "") disabled>否</label>
+                        <br />
+                        若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"
+                    </div>
+                </div>
+
+                @*繳費紀錄照片或pdf檔案*@
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.FileList.FILE_PAYRECORD)</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.FileList.FILE_PAYRECORD, Model.FileList.FILE_PAYRECORD_TEXT)
+
+                            @*@if (Model.filePayRecHisList != null)
+                            {
+                                for (int i = 0; i < Model.filePayRecHisList.Count; i++)
+                                {
+                                    var item = Model.filePayRecHisList[i];
+                                    <div>
+                                        @Html.FileDLForTurbo(m => m.filePayRecHisList[i].FILENAME, item.FILE_TEXT) 
+
+                                        @if (i < Model.filePayRecHisList.Count - 1 || (i == Model.filePayRecHisList.Count - 1 && item.SRC_NO != null && item.SRC_NO > 1))
+                                        {
+                                            @Html.Raw(string.Format("補件時間：{0}", item.ADD_TIME_TW))
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw(string.Format("申請時間：{0}", item.ADD_TIME_TW))
+                                        }
+
+                                    </div>
+                                }
+                            }*@
+                        </div>
+                    </div>
+                </div>
+
+                @*護照影本電子檔*@
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.FileList.FILE_PASSPORT)</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.FileList.FILE_PASSPORT, Model.FileList.FILE_PASSPORT_TEXT)
+                            @*@Html.FontFileDLForTurbo(m => m.FileList.FILE_PASSPORT, Model.FileList.FILE_PASSPORT_TEXT, "Y")*@
+
+                            @*@if (Model.filePayPassportHisList != null)
+                            {
+                                for (int i = 0; i < Model.filePayPassportHisList.Count; i++)
+                                {
+                                    var item = Model.filePayPassportHisList[i];
+                                    <div>
+                                        @Html.FileDLForTurbo(m => m.filePayPassportHisList[i].FILENAME, item.FILE_TEXT)
+                                        @if (i < Model.filePayPassportHisList.Count - 1 || (i == Model.filePayPassportHisList.Count - 1 && item.SRC_NO != null && item.SRC_NO > 1))
+                                        {
+                                            @Html.Raw(string.Format("補件時間：{0}", item.ADD_TIME_TW))
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw(string.Format("申請時間：{0}", item.ADD_TIME_TW))
+                                        }
+                                    </div>
+                                }
+                            }*@
+                        </div>
+                    </div>
+                </div>
+
+                @*醫事人員中文證書電子檔*@
+                <div class="form-group">
+                    <div>
+                        <h2 class="second-title">
+                            醫事人員或公共衛生師/專科中文證書電子檔
+                        </h2>
+                    </div>
+                </div>
+                @*附件*@
+                <div class="form-group">
+                    @if (Model.ATHs != null)
+                    {
+                        int idx = 0;
+                        foreach (Apply_001008_AthViewModel item in Model.ATHs)
+                        {
+                            <div class="form-group">
+                                <label class="main-label col-sm-2">電子檔@(item.SRL_NO)</label>
+                                <div class="col-sm-10">
+                                    @Html.FileDLForTurbo(m => m.ATHs[idx].FILE_CERT, item.FILE_CERT_TEXT)
+                                </div>
+                            </div>
+                            idx++;
+                        }
+                    }
+
+                    @*@if (Model.ATHs != null)
+                    {
+                        int idx1 = 0;
+                        int idx2 = 0;
+                        foreach (Apply_001008AthFileHisModel item in Model.ATHs)
+                        {
+                            <div class="form-group">
+                                <label class="main-label col-sm-2">電子檔@(item.SRL_NO)</label>
+                                <div class="col-sm-10">
+                                    @if (item.athList != null)
+                                    {
+                                        idx2 = 0;
+                                        foreach (Apply_001008_AthViewModel hisItem in item.athList)
+                                        {
+                                            <div>
+                                                @Html.FileDLForTurbo(m => m.ATHs[idx1].athList[idx2].FILE_CERT, hisItem.FILE_CERT_TEXT)
+
+                                                @if (idx2 < item.athList.Count - 1 || (idx2 == item.athList.Count - 1 && hisItem.SRC_NO != null && hisItem.SRC_NO > 1))
+                                                {
+                                                @Html.Raw(string.Format("補件時間：{0}", hisItem.ADD_TIME_TW))
+                                                }
+                                                else
+                                                {
+                                                @Html.Raw(string.Format("申請時間：{0}", hisItem.ADD_TIME_TW))
+                                                }
+                                            </div>
+                                            idx2++;
+                                        }
+                                    }
+
+                                </div>
+                            </div>
+
+                            idx1++;
+                        }
+                    }*@
+                                 @*@Html.EditorFor(m => m.ATH, "GoodsDynamicGrid005001Ath")*@
+                </div>
+
+                <div class="btnbar">
+                    <button type="button" onclick="GetZip('@Model.APP_ID')" class="btn btn-blue">檔案打包下載</button>
+                    <button type="button" class="btn btn-blue" onclick="document.location.href='@Url.Action("PrintPDF", new { id = Model.APP_ID })';">套印申請書</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

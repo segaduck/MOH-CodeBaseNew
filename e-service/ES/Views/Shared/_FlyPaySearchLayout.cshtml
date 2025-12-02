@@ -1,0 +1,370 @@
+﻿<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <title>Collective Quarantine Facilities Online payment (Search)</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=8,9,edge,chrome=1">
+    <meta name="google-site-verification" content="xO1rl3yyV9pA8bYEEbsrQHV6bsvYiN-OmygfyITWAyQ">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <meta name="author" content="">
+    <meta name="copyright" content=" ">
+    <meta name="robots" content="all">
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <!-- resource -->
+    @Styles.Render("~/Content/dist/css/bootstrap-themes.css")
+    @Styles.Render("~/Content/jquery-confirm.min.css")
+    @Styles.Render("~/bundles/select2")
+
+    <!-- 警告：Respond.js 無法在 file:// 協定下運作 -->
+    <!-- jQuery 2.0 不支援 IE 6、IE 7、IE 8 -->
+    <!--[if gte IE 9]>
+        <script src="https://code.jquery.com/jquery-2.0.0.min.js" integrity="sha256-1IKHGl6UjLSIT6CXLqmKgavKBXtr0/jJlaGMEkh+dhw=" crossorigin="anonymous"></script>
+    <![endif]-->
+    <!--[if lt IE 9]>
+        <script src="https://code.jquery.com/jquery-1.9.0.min.js" integrity="sha256-f6DVw/U4x2+HjgEqw5BZf67Kq/5vudRZuRkljnbF344=" crossorigin="anonymous"></script>
+        <script src="js/html5shiv.js" type="text/javascript"></script>
+        <script src="js/respond.min.js" type="text/javascript"></script>
+    <![endif]-->
+    <!--[if IE]>
+        <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    @Scripts.Render("~/js/polyfills")
+    @Scripts.Render("~/bundle/vender")
+    @Scripts.Render("~/Scripts/jquery-validation/dist/jquery.validate.js")
+    @Scripts.Render("~/Scripts/jquery.ui.datepicker.validation.package-1.0.1/jquery.ui.datepicker.validation.js")
+    @Scripts.Render("~/Scripts/jquery-confirm.min.js")
+    @Scripts.Render("~/Scripts/popper.min.js")
+    @Scripts.Render("~/Scripts/bootstrap-4.5.3-js/js/bootstrap.min.js")
+    @Scripts.Render("~/js/components/TU.datepicker.js")
+    @Scripts.Render("~/js/core.js")
+    @*@Scripts.Render("~/bundle/javascripts")*@
+    @Scripts.Render("~/js/javascript/Turboframe_ScrollTop.js")
+    @Scripts.Render("~/js/javascript/Turboframe_ObserveEachClass.js")
+    @Scripts.Render("~/js/javascript/Turboframe_ObserveSingleScroll.js")
+    @Scripts.Render("~/js/javascript/Turboframe_Utils.js")
+    <script>
+        (function (d) {
+            var config = {
+                kitId: 'xhx6tlx',
+                scriptTimeout: 3000,
+                async: true
+            },
+            h = d.documentElement, t = setTimeout(function () { h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive"; }, config.scriptTimeout), tk = d.createElement("script"), f = false, s = d.getElementsByTagName("script")[0], a; h.className += " wf-loading"; tk.src = 'https://use.typekit.net/' + config.kitId + '.js'; tk.async = true; tk.onload = tk.onreadystatechange = function () { a = this.readyState; if (f || a && a != "complete" && a != "loaded") return; f = true; clearTimeout(t); try { Typekit.load(config) } catch (e) { } }; s.parentNode.insertBefore(tk, s)
+        })(document);
+    </script>
+</head>
+<body>
+    <!--
+    ================
+        HEADER
+    ================
+    -->
+    <header class="spr-header" id="header">
+        <!-- <div class="mask mask_tornado"></div> -->
+        <div class="top-bar">
+            <div class="container-xxl">
+                <div class="row">
+                    <div class="col-12">
+                        <ul>
+                            <li class="hidden-md active">
+                                <a href="javascript:;">
+                                    集中檢疫所線上刷卡繳費平台
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://eservice.mohw.gov.tw/FlyPay/Search" target="_blank">
+                                    查詢繳費成功識別碼 (Identificaltion Code Query)
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" target="_blank">
+                                    檢疫所資訊 (Collective Quarantine Facilities Information)
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="">
+                            <li>
+                                <i class="tu-f-classic-phone" aria-hidden="true"></i>
+                                <font class="hidden-xs">訂房諮詢專線：</font>
+                                <a class="in-bk-mid" href="tel:+886-2-85907632" title="訂房諮詢專線">02-85907632</a>
+                            </li>
+                            <li class="hidden-md">
+                                <a href="https://www.mohw.gov.tw/mp-1.html" target="_blank">
+                                    衛福部
+                                </a>
+                            </li>
+                            <li class="hidden-sm">
+                                <font>字級：</font>
+                                <a href="javascript:rMain.cFontSize('smaller');" class="font-set" data-toggle="tooltip" title="縮小字級" data-placement="bottom">
+                                    <i class="ja-font-small" aria-hidden="true"></i>
+                                </a>
+                                <a href="javascript:rMain.cFontSize('unset');" class="font-set" data-toggle="tooltip" title="恢復預設大小" data-placement="bottom">
+                                    <i class="ja-font-default" aria-hidden="true"></i>
+                                </a>
+                                <a href="javascript:rMain.cFontSize('bigger') ;" class="font-set" data-toggle="tooltip" title="放大字級" data-placement="bottom">
+                                    <i class="ja-font-big" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main-header">
+            <div class="container-xxl">
+                <div class="mask mask_city"></div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="brand">
+                            <a href="javascript:;">
+                                <img src="/images/wf_logo.svg" alt="衛福部" class="logo" width="60" height="60">
+                                <div class="spr-heading">
+                                    <h1 class="ch">新型冠狀病毒肺炎 <mark>集中檢疫場所</mark>費用線上繳納平台</h1>
+                                    <h1 class="en">Online Payment for Staying in COVID-19 <mark>Government Quarantine Facility</mark></h1>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="lantern-cnt">
+                            <div class="cp-lantern">
+                                <div class="cp-lantern-body">
+                                    <div class="txt">春</div>
+                                </div>
+                            </div>
+                            <div class="cp-lantern">
+                                <div class="cp-lantern-body">
+                                    <div class="txt">節</div>
+                                </div>
+                            </div>
+                            <div class="cp-lantern">
+                                <div class="cp-lantern-body">
+                                    <div class="txt">專</div>
+                                </div>
+                            </div>
+                            <div class="cp-lantern">
+                                <div class="cp-lantern-body">
+                                    <div class="txt">案</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!--
+    ================
+      FORM CONTENT
+    ================
+    -->
+    <div class="spr-form">
+        <div class="mask mask_pixel"></div>
+        <div class="container-xxl">
+            <div class="row">
+                @RenderBody()
+            </div>
+        </div>
+        </div>
+        <footer id="footer">
+            <div class="container-xxl">
+                <div class="row">
+                    #Taiwan Can Help #Taiwan Is Helping
+                </div>
+            </div>
+        </footer>
+        <!--
+        ================
+            LOADER
+        ================
+        -->
+        <div id="loader">
+            <div class="loader-cnt">
+                <div class="loader">
+                    <svg viewBox="0 0 80 80">
+                        <circle id="test" cx="40" cy="40" r="32"></circle>
+                    </svg>
+                </div>
+                <div class="loader triangle">
+                    <svg viewBox="0 0 86 80">
+                        <polygon points="43 8 79 72 7 72"></polygon>
+                    </svg>
+                </div>
+                <div class="loader">
+                    <svg viewBox="0 0 80 80">
+                        <rect x="8" y="8" width="64" height="64"></rect>
+                    </svg>
+                </div>
+                <div class="loader-txt--glitch" data-text="載入中請稍等 ...">
+                    載入中請稍等 ...
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // 調整 jconfirm 在 Bootstrap 版本下 下的位置
+            jconfirm.defaults = {
+                backgroundDismiss: false,
+                animation: 'zoom',
+                closeIcon: false,
+                // Bootstrap 4 (Flex)
+                columnClass: "col-lg-6 offset-lg-3 col-sm-8 offset-sm-2",
+                // Bootstrap 3 (float)
+                // columnClass: "col-lg-6 col-lg-offset-3 col-sm-8 col-sm-offset-2",
+            };
+
+            //傳回在 form 元素內的全部輸入欄位的「名稱-值」JSON 物件。（請儘量使用這個 getFormDataJson() 方法取得整個表單欄位資料 JSON）
+            //formSelector: HTML form 元素的 CSS 選擇子表達式（例："#main_form"）或是 jquery 物件（例：$("#main_form")）。
+            //jsonExtra:（非必要）額外加入的自訂資料 JSON 物件（輸入 null 表示不需要）。
+            function getFormDataJson(formSelector, jsonExtra) {
+                var ret = {};
+                if (formSelector !== undefined && formSelector != null) {
+                    var form = $(formSelector);
+                    if (form.length > 0) {
+                        try {
+                            var raw = form.serialize();
+                            if (raw.length > 0) {
+                                var nv, pairs = raw.split("&");
+                                $.each(pairs, function (idx, text) {
+                                    nv = text.split("=");
+                                    ret[decodeURIComponent(nv[0])] = decodeURIComponent(nv[1]);
+                                });
+                            }
+                        } catch (e) {
+                            blockAlert("[getFormDataJson] " + e.message);
+                        }
+                    }
+                }
+                if (jsonExtra) ret = $.extend(ret, jsonExtra);
+                return ret;
+            }
+
+            function ajaxLoadMore(url, parms, onLoaded, isTtraditional, notAutoBlock) {
+                //if (!notAutoBlock) {
+                //    blockUI();
+                //}
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: parms,
+                    traditional: isTtraditional,
+                    success: function (data, textStatus) {
+                        //if (!notAutoBlock) {
+                        //    unblockUI();
+                        //}
+                        if (typeof onLoaded != 'undefined') {
+                            onLoaded(data);
+                        } else {
+                            blockAlert("ajaxLoadMore('" + url + "'): onLoaded handler function not defined.");
+                        }
+                    },
+                    error: function (XMLHttpRequest, exception) {
+                        if (!notAutoBlock) {
+                            unblockUI();
+                        }
+                        if (XMLHttpRequest.status > 0) {
+                            // status = 0 時, 表示沒有連線, 忽略訊息
+                            var msg = "ajaxLoadMore('" + url + "') error: " + XMLHttpRequest.status + " " + XMLHttpRequest.statusText + ", " + exception;
+                            debugTrace(msg);
+                            debugTrace(XMLHttpRequest);
+                            blockAlert(msg, "錯誤");
+                        }
+                    }
+                });
+            }
+            /*用來顯示錯誤訊息*/
+            /*20180907-問題單158-建議縮小行距,即不需要有下拉按鍵*/
+            function blockAlert(msg, title, sureCallback, height) {
+                /* required: jqiuer-confirm.min.js */
+                if (msg == undefined) {
+                    /*msg = "argument 'msg' is null while call blockAlert()";*/
+                    msg = "操作逾時，請重新登入";
+                }
+                var clen = (msg !== undefined && msg != null) ? msg.length : 0;
+                var wdHeight = (height) ? height.toString() + "px" : ((clen < 80) ? "60px" : ((clen < 160) ? "100px" : (clen < 320 ? "200px" : "300px")));
+                $.confirm({
+                    backgroundDismiss: false,
+                    icon: 'tu-alert-triangle',
+                    title: "<div class='blockAlertTitle'>" + (title ? title : 'Message') + "</div>",
+                    confirmButton: 'Sure',
+                    confirmButtonClass: 'n--btn btn--warning',
+                    cancelButton: false,
+                    closeIcon: false,
+                    //content: "<div class='blockAlertMessage' style='width:100%;height:" + wdHeight + ";overflow:auto;word-wrap:break-word;white-space:normal;'>" + msg.replace(/(\n)+/g, '<br />') + "</div>",
+                    content: "<div class='blockAlertMessage'>" + msg.replace(/(\n)+/g, '<br />') + "</div>",
+                    theme: 'white warning',
+                    onAction: (sureCallback == null) ? undefined : sureCallback
+                });
+            }
+            /*用來顯示錯誤訊息*/
+            /*20180907-問題單158-建議縮小行距,即不需要有下拉按鍵*/
+            function blockAlertChn(msg, title, sureCallback, height) {
+                /* required: jqiuer-confirm.min.js */
+                if (msg == undefined) {
+                    /*msg = "argument 'msg' is null while call blockAlert()";*/
+                    msg = "操作逾時，請重新登入";
+                }
+                var clen = (msg !== undefined && msg != null) ? msg.length : 0;
+                var wdHeight = (height) ? height.toString() + "px" : ((clen < 80) ? "60px" : ((clen < 160) ? "100px" : (clen < 320 ? "200px" : "300px")));
+                $.confirm({
+                    backgroundDismiss: false,
+                    icon: 'tu-alert-triangle',
+                    title: "<div class='blockAlertTitle'>" + (title ? title : '提示訊息') + "</div>",
+                    confirmButton: '確認',
+                    confirmButtonClass: 'n--btn btn--warning',
+                    cancelButton: false,
+                    closeIcon: false,
+                    content: "<div class='blockAlertMessage'>" + msg.replace(/(\n)+/g, '<br />') + "</div>",
+                    theme: 'white warning',
+                    onAction: (sureCallback == null) ? undefined : sureCallback
+                });
+            }
+            /*用來顯示操作訊息*/
+            function blockMessage(msg, title, unblockCallback) {
+                /* required: jqiuer-confirm.min.js */
+                if (msg == undefined) {
+                    /*msg = "argument 'msg' is null while call blockMessage()";*/
+                    msg = "操作逾時，請重新登入";
+                }
+                $.confirm({
+                    backgroundDismiss: false,
+                    icon: 'tu-check-circle',
+                    title: "<div class='blockMessageTitle'>" + (title ? title : 'Information') + "</div>",
+                    confirmButton: 'Sure',
+                    confirmButtonClass: 'n--btn btn--info',
+                    cancelButton: false,
+                    closeIcon: false,
+                    content: "<div class='blockMessage'>" + msg.replace(/(\n)+/g, '<br />') + "</div>",
+                    theme: 'white info',
+                    onAction: unblockCallback
+                });
+            }
+            /*
+            顯示 block 詢問訊息, 等待使用者回應 "確定" 或 "取消",
+            若使用者回應 確認 則 confirmCallback() 會被呼叫，若按下「取消」時呼叫 cancelCallback() 方法
+            confirmBtnText 確定按鈕文字，cancelBtnText 取消按鈕文字
+            */
+            function blockConfirm(msg, title, confirmCallback, cancelCallback, confirmBtnText, cancelBtnText) {
+                /* required: jqiuer-confirm.min.js */
+                var clen = (msg !== undefined && msg != null) ? msg.length : 0;
+                var wdHeight = (clen < 80) ? "60px" : ((clen < 160) ? "100px" : (clen < 320 ? "200px" : "300px"));
+                $.confirm({
+                    backgroundDismiss: false,
+                    icon: 'tu-help-circle',
+                    title: "<div class='blockAlertTitle'>" + (title ? title : 'Confirm Message') + "</div>",
+                    confirmButton: (confirmBtnText ? confirmBtnText : "Sure"),
+                    confirmButtonClass: 'n--btn btn--danger',
+                    cancelButton: (cancelBtnText ? cancelBtnText : "Cancel"),
+                    cancelButtonClass: 'n--btn btn--border--danger',
+                    closeIcon: false,
+                    content: "<div class='blockAlertMessage'>" + msg.replace(/(\n)+/g, '<br />') + "</div>",
+                    theme: 'white danger',
+                    confirm: confirmCallback,
+                    cancel: function () {
+                        if (cancelCallback) cancelCallback();
+                    }
+                });
+            }
+        </script>
+</body>
+</html>

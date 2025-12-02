@@ -1,0 +1,20 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_007001FormModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+}
+@using (Html.BeginForm("DonateResult", "ApplyDonate", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form" }))
+{
+    <div class="container-fluid">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="#">線上捐款</a></div>
+            <div class="clearfix"></div>
+            <!--form-->
+            @Html.Raw(Model.ReturnMsg)
+        </div>
+        <div class="clearfix"></div>
+    </div>
+}

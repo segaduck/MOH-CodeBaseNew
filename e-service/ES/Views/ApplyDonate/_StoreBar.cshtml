@@ -1,0 +1,12 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_007001FormModel
+@{
+}
+
+<!--超商條碼-->
+<div id="StoreBarform">
+    <div class="btn-bar text-center">
+        <input type="button" class="btn btn-save" value="列印條碼單" onclick="document.location.href='@Url.Action("PayPDF")/@Model.APP_ID';" />
+    </div>
+</div>

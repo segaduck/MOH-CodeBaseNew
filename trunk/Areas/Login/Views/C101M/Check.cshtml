@@ -1,0 +1,99 @@
+﻿@using EECOnline.Areas.Login.Models;
+@model C101MChangeModel
+
+@Html.HiddenFor(m => m.PWDCheck.Chk_1)
+@Html.HiddenFor(m => m.PWDCheck.Chk_2)
+@Html.HiddenFor(m => m.PWDCheck.Chk_3)
+@Html.HiddenFor(m => m.PWDCheck.Chk_4)
+@Html.HiddenFor(m => m.PWDCheck.Chk_5)
+@Html.HiddenFor(m => m.PWDCheck.Chk_6)
+@Html.HiddenFor(m => m.PWDCheck.Chk_7)
+@Html.HiddenFor(m => m.PWDCheck.Chk_8)
+<p>
+    @if (Model.PWDCheck.Chk_1)
+    {
+        <i class="fa fa-check" aria-hidden="true" style="color:limegreen"></i>
+    }
+    else
+    {
+        <i class="fa fa-times" aria-hidden="true" style="color:red"></i>
+    }
+    長度至少8字元
+</p>
+<p>
+    @if (Model.PWDCheck.Chk_2)
+    {
+         <i class="fa fa-check" aria-hidden="true" style="color:limegreen"></i>
+    }
+    else
+    {
+       <i class="fa fa-times" aria-hidden="true" style="color:red"></i>
+    }
+    包含小寫英文字母
+</p>
+<p>
+    @if (Model.PWDCheck.Chk_3)
+    {
+         <i class="fa fa-check" aria-hidden="true" style="color:limegreen"></i>
+    }
+    else
+    {
+       <i class="fa fa-times" aria-hidden="true" style="color:red"></i>
+    }
+    包含大寫英文字母
+</p>
+<p>
+    @if (Model.PWDCheck.Chk_4)
+    {
+         <i class="fa fa-check" aria-hidden="true" style="color:limegreen"></i>
+    }
+    else
+    {
+       <i class="fa fa-times" aria-hidden="true" style="color:red"></i>
+    }
+    包含數字
+</p>
+<p>
+    @if (Model.PWDCheck.Chk_5)
+    {
+         <i class="fa fa-check" aria-hidden="true" style="color:limegreen"></i>
+    }
+    else
+    {
+       <i class="fa fa-times" aria-hidden="true" style="color:red"></i>
+    }
+    不含空白字元
+</p>
+<p>
+    @if (Model.PWDCheck.Chk_6)
+    {
+         <i class="fa fa-check" aria-hidden="true" style="color:limegreen"></i>
+    }
+    else
+    {
+       <i class="fa fa-times" aria-hidden="true" style="color:red"></i>
+    }
+    密碼與重複密碼相符
+</p>
+@*<p>
+    @if (Model.PWDCheck.Chk_7)
+    {
+         <i class="fa fa-check" aria-hidden="true" style="color:limegreen"></i>
+    }
+    else
+    {
+       <i class="fa fa-times" aria-hidden="true" style="color:red"></i>
+    }
+    變更後密碼不得與前三次密碼相同
+</p>*@
+<p>
+    @if (Model.PWDCheck.Chk_8)
+    {
+         <i class="fa fa-check" aria-hidden="true" style="color:limegreen"></i>
+    }
+    else
+    {
+       <i class="fa fa-times" aria-hidden="true" style="color:red"></i>
+    }
+    變更後密碼不得與帳號相同
+</p>

@@ -1,0 +1,392 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_005013FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+}
+
+<h1 class="form-title  title-bg-y">申辦表件填寫 &nbsp;&nbsp; <span style="color:red; font-size:1.5em">*</span>為必填欄位</h1>
+<div class="form-set">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">申辦項目</label>
+            <div class="col-sm-10">
+                <p class="form-control-static">民眾少量自用中藥貨品進口</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">申請須知</label>
+            <div class="col-sm-10">
+                <p>一、依據入境旅客攜帶行李物品報驗稅放辦法及藥物樣品贈品管理辦法等規定。</p>
+                <p>
+                    二、中藥材及中藥製劑：<br />
+                    1.中藥材每種至多一公斤，合計不得超過十二種。<br />
+                    2.中藥製劑(藥品)每種至多十二瓶(盒)，合計以不超過三十六瓶(盒)為限。<br />
+                    3.攜帶入境超過前述限量之中藥材及中藥製劑(藥品)，應檢附醫療證明之文件(如醫師診斷證明)，且不逾3個月用量為限。<br />
+                    4.非處方藥品於6個月內不得重複申請。
+                </p>
+                <p>
+                    三、說明：<br />
+                    1.旅客或隨交通工具服務人員攜帶入境或郵寄入境之自用藥品，不得供非自用之用途。<br />
+                    2.本表鎖定之產品種類：瓶(盒、罐、條、支、包、袋)等均以「原包裝」為限。<br />
+                    3.藥品成分含保育類物種者，應先取得主管機關(農業部)同意始可攜帶入境。<br />
+                    4.自中國大陸輸入中藥製劑(藥品)需另取得經濟部國際貿易署輸入許可文件。
+                <p />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>案件類型</label>
+            <div class="col-sm-4">
+                <input type="radio" name="optradio" value="Y" onchange="radioChane()" checked>事前申請
+                <input type="radio" name="optradio" value="N" onchange="radioChane()">補辦案件
+                @Html.HiddenFor(m => m.CSEE_TYPE)
+            </div>
+            <label class="step-label col-sm-2" for="">申辦日期</label>
+            <div class="col-sm-4">
+                @Html.BLATYPForTurbo(m => m.APP_TIME_TW, Model.APP_TIME_TW)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.NAME, new { @class = "form-control" })
+            </div>
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證字號ID QUMDRE</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.IDN, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>地址Address</label>
+            <div class="col-sm-10 form-inline">
+                @Html.TextBoxFor(m => m.TAX_ORG_CITY_CODE, new { @id = "TAX_ORG_CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號" })
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.TAX_ORG_CITY_TEXT, new { @id = "TAX_ORG_CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </span>
+                </div>
+                @Html.TextBoxFor(m => m.TAX_ORG_CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話Tel. No.</label>
+            <div class="col-sm-10">
+                @Html.TelForTurbo(m => m.TEL)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>行動電話</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.MOBILE, new { @class = "form-control", @maxlength = "10" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+            <div class="col-sm-10">
+                @Html.EmailForTurbo(m => m.EMAIL)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>生產國別Country of origin</label>
+            <div class="col-sm-4">
+                @Html.DropDownListFor(m => m.ProductionCountry, dropdown.Port2List, new { @class = "form-control", @onchange = "ProductionCountryChange()" })
+                @Html.HiddenFor(m => m.ProductionCountry_TEXT)
+            </div>
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>賣方國家Country of seller</label>
+            <div class="col-sm-4">
+                @Html.DropDownListFor(m => m.SellerCountry, dropdown.Port2List, new { @class = "form-control", @onchange = "SellerCountryChange()" })
+                @Html.HiddenFor(m => m.SellerCountry_TEXT)
+            </div>
+        </div><div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>起運國家Shipping port</label>
+            <div class="col-sm-4">
+                @Html.DropDownListFor(m => m.ShippingPort, dropdown.Port2List, new { @class = "form-control", @onchange = "ShippingPortChange()" })
+                @Html.HiddenFor(m => m.ShippingPort_TEXT)
+            </div>
+        </div>
+        <h2 class="second-title">民眾輸入自用中藥切結書(使用方法)</h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>個人用途</label>
+            <div class="col-sm-10">
+                <input type="radio" name="optradio1" class="form-normal" value="1" onchange="radioChane1()" checked />1.疾病:請檢附醫療機構開立之診斷書，處方箋等醫療證明文件之影本。<br />
+                <input type="radio" name="optradio1" class="form-normal" value="2" onchange="radioChane1()" />2.保健養生:<br />
+                <input type="radio" name="optradio1" class="form-normal" value="3" onchange="radioChane1()" />3.其他:<br />
+                @Html.HiddenFor(m => m.RADIOUSAGE)
+            </div>
+            <div id="labRADIOUSAGE">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>請輸入說明</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.RADIOUSAGE_TEXT, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <h2 class="second-title">申請項目<button type="button" class="btn btn-save add">新增</button></h2>
+        <div id="Sample_ApplyItem" hidden>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><button type="button" class="btn btn-save">刪除</button>項次Item</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.newApplyItem[9999].ItemNum, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.HiddenFor(m => m.ApplyItem2[9999].ItemNum)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>產品類別ProductType</label>
+                <div class="col-sm-10">
+                    @Html.RadioButtonFor(m => m.newApplyItem[9999].PorcType, "0", new { @class = "form-normal" })
+                    <span>中藥材</span>
+                    @Html.RadioButtonFor(m => m.newApplyItem[9999].PorcType, "1", new { @class = "form-normal" })
+                    <span>中藥製劑</span>
+                    @*@Html.RadioButtonFor(m => m.newApplyItem[9999].PorcType, dropdown.PorcType_list, new { @class = "form-control" })*@
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>貨名Commodities</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.newApplyItem[9999].Commodities, new { @class = "form-control", @onkeyup = "CommoditiesChange(this)", @placeholder = "請輸入中英文貨名" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">備註Memo</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.newApplyItem[9999].CommodMemo, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(m => m.newApplyItem[9999].CommodType, dropdown.Getvw_DRUG_FORMList, new { @class = "form-control", @onchange = "CommodTypeChange(this)" })
+                    @Html.HiddenFor(m => m.newApplyItem[9999].CommodType_TEXT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量Q'ty</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.newApplyItem[9999].Qty, new { @class = "form-normal", @maxlength = "18", @onkeyup = "ItemQtyChange(this)" })
+                </div>
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量單位Unit</label>
+                <div class="col-sm-4">
+                    @Html.DropDownListFor(m => m.newApplyItem[9999].Unit, dropdown.Getvw_PACKList, new { @class = "form-control", @onchange = "ApplyItemUnitChange(this)" })
+                    @Html.HiddenFor(m => m.newApplyItem[9999].Unit_TEXT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量SpecQ'ty</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.newApplyItem[9999].SpecQty, new { @class = "form-normal", @maxlength = "18", @onkeyup = "ItemSpecQtyChange(this)" })
+                </div>
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量單位SpecUnit</label>
+                <div class="col-sm-4">
+                    @Html.DropDownListFor(m => m.newApplyItem[9999].SpecUnit, dropdown.Getvw_PACK_UNITList, new { @class = "form-control", @onchange = "ApplyItemSpecUnitChange(this)" })
+                    @Html.HiddenFor(m => m.newApplyItem[9999].SpecUnit_TEXT)
+                </div>
+            </div>
+            <h2 class="second-title">民眾輸入自用中藥切結書(使用方法)</h2>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥品名稱</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ApplyItem2[9999].ItemName, new { @class = "form-control", @placeholder = "請輸入藥品名稱", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>用法</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ApplyItem2[9999].Usage, new { @class = "form-control", @placeholder = "每天使用9顆(單位:如粒、瓶、公克)" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>總數量</label>
+                <div class="col-sm-10">
+                    <span>共</span>
+                    @Html.TextBoxFor(m => m.ApplyItem2[9999].ItemQty, new { @class = "form-normal", @readonly = "readonly" })
+                    @Html.TextBoxFor(m => m.ApplyItem2[9999].ItemQtyUnit, new { @class = "form-normal", @readonly = "readonly" })
+                    <span>,每</span>
+                    @Html.TextBoxFor(m => m.ApplyItem2[9999].ItemQtyUnit2, new { @class = "form-normal", @readonly = "readonly" })
+                    @Html.TextBoxFor(m => m.ApplyItem2[9999].ItemSpecQty, new { @class = "form-normal", @readonly = "readonly" })
+                    @Html.TextBoxFor(m => m.ApplyItem2[9999].ItemSpecQtyUnit, new { @class = "form-normal", @readonly = "readonly" })
+                    @*@Html.TextBoxFor(m => m.ApplyItem2[9999].AllQty, new { @class = "form-control", @placeholder = "共9瓶，60顆/瓶" })*@
+                </div>
+            </div>
+            <div class="form-group">
+                <p style="height:10px;background-color:burlywood;"></p>
+            </div>
+        </div>
+        <div id="FItem_1">
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">項次Item</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.newApplyItem[0].ItemNum, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.HiddenFor(m => m.ApplyItem2[0].ItemNum)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>產品類別ProductType</label>
+                <div class="col-sm-10">
+                    @Html.RadioButtonFor(m => m.newApplyItem[0].PorcType, "0", new { @class = "form-normal" })
+                    <span>中藥材</span>
+                    @Html.RadioButtonFor(m => m.newApplyItem[0].PorcType, "1", new { @class = "form-normal" })
+                    <span>中藥製劑</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>貨名Commodities</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.newApplyItem[0].Commodities, new { @class = "form-control", @onkeyup = "CommoditiesChange(this)", @placeholder = "請輸入中英文貨名" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">備註Memo</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.newApplyItem[0].CommodMemo, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型DrugForm</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(m => m.newApplyItem[0].CommodType, dropdown.Getvw_DRUG_FORMList, new { @class = "form-control", @onchange = "CommodTypeChange(this)" })
+                    @Html.HiddenFor(m => m.newApplyItem[0].CommodType_TEXT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量Q'ty</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.newApplyItem[0].Qty, new { @class = "form-normal", @maxlength = "18", @onkeyup = "ItemQtyChange(this)" })
+                </div>
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量單位Unit</label>
+                <div class="col-sm-4">
+                    @Html.DropDownListFor(m => m.newApplyItem[0].Unit, dropdown.Getvw_PACKList, new { @class = "form-control", @onchange = "ApplyItemUnitChange(this)" })
+                    @Html.HiddenFor(m => m.newApplyItem[0].Unit_TEXT)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量SpecQ'ty</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.newApplyItem[0].SpecQty, new { @class = "form-normal", @maxlength = "18", @onkeyup = "ItemSpecQtyChange(this)" })
+                </div>
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量單位SpecUnit</label>
+                <div class="col-sm-4">
+                    @Html.DropDownListFor(m => m.newApplyItem[0].SpecUnit, dropdown.Getvw_PACK_UNITList, new { @class = "form-control", @onchange = "ApplyItemSpecUnitChange(this)" })
+                    @Html.HiddenFor(m => m.newApplyItem[0].SpecUnit_TEXT)
+                </div>
+            </div>
+            <h2 class="second-title">民眾輸入自用中藥切結書(使用方法)</h2>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥品名稱</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ApplyItem2[0].ItemName, new { @class = "form-control", @placeholder = "請輸入藥品名稱", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>用法</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ApplyItem2[0].Usage, new { @class = "form-control", @placeholder = "每天使用9顆(單位:如粒、瓶、公克)" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>總數量</label>
+                <div class="col-sm-10">
+                    <span>共</span>
+                    @Html.TextBoxFor(m => m.ApplyItem2[0].ItemQty, new { @class = "form-normal", @readonly = "readonly" })
+                    @Html.TextBoxFor(m => m.ApplyItem2[0].ItemQtyUnit, new { @class = "form-normal", @readonly = "readonly" })
+                    <span>,每</span>
+                    @Html.TextBoxFor(m => m.ApplyItem2[0].ItemQtyUnit2, new { @class = "form-normal", @readonly = "readonly" })
+                    @Html.TextBoxFor(m => m.ApplyItem2[0].ItemSpecQty, new { @class = "form-normal", @readonly = "readonly" })
+                    @Html.TextBoxFor(m => m.ApplyItem2[0].ItemSpecQtyUnit, new { @class = "form-normal", @readonly = "readonly" })
+                    @*@Html.TextBoxFor(m => m.ApplyItem2[0].AllQty, new { @class = "form-control", @placeholder = "共9瓶，60顆/瓶" })*@
+                </div>
+            </div>
+            <div class="form-group">
+                <p style="height:10px;background-color:burlywood;"></p>
+            </div>
+        </div>
+
+        <h2 class="second-title">佐證文件檔案上傳<span style="color:red">(單一檔案上限為5MB,僅准上傳PDF、JPG、BMP、PNG、TIF等檔案格式)</span></h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+            <div class="col-sm-10">
+                <label class="radio-inline "><input type="radio" name="optradio2" value="Y" onchange="radioChane2()">是</label>
+                <label class="radio-inline "><input type="radio" name="optradio2" value="N" onchange="radioChane2()" checked>否</label>
+                @Html.HiddenFor(m => m.RADIOYN)
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"</div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">國際包裹招領單或海關補辦驗關通關手續通知書(事先提出申請無須檢附)之正面影本</label>
+            <div class="col-sm-10">
+                <input type="file" class="form-control" name="File_1" id="File_1" onchange="fileChange(this)" />
+                @Html.HiddenFor(m => m.File_1_Name)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">國際包裹招領單或海關補辦驗關通關手續通知書(事先提出申請無須檢附)之反面影本</label>
+            <div class="col-sm-10">
+                <input type="file" class="form-control" name="File_2" id="File_2" onchange="fileChange(this)" />
+                @Html.HiddenFor(m => m.File_2_Name)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">醫療用途、其他用途或藥品數量超過限量表規定時需檢附國內外醫療機構出具之醫療證明文件</label>
+            <div class="col-sm-10">
+                <input type="file" class="form-control" name="File_3" id="File_3" onchange="fileChange(this)" />
+                @Html.HiddenFor(m => m.File_3_Name)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>產品外盒、仿單、說明書</label>
+            <div class="col-sm-10">
+                <input type="file" class="form-control" name="File_4" id="File_4" onchange="fileChange(this)" />
+                @Html.HiddenFor(m => m.File_4_Name)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證影本(正面)</label>
+            <div class="col-sm-10">
+                <input type="file" class="form-control" name="File_5" id="File_5" onchange="fileChange(this)" />
+                @Html.HiddenFor(m => m.File_5_Name)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證影本(反面)</label>
+            <div class="col-sm-10">
+                <input type="file" class="form-control" name="File_6" id="File_6" onchange="fileChange(this)" />
+                @Html.HiddenFor(m => m.File_6_Name)
+            </div>
+        </div>
+        <div id="Sample_ApplyFile" hidden>
+            <div class="form-group">
+                <label class="step-label col-sm-2" for=""><button type="button" class="btn btn-save">刪除</button>其他檔案或證明文件</label>
+                <div class="col-sm-10">
+                    <input type="file" class="form-control" name="ApplyFile[9999].File" id="ApplyFile_9999__File" onchange="fileChange(this)">
+                    @Html.HiddenFor(m => m.ApplyFile[9999].FileName)
+                </div>
+            </div>
+        </div>
+        <div id="OItem_1">
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">
+                    <button type="button" class="btn btn-save" onclick="addFile()">新增</button>其他檔案或證明文件<br />
+                    (若檔案數量較多，可點選新增)
+                </label>
+                <div class="col-sm-10">
+                    <input type="file" class="form-control" name="ApplyFile[0].File" id="ApplyFile_0__File" onchange="fileChange(this)">
+                    @Html.HiddenFor(m => m.ApplyFile[0].FileName)
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">聲明</label>
+            <div class="col-sm-10">
+                <input type="checkbox" id="chkDeclare" class="form-normal" />1. 藥物外盒、說明書、仿單或目錄之規格與本人於線上所申請之內容及切結書相符，且與申請產品相符。<br />
+                <input type="checkbox" id="chkDeclare2" class="form-normal" />2. 本人(貨主)已確認所上傳之檔案正確無誤，且未有疏漏。<br />
+                <input type="checkbox" id="chkDeclare3" class="form-normal" />3. 本次申請所使用帳號，確實為本人(貨主)之帳號無誤。
+            </div>
+        </div>
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="send_apply()">存檔並預覽</button>
+            <button type="reset" class="btn btn-clear">清除資料</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="A1"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<resultMaps>
+	</resultMaps>
+
+	<cacheModel id="WDASE-cache" implementation="MEMORY">
+		<flushInterval hours="1" />
+		<property name="Type" value="WEAK" />
+	</cacheModel>
+
+	<statements>
+		<!-- A1/C101M -->
+		<!-- A1/C101M 查詢帳號 -->
+		<!--
+		<select id="queryC101MGrid" resultClass="EECOnline.Areas.A1.Models.C101MGridModel" parameterClass="EECOnline.Areas.A1.Models.C101MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+       IF OBJECT_ID('TEMPDB..##RESULT') IS NOT NULL 
+	        BEGIN
+	        	DROP TABLE ##RESULT
+	        END
+	        
+	     CREATE TABLE ##RESULT
+	     (
+		   keyid VARCHAR(MAX),
+	       code VARCHAR(MAX),
+	       text VARCHAR(MAX),
+           city VARCHAR(MAX),
+		   orderby VARCHAR(MAX),
+		   cityName VARCHAR(MAX),
+		   AuthCode CHAR(6),
+	     )
+         
+		 DECLARE @keyid VARCHAR(MAX)
+	     DECLARE @code VARCHAR(MAX) 
+	     DECLARE @text VARCHAR(MAX)
+         DECLARE @city VARCHAR(MAX)
+		 DECLARE @orderby VARCHAR(MAX)
+		 DECLARE @cityName VARCHAR(MAX)
+         DECLARE @AuthCode CHAR(6)
+
+		   /* 查詢條件 */
+		   DECLARE @WHERE_CITY VARCHAR(MAX) = #city#
+		   DECLARE @WHERE_TEXT VARCHAR(MAX) = #text#
+           DECLARE @WHERE_CODE VARCHAR(MAX) = #code#
+		   DECLARE @WHERE VARCHAR(MAX) = ''
+		   DECLARE @SQL VARCHAR(MAX) = ''
+
+		   SET @WHERE = ' where 1 = 1'
+		   IF @WHERE_CITY <> ''
+			   BEGIN
+			   	 SET @WHERE = @WHERE + ' and city like ''%' + @WHERE_CITY + '%'''
+			   END
+		   IF @WHERE_TEXT <> ''
+			   BEGIN
+			   	 SET @WHERE = @WHERE + ' and text like ''%' + @WHERE_TEXT+ '%'''
+			   END
+		   IF @WHERE_CODE <> ''
+			   BEGIN
+			   	 SET @WHERE = @WHERE + ' and code like ''%' + @WHERE_CODE + '%'''
+			   END	
+		   SET @SQL = ' SELECT  keyid, code, text, city, orderby , cityName , AuthCode '
+	       SET @SQL = @SQL + ' FROM  EEC_Hospital'
+	       SET @SQL = @SQL +  @WHERE
+	       SET @SQL = 'DECLARE CUR CURSOR FOR ' + @SQL
+	       EXEC(@SQL) 
+		 
+         OPEN CUR														   
+           																   
+         FETCH NEXT FROM CUR INTO @keyid ,@code ,@text ,@city ,@orderby ,@cityName ,@AuthCode
+       
+         WHILE @@FETCH_STATUS = 0 
+         BEGIN
+
+	      INSERT INTO ##RESULT
+        VALUES
+        (
+           @keyid ,@code ,@text ,@city ,@orderby ,@cityName ,@AuthCode
+	      )
+         
+        FETCH NEXT FROM CUR INTO  @keyid ,@code ,@text ,@city ,@orderby ,@cityName ,@AuthCode
+         
+        END
+                
+        CLOSE CUR
+        DEALLOCATE CUR
+        
+        SELECT * 
+        FROM   ##RESULT
+	      order by orderby
+            
+        DROP TABLE ##RESULT
+              ]]>
+		</select>
+		-->
+
+
+		<!-- A1/C101M 查詢帳號明細 -->
+		<!--
+		<select id="queryC101MDetail" resultClass="EECOnline.Areas.A1.Models.C101MDetailModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+        IF OBJECT_ID('TEMPDB..##RESULT') IS NOT NULL 
+	      BEGIN
+	      	DROP TABLE ##RESULT
+	      END
+	      
+	      CREATE TABLE ##RESULT
+	      (
+	       code VARCHAR(MAX),
+	       text VARCHAR(MAX),
+           city VARCHAR(MAX),
+		   orderby VARCHAR(MAX),
+		   cityName VARCHAR(MAX),
+		   AuthCode CHAR(6)
+	      )
+
+	      DECLARE @code VARCHAR(MAX) 
+	      DECLARE @text VARCHAR(MAX)
+          DECLARE @city VARCHAR(MAX)
+		  DECLARE @orderby VARCHAR(MAX)
+		  DECLARE @cityName VARCHAR(MAX)
+		  DECLARE @AuthCode CHAR(6)
+        
+	      DECLARE CUR CURSOR FOR 
+                              SELECT    code, text, city, orderby ,cityName ,AuthCode
+                              FROM       EEC_Hospital
+                              where      code = #code#
+          																   
+        OPEN CUR														   
+              																   
+        FETCH NEXT FROM CUR INTO @code, @text, @city, @orderby ,@cityName ,@AuthCode
+        
+            BEGIN
+  
+	      	INSERT INTO ##RESULT
+          VALUES
+          (
+             @code, @text, @city, @orderby ,@cityName ,@AuthCode
+	        )
+              
+          END
+          
+          CLOSE CUR
+          DEALLOCATE CUR
+          
+          SELECT * 
+          FROM   ##RESULT
+          
+          DROP TABLE ##RESULT
+     ]]>
+		</select>
+		-->
+
+		<select id="queryC101MGrid" resultClass="EECOnline.Areas.A1.Models.C101MGridModel" parameterClass="EECOnline.Areas.A1.Models.C101MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+	a.keyid, a.code, a.text,
+	a.city, a.cityName, CAST(a.orderby AS NVARCHAR) AS orderby,
+	a.AuthCode, a.Email
+FROM EEC_Hospital a
+WHERE 1=1
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="city"><![CDATA[ AND a.city LIKE '%' + #city# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="code"><![CDATA[ AND a.code LIKE '%' + #code# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="text"><![CDATA[ AND a.text LIKE '%' + #text# + '%' ]]></isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+ORDER BY a.orderby
+			]]>
+		</select>
+
+		<select id="queryC101MDetail" resultClass="EECOnline.Areas.A1.Models.C101MDetailModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+	a.keyid, a.code, a.text,
+	a.city, a.cityName, CAST(a.orderby AS NVARCHAR) AS orderby,
+	a.AuthCode, a.Email
+FROM EEC_Hospital a
+WHERE 1=1
+  AND a.code=#code#
+			]]>
+		</select>
+
+		<select id="queryC102M" resultClass="EECOnline.Areas.A1.Models.C102MGridModel" parameterClass="EECOnline.Areas.A1.Models.C102MFormModel" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+	a.keyid,
+	a.hospital_code, a.hospital_name,
+	a.his_type, a.his_type_name, a.price,
+	a.show_date1, a.show_date2
+FROM EEC_Hospital_SetPrice a
+WHERE 1=1
+  AND a.hospital_code=#hospital_code#
+			]]>
+		</select>
+
+	</statements>
+</sqlMap>

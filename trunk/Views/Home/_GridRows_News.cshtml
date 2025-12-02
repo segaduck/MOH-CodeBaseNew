@@ -1,0 +1,35 @@
+﻿@using EECOnline.Models;
+@using EECOnline.Services;
+@model NewsModel
+
+@if (Model.Grid == null || Model.Grid.ToCount() <= 0)
+{
+    <tr>
+        <td colspan="3" style="color: black; text-align: center;">- 無 -</td>
+    </tr>
+}
+else
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        @Html.HiddenFor(x => x.Grid[i].enews_id)
+        @Html.HiddenFor(x => x.Grid[i].showdates)
+        @Html.HiddenFor(x => x.Grid[i].subject)
+        @Html.HiddenFor(x => x.Grid[i].newstype)
+        <tr>
+            <td width="20%" style="text-align: center">@item.showdates_Text</td>
+            <td width="70%">
+                <a href="@Url.Action("NewsDetail", "Home", new { NewsID = item.enews_id })">
+                    [@item.newstype_Text] @item.subject
+                </a>
+            </td>
+            <td width="10%" style="text-align: right">
+                @if (item.totop == "1")
+                {
+                    <img src="~/images/bookmarks-fill.svg" style="position: relative; top: -1.3rem; width: 1.2rem; height: 1.2rem;" />
+                }
+            </td>
+        </tr>
+    }
+}

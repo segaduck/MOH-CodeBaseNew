@@ -1,0 +1,77 @@
+﻿@model ES.Models.ServiceFileModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    string s_Title = "表件下載";
+    ES.Models.ServiceFileModel item1 = null;
+    if (@ViewBag.List.Count > 0) { item1 = ViewBag.List[0]; }
+    if (item1 != null) { s_Title = item1.Name; }
+    ViewBag.Title = s_Title;
+    ViewBag.Script = @" ";
+    //function doFile(url) {            window.open(url, '', 'width=400,height=300,scrollbars=yes')        }
+}
+<script>
+    $('#lihead_Service').addClass("navMark-orange");
+</script>
+<div class="container-fluid">
+    <!--bread -->
+    <div class="col-sm-12">
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> > <a href="@(Url.Action("Index", "Service"))">表件下載</a> > <a href="#">@Html.Raw(ViewBag.Title)</a></div>
+    </div>
+    <div class="clearfix"></div>
+    <!--form-->
+    <h3 class="note-title note-titlebar-blue">@Html.Raw(ViewBag.Title)</h3>
+
+    <div class="col-sm-12">
+        <div class="index-note">
+            <div class="tab-content">
+
+                @*<div class="tab-content"></div>*@
+                <div class="table-responsive">
+                    <table style="width:100%" border="0" cellspacing="0" cellpadding="0" class="table-download table">
+                        <thead>
+                            <tr>
+                                <th width="10%" align="center">項次</th>
+                                <th align="center">下載項目</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rows">
+                            @if (@ViewBag.List.Count > 0)
+                            {
+                                int i = 0;
+                                foreach (ES.Models.ServiceFileModel item in ViewBag.List)
+                                {
+                                    string s_td1 = string.Format("<td>{0}</td>", (i + 1));
+                                    i++;
+                                    @Html.Raw("<tr>")
+                                    @Html.Raw(s_td1)
+                                    @Html.Raw("<td>")
+                                    if (@item.FileType.Equals("F"))
+                                    {
+                                        @Html.ActionLink(@item.Title, "ServiceFile", "File", new { id = @item.ServiceId, fid = @item.FileId, file = ES.Utils.DataUtils.ToBase64String(@item.FileName) }, null)
+                                    }
+                                    else
+                                    {
+                                        @Html.ActionLink(@item.Title, "ServiceFile", "File", new { id = @item.ServiceId, fid = @item.FileId, url = ES.Utils.DataUtils.ToBase64String(@item.FileUrl) }, null)
+                                    }
+                                    @Html.Raw("</td>")
+                                    @Html.Raw("</tr>")
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-bar text-center">
+        @*<button type="button" class="btn btn-save" onclick="window.history.go(-1);">返回</button>*@
+        <button type="button" class="btn btn-save" onclick="location.href = '@Url.Action("Index", "Service")'">返回</button>
+    </div>
+
+    <div class="clearfix"></div>
+
+</div>
+

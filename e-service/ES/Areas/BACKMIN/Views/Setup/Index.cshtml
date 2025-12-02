@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "參數管理";
+    ViewBag.FunctionTitle = "參數管理";
+}
+
+<div>
+    <div style="float: left; padding-bottom: 5px;"><input type="button" value="新增" onclick="document.location.href='@Url.Action("New")';" /></div>
+    <div style="float: left; padding-bottom: 5px;"><input type="button" value="重設系統參數" onclick="document.location.href='@Url.Action("Reset")';" /></div>
+</div>
+<table class="gridTable1">
+    <tr>
+        <th>動作</th>
+        <th>參數名稱</th>
+        <th>參數說明</th>
+        <th>參數值</th>
+    </tr>
+    @foreach (Dictionary<string, object> item in ViewBag.List)
+    {
+        <tr>
+            <td>
+                <a href="@Url.Action("Edit", "Setup", new { id = @item["SETUP_CD"] })" ><img src="@Url.Action("Index", "Home", new { Area = "" })Images/icon/pencil-icone-8243-16.png" alt="修改" title="修改" border="0" /></a>
+                <a href="@Url.Action("Delete", "Setup", new { id = @item["SETUP_CD"] })" ><img src="@Url.Action("Index", "Home", new { Area = "" })Images/icon/cross-icone-5804-16.png" alt="刪除" title="刪除" border="0" /></a>
+            </td>
+            <td>@item["SETUP_CD"]</td>
+            <td>@item["SETUP_DESC"]</td>
+            <td>@item["SETUP_VAL"]</td>
+        </tr>
+    }
+</table>

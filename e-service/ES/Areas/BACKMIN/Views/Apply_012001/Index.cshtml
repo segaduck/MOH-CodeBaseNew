@@ -1,0 +1,442 @@
+﻿@using ES.Areas.Admin.Models;
+@model Apply_012001FormModel
+
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ES.Models.ShareCodeListModel sc = new ES.Models.ShareCodeListModel();
+}
+
+@using (Html.BeginForm("Index", "Apply_012001", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.APP_ID)
+    @Html.HiddenFor(m => m.SRV_ID)
+    @Html.HiddenFor(m => m.SRC_SRV_ID)
+    @Html.HiddenFor(m => m.ACC_NO)
+    @Html.HiddenFor(m => m.UNIT_CD)
+    @Html.HiddenFor(m => m.APP_TIME)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 案件分文及處理 / 案件處理 / 檔案應用申請
+    </div>
+    <div class="col-sm-12 content">
+        <!-- H1 title -->
+        <h1 class="main-title"><i class="fas fa-edit"></i>案件審理作業</h1>
+
+        <div class="table-responsive">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th colspan="2">基本資料檔</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="20%"><div align="center">申辦項目：</div></td>
+                        <td width="80%"><div align="left">@(Model.SRV_ID_NAME)</div></td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">申辦日期：</div></td>
+                        <td>@Model.APP_TIME_AD</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">預計完成日：</div></td>
+                        <td>@Model.APP_EXT_DATE_AD</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">案件承辦人姓名：</div></td>
+                        <td>@Model.PRO_ACC_NAME</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">案件編號：</div></td>
+                        <td>@Model.APP_ID</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">系統狀態：</div></td>
+                        <td>@Model.APP_STATUS</td>
+                    </tr>
+                    <tr>
+                        <td><div align="center">EMAIL連結確認:</div></td>
+                        @if (Model.CHECK_FLAG == "Y")
+                        {
+                            <td>已確認</td>
+                        }
+                        else
+                        {
+                            <td>未確認</td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        @Html.ControlForTurbo(Model, Model.IsNew)
+        @*@if (Model.APP_ROLE == "1")
+        {*@
+            <div class='panel panel-info'>
+                <div class='panel-heading'>
+                    <h2 class='panel-title' data-toggle='collapse' data-parent='#ApplyData' href='#ApplyData'>
+                        <a>上傳應附檔案(點擊展開)</a>
+                    </h2>
+                </div>
+                <div id='ApplyData' class='panel-collapse collapse'>
+                    <div class='panel-body'>
+                        <div class="form-blue">
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.FileList.FILE_1)</label>
+                                    <div class="col-sm-10">
+                                        @if (Model.FileList.FILE_1 != null)
+                                        {
+                                            @Html.FileDLForTurbo(m => m.FileList.FILE_1.FILE_NAME, Model.FileList.FILE_1.FILE_NAME_TEXT)
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.FileList.FILE_2)</label>
+                                    <div class="col-sm-10">
+                                        @if (Model.FileList.FILE_2 != null)
+                                        {
+                                            @Html.FileDLForTurbo(m => m.FileList.FILE_2.FILE_NAME, Model.FileList.FILE_2.FILE_NAME_TEXT)
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="btnbar">
+                                <button type="button" onclick="GetZip('@Model.APP_ID')" class="btn btn-blue">檔案打包下載</button>
+                                <button type="button" class="btn btn-blue" onclick="document.location.href='@Url.Action("PreviewApplyForm")/?APP_ID=@Model.APP_ID';">套印申請書</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @* } *@
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#srvlistData' href='#srvlistData'>
+                    <a>申請檔案(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='srvlistData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        @{
+                            var i = 1;
+                            foreach (var item in Model.APPFIL)
+                            {
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">序號</label>
+                                    <div class="col-sm-10">
+                                        <p id="SEQ_NO" class="form-control-static">@i</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">檔號或文號</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="FILENUM_@(i-1)" class="form-control" readonly="readonly" value="@item.FILENUM">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">檔案名稱或內容要旨</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="FILENAME_@(i-1)" class="form-control" readonly="readonly" value="@item.FILENAME">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">件數</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="NUMCNT_@(i-1)" class="form-control" readonly="readonly" value="@item.NUMCNT">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="main-label col-sm-2" for="">申請項目</label>
+                                    <div class="col-sm-10">
+                                        <div class="form-control-static" id="CHECKNO_Lst_@(i-1)">@item.CHECKNO_Lst</div>
+                                    </div>
+                                </div>
+                                i++;
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#ResultData' href='#ResultData'>
+                    <a>申請事由</a>
+                </h2>
+            </div>
+            <div id='ResultData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        @*<div class="form-group">
+                                <label class="main-label col-sm-2" for="">使用檔卷原件事由</label>
+                                <div class="col-sm-4">
+                                    <div class="form-control-static" id="APP_REASON">@Model.APP_REASON</div>
+                                </div>
+                            </div>*@
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">申請目的及用途</label>
+                            <div class="col-sm-4">
+                                <div class="form-control-static" id="CHECKNO_ITEMS">@Model.CHECKNO_ITEMS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class='panel panel-info'>
+            <div class='panel-heading'>
+                <h2 class='panel-title' data-toggle='collapse' data-parent='#ReviewData' href='#ReviewData'>
+                    <a>案件進度歷程(點擊展開)</a>
+                </h2>
+            </div>
+            <div id='ReviewData' class='panel-collapse collapse'>
+                <div class='panel-body'>
+                    <div class="form-blue">
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件進度</label>
+                            <div class="col-sm-4">
+                                <input type="text" id="StatusDesc" class="form-control" readonly value="@Model.FLOW_CD_STATUS" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件狀態修改</label>
+                            <div class="col-sm-4">
+                                @Html.DropDownListFor(x => x.FLOW_CD, sc.GetStatuListForUnitCD8_2, new { @class = "form-control", @onchange = "changeAddDocCheck()" })
+                            </div>
+                        </div>
+
+                        <div id="notice" style="display:none">
+                            <div class="form-group" id="notice_item">
+                                <label class="main-label col-sm-2" for="">通知補件</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">
+                                        @if (Model.APP_ROLE == "1")
+                                        {
+                                            switch (Model.A_AGENT)
+                                            {
+                                                case "0":
+                                                    @Html.Raw(" <input type=\"checkbox\" id=\"chkfile\" value=\"1\" onchange=\"checkfile()\" />代理上傳委任書電子檔&nbsp&nbsp&nbsp&nbsp")
+                                                    break;
+                                                case "1":
+                                                    @Html.Raw(" <input type=\"checkbox\" id=\"chkfile\" value=\"2\" onchange=\"checkfile()\" />代理<法人>上傳登記證影本&nbsp&nbsp&nbsp&nbsp")
+                                                    break;
+                                            }
+                                        }
+                                        <input type="checkbox" id="chkfile" value="3" onchange="checkfile()" />其他
+                                    </p>
+                                </div>
+                            </div>
+                            @Html.HiddenFor(m => m.FileCheck)
+                            <div class="form-group" id="noticeContent">
+                                <label id="remark" class="main-label col-sm-2" for="">補件內容</label>
+                                <div class="col-sm-4">
+                                    @Html.TextAreaFor(x => x.NOTE, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">公文文號</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.MOHW_CASE_NO, new { @id = "MOHW_CASE_NO", @class = "form-control", placeholder = "" })
+                            </div>
+                            <button type="button" id="btnCaseNo" class="btn btn-blue" onclick="GetMOHW_CASE_NO('8','@Model.APP_ID')">取得公文文號</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="main-label col-sm-2" for="">案件歷程記錄</label>
+                            <div class="col-sm-10">
+                                @Html.LogForTurbo(Model.APP_ID, "APPLY_012001,APPLY_012001_APPFIL,APPLY_012001_CHK")
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-bar text-center">
+            @if (Model.FLOW_CD != "2")
+            {
+                <button id="btnSave" type="button" class="btn btn-save" onclick="doSave()">存檔</button>
+            }
+            <button type="button" class="btn btn-gray" onclick="doBack()">返回</button>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('input:radio[name="APP_ROLE"]').click(function () { doSELFChnage(); });
+        $('input:radio:checked[name="A_AGENT"]').click(function () { doNPLPChange(); });
+        doSELFChnage();
+        doNPLPChange();
+        // 完成申請
+        if ($('#FLOW_CD option:selected').val() == '0') {
+            $('#FLOW_CD').attr('disabled', 'disabled');
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnCaseNo').attr('disabled', 'disabled');
+        }
+            // 通知補件
+        else if ($('#FLOW_CD option:selected').val() == '2') {
+            $('#FLOW_CD').attr("disabled", "disabled");
+        }
+        else if ($('#FLOW_CD option:selected').val() == '4') {
+            $('#notice').hide();
+        }
+        else if ($('#FLOW_CD option:selected').val() == '9') {
+            // 逾期補件而予結案
+            $('#notice_item').hide();
+            $('#remark').text('備註');
+            $('#FLOW_CD').attr('disabled', 'disabled');
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnCaseNo').attr('disabled', 'disabled');
+            $('#Note').attr('readonly', 'readonly');
+            $('#btnSave').hide();
+            $('#mail_record').hide();
+        }
+        else if ($('#FLOW_CD option:selected').val() == '8') {
+            // 退件
+            $('#notice').show();
+            $('#notice_item').hide();
+            $('#remark').text('退件原因');
+            $('#FLOW_CD').attr('disabled', 'disabled');
+            $('#MOHW_CASE_NO').attr("readonly", "readonly");
+            $('#btnCaseNo').attr('disabled', 'disabled');
+            $('#Note').attr('readonly', 'readonly');
+            $('#btnSave').hide();
+            $('#mail_record').hide();
+        }
+        else {
+            $('#MOHW_CASE_NO').removeAttr("readonly");
+            $('#btnCaseNo').removeAttr('disabled');
+        }
+        //changeAddDocCheck();
+    });
+    function doSELFChnage() {
+        var SELF = $('input:radio:checked[name="APP_ROLE"]').val();
+        var NP = $("#NP");
+        var LP = $("#LP");
+        NP.attr("style", "display:none");
+        LP.attr("style", "display:none");
+        if (SELF == "1") {
+            doNPLPChange();
+        }
+    }
+    function doNPLPChange() {
+        var SELF = $('input:radio:checked[name="APP_ROLE"]').val();
+        var NPLP = $('input:radio:checked[name="A_AGENT"]').val();
+        var NP = $("#NP");
+        var LP = $("#LP");
+
+        NP.attr("style", "display:none");
+        LP.attr("style", "display:none");
+        if (NPLP == "0" && SELF == "1") {
+            NP.removeAttr("style");
+        }
+        if (NPLP == "1" && SELF == "1") {
+            LP.removeAttr("style");
+        }
+    }
+
+    // 送出
+    function doSave() {
+        var ValStr = "";
+        var app_id = $('#APP_ID').val();
+        var srv_id = $('#SRV_ID').val();
+        if ($('#FLOW_CD option:selected').val() == "") {
+            blockAlert("請選擇案件狀態 !", "提示訊息");
+        }
+        else {
+            var data = getFormDataToObject($("form[id=main_form]"));
+            ajaxLoadMore('@Url.Action("Save")', data, function (retData) {
+                if (retData.status) {
+                    blockMessage(retData.message, "提示訊息", function () {
+                        location.href = '@Url.Action("Index", "Apply_012001")?appid=' + app_id + '&srvid=' + srv_id;
+                    });
+                }
+                else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+        }
+    }
+
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index", "Case")';
+    }
+
+    // 取公文號
+    function GetMOHW_CASE_NO(UNIT_CD, APP_ID) {
+        var data = {
+            "UNIT_CD": UNIT_CD,
+            "APP_ID": APP_ID
+        }
+        ajaxLoadMore('/AJAX/GetMOHW_CASE_NO', data, function (retData) {
+            if (retData.status) {
+                $('#MOHW_CASE_NO').val(retData.message)
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+    }
+    // 案件狀態
+    function changeAddDocCheck() {
+      
+        var fc = $('#FLOW_CD option:selected').val();
+        if (fc == '2') {
+            // 通知補件
+            $('#notice').show();
+            $('#noticeContent').show();
+            $('#notice_item').show(); 
+            $('#remark').text('補件內容');
+        }
+        else if (fc == '4') {
+            // 補件確認完成
+            $('#notice').show();
+            $('#noticeContent').hide();
+            $('#notice_item').show();
+        }
+        else if (fc == '9') {
+            // 逾期補件而予結案
+            $('#notice').show();
+            $('#notice_item').hide();
+            $('#noticeContent').show();
+            $('#remark').text('備註');
+        }
+        else if (fc == '8') {
+            // 退件
+            $('#notice').show();
+            $('#notice_item').hide();
+            $('#noticeContent').show();
+            $('#remark').text('退件原因');
+        }
+        else {
+            $('#notice').hide();
+        }
+    }
+
+    function checkfile() {
+        var ValArr = new Array();
+        $('input[type="checkbox"][id="chkfile"]:checked').each(function (i) {
+            ValArr[i] = this.value;
+        });
+        $('#FileCheck').val(ValArr.join());
+    }
+    // 取得ZIP
+    function GetZip(APP_ID) {
+        var data = {
+            "APP_ID": APP_ID
+        }
+        var url = '/GetZIP/GetZIP?' + $.param(data);
+        location.href = url;
+    }
+</script>

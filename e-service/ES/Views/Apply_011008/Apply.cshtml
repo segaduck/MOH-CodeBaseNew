@@ -1,0 +1,533 @@
+﻿@using ES.Models;
+@using ES.Commons;
+@using ES.Models.ViewModels;
+@model Apply_011008FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel sc = new ShareCodeListModel();
+    ViewBag.SRV_NAME = "社工師證書換發（更名或汙損）";
+}
+
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申辦項目</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">@Html.Raw(ViewBag.SRV_NAME)</p>
+        </div>
+        <label class="step-label col-sm-2" for="">申辦日期</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.APPLY_DATE_TW</p>@Html.HiddenFor(m => m.APPLY_DATE_TW)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.APPLY_TYPE)</label>
+        <div class="col-sm-10">
+            @*APPLY_TYPE 1:更名 2:汙損*@
+            <label class="radio-inline "><input type="radio" value="1" name="RadioAPPLYTYPE" onchange="RadioAPPLYTYPEChange()">更名</label>
+            <label class="radio-inline "><input type="radio" value="2" name="RadioAPPLYTYPE" onchange="RadioAPPLYTYPEChange()">汙損</label>
+            @Html.HiddenFor(m => m.APPLY_TYPE)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.BIRTHDAY_AD)</label>
+        <div class="col-sm-2">
+            @Html.DatePickerTWFor(m => m.BIRTHDAY_AD, new { size = "10", @readonly = "readonly", @disabled = "disabled" }, true)
+            @Html.HiddenFor(m => m.BIRTHDAY_AD)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.IDN)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.IDN, new { @class = "form-normal", @readonly = "readonly" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.NAME, new { @class = "form-normal", @readonly = "readonly" })
+        </div>
+    </div>
+
+    <div class="form-group" id="opt4">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.CHG_NAME)</label>
+        <div class="col-sm-10">
+            @*姓名(更正前)*@
+            @Html.TextBoxFor(m => m.CHG_NAME, new { @class = "form-normal", maxlength = 60 })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.SEX_CD)</label>
+        <div class="col-sm-4">
+            <label class="radio-inline "><input type="radio" value="M" name="RGENDER" onchange="RadioSEXChange()">男</label>
+            <label class="radio-inline "><input type="radio" value="F" name="RGENDER" onchange="RadioSEXChange()">女</label>
+            <label class="radio-inline "><input type="radio" value="O" name="RGENDER" onchange="RadioSEXChange()">其他</label>
+            @Html.HiddenFor(m => m.SEX_CD)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.EMAIL)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.EMAIL_0, new { @class = "form-normal" })
+            @@
+            @Html.DropDownListFor(m => m.EMAIL_1, sc.GetMailDomainList, new { @class = "form-normal", onchange = "doEmailChange()" })
+            @Html.TextBoxFor(m => m.EMAIL_2, new { @class = "form-normal" })
+            @Html.HiddenFor(m => m.EMAIL_3)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">電話(公)</label>
+        <div class="col-sm-10">
+            <span>(</span>
+            @Html.TextBoxFor(m => m.W_TEL_0, new { @class = "form-normal form-10" })
+            <span>)</span>
+            @Html.TextBoxFor(m => m.W_TEL_1, new { @class = "form-normal" })
+            <span>#</span>
+            @Html.TextBoxFor(m => m.W_TEL_2, new { @class = "form-normal form-10" })
+            @Html.HiddenFor(m => m.W_TEL)
+            <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">電話(宅)</label>
+        <div class="col-sm-10">
+            <span>(</span>
+            @Html.TextBoxFor(m => m.H_TEL_0, new { @class = "form-normal form-10" })
+            <span>)</span>
+            @Html.TextBoxFor(m => m.H_TEL_1, new { @class = "form-normal" })
+            <span>#</span>
+            @Html.TextBoxFor(m => m.H_TEL_2, new { @class = "form-normal form-10" })
+            @Html.HiddenFor(m => m.H_TEL)
+            <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">行動電話</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.MOBILE, new { @class = "form-normal", MaxLength = 10 })
+            <span>電話(公)、電話(宅)、行動電話請擇一填寫</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>通訊地址(含郵遞區號)</label>
+        <div class="col-sm-10 form-inline">
+            @Html.TextBoxFor(m => m.C_ZIPCODE, new { @id = "C_ZIPCODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號" })
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.C_ZIPCODE_TEXT, new { @id = "C_ZIPCODE_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-info" onclick="doACC_ADDRSelect()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </span>
+            </div>
+            @Html.TextBoxFor(m => m.C_ADDR, new { @class = "form-normal form-50", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+        </div>
+    </div>
+
+    <div class="form-group form-inline">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>戶籍地址(含郵遞區號)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.H_ZIPCODE, new { @id = "H_ZIPCODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號" })
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.H_ZIPCODE_TEXT, new { @id = "H_ZIPCODE_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-info" onclick="doACC_ADDRSelect1()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </span>
+            </div>
+            @Html.TextBoxFor(m => m.H_ADDR, new { @class = "form-normal form-50", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+            <br />
+            <div class="checkbox">
+                <label><input type="checkbox" id="H_EQUAL" name="H_EQUAL" value="Y" @(Model.H_EQUAL == "Y" ? "checked" : "")>同通訊地址</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @*考試年度*@
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.TEST_YEAR)</label>
+        <div class="col-sm-4">
+            @Html.DropDownListFor(m => m.TEST_YEAR, Model.TEST_YEAR_LIST, new { @class = "form-normal" })
+        </div>
+    </div>
+    <div class="form-group">
+        @*考試名稱類科*@
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.TEST_CATEGORY)</label>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.TEST_CATEGORY, new { @class = "form-normal" })
+        </div>
+    </div>
+
+    @*佐證文件上傳請加註提醒(檔案大小5MB以下，請附上圖檔，例如：JPG、BMP、PNG、GIF、TIF)，另外目前沒有檢核檔案大小5MB以下*@
+    <h2 class="second-title">佐證文件檔案上傳(檔案大小5MB以下，請附上圖檔，例如：JPG、BMP、PNG、GIF、TIF)</h2>
+    <!--網站 佐證文件採合併檔案-->
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+        <div class="col-sm-10">
+            <label class="radio-inline "><input type="radio" name="RadioMerge" value="Y" onchange="RadioChange()">是</label>
+            <label class="radio-inline "><input type="radio" name="RadioMerge" value="N" checked onchange="RadioChange()">否</label>
+        </div>
+        @Html.HiddenFor(m => m.MERGEYN)
+        <br />
+        若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>考試院考試及格證書影本或電子證書</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE_PASSCOPY, new { @id = "FILE_PASSCOPY", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+            @Html.HiddenFor(m => m.FILE_PASSCOPY_TEXT)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證正面影本</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE_IDNF, new { @id = "FILE_IDNF", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+            @Html.HiddenFor(m => m.FILE_IDNF_TEXT)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證反面影本</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE_IDNB, new { @id = "FILE_IDNB", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+            @Html.HiddenFor(m => m.FILE_IDNB_TEXT)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>照片(規格應同護照照片)</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE_PHOTO, new { @id = "FILE_PHOTO", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+            @Html.HiddenFor(m => m.FILE_PHOTO_TEXT)
+        </div>
+    </div>
+
+    @*申請更名時，需上傳戶籍謄本或戶口名簿*@
+    <div class="form-group" id="opt5">
+        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>戶籍謄本或戶口名簿影本</label>
+        <div class="col-sm-10">
+            @Html.TextBoxFor(m => m.FILE_HOUSEHOLD, new { @id = "FILE_HOUSEHOLD", @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)" })
+            @Html.HiddenFor(m => m.FILE_HOUSEHOLD_TEXT)
+        </div>
+    </div>
+
+    <h2 class="second-title">提醒郵遞</h2>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">提醒須郵遞投回</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">1.郵局匯票新臺幣500元１紙，戶名：衛生福利部。<br />2.社會工作師證書正本</p>
+        </div>
+    </div>
+
+    <div class="btn-bar text-center">
+        <button type="button" class="btn btn-save" onclick="doPreView()">存檔並預覽</button>
+        <button type="reset" class="btn btn-clear">清除資料</button>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // 社工師證書換發（更名或汙損） 申請類別：（1:更名或2:汙損）
+        $("input[name=RadioAPPLYTYPE][value='" + $("#APPLY_TYPE").val() + "']").attr('checked', true);
+        RadioAPPLYTYPEChange();
+        // 性別
+        $("input[name=RGENDER][value='" + $("#SEX_CD").val() + "']").attr('checked', true);
+        // 地址
+        $('#C_ZIPCODE').on('blur', doACC_ADDRNameGet); doACC_ADDRNameGet();
+        $('#H_ZIPCODE').on('blur', doACC_ADDRNameGet1); doACC_ADDRNameGet1();
+
+        $('#H_EQUAL').on('change', function () {
+            if ($("#" + this.id).prop("checked")) {
+                $('#H_ZIPCODE').val($('#C_ZIPCODE').val());
+                doACC_ADDRNameGet1();
+                $('#H_ADDR').val($('#C_ADDR').val());
+            } else {
+                $('#H_ZIPCODE').val('');
+                $("#H_ZIPCODE_TEXT").val('');
+                $('#H_ADDR').val('');
+            }
+        })
+    });
+
+    // 地址
+    function loadDialogACC_ADDRCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    //console.log(data);
+                    //console.log(resp);
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doACC_ADDRSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#C_ZIPCODE').val(retData.Id);
+                    $('#C_ZIPCODE_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doACC_ADDRSelect1() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                console.log(retData);
+                if (retData != null) {
+                    $('#H_ZIPCODE').val(retData.Id);
+                    $('#H_ZIPCODE_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    // 通訊地址(含郵遞區號)
+    function doACC_ADDRNameGet() {
+        var code = $('#C_ZIPCODE');
+        var code_text = $('#C_ZIPCODE_TEXT');
+        var data = null;
+        data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#C_ZIPCODE_TEXT'),
+            'add': $('#C_ZIPCODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            loadDialogACC_ADDRCodeMapName(data);
+        }
+    }
+
+    // 戶籍地址(含郵遞區號)
+    function doACC_ADDRNameGet1() {
+        var code = $('#H_ZIPCODE');
+        var code_text = $('#H_ZIPCODE_TEXT');
+        var data = null;
+        data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#H_ZIPCODE_TEXT'),
+            'add': $('#H_ZIPCODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            loadDialogACC_ADDRCodeMapName(data);
+        }
+    }
+
+    // MAIL 選自訂
+    function doEmailChange() {
+        var ADM_MAIL = $('#EMAIL_1').val();
+        if (ADM_MAIL == 0) $('#EMAIL_2').removeAttr("readonly");
+        else {
+            if (ADM_MAIL == 1) $('#EMAIL_3').val('gmail.com');
+            if (ADM_MAIL == 2) $('#EMAIL_3').val('yahoo.com.tw');
+            if (ADM_MAIL == 3) $('#EMAIL_3').val('outlook.com');
+            $('#EMAIL_2').attr("readonly", "readonly");
+            $('#EMAIL_2').val('');
+        }
+    }
+    // 是否合併檔案
+    function RadioChange() {
+        $("#MERGEYN").val($('input[name="RadioMerge"]:checked').val());
+    }
+    // 性別
+    function RadioSEXChange() {
+        $("#SEX_CD").val($('input[name="RGENDER"]:checked').val());
+    }
+    // 社工師證書換發（更名或汙損） 申請類別：（1:更名或2:汙損）
+    function RadioAPPLYTYPEChange() {
+        $("#APPLY_TYPE").val($('input[name="RadioAPPLYTYPE"]:checked').val());
+        //姓名(更正前)-CHG_NAME
+        //申請更名時，需上傳戶籍謄本或戶口名簿-FILE_HOUSEHOLD
+        $("#opt4").hide('slow'); $("#opt5").hide('slow');
+        if ($("input[name='RadioAPPLYTYPE']:checked").val() == "1") { $("#opt4").show('slow'); $("#opt5").show('slow'); }
+    }
+
+    //檢核 有誤為 false 正常為true
+    function validfile() {
+        var err_msg1 = "";
+        //if (!validfile()) { return; }
+        // 是否合併檔案
+        RadioChange();
+        // 性別
+        RadioSEXChange();
+
+        // 確認上傳檔案
+        var MERGE = $('input[name="RadioMerge"]:checked').val();
+        @*APPLY_TYPE 1:更名 2:汙損*@
+        var APPLY_TYPE = $('input[name="RadioAPPLYTYPE"]:checked').val();
+
+        var EMAIL_0 = $('#EMAIL_0').val();
+        var EMAIL_1 = $('#EMAIL_1').val();
+        var EMAIL_2 = $('#EMAIL_2').val();
+        var H_TEL_1 = $('#H_TEL_1').val();
+        var W_TEL_1 = $('#W_TEL_1').val();
+        var MOBILE = $('#MOBILE').val();
+        var SEX_CD = $('#SEX_CD').val();
+        var CHG_NAME = $('#CHG_NAME').val();
+        var NAME = $('#NAME').val();
+
+        var flag_EMAILNG = false;
+        if (EMAIL_0 == "") { flag_EMAILNG = true; }
+        if (EMAIL_1 == "" && EMAIL_2 == "") { flag_EMAILNG = true; }
+        if (EMAIL_1 == "0" && EMAIL_2 == "") { flag_EMAILNG = true; }
+        if (flag_EMAILNG) {
+            err_msg1 += "E-MAIL 為必填欄位 !\n";
+        }
+        if (H_TEL_1 == "" && W_TEL_1 == "" && MOBILE == "") {
+            err_msg1 += "電話(公)、電話(宅)、行動電話請擇一填寫 !\n";
+        }
+        if (SEX_CD == "") {
+            err_msg1 += "性別為必填欄位 !\n";
+        }
+        if (APPLY_TYPE == "") {
+            err_msg1 += "申請類別為必選欄位 !\n";
+        }
+        if (APPLY_TYPE == "1") {
+            if (CHG_NAME == "") {
+                err_msg1 += "申請類別為更名 姓名(更正前) 必填欄位 !\n";
+            }
+            else if (CHG_NAME == NAME && NAME != "") {
+                err_msg1 += "申請類別為更名 姓名(更正前) 不可等同 姓名 !\n";
+            }
+        }
+        var C_ZIPCODE = $('#C_ZIPCODE').val();
+        var C_ADDR = $('#C_ADDR').val();
+        var H_ZIPCODE = $('#H_ZIPCODE').val();
+        var H_ADDR = $('#H_ADDR').val();
+        if (C_ZIPCODE == "") {
+            err_msg1 += "通訊地址(郵遞區號)為必填欄位 !\n";
+        }
+        if (C_ADDR == "") {
+            err_msg1 += "通訊地址為必填欄位 !\n";
+        }
+        if (H_ZIPCODE == "") {
+            err_msg1 += "戶籍地址(郵遞區號)為必填欄位 !\n";
+        }
+        if (H_ADDR == "") {
+            err_msg1 += "戶籍地址為必填欄位 !\n";
+        }
+        var TEST_YEAR = $('#TEST_YEAR').val();
+        var TEST_CATEGORY = $('#TEST_CATEGORY').val();
+        if (TEST_YEAR == "") {
+            err_msg1 += "考試年度 為必填欄位 !\n";
+        }
+        if (TEST_CATEGORY == "") {
+            err_msg1 += "考試名稱類科 為必填欄位 !\n";
+        }
+
+        var FILE_PASSCOPY = $('#FILE_PASSCOPY').val();
+        var FILE_IDNF = $('#FILE_IDNF').val();
+        var FILE_IDNB = $('#FILE_IDNB').val();
+        var FILE_PHOTO = $('#FILE_PHOTO').val();
+        var FILE_HOUSEHOLD = $('#FILE_HOUSEHOLD').val();
+
+        var bool_file_all_NG = false;
+        if (FILE_PASSCOPY == "" && FILE_IDNF == "" && FILE_IDNB == "" && FILE_PHOTO == "") {
+            if (APPLY_TYPE == "1" && FILE_HOUSEHOLD == "") { bool_file_all_NG = true; };
+            if (APPLY_TYPE != "1") { bool_file_all_NG = true; };
+        };
+        if (MERGE == 'Y' && bool_file_all_NG) {
+            //blockAlert("請至少上傳一個檔案 !", "提示訊息");
+            err_msg1 += "請至少上傳一個檔案 !\n";
+        }
+        //var err_msg1 = "";
+        if (MERGE == 'N') {
+            if (FILE_PASSCOPY == "") {
+                err_msg1 += "請上傳考試院考試及格證書影本或電子證書 !\n";
+            }
+            if (FILE_IDNF == "") {
+                err_msg1 += "請上傳身分證正面影本 !\n";
+            }
+            if (FILE_IDNB == "") {
+                err_msg1 += "請上傳身分證反面影本 !\n";
+            }
+            if (FILE_PHOTO == "") {
+                err_msg1 += "請上傳照片(規格應同護照照片) !\n";
+            }
+            if (APPLY_TYPE == "1" && FILE_HOUSEHOLD == "") {
+                err_msg1 += "請上傳戶籍謄本或戶口名簿影本 !\n";
+            }
+        }
+        if (err_msg1 != "") {
+            blockAlert(err_msg1, "提示訊息");
+            return false;
+        }
+        return true;
+    }
+
+    // 轉至瀏覽
+    function doPreView() {
+        if (!validfile()) { return; }
+
+        var data = getFormSubmitableFields($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("Apply")', data, function (retData) {
+            if (retData.status) {
+
+                ajaxLoadMore('@Url.Action("PreView")', data, function (getHtml) {
+                    $('#form_tab').removeClass('active');
+                    $('#form').attr('class', 'tab-pane fade');
+                    $('#form_tab1').attr('class', 'active');
+                    $('#form1').attr('class', 'tab-pane fade active in');
+                    $("#form1").html(getHtml);
+                });
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+    }
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".PDF", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.')).toUpperCase();
+        var fileSize = (file.files.item(0).size / 1024 / 1024);
+
+        if (validExts.indexOf(fileExt) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        } else if (fileSize > 5) {
+            blockAlert("檔案大小不可超過5MB");
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        } else {
+            $("#" + file.name + "_TEXT").val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+
+
+</script>

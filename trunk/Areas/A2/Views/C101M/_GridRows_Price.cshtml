@@ -1,0 +1,26 @@
+﻿@using EECOnline.Areas.A2.Models;
+@using EECOnline.Services;
+@using EECOnline.Models;
+@model C101MDetailModel
+
+@if (Model.DetailGrid != null)
+{
+    for (int i = 0; i < Model.DetailGrid.Count; i++)
+    {
+        var item = Model.DetailGrid[i];
+        ShareCodeListModel sc = new ShareCodeListModel();
+        @Html.HiddenFor(x => x.DetailGrid[i].apply_no_sub)
+        @Html.HiddenFor(x => x.DetailGrid[i].his_type)
+        @Html.HiddenFor(x => x.DetailGrid[i].his_type_name)
+        @Html.HiddenFor(x => x.DetailGrid[i].ec_dept)
+        @Html.HiddenFor(x => x.DetailGrid[i].ec_doctor)
+        @Html.HiddenFor(x => x.DetailGrid[i].ec_dateText)
+        @Html.HiddenFor(x => x.DetailGrid[i].ec_date)
+        <tr>
+            <td align="center">@(item.his_type_name)@(item.Get_Api_A1_Remark)</td>
+            <td align="center">@Model.his_range1_Text ~ @Model.his_range2_Text</td>
+            <td align="center">@Html.RadioGroupFor(x => x.DetailGrid[i].provide_status, sc.provide_status_list(), new { @class = "form-inline" })</td>
+            <td align="center">@item.TheStatus</td>
+        </tr>
+    }
+}

@@ -1,0 +1,44 @@
+﻿@model ES.Areas.BACKMIN.Models.Apply_005002ViewModel
+@{
+    ViewBag.Title = "_ErrataGrid";
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th> 補正序號 </th>
+            <th> 日期 </th>
+            <th> 欄位名稱 </th>
+            <th> 補正(件)項目 </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.NoticeList != null && Model.NoticeList.Count > 0)
+        {
+            for (int i = 0; i < Model.NoticeList.Count; i++)
+            {
+                var item = Model.NoticeList[i];
+                var first = Model.NoticeList.FirstOrDefault(x => x.FREQUENCY.Value == item.FREQUENCY);
+                int count = Model.NoticeList.Count(x => x.FREQUENCY.Value == item.FREQUENCY);
+                bool isFirst = item.Field == first.Field;
+
+                <tr>
+                    @if (isFirst)
+                    {
+                        <td rowspan="@(isFirst? count.ToString(): "")">@(item.FREQUENCY - 1)</td>
+                        <td rowspan="@(isFirst? count.ToString(): "")"> @item.ADD_TIME.Value.ToString("yyyy/MM/dd")</td>
+                    }
+                    <td> @item.Field_NAME </td>
+                    <td> @item.NOTE </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center"> 查無資料 </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

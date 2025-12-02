@@ -1,0 +1,61 @@
+﻿@using EECOnline.Areas.A3.Models;
+@model C101MImportDatModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout_NoHeader_NoBg.cshtml";
+}
+
+<div class="col-sm-12 content" style="background-color: white;">
+    <div class="form-blue">
+        @using (Html.BeginForm("ImportDat", "C101M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal", @enctype = "multipart/form-data" }))
+        {
+            <div class="col-sm-12" style="padding-left: 0rem; padding-right: 0rem;">
+                <div class="form-data form-bg">
+                    <div class="row form-group">
+                        <label class="form-control col-md-2" style="background-color: unset;">請款檔上傳</label>
+                        <div class="col-sm-9 mb-3" style="width: auto;">
+                            @Html.TextBoxFor(x => x.UploadFILE, new { type = "file", @class = "form-control", placeholder = "請選擇檔案", accept = ".rsp", @style = "background-color: unset;" })
+                        </div>
+                    </div>
+                </div>
+                <div class="btnBar" style="text-align: center; margin-top: 1rem; margin-bottom: 1rem;">
+                    <button type="button" style="margin-right: 0.5rem;" class="btn btn-blue" onclick="doImport()">匯入請款檔</button>
+                    <button type="button" style="margin-right: 0.5rem;" class="btn btn-gray" onclick="doClose()">關閉</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+    })
+
+    function doImport() {
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("ImportDat_Go", "C101M")').submit();
+    }
+
+    function doClose() {
+        parent.closeWindow();
+    }
+
+    $("#UploadFILE").on("change", function () { CheckFileTypeByComp("UploadFILE"); });
+    function CheckFileTypeByComp(ID_Name) {
+        let fileType = "." + document.getElementById(ID_Name).value.replace(/^.*[\\\/]/, '').split('.').pop().toLowerCase();
+        let acceptType = document.getElementById(ID_Name).accept.toLowerCase();
+        //console.log(fileType);
+        //console.log(acceptType);
+        //console.log(acceptType.indexOf(fileType));
+        //console.log(document.getElementById(ID_Name).files[0].size);
+        if (acceptType.indexOf(fileType) === -1) {
+            blockAlert("請選擇正確的檔案格式！ (" + acceptType + ")");
+            document.getElementById(ID_Name).value = null;
+        }
+        if (document.getElementById(ID_Name).files[0].size > (20 * 1024 * 1024)) {
+            blockAlert("檔案大小以 20MB 為限！");
+            document.getElementById(ID_Name).value = null;
+        }
+    }
+
+</script>

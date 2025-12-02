@@ -1,0 +1,28 @@
+﻿@using EECOnline.Areas.A6.Models;
+@model C101MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        @Html.HiddenFor(m => m.Grid[i].grp_id);
+        var item = Model.Grid[i];
+        <tr>
+            <td align="center">
+                <button type="button" class="btn btn-login" onclick="doModify('@item.grp_id')">編輯</button>
+            </td>
+            <td align="center">
+                <div>@item.grpname</div>
+            </td>
+            <td align="center">
+                <div>@item.unit_nm</div>
+            </td>
+            <td align="center">
+                <div>@item.grp_status_nm</div>
+            </td>
+            <td align="center">
+                <button type="button" class="btn btn-save" onclick="doSet('@item.grp_id','@item.grpname')">功能權限設定</button>
+            </td>
+        </tr>
+    }
+}

@@ -1,0 +1,265 @@
+﻿@using ES.Utils;
+@model ES.Areas.Admin.Models.PayModel
+<script src="../../Scripts/View/Maintain.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#sel_UNIT_CD').val('@this.Model.queryModel.UNIT_TYPE');
+        $('#sel_UNIT_CD').change();
+        $('#sel_SC_PID').val('@this.Model.queryModel.SC_PID');
+        $('#sel_SC_PID').change();
+        $('#sel_SRV_ID').val('@this.Model.queryModel.SRV_ID');
+        //$('#sel_SRV_ID').change();
+        $('#sel_CLOSE_MK').val('@this.Model.queryModel.CLOSE_MK');
+        $('#sel_PAY_STATUS').val('@this.Model.queryModel.PAY_STATUS');
+        $('#sel_OderByCol').val('@this.Model.queryModel.OderByCol');
+        $('#sel_SortAZ').val('@this.Model.queryModel.SortAZ');
+        $("input[name='paymethod']").each(
+            function () {
+                var str = $('#queryModel_PAY_WAY').val();
+                if (str.indexOf($(this).val()) >= 0) {
+                    $(this).prop("checked", true);
+                }
+            }
+        );
+        $('#queryModel_APP_TIME_BEGIN').datepicker();
+        var a = $('#queryModel_APP_TIME_BEGIN').val();
+        if (a.length > 10) {
+            $('#queryModel_APP_TIME_BEGIN').val(a.substring(0, 10));
+        }
+        $('#queryModel_APP_TIME_END').datepicker();
+        var b = $('#queryModel_APP_TIME_END').val();
+        if (b.length > 10) {
+            $('#queryModel_APP_TIME_END').val(b.substring(0, 10));
+        }
+    });
+    function setChkValue() {
+        var temp = "";
+        $("input[name='paymethod']").each(function () {
+            if ($(this).prop("checked")) {
+                temp += "'" + $(this).val() + "',";
+            }
+        }
+        );
+        if (temp.length > 0)
+            temp = temp.substring(0, temp.length - 1);
+        $('#queryModel_PAY_WAY').val(temp);
+    }
+
+    function doQuery(page) {
+        $('#queryModel_NowPage').val(page);
+        $('#ActionType').val('Query');
+    }
+
+    function OpenView(val) {
+        $('#APP_ID').val(val);
+        $('#ActionType').val('Open');
+        console.log($('#ActionType').val());
+        //location.href = '@Url.Action("MaintainView", "Pay")?APP_ID=' + val;
+    }
+</script>
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "繳費維護";
+    ViewBag.FunctionTitle = "繳費維護";
+}
+@using (Html.BeginForm("Maintain", "Pay", FormMethod.Post, new { ID = "ActionForm" }))
+{
+
+    @*@using (Html.BeginForm("MaintainView", "Pay", FormMethod.Post, new { ID = "ActionFormView" }))
+        {
+            <input type="hidden" id="APP_ID" name="APP_ID" value="" />
+        }*@
+    @Html.HiddenFor(m => m.APP_ID)
+    @Html.HiddenFor(m => m.ActionType)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 帳務管理 / @ViewBag.Title
+    </div>
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.queryModel.APP_ID_BEGIN)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.queryModel.APP_ID_BEGIN, new { @class = "form-normal" })
+                    ～
+                    @Html.TextBoxFor(m => m.queryModel.APP_ID_END, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.queryModel.APP_TIME_BEGIN)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.queryModel.APP_TIME_BEGIN, String.Format("{0:yyyy/MM/dd}", Model.queryModel.APP_TIME_BEGIN), new { @class = "form-normal" })
+                    ～
+                    @Html.TextBoxFor(m => m.queryModel.APP_TIME_END, String.Format("{0:yyyy/MM/dd}", Model.queryModel.APP_TIME_END), new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.queryModel.UNIT_TYPE)</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.queryModel.UNIT_TYPE)
+                    <select class="form-control" id="sel_UNIT_CD" onchange="SetNext(this.value,'@Url.Action("Index", "Home", new { Area = "" })');$('#UNIT_TYPE').val(this.value);">
+                        <option value="">請選擇</option>
+                        @{
+                            foreach (ES.Areas.Admin.Models.Map map in WebUtils.GetUnitAll())
+                            {
+                                @Html.Raw("<option value='" + map.GetString("UNIT_CD") + "'>" + map.GetString("UNIT_NAME") + "</option>")
+                            }
+                        }
+                    </select>
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.queryModel.SC_PID)</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.queryModel.SC_PID)
+                    @Html.HiddenFor(m => m.queryModel.SRV_ID)
+                    <select class="form-normal" id="sel_SC_PID" onchange="SetNextAgain(this.value,'@Url.Action("Index", "Home", new {Area="" })');$('#SC_PID').val(this.value);">
+                        <option value="">請選擇</option>
+                    </select>
+                    <select class="form-normal" id="sel_SRV_ID" onchange="$('#queryModel_SRV_ID').val(this.value);">
+                        <option value="">請選擇</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.queryModel.CLOSE_MK)</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.queryModel.CLOSE_MK)
+                    <select class="form-control" id="sel_CLOSE_MK" onchange="$('#queryModel_CLOSE_MK').val(this.value)">
+                        <option value="">請選擇</option>
+                        <option value="Y">已結案</option>
+                        <option value="N">未結案</option>
+                    </select>
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.queryModel.PAY_STATUS)</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.queryModel.PAY_STATUS)
+                    <select class="form-control" id="sel_PAY_STATUS" onchange="$('#queryModel_PAY_STATUS').val(this.value)">
+                        <option value="">請選擇</option>
+                        <option value="0">未繳費</option>
+                        <option value="1">已繳費</option>
+                        <option value="2">已入帳</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.queryModel.IDN)</label>
+                <div class="col-sm-4">
+                    @Html.TextBoxFor(m => m.queryModel.IDN, new { @class = "form-control" })
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.queryModel.PAY_WAY)</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.queryModel.PAY_WAY)
+                    <input name="paymethod" type="checkbox" value="C" onclick="setChkValue();" />
+                    信用卡
+                    <input name="paymethod" type="checkbox" value="D" onclick="setChkValue();" />
+                    匯(支)票
+                    <input name="paymethod" type="checkbox" value="T" onclick="setChkValue();" />
+                    劃撥
+                    <input name="paymethod" type="checkbox" value="B" onclick="setChkValue();" />
+                    臨櫃(現金)
+                    <input name="paymethod" type="checkbox" value="S" onclick="setChkValue();" />
+                    超商
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.queryModel.OderByCol)</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.queryModel.OderByCol)
+                    <select class="form-control" id="sel_OderByCol" onchange="$('#queryModel_OderByCol').val(this.value)">
+                        <option value="APP_ID">申辦編號</option>
+                        <option value="APP_TIME">申辦日期</option>
+                        <option value="UNIT_CD">承辦單位</option>
+                        <option value="SRV_ID">案件類別</option>
+                    </select>
+                </div>
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.queryModel.SortAZ)</label>
+                <div class="col-sm-4">
+                    @Html.HiddenFor(m => m.queryModel.SortAZ)
+                    <select class="form-control" id="sel_SortAZ" onchange="$('#queryModel_SortAZ').val(this.value)">
+                        <option value="ASC">由小到大</option>
+                        <option value="DESC">由大到小</option>
+                    </select>
+                </div>
+            </div>
+            <div class="btnbar">
+                @Html.HiddenFor(m => m.queryModel.NowPage)
+                <input type="submit" value="查詢" class="btn btn-blue" />
+            </div>
+        </div>
+
+        @{
+            <div class="table-pager">
+                @Html.HiddenFor(m => m.queryModel.NowPage)
+                @Html.ShowGridPage((int)ViewBag.NowPage, (int)ViewBag.TotalPage, (int)ViewBag.TotalCount)
+            </div>
+            <div class="clearfix"></div>
+            if (ViewBag.List != null)
+            {
+                <h2 class="second-title">查詢結果</h2>
+                <div class="table-responsive">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                        <thead>
+                            <tr>
+                                <th>編號</th>
+                                <th>申辦項目</th>
+                                <th>申辦日期</th>
+                                <th>申請人姓名</th>
+                                <th>繳費方式</th>
+                                <th>繳費狀態</th>
+                                <th>已入帳</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                foreach (ES.Areas.Admin.Models.Map map in ViewBag.List)
+                                {
+                                    String payword = WebUtils.GetPayWord(map);
+                                    String paymethod = map.GetString("PAY_METHOD");
+                                    <tr>
+                                        <td>
+                                            <input type="submit" style="margin-right:20px;" value="編輯" class="btn btn-blue" onclick="OpenView('@map.Get("APP_ID")')" />
+                                            @map.Get("APP_ID")
+                                        </td>
+                                        <td>
+                                            @Html.Raw(map.Get("SRV_NAME"))
+                                        </td>
+                                        <td>
+                                            @Html.Raw(map.Get("APP_TIME"))
+                                        </td>
+                                        <td>
+                                            @Html.Raw(map.Get("NAME"))
+                                        </td>
+                                        <td>
+                                            @Html.Raw(WebUtils.GetPay_Method(map.GetString("PAY_METHOD")))
+                                        </td>
+                                        <td>
+                                            @payword
+                                        </td>
+                                        <td>
+                                            @{
+                                                if (payword.Contains("已繳費") && (paymethod.Equals("S") || paymethod.Equals("C")))
+                                                {
+                                                    @Html.Raw("<input type='checkbox' id='chb_app_id' name='chb_app_id' value='" + map.Get("APP_ID") + "'>");
+                                                }
+                                            }
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="btnbar">
+                    <div style="text-align: center">
+                        <input class="btn btn-save" type="button" value="已入帳" onclick="UpdateTime('@Url.Action("Index", "Home", new { Area = "" })');" />
+                    </div>
+                </div>
+                                                }
+
+        }
+    </div>
+                                                }

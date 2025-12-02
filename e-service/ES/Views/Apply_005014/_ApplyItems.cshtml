@@ -1,0 +1,388 @@
+﻿@model ES.Models.ViewModels.Apply_005014ViewModel
+@using ES.Models.ViewModels
+@using ES.Models
+@using System.Linq.Expressions
+@{
+    ViewBag.Title = "_ApplyItems";
+    // 申請項目
+    ShareCodeListModel options = new ShareCodeListModel();
+    bool errata = Model.IsErrata();
+    bool isNew = (Model.Apply == null || string.IsNullOrEmpty(Model.Apply.APP_ID));
+}
+
+<style>
+    #_applyitems fieldset.errata-input label {
+        background-color: pink;
+    }
+</style>
+
+@*<h2>_ApplyItems</h2>*@
+<div id="_applyitems">
+    <span style="color:red;">一般申請項目、萃取物(提取物)項目，擇一填寫</span>
+    <h2 class="second-title">
+        <input type="radio" name="applyitem" value="1" id="applyitem1" style="transform: scale(1.5);" />
+        一般申請項目
+        <button type="button"
+                class="btn btn-save"
+                v-on:click="newItem()"
+                v-bind:disabled="isErrata">
+            新增
+        </button>
+    </h2>
+    <div v-for="(item, index) in itemList">
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">
+                項目Item
+            </label>
+            <div class="col-sm-10" style="margin-top:3px">
+                <div class="col-sm-1">
+                    <p class="form-control-static" style="width:100%">
+                        <input type="hidden" v-model="item.ITEM" /> {{index + 1}}
+                    </p>
+                </div>
+                <div class="col-sm-1">
+                    <button type="button"
+                            class="btn btn-danger text-right"
+                            v-on:click="remove(index)"
+                            v-if="index!==0"
+                            v-bind:disabled="isErrata">
+                        刪除
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>類型Type</label>
+            <div class="col-sm-10">
+                <fieldset v-bind:disabled="bindErrata(item.ITEM_TYPE_E)" v-bind:class="getStyle(item.ITEM_TYPE_E)">
+                    <input v-model="item.ITEM_TYPE" type="radio" v-bind:value="3">
+                    <label :for="3">中藥材作為食品使用者(例如:靈芝)</label>
+                    <input v-model="item.ITEM_TYPE" type="radio" v-bind:value="1" disabled="disabled">
+                    <label :for="1">中藥材萃取物作為食品原料者</label>
+                    <input v-model="item.ITEM_TYPE" type="radio" v-bind:value="2">
+                    <label :for="2">其他</label>
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'ITEM_TYPE')"></div>
+                </fieldset>
+                <input type="text" v-model="item.ITEM_TYPE_E" v-show="hasValue(item.ITEM_TYPE_E)" class="form-control" readonly />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>產品類別ProductType</label>
+            <div class="col-sm-10">
+                <fieldset v-bind:disabled="bindErrata(item.PORCTYPE_E)" v-bind:class="getStyle(item.PORCTYPE_E)">
+                    <input v-model="item.PORCTYPE" type="radio" v-bind:value="0">
+                    <label :for="0">中藥材</label>
+                    <input v-model="item.PORCTYPE" type="radio" v-bind:value="1">
+                    <label :for="1">中藥製劑</label>
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'PORCTYPE')"></div>
+                </fieldset>
+                <input type="text" v-model="item.PORCTYPE_E" v-show="hasValue(item.PORCTYPE_E)" class="form-control" readonly />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型</label>
+            <div class="col-sm-4">
+                <fieldset v-bind:disabled="bindErrata(item.COMMODTYPE_E)" v-bind:class="getStyle(item.COMMODTYPE_E)">
+                    <select class="form-control" v-model="item.COMMODTYPE">
+                        <option v-for="opt in $data.DrugFormoptions" v-bind:value="opt.Value">{{opt.Text}}</option>
+                    </select>
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'COMMODTYPE')"></div>
+                </fieldset>
+                <input type="text" v-model="item.COMMODTYPE_E" v-show="hasValue(item.COMMODTYPE_E)" class="form-control" readonly />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>貨名Commodities</label>
+            <div class="col-sm-10">
+                <fieldset v-bind:disabled="bindErrata(item.COMMODITIES_E)" v-bind:class="getStyle(item.COMMODITIES_E)">
+                    <input type="text" class="form-control" id="" v-model="item.COMMODITIES">
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'COMMODITIES')"></div>
+                </fieldset>
+                <input type="text" v-model="item.COMMODITIES_E" v-show="hasValue(item.COMMODITIES_E)" class="form-control" readonly />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量Q'ty</label>
+            <div class="col-sm-4">
+                <fieldset v-bind:disabled="bindErrata(item.QTY_E)" v-bind:class="getStyle(item.QTY_E)">
+                    <input type="text" class="form-control" id="" v-model="item.QTY">
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'QTY')"></div>
+                </fieldset>
+                <input type="text" v-model="item.QTY_E" v-show="hasValue(item.QTY_E)" class="form-normal" readonly />
+            </div>
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量單位Unit</label>
+            <div class="col-sm-4">
+                <fieldset v-bind:disabled="bindErrata(item.UNIT_E)" v-bind:class="getStyle(item.UNIT_E)">
+                    <select class="form-control" v-model="item.UNIT">
+                        <option v-for="opt in $data.options" v-bind:value="opt.Value">{{opt.Text}}</option>
+                    </select>
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'UNIT')"></div>
+                </fieldset>
+                <input type="text" v-model="item.UNIT_E" v-show="hasValue(item.UNIT_E)" class="form-control" readonly />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量Q'ty</label>
+            <div class="col-sm-4">
+                <fieldset v-bind:disabled="bindErrata(item.SPECQTY_E)" v-bind:class="getStyle(item.SPECQTY_E)">
+                    <input type="text" class="form-control" id="" v-model="item.SPECQTY">
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'SPECQTY')"></div>
+                </fieldset>
+                <input type="text" v-model="item.SPECQTY_E" v-show="hasValue(item.SPECQTY_E)" class="form-normal" readonly />
+            </div>
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量單位Unit</label>
+            <div class="col-sm-4">
+                <fieldset v-bind:disabled="bindErrata(item.SPECUNIT_E)" v-bind:class="getStyle(item.SPECUNIT_E)">
+                    <select class="form-control" v-model="item.SPECUNIT">
+                        <option v-for="opt in $data.Packunitoptions" v-bind:value="opt.Value">{{opt.Text}}</option>
+                    </select>
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'SPECUNIT')"></div>
+                </fieldset>
+                <input type="text" v-model="item.SPECUNIT_E" v-show="hasValue(item.SPECUNIT_E)" class="form-control" readonly />
+            </div>
+        </div>
+        <h2 class="second-title">
+            一般切結書
+        </h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出口國</label>
+            <div class="col-sm-10">
+                同起運國家Shipping port
+                @*<fieldset v-bind:disabled="bindErrata(item.AFF1_EXPORT_COUNTRY_E)" v-bind:class="getStyle(item.AFF1_EXPORT_COUNTRY_E)">
+            <select class="form-control" v-model="item.AFF1_EXPORT_COUNTRY">
+                <option v-for="opt in $data.Countryoptions" v-bind:value="opt.Value">{{opt.Text}}</option>
+            </select>
+            <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'AFF1_EXPORT_COUNTRY')"></div>
+        </fieldset>
+        <input type="text" v-model="item.AFF1_EXPORT_COUNTRY_E" v-show="hasValue(item.AFF1_EXPORT_COUNTRY_E)" class="form-control" readonly />*@
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">報單號碼</label>
+            <div class="col-sm-10">
+                <fieldset v-bind:disabled="bindErrata(item.AFF1_SHEET_NO_E)" v-bind:class="getStyle(item.AFF1_SHEET_NO_E)">
+                    <input type="text" class="form-control decimal-only" id="" value="10" v-model.number="item.AFF1_SHEET_NO">
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'AFF1_SHEET_NO')"></div>
+                </fieldset>
+                <input type="text" v-model="item.AFF1_SHEET_NO_E" v-show="hasValue(item.AFF1_SHEET_NO_E)" class="form-normal" readonly />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>進口關</label>
+            <div class="col-sm-10">
+                <fieldset v-bind:disabled="bindErrata(item.AFF1_IMPORT_COUNTRY_E)" v-bind:class="getStyle(item.AFF1_IMPORT_COUNTRY_E)">
+                    <select class="form-control" v-model="item.AFF1_IMPORT_COUNTRY">
+                        <option v-for="opt in $data.Countryoptions" v-bind:value="opt.Value">{{opt.Text}}</option>
+                    </select>
+                    <div class="col-sm-12 msg-container" v-bind:id="getItemId(item, 'AFF1_IMPORT_COUNTRY')"></div>
+                </fieldset>
+                <input type="text" v-model="item.AFF1_IMPORT_COUNTRY_E" v-show="hasValue(item.AFF1_IMPORT_COUNTRY_E)" class="form-control" readonly />
+            </div>
+        </div>
+        <div class="form-group">
+            <p style="height:10px;background-color:burlywood;"></p>
+        </div>
+    </div>
+
+    <input type="hidden" :value="applyItemJson" name="ApplyItemsJson" />  @* 送回至server用 *@
+    @*{{applyItemJson}}*@
+</div>
+
+
+<script>
+
+    var vm = new Vue({
+        name: 'ApplyItems',
+        data: function () {
+            return {
+                itemList: [],
+                options: [],
+                isErrata: '@(Model.IsErrata() ? "Y" : "N")' == 'Y',
+                flowCd: '@Model.Apply.FLOW_CD',
+                Countryoptions: [],
+                DrugFormoptions: [],
+                Packunitoptions: []
+            };
+        },
+        computed: {
+            applyItemJson: function () {
+                //console.log(this.itemList);
+                //console.log(JSON.stringify(this.itemList));
+                return JSON.stringify(this.itemList);
+            }
+        },
+        methods: {
+            newItem: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "NewApplyItem" })',
+                    method: 'POST'
+                }).done(function (resp) {
+                    if (resp) {
+                        self.itemList.push(resp);
+                        self.bindEvent();
+                    }
+                });
+            },
+            getApplyList: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "ApplyItemList" })',
+                    method: 'POST',
+                    data: { APP_ID: '@(Model.Apply!=null ? Model.Apply.APP_ID : "" )' }
+                }).done(function (resp) {
+                    self.itemList = resp;
+                    self.bindEvent();
+                });
+            },
+            getOptions: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "Vw_PACKList" })',
+                    method: 'POST'
+                }).done(function (resp) {
+                    self.$data.options = resp;
+                });
+            },
+            getCountryOptions: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "ImportList"})',
+                    method: 'POST'
+                }).done(function (resp) {
+                    self.$data.Countryoptions = resp;
+                });
+            },
+            getVw_DrugFormOptions: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "Vw_DrugFormList" })',
+                    method: 'POST'
+                }).done(function (resp) {
+                    self.$data.DrugFormoptions = resp;
+                });
+            },
+            getVw_PackUnitOptions: function () {
+                var self = this;
+                $.ajax({
+                    url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "Vw_PackUnitList"})',
+                    method: 'POST'
+                }).done(function (resp) {
+                    self.$data.Packunitoptions = resp;
+                });
+            },
+            bindEvent: function () {
+                var self = this;
+                this.$nextTick(function () {
+                    $(self.$el).find('.decimal-only').decimalOnly();
+                });
+            },
+            getItemId: function (item, prop) {
+                return item.ID + '_' + prop;  @* 唯一值 + 欄位名稱 *@
+            },
+            getItemName: function (item, prop) {
+                return item.ID + '.' + prop; @*radio group name*@
+            },
+            hasValue: function (value) {
+                var res = true;
+                if (value) {
+                    res = true && this.flowCd == '2';  // 補件狀態
+                } else {
+                    res = false;  // todo
+                }
+                return res;
+            },
+            getStyle: function (value) {
+                var res = '';
+                if (this.hasValue(value)) {
+                    res = 'errata-input';
+                }
+                return res;
+            },
+            remove: function (index) {
+                var self = this;
+                blockConfirm("確定要刪除?", null, function () {
+                    self.itemList.splice(index, 1);
+                })
+            },
+            bindErrata: function (errmsg) {
+                // false : show
+                var res = true;
+                //console.log("isErrata:" + this.isErrata);
+                if (!this.flowCd) { this.flowCd = '0' }
+                //console.log("errmsg"+errmsg);
+                if (this.flowCd != '0') {
+                    errmsg = errmsg || false;
+                    if (this.isErrata && errmsg) {
+                        res = false;
+                    }
+                } else {
+                    res = false;
+                }
+                //console.log("bindErrata:"+res);
+                return res;
+            }
+        },
+        mounted: function () {
+            this.getOptions();
+            this.getApplyList();
+            this.getCountryOptions();
+            this.getVw_DrugFormOptions();
+            this.getVw_PackUnitOptions();
+        }
+    });
+    vm.$mount('#_applyitems');
+</script>
+
+
+@helper IsErrata(MvcHtmlString html, Expression<Func<Apply_005014ViewModel, string>> exp, bool errata, bool isNew)
+{
+if (isNew)
+{
+        @html
+}
+else
+{
+    string msg = exp.Compile().Invoke(Model);
+    if (string.IsNullOrEmpty(msg))
+    {
+            <fieldset disabled>@html</fieldset>
+    }
+    else
+    {
+            <div class="errata-input">@html</div>
+        if (errata && !isNew)
+        {
+                @Html.TextBoxFor(exp, new { @class = "form-control" }, true)
+        }
+    }
+}
+}
+
+@helper IsErrata(MvcHtmlString html1, MvcHtmlString html2, Expression<Func<Apply_005014ViewModel, string>> exp, bool errata, bool isNew)
+{
+if (isNew)
+{
+        @html1
+        @html2
+}
+else
+{
+    string msg = exp.Compile().Invoke(Model);
+    if (string.IsNullOrEmpty(msg))
+    {
+            <fieldset disabled>@msg @html1 @html2 </fieldset>
+    }
+    else
+    {
+            <div class="errata-input">
+                @html1
+                @html2
+            </div>
+        if (errata)
+        {
+                @Html.TextBoxFor(exp, new { @class = "form-control" }, true)
+        }
+    }
+}
+}

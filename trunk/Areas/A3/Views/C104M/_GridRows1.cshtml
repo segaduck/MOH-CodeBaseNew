@@ -1,0 +1,24 @@
+﻿@using EECOnline.Areas.A3.Models;
+@using EECOnline.Services;
+@model C104MForm1Model
+
+@if (Model.Form1Grid != null)
+{
+    for (int i = 0; i < Model.Form1Grid.Count; i++)
+    {
+        var item = Model.Form1Grid[i];
+        var strClass1 = (item.payed == "Y") ? "bx bxs-check-circle text-green" : "bx bxs-error-circle text-danger";
+        var strColor1 = (item.payed == "Y") ? "green" : "red";
+        var strColor2 = (item.NeedUploadNum == 0) ? "black" : "red";
+
+        <tr>
+            <td align="left">@item.hospital_name</td>
+            <td align="center">@item.user_name</td>
+            <td align="center">@Html.Raw(item.his_types_Text)</td>
+            <td align="center">@item.createdatetime_Text</td>
+            <td align="center"><i class="@strClass1" style="color: @strColor1">&nbsp;@item.payed_Text</i></td>
+            <td align="center">@item.price_Text</td>
+            <td align="center"><div style="color: @strColor2">@item.NeedUploadNum_Text</div></td>
+        </tr>
+    }
+}

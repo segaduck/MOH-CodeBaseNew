@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="Front" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<resultMaps>
+	</resultMaps>
+	<cacheModel id="WDASE-cache" implementation="MEMORY">
+		<flushInterval hours="1" />
+		<property name="Type" value="WEAK" />
+	</cacheModel>
+	<statements>
+		<!-- 進度查詢 Page 1 -->
+		<select id="getSearchApplyList1" resultClass="EECOnline.Models.SearchGridModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT 
+	a.keyid,
+	a.apply_no, a.apply_no_sub, a.user_idno,
+	a.hospital_code, a.hospital_name,
+	a.his_range1, a.his_range2, a.his_types, a.pay_deadline,
+	a.payed, a.payed_datetime,
+	(SELECT SUM(b.price) FROM EEC_ApplyDetailPrice b WHERE b.apply_no=a.apply_no AND b.apply_no_sub=a.apply_no_sub) AS price_sum,
+	(SELECT createdatetime FROM EEC_Apply c WHERE c.apply_no=a.apply_no) AS createdatetime,
+	b.user_birthday
+FROM EEC_ApplyDetail a
+LEFT JOIN EEC_Apply b ON a.apply_no=b.apply_no
+WHERE 1=1
+  AND a.user_idno=#user_idno#
+  /*AND DATEDIFF(MONTH, (SELECT createdatetime FROM EEC_Apply c WHERE c.apply_no=a.apply_no), GETDATE()) <= 3*/
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="FilterMonth">
+						<![CDATA[
+AND DATEDIFF(MONTH, (SELECT createdatetime FROM EEC_Apply c WHERE c.apply_no=a.apply_no), GETDATE()) <= $FilterMonth$
+						]]>
+					</isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+ORDER BY a.pay_deadline, a.keyid
+			]]>
+		</select>
+		<!-- 進度查詢 Page 2 -->
+		<select id="getSearchApplyList2" resultClass="EECOnline.Models.SearchGridModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT 
+	a.keyid,
+	a.apply_no, a.apply_no_sub, a.user_idno,
+	a.hospital_code, a.hospital_name,
+	a.his_range1, a.his_range2, a.his_types, a.pay_deadline,
+	a.payed, a.payed_datetime,
+	(SELECT SUM(b.price) FROM EEC_ApplyDetailPrice b WHERE b.apply_no=a.apply_no AND b.apply_no_sub=a.apply_no_sub) AS price_sum,
+	(SELECT createdatetime FROM EEC_Apply c WHERE c.apply_no=a.apply_no) AS createdatetime,
+	b.user_birthday
+FROM EEC_ApplyDetail a
+LEFT JOIN EEC_Apply b ON a.apply_no=b.apply_no
+WHERE 1=1
+  AND a.user_idno=#user_idno#
+  AND a.payed<>'Y'
+  AND a.pay_deadline>=GETDATE()
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="FilterMonth">
+						<![CDATA[
+AND DATEDIFF(MONTH, (SELECT createdatetime FROM EEC_Apply c WHERE c.apply_no=a.apply_no), GETDATE()) <= $FilterMonth$
+						]]>
+					</isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+ORDER BY a.pay_deadline, a.keyid
+			]]>
+		</select>
+		<!-- 進度查詢 Page 3 -->
+		<select id="getSearchApplyList3" resultClass="EECOnline.Models.SearchGridModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT 
+	a.keyid,
+	a.apply_no, a.apply_no_sub, a.user_idno,
+	a.hospital_code, a.hospital_name,
+	a.his_range1, a.his_range2, a.his_types, a.pay_deadline,
+	a.payed, a.payed_datetime,
+	(SELECT SUM(b.price) FROM EEC_ApplyDetailPrice b WHERE b.apply_no=a.apply_no AND b.apply_no_sub=a.apply_no_sub) AS price_sum,
+	(SELECT createdatetime FROM EEC_Apply c WHERE c.apply_no=a.apply_no) AS createdatetime,
+	b.user_birthday
+FROM EEC_ApplyDetail a
+LEFT JOIN EEC_Apply b ON a.apply_no=b.apply_no
+WHERE 1=1
+  AND a.user_idno=#user_idno#
+  AND (a.pay_deadline<GETDATE() OR a.payed='Y')
+			]]>
+			<dynamic>
+				<isParameterPresent>
+					<isNotEmpty prepend="" property="FilterMonth">
+						<![CDATA[
+AND DATEDIFF(MONTH, (SELECT createdatetime FROM EEC_Apply c WHERE c.apply_no=a.apply_no), GETDATE()) <= $FilterMonth$
+						]]>
+					</isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			<![CDATA[
+ORDER BY a.pay_deadline, a.keyid
+			]]>
+		</select>
+
+		<select id="get_ApplyDetail_Pay_SETUP" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+	a.setup_id,
+	a.setup_cd, a.setup_desc, a.setup_val,
+	a.moduser, a.modusername, a.modtime, a.modip,
+	a.del_mk
+FROM SETUP a
+WHERE 1=1
+  AND a.del_mk='N'
+  AND a.setup_cd LIKE 'PAY_EEC_%'
+			]]>
+		</select>
+		
+		<select id="getHomeNews" resultClass="EECOnline.Models.NewsGridModel" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT 
+  a.enews_id, a.subject, a.body, a.newstype, a.totop,
+  a.showdates, a.showdatee, a.showyn, a.del_mk
+FROM ENEWS a
+WHERE 1=1
+  AND a.showyn='1'
+  AND a.del_mk='N'
+  AND CAST(CONVERT(NVARCHAR, GETDATE(), 112) AS INT)>=CAST(a.showdates AS INT)
+  AND CAST(CONVERT(NVARCHAR, GETDATE(), 112) AS INT)<=CAST(a.showdatee AS INT)
+ORDER BY IIF(totop='1',1,0) DESC, a.showdates DESC
+			]]>
+		</select>
+
+		<select id="getDataIsNotGot" resultClass="EECOnline.Models.Entities.TblEEC_ApplyDetailPrice" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+  a.keyid, a.apply_no, a.apply_no_sub, a.user_idno,
+  a.hospital_code, a.hospital_name, a.his_type, a.his_type_name, a.price,
+  a.pay_deadline, a.payed, a.payed_datetime,
+  a.isprovide, a.provide_datetime, a.provide_bin, a.provide_ext,
+  a.ec_date, a.ec_dateText, a.ec_note, a.ec_dept, a.ec_doctor, a.ec_docType, a.ec_system, a.ec_fileName,
+  a.ec_success, a.ec_success_yn, a.ec_reason
+FROM EEC_ApplyDetailPrice a
+WHERE 1=1
+  AND a.hospital_code=#hospital_code#
+  AND a.payed='Y'
+  AND ISNULL(a.his_type,'')<>''
+  AND a.ec_success_yn<>'成功'
+  AND DATEDIFF(DAY, CAST(a.payed_datetime AS DATETIME), GETDATE())>=4
+			]]>
+		</select>
+		
+		<select id="get_EEC_CommonType" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+	a.keyid, a.type_name, a.type_price,
+	a.type_date1, a.type_date2
+FROM EEC_CommonType a
+WHERE 1=1
+  AND ISNULL(a.type_price,0)<>0
+  AND CONVERT(NVARCHAR, GETDATE(), 112)>=a.type_date1
+  AND CONVERT(NVARCHAR, GETDATE(), 112)<=a.type_date2
+ORDER BY a.keyid
+			]]>
+		</select>
+
+		<select id="get_EEC_CommonTypeAll" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT
+	a.keyid, a.type_name, a.type_price,
+	a.type_date1, a.type_date2
+FROM EEC_CommonType a
+WHERE 1=1
+ORDER BY a.keyid
+			]]>
+		</select>
+		
+		<select id="get_EEC_ApplyDetailPrice_caseNo" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT TOP 1 caseNo 
+FROM EEC_ApplyDetailPrice 
+WHERE caseNo LIKE #caseNo_Key# + '%' 
+ORDER BY caseNo DESC
+			]]>
+		</select>
+
+		<select id="get_EEC_ApplyDetailPrice_lidm" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="WDASE-cache">
+			<![CDATA[
+SELECT DISTINCT apply_no, apply_no_sub, user_idno, hospital_code, hospital_name, payed, payed_datetime
+FROM EEC_ApplyDetailPrice 
+WHERE hospital_code = '1317040011H'  /* 中山醫院專用 */
+  AND apply_no_sub LIKE #lidm#
+			]]>
+		</select>
+		
+	</statements>
+</sqlMap>

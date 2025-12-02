@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="Login"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <resultMaps>
+  </resultMaps>
+
+  <cacheModel id="WDASE-cache" implementation="MEMORY">
+    <flushInterval hours="1" />
+    <property name="Type" value="WEAK" />
+  </cacheModel>
+
+  <statements>
+
+    <!-- 取得使用者帳號資訊 -->
+    <select id="getClamUser" resultClass="EECOnline.Models.ClamUser" parameterClass="Hashtable" cacheModel="TBKC-cache">
+      <![CDATA[
+        select ad.* ,ag.grpname UNIT_NAME
+        from   amdburm ad
+        left join amurole are on are.userno= ad.userno
+        left join amgrp ag on ag.grp_id = are.grp_id   
+        where  ad.userno = #USERNO#
+		 ]]>
+    </select>
+	  
+    <select id="getClamUser_Hosp" resultClass="EECOnline.Models.ClamUser" parameterClass="Hashtable" cacheModel="TBKC-cache">
+      <![CDATA[
+SELECT 
+	a.AuthCode AS userno,
+	a.PWD AS pwd,
+	a.text AS username,
+	a.Email AS email,
+	a.AuthStatus AS authstatus,
+	a.errct AS errct,	
+	c.grpname AS UNIT_NAME
+FROM EEC_Hospital a
+LEFT JOIN AMUROLE_Hosp b ON b.AuthCode=a.AuthCode
+LEFT JOIN AMGRP_Hosp c ON c.grp_id=b.grp_id   
+WHERE a.AuthCode = #AuthCode#
+		 ]]>
+    </select>
+
+    <!-- 取得使用者群組角色資訊 -->
+    <select id="getClamUserGroup" resultClass="EECOnline.Models.ClamUserGroup" parameterClass="Hashtable" cacheModel="TBKC-cache">
+      <![CDATA[
+		    select convert(nvarchar,b.grp_id) GRPID,c.grpname GRPNAME
+        from   amdburm a
+	      inner join amurole b on b.userno = a.userno
+	      inner join amgrp c on c.grp_id = b.grp_id
+	      where a.userno = #USERNO#
+        order by b.grp_id
+        ]]>
+    </select>
+	  
+	<select id="getClamUserGroup_Hosp" resultClass="EECOnline.Models.ClamUserGroup" parameterClass="Hashtable" cacheModel="TBKC-cache">
+		<![CDATA[
+SELECT CONVERT(NVARCHAR, b.grp_id) AS GRPID, c.grpname AS GRPNAME
+FROM EEC_Hospital a
+INNER JOIN AMUROLE_Hosp b ON b.AuthCode=a.AuthCode
+INNER JOIN AMGRP_Hosp c ON c.grp_id=b.grp_id
+WHERE a.AuthCode = #AuthCode#
+ORDER BY b.grp_id
+		]]>
+	</select>
+
+    <!-- 取得群組功能權限清單 -->
+    <select id="getClamGroupFuncs" resultClass="EECOnline.Models.ClamRoleFunc" parameterClass="Hashtable" cacheModel="TBKC-cache">
+      <![CDATA[
+        select distinct a.sysid,a.modules,a.submodules,a.prgid,a.prgname,a.prgorder,a.showmenu,a.querystring,a.moduser,a.modusername,a.modtime,a.modip 
+        from   amfuncm a
+	      inner join amgmapm b on b.sysid = a.sysid and b.modules = a.modules and b.submodules = b.submodules and b.prgid = a.prgid
+	      inner join amurole c on c.grp_id = b.grp_id
+	      inner join amdburm d on d.userno = c.userno
+	      where 1 = 1
+        and showmenu = '1'
+        and (b.prg_i <> '0' or b.prg_u <> '0' or b.prg_d <> '0' or b.prg_q <> '0' or b.prg_p <> '0')
+	      and d.userno = #USERNO#
+	      order by a.prgorder,a.sysid,a.modules,a.submodules,a.prgid
+		    ]]>
+    </select>
+	  
+    <select id="getClamGroupFuncs_Hosp" resultClass="EECOnline.Models.ClamRoleFunc" parameterClass="Hashtable" cacheModel="TBKC-cache">
+      <![CDATA[
+SELECT distinct a.sysid,a.modules,a.submodules,a.prgid,a.prgname,a.prgorder,a.showmenu,a.querystring,a.moduser,a.modusername,a.modtime,a.modip 
+FROM amfuncm a
+INNER JOIN amgmapm_Hosp b ON b.sysid = a.sysid AND b.modules = a.modules AND b.submodules = b.submodules AND b.prgid = a.prgid
+INNER JOIN amurole_Hosp c ON c.grp_id = b.grp_id
+INNER JOIN EEC_Hospital d ON d.AuthCode = c.AuthCode
+WHERE 1=1
+  AND showmenu = '1'
+  AND (b.prg_i <> '0' or b.prg_u <> '0' or b.prg_d <> '0' or b.prg_q <> '0' or b.prg_p <> '0')
+  AND d.AuthCode = #AuthCode#
+ORDER BY a.prgorder,a.sysid,a.modules,a.submodules,a.prgid
+      ]]>
+    </select>
+
+    <!-- 取得系統已啟用的全部功能清單 -->
+    <select id="getClamFuncsAll" resultClass="EECOnline.Models.Entities.TblAMFUNCM" parameterClass="Hashtable" cacheModel="TBKC-cache">
+      <![CDATA[
+        SELECT * FROM AMFUNCM
+        WHERE 1=1
+        /*AND SHOWMENU = '1'*/
+        order by SYSID, MODULES, SUBMODULES,PRGORDER
+		 ]]>
+    </select>
+
+    <!-- 取得系統已啟用的全部功能清單 -->
+    <select id="getClamFuncsOutAll" resultClass="EECOnline.Models.Entities.TblAMFUNCM" parameterClass="Hashtable" cacheModel="TBKC-cache">
+      <![CDATA[
+        SELECT * FROM AMFUNCM
+        WHERE 1=1
+        AND SHOWMENU = '1'
+        AND PRGID = ' '
+        order by SYSID, MODULES, SUBMODULES,PRGORDER
+		 ]]>
+    </select>
+	  
+    <select id="getHomeData1" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="TBKC-cache">
+        <![CDATA[
+SELECT DISTINCT a.apply_no_sub, b.AuthCode
+FROM EEC_ApplyDetail a
+LEFT JOIN EEC_Hospital b ON a.hospital_code=b.code
+        ]]>
+    </select>
+	  
+    <select id="getHomeData2" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="TBKC-cache">
+        <![CDATA[
+SELECT a.keyid, b.AuthCode
+FROM EEC_ApplyDetailPrice a
+LEFT JOIN EEC_Hospital b ON a.hospital_code=b.code
+WHERE 1=1
+  AND a.payed='Y'
+  /*AND a.isprovide='N'*/
+  AND a.provide_status='2'
+  AND ISNULL(a.provide_datetime,'')=''
+  AND ISNULL(a.provide_bin,'')=''
+		]]>
+	</select>
+	  
+    <select id="getHomeData3" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="TBKC-cache">
+        <![CDATA[
+SELECT a.price, b.AuthCode
+FROM EEC_ApplyDetailPrice a
+LEFT JOIN EEC_Hospital b ON a.hospital_code=b.code
+WHERE 1=1
+  AND a.payed='Y'
+  AND CONVERT(NVARCHAR(6),CAST(a.payed_datetime AS DATETIME),112)=CONVERT(NVARCHAR(6),GETDATE(),112)
+		]]>
+	</select>
+
+    <select id="getHomeData4" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="TBKC-cache">
+        <![CDATA[
+SELECT DISTINCT 
+  SUBSTRING(a.apply_no,1,4) AS TheYear, 
+  SUBSTRING(a.apply_no,5,2) AS TheMonth, 
+  COUNT(a.apply_no_sub) AS MonthCount
+FROM EEC_ApplyDetail a
+WHERE    SUBSTRING(a.apply_no,1,4)=YEAR(GETDATE())
+GROUP BY SUBSTRING(a.apply_no,1,4),SUBSTRING(a.apply_no,5,2)
+ORDER BY SUBSTRING(a.apply_no,5,2)
+        ]]>
+    </select>
+
+    <select id="getHomeData5" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="TBKC-cache">
+        <![CDATA[
+SELECT his_type_name AS 'name', COUNT(keyid) AS 'value'
+FROM EEC_ApplyDetailPrice
+WHERE SUBSTRING(apply_no,1,4)=YEAR(GETDATE()) AND ISNULL(his_type,'')<>''
+GROUP BY his_type_name
+        ]]>
+    </select>
+	  
+  </statements>
+</sqlMap>

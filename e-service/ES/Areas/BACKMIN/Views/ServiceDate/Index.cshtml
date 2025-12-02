@@ -1,0 +1,74 @@
+﻿@model ES.Areas.Admin.Models.ServiceDateActionModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout3.cshtml";
+
+    ViewBag.Title = "申請開放設定";
+    ViewBag.FunctionTitle = "申請開放設定";
+
+    ViewBag.Script = @"
+function doQuery(page) {
+$('#ActionType').val('Query');
+$('#NowPage').val(page);
+}
+
+function doEdit1(id) {
+$('#ActionType').val('Edit');
+$('#ActionId').val(id);
+$('#ActionForm').submit();
+}
+
+";
+}
+
+@using (Html.BeginForm("Index", "ServiceDate", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 前台管理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        @if (ViewBag.List != null)
+        {
+            <div class="clearfix"></div>
+            <h2 class="second-title">查詢結果</h2>
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th width="5%">編輯</th>
+                            <th width="5%">項次</th>
+                            <th width="15%">標題</th>
+                            <th width="15%">起迄時間</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.List.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="4" style="text-align: center;">查無資料</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (var i = 0; i < ViewBag.List.Count; i++)
+                            {
+                                ES.Areas.Admin.Models.ServiceDateModel item = ViewBag.List[i];
+
+                                <tr>
+                                    <td align="center">
+                                        <input type="button" class="btn btn-blue" value="編輯" onclick="document.location.href='@Url.Action("Edit", "ServiceDate", new { id=@item.ServiceDateID })';" />
+                                    </td>
+                                    <td align="center">@(i + 1)</td>
+                                    <td align="center">@Html.Raw(@item.Title)</td>
+                                    <td align="center">@(((DateTime)@item.StartTime).ToString("yyyy/MM/dd HH:mm")) ～ @(((DateTime)@item.EndTime).ToString("yyyy/MM/dd HH:mm"))</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}

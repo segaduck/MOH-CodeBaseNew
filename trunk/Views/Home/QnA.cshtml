@@ -1,0 +1,103 @@
+﻿@using EECOnline.Services;
+@using EECOnline.Models;
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<section class="main-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="board board-white">
+                    <a class="accesskey" href="#aC" id="aC" accesskey="C" title="主要內容區">:::</a>
+                    <ul class="breadcrumb" style="background-color: unset;">
+                        <li><i class="fa fa-home"></i><a href="~/Home/Index">首頁</a></li>
+                        <li><a href="~/Home/QnA">常見問題</a></li>
+                    </ul>
+                    <h1 class="board-title titleBg-linear main-title"><i class="fas fa-question"></i>常見問題</h1>
+                    <div class="news-content">
+                        <div id="accordion">
+                            <div class="qa-card">
+                                <div class="card-header">
+                                    <a class="btn" data-bs-toggle="collapse" href="#collapseOne">1.電子病歷對我的看病權益有何影響？</a>
+                                </div>
+                                <div id="collapseOne" class="collapse show" data-bs-parent="#accordion">
+                                    <div class="card-answer">
+                                        <p>電子病歷主要是將紙本病歷轉換成合法的電子格式，對於民眾的看病權益不會有任何影響。為民眾所帶來的將是方便性。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="qa-card">
+                                <div class="card-header">
+                                    <a class="collapsed btn" data-bs-toggle="collapse" href="#collapseTwo">2.電子病歷施行後我的個人隱私會受到保護嗎？</a>
+                                </div>
+                                <div id="collapseTwo" class="collapse" data-bs-parent="#accordion">
+                                    <div class="card-answer">
+                                        <p>衛生署訂有嚴格的電子病歷保護法與相關施行細則。任何醫院在實施電子病歷前均須向當地的衛生局報備，並接受衛生署委託醫院協會進行電子病歷檢查。訂有嚴格的隱私保護措施，您的健康資料可以獲得確保。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="qa-card">
+                                <div class="card-header">
+                                    <a class="collapsed btn" data-bs-toggle="collapse" href="#collapseThree">3. 哪些醫院有施行電子病歷？</a>
+                                </div>
+                                <div id="collapseThree" class="collapse" data-bs-parent="#accordion">
+                                    <div class="card-answer">
+                                        <p>各家醫院開始施行之電子病歷各不相同，您可上<a href="http://emr.doh.gov.tw/emrlist.aspx" target="_blank">衛生署電子病歷推動專區之電子病歷金榜</a>上查詢，或連絡各相關醫院洽詢細節。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            @*
+                                <div class="qa-card">
+                                    <div class="card-header">
+                                        <a class="collapsed btn" data-bs-toggle="collapse" href="#collapseFour">4. 哪些醫院有施行電子病歷？</a>
+                                    </div>
+                                    <div id="collapseFour" class="collapse" data-bs-parent="#accordion">
+                                        <div class="card-answer">
+                                            <p>各家醫院開始施行之電子病歷各不相同，您可上<a href="http://emr.doh.gov.tw/emrlist.aspx" target="_blank">衛生署電子病歷推動專區之電子病歷金榜</a>上查詢，或連絡各相關醫院洽詢細節。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="qa-card">
+                                    <div class="card-header">
+                                        <a class="collapsed btn" data-bs-toggle="collapse" href="#collapseFive">5. 哪些醫院有施行電子病歷？</a>
+                                    </div>
+                                    <div id="collapseFive" class="collapse" data-bs-parent="#accordion">
+                                        <div class="card-answer">
+                                            <p>各家醫院開始施行之電子病歷各不相同，您可上<a href="http://emr.doh.gov.tw/emrlist.aspx" target="_blank">衛生署電子病歷推動專區之電子病歷金榜</a>上查詢，或連絡各相關醫院洽詢細節。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="qa-card">
+                                    <div class="card-header">
+                                        <a class="collapsed btn" data-bs-toggle="collapse" href="#collapseSix">6. 哪些醫院有施行電子病歷？</a>
+                                    </div>
+                                    <div id="collapseSix" class="collapse" data-bs-parent="#accordion">
+                                        <div class="card-answer">
+                                            <p>各家醫院開始施行之電子病歷各不相同，您可上<a href="http://emr.doh.gov.tw/emrlist.aspx" target="_blank">衛生署電子病歷推動專區之電子病歷金榜</a>上查詢，或連絡各相關醫院洽詢細節。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="qa-card">
+                                    <div class="card-header">
+                                        <a class="collapsed btn" data-bs-toggle="collapse" href="#collapseSeven">7. 哪些醫院有施行電子病歷？</a>
+                                    </div>
+                                    <div id="collapseSeven" class="collapse" data-bs-parent="#accordion">
+                                        <div class="card-answer">
+                                            <p>各家醫院開始施行之電子病歷各不相同，您可上<a href="http://emr.doh.gov.tw/emrlist.aspx" target="_blank">衛生署電子病歷推動專區之電子病歷金榜</a>上查詢，或連絡各相關醫院洽詢細節。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            *@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+
+</script>

@@ -1,0 +1,16 @@
+﻿@using EECOnline.Models
+@{
+    Layout = "~/Views/Shared/_MainLayout_NoHeader.cshtml";
+    SessionModel sm = SessionModel.Get();
+}
+<div class="wrap" style="overflow: auto;">
+    <div class="col-sm-12">
+        <div class="theme-news ErrorPage">
+            <h1>沒有權限!</h1>
+            <p>您的職稱: <span>XXX</span></p>
+            <p>沒有執行下列程式的權限: <span></span></p>
+            <p>若是您認為應該具有該程式的權限，請聯絡管理人員!</p>
+        </div>
+    </div>
+</div>
+

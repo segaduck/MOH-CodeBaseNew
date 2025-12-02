@@ -1,0 +1,52 @@
+﻿@using EUSERVICE.Areas.A5.Models;
+@model C102MGrpModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout_NoHeader_NoBg.cshtml";
+}
+
+<div class="col-sm-12 content">
+    @using (Html.BeginForm("Grp", "C102M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+    {
+        var button = new Dictionary<string, string>();
+        button.Add("save", "doSave()");
+        button.Add("close", "doClose()");
+
+        @Html.HiddenFor(m=>m.userno)
+
+        <div class="table-responsive">
+            @if (Model.Grid != null)
+            {
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th width="8%"></th>
+                            @*<th width="10%">群組代號</th>*@
+                            <th width="">群組名稱</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rows">
+                        @Html.Partial("_GrpGridRows")
+                    </tbody>
+                </table>
+            }
+        </div>
+
+        @Html.ButtonForTurbo(button)
+    }
+</div>
+
+<script type="text/javascript">
+
+    //儲存
+    function doSave() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("GrpSave")').submit();
+    }
+
+    //關閉
+    function doClose() {
+        parent.closeWindow();
+    }
+
+</script>

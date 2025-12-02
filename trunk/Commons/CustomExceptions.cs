@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace EECOnline.Commons
+{
+    /// <summary>
+    /// 用來代表登入失敗的 Exception
+    /// </summary>
+    public class LoginExceptions: Exception
+    {
+        public LoginExceptions(string message)
+            : base(message)
+        {
+
+        }
+    }
+}

@@ -1,0 +1,161 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model ES.Areas.Admin.Models.StatisticsPaytypeModel
+<link href="../../../../Content/Report/TableStyle.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Sdate').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#Fdate').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+    });
+
+    function showdetail(val1, val2) {
+        $('#SC_ID').val(val1);
+        $('#NAME').val(val2);
+        $('#ActionForm_Detail').submit();
+    }
+</script>
+
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "繳費方式統計";
+    ViewBag.FunctionTitle = "繳費方式統計";
+}
+@using (Html.BeginForm("StatisticsPaytype", "Report", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 統計分析 / @ViewBag.Title
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">統計區間</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Sdate, new { @class = "form-normal" })&nbsp;&nbsp;至&nbsp;&nbsp;@Html.TextBoxFor(m => m.Fdate, new { @class = "form-normal" })
+                    @Html.ValidationMessageFor(m => m.Fdate)
+                </div>
+            </div>
+            <div class="btnbar">
+                <input type="submit" id="Button_1" value="繳費方式統計" onclick="$('#Fdate').validate();$('#Fdate').valid()" class="btn btn-print" />
+            </div>
+        </div>
+        <hr />
+        @using (Html.BeginForm("StatisticsPaytypeDetail", "Report", FormMethod.Post, new { id = "ActionForm_Detail" }))
+        {
+            @Html.HiddenFor(m => m.Sdate)
+            @Html.HiddenFor(m => m.Fdate)
+            <input id="SC_ID" name="SC_ID" type="hidden" value="" />
+            <input id="NAME" name="NAME" type="hidden" value="" />
+            if (ViewBag.List != null)
+            {
+                <div class="clearfix"></div>
+                <h2 class="second-title">
+                    統計區間：
+                    @Html.Raw(this.Model.Sdate)
+                    到
+                    @Html.Raw(this.Model.Fdate)
+                </h2><span>請點選「案件分類」查看個別案件繳費方式次數統計</span>
+                <div class="table-responsive">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                        <thead>
+                            <tr>
+                                <th>項次</th>
+                                <th>案件分類</th>
+                                <th align="right">信用卡</th>
+                                <th align="right">匯（支）票</th>
+                                <th align="right">劃撥</th>
+                                <th align="right">臨櫃</th>
+                                <th align="right">超商</th>
+                                <th align="right">合計</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                List<Map> li = ViewBag.List;
+                                if (li.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="8">
+                                            此範圍無資料可統計
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    int i = 0;
+                                    int CREDITCARD = 0, DRAFT = 0, TRANSFER = 0, COUNTER = 0, STORE = 0, TATOL = 0;
+                                    foreach (Map m in li)
+                                    {
+                                        i++;
+                                        <tr>
+                                            <td>
+                                                @i.
+                                            </td>
+                                            <td>
+                                                <a href="#" onclick="showdetail('@m.GetString("SC_ID")','@m.GetString("NAME")')">
+                                                    <span>@m.GetString("NAME")</span>
+                                                </a>
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("CREDITCARD")
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("DRAFT")
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("TRANSFER")
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("COUNTER")
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("STORE")
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("TATOL")
+                                            </td>
+                                        </tr>
+                                        CREDITCARD += int.Parse(m.GetString("CREDITCARD"));
+                                        DRAFT += int.Parse(m.GetString("DRAFT"));
+                                        TRANSFER += int.Parse(m.GetString("TRANSFER"));
+                                        COUNTER += int.Parse(m.GetString("COUNTER"));
+                                        STORE += int.Parse(m.GetString("STORE"));
+                                        TATOL += int.Parse(m.GetString("TATOL"));
+                                    }
+                                    i++;
+                                    <tr>
+                                        <td>
+                                            總計
+                                        </td>
+                                        <td></td>
+                                        <td align="right">
+                                            @CREDITCARD
+                                        </td>
+                                        <td align="right">
+                                            @DRAFT
+                                        </td>
+                                        <td align="right">
+                                            @TRANSFER
+                                        </td>
+                                        <td align="right">
+                                            @COUNTER
+                                        </td>
+                                        <td align="right">
+                                            @STORE
+                                        </td>
+                                        <td align="right">
+                                            @TATOL
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+    </div>
+}

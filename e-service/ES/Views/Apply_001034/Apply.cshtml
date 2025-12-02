@@ -1,0 +1,1668 @@
+﻿@using ES.Models.Entities
+@using ES.Models
+@using ES.Commons;
+@model ES.Models.ViewModels.Apply_001034ViewModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "危險性醫療儀器進口申請作業";
+    ShareCodeListModel DEST_STATE_IDList = new ShareCodeListModel();
+    ShareCodeListModel SELL_STATE_IDList = new ShareCodeListModel();
+    ShareCodeListModel TRN_PORTList = new ShareCodeListModel();
+    ShareCodeListModel BEG_PORTList = new ShareCodeListModel();
+    ShareCodeListModel APP_USE_IDList = new ShareCodeListModel();
+    ShareCodeListModel GOODS_TYPE_IDList = new ShareCodeListModel();
+    ShareCodeListModel GOODS_UNIT_IDList = new ShareCodeListModel();
+    ShareCodeListModel MAIL_DOMAINList = new ShareCodeListModel();
+    SessionModel sm = SessionModel.Get();
+}
+<script type="text/javascript" src="~/Scripts/utility.js"></script>
+
+@using (Html.BeginForm("PreView", "Apply_001034", FormMethod.Post, new { id = "main_form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+{
+
+    <div class="container" id="Apply">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink">
+                <i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">危險性醫療儀器進口申請作業</a>
+            </div>
+            <div class="clearfix"></div>
+            <div class="step_map">
+                <ul>
+                    <li id="Apply_Tab" class="active">填寫申報表件並上傳檔案</li>
+                    <li id="PreView_Tab" >預覽申辦表件</li>
+                    <li>完成申報</li>
+                </ul>
+            </div>
+            <div class="tab-content" id="myTabContent">
+                <!--ApplyForm-->
+                <div id="ApplyForm" class="tab-pane fade active in">
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                    <div class="form-set">
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦項目</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">危險性醫療儀器進口申請作業</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">承辦單位</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">衛生福利部醫事司</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦日期</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static"> @Model.APPLY_DATE</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申請人</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x=>x.APPLY_NAME,new { @class="form-control",@placeholder="請輸入申請人姓名",@readonly="readonly"})
+                            </div>
+                            <label class="step-label col-sm-2" for="">申請人身分證字號</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.APPLY_PID, new { @class = "form-control", @placeholder = "請輸入申請人姓名", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <h2 class="second-title">納稅義務人資料</h2>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證字號/統一編號</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="TAX_ORG_ID" name="TAX_ORG_ID" placeholder="請輸入申請人身分證字號" value='@(sm.UserInfo.Member.IDN)'>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名/公司名稱<font style="color: red;">中文</font></label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="TAX_ORG_NAME" name="TAX_ORG_NAME" placeholder="中文姓名/中文公司名稱(中英文擇一輸入)" size=35 value='@(sm.UserInfo.Member.NAME)'>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名/公司名稱<font style="color: red;">英文</font></label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="TAX_ORG_ENAME" name="TAX_ORG_ENAME" placeholder="英文姓名/英文公司名稱(中英文擇一輸入)" size=35 value='@(sm.UserInfo.Member.ENAME)'>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡地址中文</label>
+                            <div class="col-sm-10 form-inline">
+                                @Html.TextBoxFor(m => m.TAX_ORG_CITY_CODE, new { @id = "TAX_ORG_CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號" })
+                                <div class="input-group">
+                                    @Html.TextBoxFor(m => m.TAX_ORG_CITY_TEXT, new { @id = "TAX_ORG_CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.TAX_ORG_CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class='step-label col-sm-2' for=""><span style="color:red;">*</span>聯絡地址英文</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="TAX_ORG_EADDR" name="TAX_ORG_EADDR" placeholder="請輸入英文聯絡地址(中英文擇一輸入)" size=35>
+                            </div>
+                        </div>
+                        <h2 class="second-title">申辦資料</h2>
+                        <div class='form-group'>
+                            <label class='step-label col-sm-2' for=''><span style="color:red;">*</span>聯絡人姓名</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-normal" id='TAX_ORG_MAN' name="TAX_ORG_MAN" value=''>
+                                <button type='button' class="btn btn-info" onclick="getMemberData()">同登入會員資料</button>
+                            </div>
+                        </div>
+                        <div class='form-group'>
+                            <label class='step-label col-sm-2' for=''><span style="color:red;">*</span>聯絡人電話</label>
+                            <div class="col-sm-10">
+                                <span></span>
+                                <input type="text" class="form-10 form-normal" id="TEL_SEC" name="TEL_SEC" value="">
+                                <span>-</span>
+                                <input type="text" class="form-normal" id="TEL_NO" name="TEL_NO" value="">
+                                <span>#</span>
+                                <input type="text" class="form-10 form-normal" id="TEL_EXT" name="TEL_EXT" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人E-MAIL</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-normal" id="MAIL_ACCOUNT" name="MAIL_ACCOUNT" value="" />@@
+                                @Html.DropDownList("DOMAINList", MAIL_DOMAINList.GetMailDomainList, new { @class = "form-normal" })
+                                <input type="text" class="form-normal" id="MAIL_DOMAIN" name="MAIL_DOMAIN" value="" />
+                            </div>
+                        </div>
+                        <div class='form-group'>
+                            <label class='step-label col-sm-2' for=''>聯絡人傳真</label>
+                            <div class="col-sm-10">
+                                <span></span>
+                                <input type="text" class="form-10 form-normal" id="FAX_SEC" name="FAX_SEC" value="">
+                                <span>-</span>
+                                <input type="text" class="form-normal" id="FAX_NO" name="FAX_NO" value="">
+                                <span>#</span>
+                                <input type="text" class="form-10 form-normal" id="FAX_EXT" name="FAX_EXT" value="">
+                            </div>
+                        </div>
+
+                        <div class='form-group'>
+                            <label class='step-label col-sm-2' for=''><span style="color:red;">*</span>進出口別</label>
+                            <div class="form-control-static col-sm-10">
+                                <input type="radio" id='IM_EXPORT' name="IM_EXPORT" value='1' checked>進口
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>起始日期</label>
+                            <div class="col-sm-4">
+                                @Html.DatePickerTWFor(x => x.DATE_S_AC, new { size = "10" })
+                            </div>
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>終止日期</label>
+                            <div class="col-sm-4">
+                                @Html.DatePickerTWFor(x => x.DATE_E_AC, new { size = "10" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>生產國家</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.DEST_STATE_ID, DEST_STATE_IDList.CountryList, new { @class = "form-control" })
+                                @Html.HiddenFor(x => x.DEST_STATE)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>賣方國家</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.SELL_STATE_ID, SELL_STATE_IDList.CountryList, new { @class = "form-control" })
+                                @Html.HiddenFor(x => x.SELL_STATE)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">轉口港</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.TRN_PORT_ID, TRN_PORTList.PortList, new { @class = "form-normal form-inline" })
+                                @Html.DropDownListFor(x => x.TRN_PORT_ID2, new List<SelectListItem>(), new { @class = "form-normal form-inline" })
+                                @Html.HiddenFor(x => x.TRN_PORT_COUNTRY)
+                                @Html.HiddenFor(x => x.TRN_PORT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">起運口岸</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.BEG_PORT_ID, BEG_PORTList.PortList, new { @class = "form-normal form-inline" })
+                                @Html.DropDownListFor(x => x.BEG_PORT_ID2, new List<SelectListItem>(), new { @class = "form-normal form-inline" })
+                                @Html.HiddenFor(x => x.BEG_PORT_COUNTRY)
+                                @Html.HiddenFor(x => x.BEG_PORT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>賣方英文名稱</label>
+                            <div class="col-sm-10">
+                                <input type='text' class='form-control' id="SELL_NAME" name="SELL_NAME" value=''>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2"><span style="color:red;">*</span>賣方英文地址</label>
+                            <div class='col-sm-10'>
+                                <input type='text' class="form-control" id="SELL_ADDR" name="SELL_ADDR" value="" size=90>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2"><span style="color:red;">*</span>申請用途</label>
+                            <div class='col-sm-10'>
+                                @Html.DropDownListFor(x => x.APP_USE_ID, APP_USE_IDList.GetAPP_USEList, new { @class = "form-control" })
+                                @Html.HiddenFor(x => x.APP_USE_TEXT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2">用途說明</label>
+                            <div class='col-sm-10'>
+                                <textarea name="USE_MARK" id="USE_MARK" rows="4" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2"><span style="color:red;">*</span>核發方式</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.CONF_TYPE_ID, APP_USE_IDList.GetCONF_TYPEList, new { @class = "form-control" })
+                                @Html.HiddenFor(x => x.CONF_TYPE_TEXT)
+                            </div>
+                        </div>
+
+
+                        <h2 class="second-title">
+                            貨品資料
+                            <button type="button" class="btn btn-save" id="btnAdd" onclick="addGoodRow()">新增一筆</button>
+                        </h2>
+
+                        <!--貨品資料列-->
+                        <div id="goodsTable">
+                            <div id="row1" data-group="goods">
+                                <div class="form-group">
+                                    <label class='step-label col-sm-2'><button type="button" id="btnDelte_1" class="btn btn-clear" onclick="deleteGoodRow($(this))">刪除</button>序</label>
+                                    <div class="col-sm-10">
+                                        <P id="SRL_NOItem" class="form-control-static">1</P>
+                                        @Html.HiddenFor(x => x.Goods[0].SRL_NO)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class='step-label col-sm-2'><span style="color:red;">*</span>貨品類別（規格）：</label>
+                                    <div class="col-sm-10">
+                                        @Html.DropDownListFor(x => x.Goods[0].GOODS_TYPE_ID, GOODS_TYPE_IDList.GetGOODS_TYPEList, new { @class = "form-control", onchange = "setRequiredColumn($(this).attr('name'))" })
+                                        <input id="GOODS_TYPE_TEXT" type="hidden" name="Goods[0].GOODS_TYPE_TEXT" value="" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span style="color:red;">*</span>貨品名稱</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="GOODS_TYPE" name="Goods[0].GOODS_TYPE" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span style="color:red;">*</span>申請數量</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="APPLY_CNT" name="Goods[0].APPLY_CNT" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span style="color:red;">*</span>貨品單位</label>
+                                    <div class="col-sm-10">
+                                        @Html.DropDownListFor(x => x.Goods[0].GOODS_UNIT_ID, GOODS_UNIT_IDList.GetGOODS_UNIT_IDList, new { @class = "form-control" })
+                                        <input id="GOODS_UNIT_TEXT" type="hidden" name="Goods[0].GOODS_UNIT_TEXT" value="" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span style="color:red;">*</span>型號</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="GOODS_MODEL" name="Goods[0].GOODS_MODEL" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span style="color:red;">*</span>規格</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-normal form-inline" value="" id='GOODS_SPEC_1' name="Goods[0].GOODS_SPEC_1" readonly size=4>
+                                        <input type="text" class="form-normal form-inline" value="" id='GOODS_SPEC_2' name="Goods[0].GOODS_SPEC_2">
+                                        <font color="red">（第二格非必填）</font>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span style="color:red;">*</span>牌名</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="GOODS_BRAND" name="Goods[0].GOODS_BRAND" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">貨品輔助描述</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="GOODS_DESC" name="Goods[0].GOODS_DESC" rows="3"></textarea>
+                                    </div>
+                                </div>
+                                <!--檢附文件類型 ˇ的勾選框 會與貨品類別(規格下拉連動 其他除外)-->
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span class="required-span" style="color:red;display:none">*</span>檢附文件類型一</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_01" name="Goods[0].DOC_TYP_01_CHK">醫院開業執照影本</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號一</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_01" name="Goods[0].DOC_COD_01" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明一</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_01" name="Goods[0].DOC_TXT_01" rows="3"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span class="required-span" style="color:red;display:none">*</span>檢附文件類型二</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_02" name="Goods[0].DOC_TYP_02_CHK">型錄（圖樣及說明書）一份</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號二</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_02" class="form-control" name="Goods[0].DOC_COD_02" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明二</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_02" name="Goods[0].DOC_TXT_02" rows="3"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span class="required-span" style="color:red;display:none">*</span>檢附文件類型三</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_03" name="Goods[0].DOC_TYP_03_CHK">原廠報價單一份</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號三</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_03" name="Goods[0].DOC_COD_03" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明三</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_03" name="Goods[0].DOC_TXT_03" rows="3"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span class="required-span" style="color:red;display:none">*</span>檢附文件類型四</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_04" name="Goods[0].DOC_TYP_04_CHK">醫療器材許可證明文件影本一份</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號四</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_04" name="Goods[0].DOC_COD_04" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明四</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_04" name="Goods[0].DOC_TXT_04" rows="3"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span class="required-span" style="color:red;display:none">*</span>檢附文件類型五</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_05" name="Goods[0].DOC_TYP_05_CHK">管理醫師：執業執照影本</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號五</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_05" name="Goods[0].DOC_COD_05" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明五</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_05" name="Goods[0].DOC_TXT_05" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型六</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            <input type="checkbox" id="CHK_DOC_TYP_06" name="Goods[0].DOC_TYP_06_CHK">
+                                            管理醫師：核子醫學科專科醫師證書影本<font style="color: red;">（必選或自行勾選時，請填寫下述二欄位）</font>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號六</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_06" name="Goods[0].DOC_COD_06" class="form-normal" value="">
+                                        <font style="color: red;">（檢附證書代表之醫事人員或公共衛生師身分證字號）</font>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明六</label>
+                                    <font style="color: red;">（ex:證書字號）</font>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_06" name="Goods[0].DOC_TXT_06" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span class="required-span" style="color:red;display:none">*</span>檢附文件類型七</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            <input type="checkbox" id="CHK_DOC_TYP_07" name="Goods[0].DOC_TYP_07_CHK">管理醫師：放射線（腫瘤）專科醫師證書影本
+                                            <font style="color: red;">（必選或自行勾選時，請填寫下述二欄位）</font>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號七</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_07" name="Goods[0].DOC_COD_07" class="form-normal" value="">
+                                        <font style="color: red;">（檢附證書代表之醫事人員或公共衛生師身分證字號）</font>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明七</label>
+                                    <font style="color: red;">（ex:證書字號）</font>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_07" name="Goods[0].DOC_TXT_07" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型八</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_08" name="Goods[0].DOC_TYP_08_CHK">專任輻射防護人員：認可證書影本</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號八</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_08" name="Goods[0].DOC_COD_08" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明八</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_08" name="Goods[0].DOC_TXT_08" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型九</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_09" name="Goods[0].DOC_TYP_09_CHK">專任輻射防護人員：在職證明影本</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號九</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_09" name="Goods[0].DOC_COD_09" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明九</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_09" name="Goods[0].DOC_TXT_09" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_10" name="Goods[0].DOC_TYP_10_CHK">專任醫學物理專業人員：醫學物理訓練證明影本</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_10" name="Goods[0].DOC_COD_10" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_10" name="Goods[0].DOC_TXT_10" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十一</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_11" name="Goods[0].DOC_TYP_11_CHK">專任醫學物理專業人員：在職證明影本</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十一</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_11" name="Goods[0].DOC_COD_11" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十一</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_11" name="Goods[0].DOC_TXT_11" rows="3"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十二</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_12" name="Goods[0].DOC_TYP_12_CHK">專任運轉人員：運轉人員資格證明文件影本</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十二</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_12" name="Goods[0].DOC_COD_12" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十二</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_12" name="Goods[0].DOC_TXT_12" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十三</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_13" name="Goods[0].DOC_TYP_13_CHK">專任運轉人員：在職證明影本</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十三</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_13" name="Goods[0].DOC_COD_13" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十三</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_13" name="Goods[0].DOC_TXT_13" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十四</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            <input type="checkbox" id="CHK_DOC_TYP_14" name="Goods[0].DOC_TYP_14_CHK">專任正子放射製藥專業人員：<br>
+                                            具正子放射藥物製備一年以上工作經驗，或曾在國內外醫療機構接受正子放射藥物製備訓練三個月以上之證明文件
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十四</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_14" name="Goods[0].DOC_COD_14" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十四</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_14" name="Goods[0].DOC_TXT_14" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十五</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            <input type="checkbox" id="CHK_DOC_TYP_15" name="Goods[0].DOC_TYP_15_CHK">常駐工程師相關證明文件：<br>
+                                            本國常駐工程師應有維修訓練三個月以上經驗，並取得證明文件。原廠常駐工程師應提出國外相同機組之維修訓練證明文件。
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十五</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_15" name="Goods[0].DOC_COD_15" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十五</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_15" name="Goods[0].DOC_TXT_15" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十六</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_16" name="Goods[0].DOC_TYP_16_CHK">醫事放射師或醫事放射士：證書影本<font style="color: red;">（必選或自行勾選時，請填寫下述二欄位）</font></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十六</label><font style="color: red;">（檢附證書代表之醫事人員或公共衛生師身分證字號）</font>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_16" name="Goods[0].DOC_COD_16" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十六</label>
+                                    <font style="color: red;">（ex: 證書字號）</font>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_16" name="Goods[0].DOC_TXT_16" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十七</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_17" name="Goods[0].DOC_TYP_17_CHK">醫事放射師或醫事放射士：執業執照影本</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十七</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_17" name="Goods[0].DOC_COD_17" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十七</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_17" name="Goods[0].DOC_TXT_17" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件類型十八</label>
+                                    <div class="col-sm-10">
+                                        <label>
+                                            <input type="checkbox" id="CHK_DOC_TYP_18" name="Goods[0].DOC_TYP_18_CHK">醫事放射師或醫事放射士：<br>
+                                            應有一人以上具操作單光子斷層掃描設備一年以上之經驗，或曾在國內外 醫療機構接受正子斷層掃描設備操作訓練三個月以上之證明文件
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十八</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_18" name="Goods[0].DOC_COD_18" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十八</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_18" name="Goods[0].DOC_TXT_18" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2"><span class="required-span" style="color:red;display:none">*</span>檢附文件類型十九</label>
+                                    <div class="col-sm-10">
+                                        <label><input type="checkbox" id="CHK_DOC_TYP_19" name="Goods[0].DOC_TYP_19_CHK">醫院評鑑結果證明文件</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件字號十九</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="DOC_COD_19" name="Goods[0].DOC_COD_19" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2">檢附文件說明十九</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="DOC_TXT_19" name="Goods[0].DOC_TXT_19" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                @*<h2 class="second-title">佐證文件檔案上傳</h2>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型一</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_01" name="Goods[0].DOC_TYP_01_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_01_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型二</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_02" name="Goods[0].DOC_TYP_02_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_02_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型三</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_03" name="Goods[0].DOC_TYP_03_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_03_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型四</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_04" name="Goods[0].DOC_TYP_04_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_04_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型五</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_05" name="Goods[0].DOC_TYP_05_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_05_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型六</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_06" name="Goods[0].DOC_TYP_06_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_06_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型七</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_07" name="Goods[0].DOC_TYP_07_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_07_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型八</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_08" name="Goods[0].DOC_TYP_08_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_08_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型九</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_09" name="Goods[0].DOC_TYP_09_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_09_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型十</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_10" name="Goods[0].DOC_TYP_10_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_10_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型十一</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_11" name="Goods[0].DOC_TYP_11_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_11_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型十二</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_12" name="Goods[0].DOC_TYP_12_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_12_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型十三</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_13" name="Goods[0].DOC_TYP_13_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_13_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型十四</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_14" name="Goods[0].DOC_TYP_14_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_14_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型十五</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_15" name="Goods[0].DOC_TYP_15_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_15_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型十六</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_16" name="Goods[0].DOC_TYP_16_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_16_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型十七</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_17" name="Goods[0].DOC_TYP_17_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_17_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型十八</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_18" name="Goods[0].DOC_TYP_18_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_18_FILE_NAME)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">檢附文件類型十九</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" id="DOC_TYP_19" name="Goods[0].DOC_TYP_19_FILE" class="form-control" onchange="setFileName($(this).attr('name'))">
+                                            @Html.HiddenFor(x => x.Goods[0].DOC_TYP_19_FILE_NAME)
+                                        </div>
+                                    </div>*@
+                            </div>
+                            </div>
+                        <!--貨品資料列-->
+
+                        <div class="btn-bar text-center">
+                            <button type="button" class="btn btn-save" onclick="doPreView()">存檔並預覽</button>
+                            <button type="reset" class="btn btn-clear" onclick="doReset()">清除資料</button>
+                        </div>
+
+                    </div>
+
+                    <input type="hidden" id="rowCount" value="1" />
+                    <input type="hidden" id="emptyRow" value="" />
+                    @Html.HiddenFor(x => x.TAX_FULL_ADDRESS)
+                    @Html.HiddenFor(x => x.TEL)
+                    @Html.HiddenFor(x => x.FAX)
+                    @Html.HiddenFor(x => x.MAIL)
+                </div>
+                <!--ApplyForm-->
+
+                <!--PreViewForm-->
+                <div id="PreViewForm" class="tab-pane fade">
+                    
+                </div>
+                <!--PreViewForm-->
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+
+
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#TRN_PORT_ID').change(function () {
+            GetHarborList('TRN_PORT_ID', 'TRN_PORT_ID2');
+            $('#TRN_PORT_COUNTRY').val($('#TRN_PORT_ID option:selected').text());
+        });
+
+        $('#BEG_PORT_ID').change(function () {
+            GetHarborList('BEG_PORT_ID', 'BEG_PORT_ID2');
+            $('#BEG_PORT_COUNTRY').val($('#BEG_PORT_ID option:selected').text());
+        });
+
+        initGoodsDDL();
+
+        $('#TAX_ORG_CITY_CODE').on('blur', doTAX_ORG_CITYNameGet);
+        doTAX_ORG_CITYNameGet();
+
+        $('#emptyRow').val($('#row1').html());
+
+        $('#DOMAINList').change(function () {
+            if ($('#DOMAINList option:selected').text() == '自訂' || $('#DOMAINList option:selected').text() == '請選擇') {
+                $('#MAIL_DOMAIN').val('');
+            }
+            else {
+                $('#MAIL_DOMAIN').val($('#DOMAINList option:selected').text());
+            }
+        });
+
+        $('#row1 input[name="Goods[0].SRL_NO"').val('1');
+
+        $('#DEST_STATE_ID').change(function () {
+            $('#DEST_STATE').val($('#DEST_STATE_ID option:selected').text());
+        });
+
+        $('#SELL_STATE_ID').change(function () {
+            $('#SELL_STATE').val($('#SELL_STATE_ID option:selected').text());
+        });
+
+        $('#APP_USE_ID').change(function () {
+            $('#APP_USE_TEXT').val($('#APP_USE_ID option:selected').text());
+        });
+
+        $('#CONF_TYPE_ID').change(function () {
+            $('#CONF_TYPE_TEXT').val($('#CONF_TYPE_ID option:selected').text());
+        });
+
+    });
+
+    function GetHarborList(TRN_PORT_ID, TRN_PORT_ID2) {
+        var port = $('#' + TRN_PORT_ID);
+
+        if ($(port).val()=='') {
+            $('#' + TRN_PORT_ID2).empty();
+        }
+
+        var data = {
+            'url': '/Ajax/GetHarborList', 'msg': '查無該港口!!', 'arg': { 'port': port.val() }, 'result': $('#' + TRN_PORT_ID)
+        };
+
+        if ($.trim(data.arg.port) == '')
+            data.result.val('');
+        else {
+            port.val(data.arg.port);
+            loadHarborList(data, TRN_PORT_ID2);
+        }
+    };
+
+    function loadHarborList(data, objectId) {
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) {
+                data.result.val('');
+            }
+            else {
+                if (resp.data != '') {
+                    $('#' + objectId).empty();
+                    $.each(resp.data, function (i, item) {
+                        $('#' + objectId).append('<option value=' + item.CODE + '>' + item.TEXT + '</option>');
+                    });
+                }
+                else {
+                    data.result.val('');
+                    $('#' + objectId).empty();
+                    blockAlert(data.msg);
+                }
+            }
+        });
+    };
+
+    // 地址
+    function loadDialogTAX_ORG_CITYCodeMapName(data) {
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) data.box.val('');
+            else {
+                if (resp.data != '') data.box.val(resp.data);
+                else { data.box.val(''); data.add.val(''); blockAlert(data.msg); }
+            }
+        });
+    };
+
+    function doTAX_ORG_CITYSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢'; popupWindow({ 'width': 900 }, url, title, null, function (retData, doc) {
+            if (retData != null) {
+                $('#TAX_ORG_CITY_CODE').val(retData.Id);
+                $('#TAX_ORG_CITY_TEXT').val(retData.Name);
+            }
+        });
+    }
+
+    function doTAX_ORG_CITYNameGet() {
+        var code = $('#TAX_ORG_CITY_CODE');
+        var data = { 'url': '/Ajax/GetCityTown', 'msg': '查無該郵遞區號!!', 'arg': { 'CODE': code.val().toUpperCase() }, 'box': $('#TAX_ORG_CITY_TEXT'), 'add': $('#TAX_ORG_CITY_CODE') };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogTAX_ORG_CITYCodeMapName(data);
+        }
+    };
+
+    //預覽
+    function doPreView() { 
+
+        if (validation())
+        {
+            $('#TRN_PORT').val($('#TRN_PORT_ID2 option:selected').text());
+            $('#BEG_PORT').val($('#BEG_PORT_ID2 option:selected').text());
+            $('#TAX_FULL_ADDRESS').val($('#TAX_ORG_CITY_CODE').val() + $('#TAX_ORG_CITY_TEXT').val() + $('#TAX_ORG_CITY_DETAIL').val())
+
+            if ($('#TEL_SEC').val() == '' || $('#TEL_NO').val() == '') {
+                $('#TEL').val('');
+            }
+            else {
+                $('#TEL').val($('#TEL_SEC').val() + '-' + $('#TEL_NO').val())
+            }
+
+            if ($('#TEL').val() != '' && $('#TEL_EXT') != '') {
+                $('#TEL').val($('#TEL_SEC').val() + '-' + $('#TEL_NO').val() + '#' + $('#TEL_EXT').val());
+            }
+
+            if ($('#FAX_SEC').val() == '' || $('#FAX_NO').val() == '') {
+                $('#FAX').val('')
+            }
+            else {
+                $('#FAX').val($('#FAX_SEC').val() + '-' + $('#FAX_NO').val())
+            }
+
+            if ($('#FAX').val() != '' && $('#FAX_EXT') != '') {
+                $('#FAX').val($('#FAX_SEC').val() + '-' + $('#FAX_NO').val() + '#' + $('#FAX_EXT').val());
+            }
+
+            $('#MAIL').val($('#MAIL_ACCOUNT').val() + '@@' + $('#MAIL_DOMAIN').val().replace('@@', ''));
+
+            for (var i = 0; i < $('input[id^="CHK_DOC_TYP"]').length; i++) {
+                var attrName = $($('input[id^="CHK_DOC_TYP"]')[i]).attr('name');
+
+                if ($('input[name^="' + attrName + '"]').attr('disabled') != undefined) {
+                    $('input[name^="' + attrName + '"]').removeAttr('disabled');
+                    $('input[name^="' + attrName + '"]').attr('value', 'true');
+                }
+
+                if ($('input[name^="' + attrName + '"]').is(':checked')) {
+                    $('input[name^="' + attrName + '"]').attr('value', 'true');
+                }
+
+            }
+
+            var data = getFormDataToObject($("form[id=main_form]"));
+            ajaxLoadMore('@Url.Action("Apply")', data, function (retData) {
+                if (retData.status) {
+                    ajaxLoadMore('@Url.Action("PreView")', data, function (getHtml) {
+                        $('#Apply_Tab').removeClass('active');
+                        $('#ApplyForm').attr('class', 'tab-pane fade');
+
+                        $('#PreView_Tab').attr('class', 'active');
+                        $('#PreViewForm').attr('class', 'tab-pane fade active in');
+
+                        $("#PreViewForm").html(getHtml);
+                        
+                    });
+                }
+                else {
+                    blockAlert(retData.message, "提示訊息");
+                }
+            });
+        }
+    }
+
+    function doReset() {
+        $('#TRN_PORT_ID2').empty();
+        $('#BEG_PORT_ID2').empty();
+
+        $('#goodsTable div[id^="row"]').remove();
+        $('#rowCount').val(0);
+        addGoodRow();
+    }
+
+    function addGoodRow() {
+        var rowCount = parseInt($('#rowCount').val(), 10) + 1;
+
+        $('#goodsTable').append('<div id=\"row' + rowCount + '\" data-group=\"goods\">' + $('#emptyRow').val().replace(/btnDelte_1/gi, 'btnDelte_' + rowCount).replace(/Goods\[0\]/gi, 'Goods[' + parseInt($('#rowCount').val(), 10) + ']') + '</div>');
+        $('#row' + rowCount + ' #SRL_NOItem').text(rowCount);
+        $('#row' + rowCount + ' input[name="Goods[' + (rowCount-1) + '].SRL_NO"]').val(rowCount);
+        $('#rowCount').val(rowCount);
+        initGoodsDDL();
+    }
+
+    function deleteGoodRow(obj)
+    {
+        var rowId = $('#' + $(obj).attr('id')).parent().parent().parent().attr('id');
+        $('#goodsTable #' + rowId).remove();
+
+        var fileSet = $('#goodsTable div[id^="row"] input[type="file"]');
+        
+        if ($('#goodsTable').data('group', 'goods') == null || $('#goodsTable').data('group', 'goods') == undefined)
+        {
+            $('#rowCount').val(0);
+        }
+        else
+        {
+            var count=1;
+            for (i = 0; i < $('#goodsTable div[id^="row"]').length; i++)
+            {               
+                var tempHtml = '';
+                $($('#goodsTable div[id^="row"]')[i]).attr('id', 'row' + count);
+                $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #SRL_NOItem').text(count);
+
+                //tempHtml = $($('#goodsTable div[id^="row"]')[i]).html().replace(/Goods\[[0-9]+\]/gi, 'Goods[' + i + ']');
+
+                //$($('#goodsTable div[id^="row"]')[i]).html(tempHtml);
+
+                $($('#goodsTable div[id^="row"]')[i]).find('input[type="text"]').each(function () {
+                    $(this).attr('name', $(this).attr('name').replace(/Goods\[[0-9]+\]/gi, 'Goods[' + i + ']'));
+                })
+
+                $($('#goodsTable div[id^="row"]')[i]).find('textarea').each(function () {
+                    $(this).attr('name', $(this).attr('name').replace(/Goods\[[0-9]+\]/gi, 'Goods[' + i + ']'));
+                })
+
+                $($('#goodsTable div[id^="row"]')[i]).find('input[type="checkbox"]').each(function () {
+                    $(this).attr('name', $(this).attr('name').replace(/Goods\[[0-9]+\]/gi, 'Goods[' + i + ']'));
+                })
+
+                $($('#goodsTable div[id^="row"]')[i]).find('input[type="hidden"]').each(function () {
+                    $(this).attr('name', $(this).attr('name').replace(/Goods\[[0-9]+\]/gi, 'Goods[' + i + ']'));
+                })
+
+                $($('#goodsTable div[id^="row"]')[i]).find('select').each(function () {
+                    $(this).attr('name', $(this).attr('name').replace(/Goods\[[0-9]+\]/gi, 'Goods[' + i + ']'));
+                })
+
+                count++;
+            }
+
+            $('#rowCount').val((count - 1));
+
+            count = 0
+            var rowCount=1
+            for (i = 0; i < $(fileSet).length; i++)
+            {  
+                var tagName = '';
+                var tagId=''
+
+                if (rowCount % 20 == 0)
+                {
+                    count++;
+                    rowCount = 1
+                }
+
+                if (rowCount < 10)
+                {
+                    tagName = 'Goods[' + count + '].DOC_TYP_0' + rowCount + '_FILE';
+                    tagId = 'DOC_TYP_0' + rowCount
+                }
+                else
+                {
+                    tagName = 'Goods[' + count + '].DOC_TYP_' + rowCount + '_FILE';
+                    tagId = 'DOC_TYP_' + rowCount
+                }
+                
+                rowCount++;
+
+                $($((fileSet)[i])[0]).attr('id', tagId)
+                $($((fileSet)[i])[0]).attr('name', tagName)
+                
+            }
+
+            count = 1;
+            var rowCount = 0;
+            for (i = 0; i < $('#goodsTable div[id^="row"]').length; i++) {
+
+                var destObjId=$($('#goodsTable div[id^="row"]')[i]).attr('id')
+                
+                $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' input[name^="Goods[' + i + '].SRL_NO"]').val(count);
+
+                for (j = 0; j < $('#' + destObjId + ' input[type="file"]').length; j++)
+                {
+                    var newObj = $(fileSet)[rowCount];                  
+                    $($($($('#' + destObjId + ' input[type="file"]')[j]))[0]).replaceWith($(newObj)[0]);
+                    setHiddenFileName($($('#' + destObjId + ' input[type="file"]')[j]).attr('name'));
+                    rowCount++
+                }
+
+                count++;
+            }
+
+        }
+
+    }
+
+    function validation()
+    {
+        var grid = '';
+        var chkMsg = '';
+
+        if ($('#APPLY_PID').val().trim()=='')
+        {
+            chkMsg += '請輸入申請人身分證字號<br/>';
+        }
+
+        if (!checkID($('#APPLY_PID').val())) {
+            chkMsg += '請輸入"正確"申請人身分證字號<br/>';
+        }
+
+        if ($('#TAX_ORG_ID').val().trim() == '')
+        {
+            chkMsg += '請輸入身分證字號/統一編號<br/>';
+        }
+
+        if (!checkID($('#TAX_ORG_ID').val()) && !isValidTaxID($('#TAX_ORG_ID').val()))
+        {
+            chkMsg += '請輸入"正確"身分證字號/統一編號<br/>';
+        }
+
+        if ($('#TAX_ORG_NAME').val().trim() == '' && $('#TAX_ORG_ENAME').val().trim() == '')
+        {
+            chkMsg += '請輸入姓名/公司名稱中文或姓名或姓名/公司名稱英文<br/>';
+        }
+
+
+        if ($('#TAX_ORG_CITY_CODE').val().trim() + $('#TAX_ORG_CITY_TEXT').val().trim() + $('#TAX_ORG_CITY_DETAIL').val().trim() == '' && $('#TAX_ORG_EADDR').val().trim() == '')
+        {
+            chkMsg += '請輸入聯絡地址中文或聯絡地址英文<br/>';
+        }
+
+        if ($('#TAX_ORG_MAN').val().trim() == '')
+        {
+            chkMsg += '請輸入聯絡人姓名<br/>';
+        }
+
+        if ($('#TEL_SEC').val().trim() + $('#TEL_NO').val().trim() == '') {
+
+            chkMsg += '請輸入聯絡人電話<br/>';
+
+            if (!($('#TEL_SEC').val().trim() +'-' + $('#TEL_NO').val().trim() +'#'+ $('#TEL_EXT').val().trim()).match(/^(\d{2,4}-)(\d{6,8})?(#\d{1,6})?$/))
+            {
+                chkMsg += '聯絡人電話輸入格式不正確<br/>';
+            }
+
+        }
+
+        if($('#MAIL_ACCOUNT').val()=='' || $('#MAIL_DOMAIN').val()=='')
+        {
+            chkMsg += '請輸入完整聯絡人E-MAIL<br/>';
+        }
+
+        //if ($('#FAX_SEC').val().trim() + $('#FAX_NO').val().trim() == '') {
+
+        //    blockAlert('請輸入聯絡人傳真', '訊息');
+        //    return false;
+
+        //    if (!($('#FAX_SEC').val().trim() + '-' + $('#FAX_NO').val().trim() + '#' + $('#FAX_EXT').val().trim()).match(/^(\d{2,4}-)(\d{6,8})?(#\d{1,6})?$/)) {
+        //        blockAlert('聯絡人傳真輸入格式不正確', '訊息');
+        //        return false;
+        //    }
+        //}
+
+        if ($('#DATE_S_AC').val().trim() == '')
+        {
+            chkMsg += '請輸入起始日期<br/>';
+        }
+
+        if ($('#DATE_E_AC').val().trim() == '') {
+            chkMsg += '請輸入終止日期<br/>';
+        }
+
+        if ($('#DEST_STATE_ID option:selected').val().trim() == '')
+        {
+            chkMsg += '請選擇生產國家<br/>';
+        }
+
+        if ($('#SELL_STATE_ID option:selected').val().trim() == '') {
+            chkMsg += '請選擇賣方國家<br/>';
+        }
+
+        if ($('#SELL_NAME').val().trim() == '')
+        {
+            chkMsg += '請輸入賣方英文名稱<br/>';
+        }
+
+        if ($('#SELL_ADDR').val().trim() == '') {
+            chkMsg += '請輸入賣方英文地址<br/>';
+        }
+
+        if ($('#APP_USE_ID option:selected').val().trim() == '')
+        {
+            chkMsg += '請選擇申請用途<br/>';
+        }
+
+        if ($('#CONF_TYPE_ID option:selected').val().trim() == '') {
+            chkMsg += '請選擇核發方式<br/>';
+        }
+
+        for (i = 0; i < $('#goodsTable div[id^="row"]').length; i++) {
+
+            var msg = '';
+            //'序號'
+            var SRL_NO = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #SRL_NOItem').text();
+            //貨品類別（規格）
+            var GOODS_TYPE_ID = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_0__GOODS_TYPE_ID option:selected').val().trim();
+            if (GOODS_TYPE_ID == '') {
+                msg += '請選擇貨品類別（規格）</br>';
+            }
+            //貨品名稱
+            var GOODS_TYPE = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #GOODS_TYPE').val().trim();
+            if (GOODS_TYPE == '') {
+                msg += '請輸入貨品名稱</br>';
+            }
+            //申請數量
+            var APPLY_CNT = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #APPLY_CNT').val().trim();
+            if (APPLY_CNT == '') {
+             
+                msg += '請輸入申請數量</br>';
+            }
+            else {
+                var re = /^[0-9]+$/;
+                if (!re.test(APPLY_CNT)) {
+                    msg += '申請數量僅能輸入數字</br>';
+                }
+            }
+            //貨品單位
+            var GOODS_UNIT_ID = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #Goods_0__GOODS_UNIT_ID option:selected').val().trim();
+            if (GOODS_UNIT_ID == '') {
+                msg += '請選擇貨品單位</br>';
+            }
+            //型號
+            var GOODS_MODEL = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #GOODS_MODEL').val().trim();
+            if (GOODS_MODEL == '') {
+                msg += '請輸入型號</br>';
+            }
+            //規格
+            var GOODS_SPEC_1 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #GOODS_SPEC_1').val().trim();
+            if (GOODS_SPEC_1 == '') {
+                msg += '請輸入規格</br>';
+            }
+            //牌名
+            var GOODS_BRAND = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #GOODS_BRAND').val().trim();
+            if (GOODS_BRAND == '') {
+                msg += '請輸入牌名</br>';
+            }
+
+            //檢附文件類型一
+            var DOC_TYP_01 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_01').val().trim();
+            //檢附文件類型二
+            var DOC_TYP_02 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_02').val().trim();
+            //檢附文件類型三
+            var DOC_TYP_03 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_03').val().trim();
+            //檢附文件類型四
+            var DOC_TYP_04 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_04').val().trim();
+            //檢附文件類型五
+            var DOC_TYP_05 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_05').val().trim();
+            //檢附文件類型六
+            var DOC_TYP_06 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_06').val().trim();
+            //檢附文件類型七
+            var DOC_TYP_07 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_07').val().trim();
+            //檢附文件類型八
+            var DOC_TYP_08 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_08').val().trim();
+            //檢附文件類型九
+            var DOC_TYP_09 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_09').val().trim();
+            //檢附文件類型十
+            var DOC_TYP_10 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_10').val().trim();
+            //檢附文件類型十一
+            var DOC_TYP_11 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_11').val().trim();
+            //檢附文件類型十二
+            var DOC_TYP_12 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_12').val().trim();
+            //檢附文件類型十三
+            var DOC_TYP_13 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_13').val().trim();
+            //檢附文件類型十四
+            var DOC_TYP_14 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_14').val().trim();
+            //檢附文件類型十五
+            var DOC_TYP_15 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_15').val().trim();
+            //檢附文件類型十六
+            var DOC_TYP_16 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_16').val().trim();
+            //檢附文件類型十七
+            var DOC_TYP_17 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_17').val().trim();
+            //檢附文件類型十八
+            var DOC_TYP_18 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_18').val().trim();
+            //檢附文件類型十九
+            var DOC_TYP_19 = 'NA';//$('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TYP_19').val().trim();
+
+            //醫院開業執照影本
+            var CHK_DOC_TYP_01 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_01').prop("checked");
+            if (CHK_DOC_TYP_01 && DOC_TYP_01 == '') {
+                msg += '請上傳醫院開業執照影本檔案</br>';
+            }
+            //型錄（圖樣及說明書）一份
+            var CHK_DOC_TYP_02 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_02').prop("checked");
+            if (CHK_DOC_TYP_02 && DOC_TYP_02 == '') {
+                msg += '請上傳型錄（圖樣及說明書）一份檔案</br>';
+            }
+            //原廠報價單一份
+            var CHK_DOC_TYP_03 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_03').prop("checked");
+            if (CHK_DOC_TYP_03 && DOC_TYP_03 == '') {
+                msg += '請上傳原廠報價單一份檔案</br>';
+            }
+            //醫療器材許可證明文件影本一份
+            var CHK_DOC_TYP_04 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_04').prop("checked");
+            if (CHK_DOC_TYP_04 && DOC_TYP_04 == '') {
+                msg += '請上傳醫療器材許可證明文件影本一份檔案</br>';
+            }
+            //管理醫師：執業執照影本
+            var CHK_DOC_TYP_05 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_05').prop("checked");
+            if (CHK_DOC_TYP_05 && DOC_TYP_05 == '') {
+                msg += '請上傳管理醫師：執業執照影本檔案</br>';
+            }
+            //管理醫師：核子醫學科專科醫師證書影本
+            var CHK_DOC_TYP_06 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_06').prop("checked");
+            //檢附文件字號六
+            var DOC_COD_06 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_COD_06').val().trim();
+            //檢附文件說明六
+            var DOC_TXT_06 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TXT_06').val().trim();
+
+            if (CHK_DOC_TYP_06) {
+                if (DOC_COD_06 == '') {
+                    msg += '請輸入檢附證書代表之醫事人員或公共衛生師身分證字號</br>';
+                }
+
+                if (!checkID(DOC_COD_06)) {
+                    msg += '請輸入"正確"檢附證書代表之醫事人員或公共衛生師身分證字號</br>';
+                }
+            }
+
+            if (CHK_DOC_TYP_06 ) {
+                if (DOC_COD_06 == '' || DOC_TXT_06 == '') {
+                    msg += '請輸入檢附文件字號六及檢附文件說明六</br>';
+                }
+            }
+
+            if (CHK_DOC_TYP_06 && DOC_TYP_06 == '') {
+                msg += '請上傳管理醫師：核子醫學科專科醫師證書影本檔案</br>';
+            }
+
+            //管理醫師：放射線（腫瘤）專科醫師證書影本
+            var CHK_DOC_TYP_07 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_07').prop("checked");
+            //檢附文件字號七
+            var DOC_COD_07 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_COD_07').val().trim();
+            //檢附文件說明七
+            var DOC_TXT_07 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TXT_07').val().trim();
+
+            if (CHK_DOC_TYP_07) {
+                if (DOC_COD_07 == '') {
+                    msg += '請輸入檢附證書代表之醫事人員或公共衛生師身分證字號</br>';
+                }
+
+                if (!checkID(DOC_COD_07)) {
+                    msg += '請輸入"正確"檢附證書代表之醫事人員或公共衛生師身分證字號</br>';
+                }
+            }
+
+            if (CHK_DOC_TYP_07) {
+                if (DOC_COD_07 == '' || DOC_TXT_07 == '') {
+                    msg += '請輸入檢附文件字號七及檢附文件說明七</br>';
+                }
+            }
+
+            if (CHK_DOC_TYP_07 && DOC_TYP_07 == '') {
+                msg += '請上傳管理醫師：放射線（腫瘤）專科醫師證書影本檔案</br>';
+            }
+
+            //專任輻射防護人員：認可證書影本
+            var CHK_DOC_TYP_08 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_08').prop("checked");
+            if (CHK_DOC_TYP_08 && DOC_TYP_08 == '') {
+                msg += '請上傳專任輻射防護人員：認可證書影本檔案</br>';
+            }
+            //專任輻射防護人員：在職證明影本
+            var CHK_DOC_TYP_09 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_09').prop("checked");
+            if (CHK_DOC_TYP_09 && DOC_TYP_09 == '') {
+                msg += '請上傳專任輻射防護人員：在職證明影本檔案</br>';
+            }
+            //專任醫學物理專業人員：醫學物理訓練證明影本
+            var CHK_DOC_TYP_10 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_10').prop("checked");
+            if (CHK_DOC_TYP_10 && DOC_TYP_10 == '') {
+                msg += '請上傳專任醫學物理專業人員：醫學物理訓練證明影本檔案</br>';
+            }
+            //專任醫學物理專業人員：在職證明影本
+            var CHK_DOC_TYP_11 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_11').prop("checked");
+            if (CHK_DOC_TYP_11 && DOC_TYP_11 == '') {
+                msg += '請上傳專任醫學物理專業人員：在職證明影本檔案</br>';
+            }
+            //專任運轉人員：運轉人員資格證明文件影本
+            var CHK_DOC_TYP_12 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_12').prop("checked");
+            if (CHK_DOC_TYP_12 && DOC_TYP_12 == '') {
+                msg += '請上傳專任運轉人員：運轉人員資格證明文件影本檔案</br>';
+            }
+            //專任運轉人員：在職證明影本
+            var CHK_DOC_TYP_13 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_13').prop("checked");
+            if (CHK_DOC_TYP_13 && DOC_TYP_13 == '') {
+                msg += '請上傳專任運轉人員：在職證明影本檔案</br>';
+            }
+            //專任正子放射製藥專業人員：具正子放射藥物製備一年以上工作經驗，或曾在國內外醫療機構接受正子放射藥物製備訓練三個月以上之證明文件
+            var CHK_DOC_TYP_14 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_14').prop("checked");
+            if (CHK_DOC_TYP_14 && DOC_TYP_14 == '') {
+                msg += '請上傳專任正子放射製藥專業人員：具正子放射藥物製備一年以上工作經驗，或曾在國內外醫療機構接受正子放射藥物製備訓練三個月以上之證明文件檔案</br>';
+            }
+            //常駐工程師相關證明文件:本國常駐工程師應有維修訓練三個月以上經驗，並取得證明文件。原廠常駐工程師應提出國外相同機組之維修訓練證明文件。
+            var CHK_DOC_TYP_15 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_15').prop("checked");
+            if (CHK_DOC_TYP_15 && DOC_TYP_15 == '') {
+                msg += '請上傳常駐工程師相關證明文件:本國常駐工程師應有維修訓練三個月以上經驗，並取得證明文件。原廠常駐工程師應提出國外相同機組之維修訓練證明文件。檔案</br>';
+            }
+            //醫事放射師或醫事放射士：證書影本
+            var CHK_DOC_TYP_16 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_16').prop("checked");
+            //檢附文件字號十六
+            var DOC_COD_16 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_COD_16').val().trim();
+            //檢附文件說明十六
+            var DOC_TXT_16 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #DOC_TXT_16').val().trim();
+
+            if (CHK_DOC_TYP_16) {
+                if (DOC_COD_16 == '') {
+                    msg += '請輸入檢附證書代表之醫事人員或公共衛生師身分證字號</br>';
+                }
+
+                if (!checkID(DOC_COD_16)) {
+                    msg += '請輸入"正確"檢附證書代表之醫事人員或公共衛生師身分證字號</br>';
+                }
+            }
+
+            if (CHK_DOC_TYP_16 && DOC_TYP_16 == '') {
+                msg += '請上傳醫事放射師或醫事放射士：證書影本檔案</br>';
+                if (DOC_COD_16 == '' || DOC_TXT_16 == '') {
+                    msg += '請輸入檢附文件字號七及檢附文件說明七</br>';
+                }
+            }
+            //醫事放射師或醫事放射士：執業執照影本
+            var CHK_DOC_TYP_17 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_17').prop("checked");
+            if (CHK_DOC_TYP_17 && DOC_TYP_17 == '') {
+                msg += '請上傳醫事放射師或醫事放射士：執業執照影本檔案</br>';
+            }
+            //醫事放射師或醫事放射士：應有一人以上具操作單光子斷層掃描設備一年以上之經驗，或曾在國內外 醫療機構接受正子斷層掃描設備操作訓練三個月以上之證明文件
+            var CHK_DOC_TYP_18 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_18').prop("checked");
+            if (CHK_DOC_TYP_18 && DOC_TYP_18 == '') {
+                msg += '請上傳醫事放射師或醫事放射士：應有一人以上具操作單光子斷層掃描設備一年以上之經驗，或曾在國內外 醫療機構接受正子斷層掃描設備操作訓練三個月以上之證明文件檔案</br>';
+            }
+            //醫院評鑑結果證明文件
+            var CHK_DOC_TYP_19 = $('#' + $($('#goodsTable div[id^="row"]')[i]).attr('id') + ' #CHK_DOC_TYP_19').prop("checked");
+            if (CHK_DOC_TYP_19 && DOC_TYP_19 == '') {
+                msg += '請上傳醫院評鑑結果證明文件檔案</br>';
+            }
+
+            if (msg != '') {
+                grid += '<tr style="width:100%;border-width:1px;border-style:solid"><td>序號:' + SRL_NO + '</tr></td>';
+                grid += '<tr style="width:100%;border-width:1px;border-style:solid"><td>' + msg + '</tr></td>';
+            }
+
+        }
+
+        grid = '<table style="width:100%;border-width:1px;border-style:solid">' + grid + '</table>';
+
+        if (chkMsg != '') {
+            blockAlert(chkMsg, '訊息');
+            return false;
+        }
+
+        if (grid.indexOf('序號')>0) {
+            blockAlert(grid, '訊息');
+            return false;
+        } 
+
+        return true;
+    }
+
+    function initGoodsDDL() {
+        if ($('select[id^="Goods_0__GOODS_TYPE_ID"]') != undefined) {
+            for (var i = 0; i < $('select[id^="Goods_0__GOODS_TYPE_ID"]').length; i++) {
+                var attrName = $($('select[id^="Goods_0__GOODS_TYPE_ID"]')[i]).attr('name');
+                $('select[name="' + attrName + '"]').on('change', function () {
+                    $('#' + $(this).parent().parent().parent().attr('id') + ' #GOODS_SPEC_1').val($(this).val());
+                    $('#' + $(this).parent().parent().parent().attr('id') + ' #GOODS_TYPE_TEXT').val($(this).find('option:selected').text());
+                });
+            }
+        }
+
+        if ($('select[id^="Goods_0__GOODS_UNIT_ID"]') != undefined) {
+            for (var i = 0; i < $('select[id^="Goods_0__GOODS_UNIT_ID"]').length; i++) {
+                var attrName = $($('select[id^="Goods_0__GOODS_UNIT_ID"]')[i]).attr('name');
+                $('select[name="' + attrName + '"]').on('change', function () {
+                    $('#' + $(this).parent().parent().parent().attr('id') + ' #GOODS_UNIT_TEXT').val($(this).find('option:selected').text());
+                });
+            }
+        }
+
+    }
+
+    function getMemberData()
+    {
+        var data = {
+            'url': '/Ajax/GetMemberData', 'msg': '查無該會員聯絡資料!!', 'arg': '', 'result': ''
+        };
+
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) {
+                data.result.val('');
+            }
+            else {
+                if (resp.data != '') {
+                    $.each(resp.data, function (i, item) {
+
+                        if (item.CODE == 'CNT_NAME')
+                        {
+                            $('#TAX_ORG_MAN').val(item.TEXT);
+                        }
+
+                        if (item.CODE == 'MAIL') {
+                            var mail = item.TEXT;
+
+                            if (mail != '') {
+
+                                $('#MAIL_ACCOUNT').val(mail.split('@@')[0]);
+
+                                $("#DOMAINList option").filter(function () {
+                                    return (this.text == (mail.split('@@')[1]).replace('@@', '') || this.text == '自訂');
+                                }).attr('selected', true);
+
+                                $('#MAIL_DOMAIN').val((mail.split('@@')[1]).replace('@@',''));
+                            }
+                        }
+
+                        if (item.CODE == 'CNT_TEL') {
+                            
+                            if (item.TEXT!='')
+                            {
+                                $('#TEL_SEC').val(item.TEXT.split('-')[0])
+                                $('#TEL_NO').val(item.TEXT.split('-')[1])
+
+                                if (item.TEXT.indexOf('#') > 0)
+                                {                                   
+                                    $('#TEL_EXT').val(item.TEXT.split('#')[1])
+                                    $('#TEL_NO').val($('#TEL_NO').val().substring(0, $('#TEL_NO').val().indexOf('#')));
+                                }
+                            }
+                        }
+
+                        if (item.CODE == 'FAX') {
+                            if (item.TEXT != '') {
+                                $('#FAX_SEC').val(item.TEXT.split('-')[0])
+                                $('#FAX_NO').val(item.TEXT.split('-')[1])
+
+                                if (item.TEXT.indexOf('#') > 0) {
+                                    $('#FAX_EXT').val(item.TEXT.split('#')[1])
+                                    $('#FAX_NO').val($('#FAX_NO').val().substring(0, $('#FAX_NO').val().indexOf('#')));
+                                }
+                            }
+                        }
+                    });
+                }
+                else {
+                    data.result.val('');
+                    blockAlert(data.msg);
+                }
+            }
+        });
+    }
+
+    function setFileName(objName)
+    { 
+            var validExts = new Array(".DOC", ".DOCX", ".ODT", ".ODF", ".ODS", ".XLS", ".XLSX", ".PDF", ".PPT", ".PPTX", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF", ".ZIP");
+
+            var fileExt = $('input[name="' + objName + '"]').val();
+            fileExt = fileExt.substring(fileExt.toLowerCase().lastIndexOf('.'));
+
+            if ($('input[name="' + objName + '"]')[0].files[0].size / 1024 / 1024 > 5) {
+                blockAlert("檔案大小不可超過5MB");
+                $('input[name="' + objName + '"]').val(null);
+                return false;
+            }
+
+            if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+                blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+                $('input[name="' + objName + '"]').val(null);
+                return false;
+            }
+            else
+            {
+                $($('input[name="' + objName + '"]').siblings()[0]).val($('input[name="' + objName + '"]').val().replace(/C:\\fakepath\\/i, ''));
+                return true;
+            } 
+    }
+
+    function setHiddenFileName(objName) {
+        $($('input[name="' + objName + '"]').siblings()[0]).val($('input[name="' + objName + '"]').val().replace(/C:\\fakepath\\/i, ''));
+    }
+
+    function setRequiredColumn(objName) {
+
+        var index = parseInt(objName.substr(objName.indexOf('[')+1,1), 10);
+        
+        if ($('select[name="' + objName + '"] option:selected').val() != 'C999') {
+            $('.required-span').show();
+            $('input[name="Goods[' + index + '].DOC_TYP_01_CHK"]').prop('checked', 'checked');
+            $('input[name="Goods[' + index + '].DOC_TYP_02_CHK"]').prop('checked', 'checked');
+            $('input[name="Goods[' + index + '].DOC_TYP_03_CHK"]').prop('checked', 'checked');
+            $('input[name="Goods[' + index + '].DOC_TYP_04_CHK"]').prop('checked', 'checked');
+            $('input[name="Goods[' + index + '].DOC_TYP_05_CHK"]').prop('checked', 'checked');
+            $('input[name="Goods[' + index + '].DOC_TYP_07_CHK"]').prop('checked', 'checked');
+            $('input[name="Goods[' + index + '].DOC_TYP_19_CHK"]').prop('checked', 'checked');
+        }
+        else {
+            $('.required-span').hide();
+            $('input[name="Goods[' + index + '].DOC_TYP_01_CHK"]').removeProp('checked');
+            $('input[name="Goods[' + index + '].DOC_TYP_02_CHK"]').removeProp('checked');
+            $('input[name="Goods[' + index + '].DOC_TYP_03_CHK"]').removeProp('checked');
+            $('input[name="Goods[' + index + '].DOC_TYP_04_CHK"]').removeProp('checked');
+            $('input[name="Goods[' + index + '].DOC_TYP_05_CHK"]').removeProp('checked');
+            $('input[name="Goods[' + index + '].DOC_TYP_07_CHK"]').removeProp('checked');
+            $('input[name="Goods[' + index + '].DOC_TYP_19_CHK"]').removeProp('checked');
+        }
+    }
+
+</script>

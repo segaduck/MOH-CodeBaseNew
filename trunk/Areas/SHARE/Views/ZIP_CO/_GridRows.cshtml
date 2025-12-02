@@ -1,0 +1,15 @@
+﻿@using EECOnline.Areas.SHARE.Models;
+@model ZIP_COFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        <tr>
+            <td align="center"><button type="button" class="btn btn-info" onclick="doSelect('@item.ZIP_CO','@item.ZIP_NM')">選</button></td>
+            <td>@item.ZIP_CO</td>
+            <td>@item.ZIP_NM</td>
+        </tr>
+    }
+}

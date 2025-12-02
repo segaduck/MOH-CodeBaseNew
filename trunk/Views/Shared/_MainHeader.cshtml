@@ -1,0 +1,114 @@
+﻿@using EECOnline.Models;
+@using EECOnline.Services;
+@using System.Collections;
+@{
+    ShareCodeListModel sc = new ShareCodeListModel();
+    string[] HomeUrl =
+    {
+        "/",
+        "/home",
+        "/home/",
+        "/home/index",
+    };
+    var abURL = Request.Url.AbsolutePath.TONotNullString().ToLower();
+    bool isHome = HomeUrl.Where(x => x == abURL).Any();
+    var tURL = Request.Url.TONotNullString().ToLower();
+    if (tURL.Contains("?result="))
+    {
+        isHome = false;
+    }
+
+    var Active1 = "";
+    var Active2 = "";
+    var Active3 = "";
+    var Active4 = "";
+    if (Request.Url.AbsolutePath.TONotNullString().ToLower().Contains("home/login")) { Active1 = "active"; }
+    if (Request.Url.AbsolutePath.TONotNullString().ToLower().Contains("home/search")) { Active2 = "active"; }
+    if (Request.Url.AbsolutePath.TONotNullString().ToLower().Contains("home/goto_searchgriddetail")) { Active2 = "active"; }
+    if (Request.Url.AbsolutePath.TONotNullString().ToLower().Contains("home/news")) { Active3 = "active"; }
+    if (Request.Url.AbsolutePath.TONotNullString().ToLower().Contains("home/qna")) { Active4 = "active"; }
+}
+
+@if (isHome)
+{
+    <header class="wel_header" id="wel_header">
+        <section id="header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="topnav" class="header-nav">
+                            <li><a href="~/Home/News" class="nav-sm">最新消息</a></li>
+                            <li><a href="~/Home/About">平台簡介</a></li>
+                            <li><a href="~/Home/Search" class="nav-sm">進度查詢</a></li>
+                            <li><a href="~/Home/QnA" class="nav-sm">常見問題</a></li>
+                            <li><a href="~/Home/ContactUs">聯絡我們</a></li>
+                            <li><a href="~/Home/Sitemap">網站導覽</a></li>
+                            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                                <i class="fa fa-bars"></i>
+                            </a>
+                        </div>
+                        <div class="content-index">
+                            <div class="logo">
+                                <a href="~/Home/Index"><img src="~/assests/images/logo-main.svg" alt="衛生福利部｜民眾線上申辦電子病歷服務平台"></a>
+                            </div>
+                            <h1>電子病歷線上申辦服務上線!!</h1>
+                            <button class="btn btn-apply hvr-float-shadow" onclick="window.location.href='@Url.Action("Login", "Home")';">
+                                線上申辦
+                                <img class="bx-fade-up" src="~/images/hand-up.svg" alt="開始線上申辦" title="開始線上申辦" />
+                            </button>
+                            <div class="nav-group">
+                                <a href="~/Home/News">最新消息</a>
+                                <a href="~/Home/Search">進度查詢</a>
+                                <a href="~/Home/QnA">常見問題</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </header>
+}
+else
+{
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div id="topnav" class="header-nav">
+                        <li><a href="~/Home/News" class="nav-sm">最新消息</a></li>
+                        <li><a href="~/Home/About">平台簡介</a></li>
+                        <li><a href="~/Home/Login" class="nav-sm">線上申辦</a></li>
+                        <li><a href="~/Home/Search" class="nav-sm">進度查詢</a></li>
+                        <li><a href="~/Home/QnA" class="nav-sm">常見問題</a></li>
+                        <li><a href="~/Home/ContactUs">聯絡我們</a></li>
+                        <li><a href="~/Home/Sitemap">網站導覽</a></li>
+                        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                            <i class="fa fa-bars"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="header">
+                        <div class="logo">
+                            <a href="~/Home/Index"><img src="~/assests/images/logo-main.svg" alt="衛生福利部｜民眾線上申辦電子病歷服務平台"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="main-nav">
+                        <div class="nav-group">
+                            <a href="~/Home/Login" class="@Active1">線上申辦</a>
+                            <a href="~/Home/Search" class="@Active2">進度查詢</a>
+                            <a href="~/Home/News" class="@Active3">最新消息</a>
+                            <a href="~/Home/QnA" class="@Active4">常見問題</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<script>
+
+</script>

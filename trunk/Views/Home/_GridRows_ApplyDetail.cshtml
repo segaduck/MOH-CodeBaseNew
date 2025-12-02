@@ -1,0 +1,196 @@
+﻿@using EECOnline.Models;
+@using EECOnline.Services;
+@using Omu.ValueInjecter;
+@model HomeViewModel
+
+@if (Model.LoginApply == null || Model.LoginApply.ApplyDetail == null || Model.LoginApply.ApplyDetail.ToCount() <= 0)
+{
+    <div>
+        <div class="col-md-7" style="padding-left: 0rem;">
+            <div class="apply-form">
+                <div class="row form-group" style="border-bottom: none;">
+                    <label class="form-label col-sm-12" style="text-align: center;">無資料</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="apply-card">
+                <div class="card-title" style="text-align: center; border-bottom: none;">無資料</div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    for (int i = 0; i < Model.LoginApply.ApplyDetail.Count; i++)
+    {
+        var item = Model.LoginApply.ApplyDetail[i];
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].keyid)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].apply_no)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].apply_no_sub)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].user_idno)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].user_birthday)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].hospital_name)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].pay_deadline)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].payed)
+        @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].payed_datetime)
+        <div>
+            <div class="col-md-7" style="padding-left: 0rem;">
+                <div class="apply-form">
+                    @*
+                        先暫時隱藏
+                        <div class="row form-group">
+                            <label style="margin: unset">項目：@((i + 1).ToString())</label>
+                        </div>
+                    *@
+                    <div class="row form-group">
+                        <label class="form-label col-sm-3">醫院名稱</label>
+                        <div class="col-sm-9">
+                            @if (item.payed != "Y")
+                            {
+                                //@Html.DropDownListFor(x => x.LoginApply.ApplyDetail[i].hospital_code,
+                                //    new SelectList(item.hospital_code_list, "Value", "Text", Model.LoginApply.ApplyDetail[i].hospital_code),
+                                //    new { @class = "form-select", onchange = "OnApplyDetailChange()" })
+
+                                // 改成 搜尋式下拉選單
+                                var strID = "LoginApply_ApplyDetail_" + i.ToString() + "__hospital_code";
+                                var strName = "LoginApply.ApplyDetail[" + i.ToString() + "].hospital_code";
+                                var forJS = "select2-LoginApply_ApplyDetail_" + i.ToString() + "__hospital_code-container";
+                                <select class="js-example-basic-single" onchange="OnApplyDetailChange()" id="@strID" name="@strName">
+                                    @foreach (var tmp in item.hospital_code_list)
+                                    {
+                                        <option value="@tmp.Value">@tmp.Text</option>
+                                    }
+                                </select>
+                                <script>
+                                    $(document).ready(function () {
+                                        $(".js-example-basic-single").select2();
+                                        $(".select2.select2-container.select2-container--default").attr("style", "width:100%;");
+                                        document.getElementById("@strID").value = "@item.hospital_code";
+                                        document.getElementById("@forJS").title = "@item.hospital_name";
+                                        document.getElementById("@forJS").innerText = "@item.hospital_name";
+                                    });
+                                </script>
+                            }
+                            else
+                            {
+                                @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].hospital_code)
+                                @Html.DropDownListFor(x => x.LoginApply.ApplyDetail[i].hospital_code,
+                                    new SelectList(item.hospital_code_list, "Value", "Text", Model.LoginApply.ApplyDetail[i].hospital_code),
+                                    new { @class = "form-select", @disabled = "disabled" })
+                            }
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="form-label col-sm-3">病歷時間區間</label>
+                        <div class="col-sm-9">
+                            @if (item.payed != "Y")
+                            {
+                                @Html.DatePickerTWFor(x => x.LoginApply.ApplyDetail[i].his_range1_AD, new { @class = "t-form-control", @style = "display: inline-flex; width: 10rem;", placeholder = "yyy/mm/dd", minDate = DateTime.Now.AddMonths(-6).ToString("yyyy-MM-dd"), maxDate = DateTime.Now.ToString("yyyy-MM-dd") }) <span>～</span>
+                                @Html.DatePickerTWFor(x => x.LoginApply.ApplyDetail[i].his_range2_AD, new { @class = "t-form-control", @style = "display: inline-flex; width: 10rem;", placeholder = "yyy/mm/dd", minDate = DateTime.Now.AddMonths(-6).ToString("yyyy-MM-dd"), maxDate = DateTime.Now.ToString("yyyy-MM-dd") })
+                            }
+                            else
+                            {
+                                @Html.DatePickerTWFor(x => x.LoginApply.ApplyDetail[i].his_range1_AD, new { @class = "t-form-control", @style = "display: inline-flex; width: 10rem; pointer-events:none;", placeholder = "yyy/mm/dd", @readonly = "readonly" }) <span>～</span>
+                                @Html.DatePickerTWFor(x => x.LoginApply.ApplyDetail[i].his_range2_AD, new { @class = "t-form-control", @style = "display: inline-flex; width: 10rem; pointer-events:none;", placeholder = "yyy/mm/dd", @readonly = "readonly" })
+                            }
+                            <br />
+                            <span style="font-size: medium;">
+                                請注意：線上申請電子病歷僅限近六個月之資料，非此時間區間之病歷，請逕洽該院臨櫃申請。
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <label class="form-label col-sm-3">病歷類型</label>
+                        <div class="col-sm-9">
+                            @if (item.payed != "Y")
+                            {
+                                @Html.CheckBoxListFor(x => x.LoginApply.ApplyDetail[i].his_types_SHOW, Model.LoginApply.ApplyDetail[i].his_types_SHOW_list, new { @id = "his_types", @class = "t-form-control", @style = "border-bottom: 0rem; zoom: 1.1;", onchange = "OnApplyDetailChange()" })
+                            }
+                            else
+                            {
+                                @Html.CheckBoxListFor(x => x.LoginApply.ApplyDetail[i].his_types_SHOW, Model.LoginApply.ApplyDetail[i].his_types_SHOW_list, new { @id = "his_types", @class = "t-form-control", @style = "border-bottom: 0rem; zoom: 1.1; pointer-events:none;" })
+                            }
+                        </div>
+                    </div>
+                    @*
+                        先暫時隱藏
+                        <div class="btnBar">
+                            @if (item.payed != "Y")
+                            {
+                                <button type="button" class="btn btn-danger" onclick="OnLoginApplyForm_Del('@i')">刪除</button>
+                            }
+                        </div>
+                    *@
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="apply-card">
+                    <div class="card-title">@item.hospital_name</div>
+                    @{ int sumPrice = 0; }
+                    @if (Model.LoginApply.ApplyDetail[i].ApplyDetailPrice.ToCount() > 0)
+                    {
+                        for (int j = 0; j < Model.LoginApply.ApplyDetail[i].ApplyDetailPrice.Count; j++)
+                        {
+                            var subItem = Model.LoginApply.ApplyDetail[i].ApplyDetailPrice[j];
+                            var tmpClass = (subItem.his_type.TONotNullString() == "") ? "cost-fee" : "cost-item";
+                            sumPrice = sumPrice + (subItem.price ?? 0);
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].keyid)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].apply_no)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].apply_no_sub)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].user_idno)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].hospital_code)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].hospital_name)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].his_type)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].his_type_name)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].price)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].pay_deadline)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].payed)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].payed_datetime)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].isprovide)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].provide_datetime)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].provide_bin)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].provide_ext)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_date)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_dateText)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_note)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_dept)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_doctor)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_docType)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_system)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_fileName)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_success)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ec_success_yn)
+
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.keyid)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.master_keyid)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.PatientIdNo)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.PatientId)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.AccessionNum)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.HospitalId)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.StudyUid)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.Guid)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.TemplateId)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.CreatedDateTime)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.Modality)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.BodyPart)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.PerfrmdStartDate)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.HospitalName)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.PerfrmdItem)
+                            @Html.HiddenFor(x => x.LoginApply.ApplyDetail[i].ApplyDetailPrice[j].ApiData.VerificationDate)
+
+                            <div class="apply-item @tmpClass">
+                                <div class="item-name" style="width: 70%;">@(subItem.his_type_name)@(subItem.Get_Api_A1_Remark)</div>
+                                <div class="item-price" style="width: 30%;"><span>@subItem.price</span>元</div>
+                            </div>
+                        }
+                    }
+                    <div class="apply-item cost-total">
+                        <div class="item-name" style="width: 50%;">累計申請費用</div>
+                        <div class="item-price" style="width: 50%;"><span>@sumPrice</span>元</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

@@ -1,0 +1,775 @@
+﻿@using ES.Models
+@using ES.Services
+@model ES.Models.ViewModels.Apply_005013ViewModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+}
+@using (Html.BeginForm("DocSave", "Apply_005013", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">民眾少量自用中藥貨品進口</a></div>
+            <div class="clearfix"></div>
+            @Html.HiddenFor(m => m.FormBack.APP_ID)
+            <h3 class="note-title" style="color:red;">粉紅色欄位為通知補件欄位，請確認</h3>
+            <div class="tab-content" id="myTabContent">
+                <div id="form" class="tab-pane fade active in">
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                    <div class="form-set">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">申辦項目</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static">民眾少量自用中藥貨品進口</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for="">申請須知</label>
+                                <div class="col-sm-10">
+                                    <p>一、依據入境旅客攜帶行李物品報驗稅放辦法及藥物樣品贈品管理辦法等規定。</p>
+                                    <p>
+                                        二、中藥材及中藥製劑：<br />
+                                        1.中藥材每種至多一公斤，合計不得超過十二種。<br />
+                                        2.中藥製劑(藥品)每種至多十二瓶(盒)，合計以不超過三十六瓶(盒)為限。<br />
+                                        3.攜帶入境超過前述限量之中藥材及中藥製劑(藥品)，應檢附醫療證明之文件(如醫師診斷證明)，且不逾3個月用量為限。<br />
+                                        4.非處方藥品於6個月內不得重複申請。
+                                    </p>
+                                    <p>
+                                        三、說明：<br />
+                                        1.旅客或隨交通工具服務人員攜帶入境或郵寄入境之自用藥品，不得供非自用之用途。<br />
+                                        2.本表鎖定之產品種類：瓶(盒、罐、條、支、包、袋)等均以「原包裝」為限。<br />
+                                        3.藥品成分含保育類物種者，應先取得主管機關(農業部)同意始可攜帶入境。<br />
+                                        4.自中國大陸輸入中藥製劑(藥品)需另取得經濟部國際貿易署輸入許可文件。
+                                    <p />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>案件類型</label>
+                                <div class="col-sm-4">
+                                    <div id="CASE_RADIO">
+                                        <input type="radio" name="optradio" value="Y" onchange="radioChane()" checked>事前申請
+                                        <input type="radio" name="optradio" value="N" onchange="radioChane()">補辦案件
+                                        @Html.HiddenFor(m => m.FormBack.CSEE_TYPE)
+                                    </div>
+                                    @Html.TextBoxFor(m => m.Detail.CSEE_TYPE, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                <label class="step-label col-sm-2" for="">申辦日期</label>
+                                <div class="col-sm-4">
+                                    @Html.BLATYPForTurbo(m => m.FormBack.APP_TIME_TW, Model.FormBack.APP_TIME_TW)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>姓名</label>
+                                <div class="col-sm-4">
+                                    @Html.BLATYPForTurbo(m => m.FormBack.NAME, Model.FormBack.NAME)
+                                    @Html.HiddenFor(m => m.FormBack.NAME)
+                                </div>
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證字號ID QUMDRE</label>
+                                <div class="col-sm-4">
+                                    @Html.BLATYPForTurbo(m => m.FormBack.IDN, Model.FormBack.IDN)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>地址Address</label>
+                                <div class="col-sm-10 form-inline">
+                                    @Html.TextBoxFor(m => m.FormBack.TAX_ORG_CITY_CODE, new { @id = "TAX_ORG_CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號" })
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.FormBack.TAX_ORG_CITY_TEXT, new { @id = "TAX_ORG_CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </span>
+                                    </div>
+                                    @Html.TextBoxFor(m => m.FormBack.TAX_ORG_CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+                                </div>
+                                <label class="col-sm-2" for=""></label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.Detail.ADDR, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話Tel. No.</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.TEL_BEFORE, new { @class = "form-10 form-normal" })
+                                    <span>-</span>
+                                    @Html.TextBoxFor(m => m.FormBack.TEL_AFTER, new { @class = "form-normal" })
+                                    <span>#</span>
+                                    @Html.TextBoxFor(m => m.FormBack.TEL_Extension, new { @class = "form-10 form-normal" })
+                                </div>
+                                <label class="col-sm-2" for=""></label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.Detail.TEL, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>行動電話</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(x => x.FormBack.MOBILE, new { @class = "form-control", @maxlength = "10", @readonly = "readonly" })
+                                </div>
+                                <label class="col-sm-2" for=""></label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.Detail.MOBILE, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>EMAIL</label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.FormBack.EMAIL, new { @class = "form-normal", @readonly = "readonly" })
+                                    @@
+                                    @Html.DropDownListFor(m => m.FormBack.EMAIL_0, dropdown.GetMailDomainList, new { @class = "form-normal", onchange = "doEmailChange()", disabled = "disabled" })
+                                    @Html.TextBoxFor(m => m.FormBack.EMAIL_1, new { @class = "form-normal", @readonly = "readonly" })
+                                    @Html.HiddenFor(m => m.FormBack.EMAIL_2)
+                                </div>
+                                <label class="col-sm-2" for=""></label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.Detail.EMAIL, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>生產國別Country of origin</label>
+                                <div class="col-sm-4">
+                                    @Html.DropDownListFor(m => m.FormBack.ProductionCountry, dropdown.Port2List, new { @class = "form-control", @onchange = "ProductionCountryChange()" })
+                                    @Html.HiddenFor(m => m.FormBack.ProductionCountry_TEXT)
+                                    @Html.TextBoxFor(m => m.Detail.ProductionCountry, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>賣方國家Country of seller</label>
+                                <div class="col-sm-4">
+                                    @Html.DropDownListFor(m => m.FormBack.SellerCountry, dropdown.Port2List, new { @class = "form-control", @onchange = "SellerCountryChange()" })
+                                    @Html.HiddenFor(m => m.FormBack.SellerCountry_TEXT)
+                                    @Html.TextBoxFor(m => m.Detail.SellerCountry, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div><div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>起運國家Shipping port</label>
+                                <div class="col-sm-4">
+                                    @Html.DropDownListFor(m => m.FormBack.ShippingPort, dropdown.Port2List, new { @class = "form-control", @onchange = "ShippingPortChange()" })
+                                    @Html.HiddenFor(m => m.FormBack.ShippingPort_TEXT)
+                                    @Html.TextBoxFor(m => m.Detail.ShippingPort, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <h2 class="second-title">民眾輸入自用中藥切結書(使用方法)</h2>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>個人用途</label>
+                                <div class="col-sm-10">
+                                    <input type="radio" name="optradio1" class="form-normal" value="1" onchange="radioChane1()" checked />1.疾病:請檢附醫療機構開立之診斷書，處方箋等醫療證明文件之影本。<br />
+                                    <input type="radio" name="optradio1" class="form-normal" value="2" onchange="radioChane1()" />2.保健養生:<br />
+                                    <input type="radio" name="optradio1" class="form-normal" value="3" onchange="radioChane1()" />3.其他:<br />
+                                    <div id="labRADIOUSAGE">
+                                        <div class="col-sm-2 form-inline">
+                                            請輸入說明:
+                                        </div>
+                                        <div class="col-sm-10">
+                                            @Html.TextBoxFor(m => m.FormBack.RADIOUSAGE_TEXT, new { @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    @Html.HiddenFor(m => m.FormBack.RADIOUSAGE)
+                                </div>
+                                <label class="col-sm-2" for=""></label>
+                                <div class="col-sm-10">
+                                    @Html.TextBoxFor(m => m.Detail.RADIOUSAGE, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <h2 class="second-title">申請項目</h2>
+                            @if (Model.FormBack.FormApply005013Item1 != null)
+                            {
+                                for (var i = 0; i < Model.FormBack.FormApply005013Item1.Count; i++)
+                                {
+                                    <div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">項次Item</label>
+                                            <div class="col-sm-4">
+                                                @Html.TextBoxFor(m => m.FormBack.FormApply005013Item1[i].ItemNum, new { @class = "form-control", @readonly = "readonly" })
+                                                @Html.HiddenFor(m => m.FormBack.FormApply005013Item2[i].ItemNum)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>產品類別ProductType</label>
+                                            <div class="col-sm-10">
+                                                @Html.RadioButtonFor(m => m.FormBack.FormApply005013Item1[i].PorcType, "0", new { @class = "form-normal" })
+                                                <span>中藥材</span>
+                                                @Html.RadioButtonFor(m => m.FormBack.FormApply005013Item1[i].PorcType, "1", new { @class = "form-normal" })
+                                                <span>中藥製劑</span>
+                                                @Html.TextBoxFor(m => m.Detail.FormApply005013Item1.Where(x => x.ItemNum == (i + 1).ToString()).ToList().FirstOrDefault().PorcType, new { @id = "Detail_" + i + "__PorcType", @name = "Detail.FormApply005013Item1[" + i + "].PorcType", @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>貨名Commodities</label>
+                                            <div class="col-sm-10">
+                                                @Html.TextBoxFor(m => m.FormBack.FormApply005013Item1[i].Commodities, new { @class = "form-control", @onkeyup = "CommoditiesChange(this)", @placeholder = "請輸入中英文貨名" })
+                                                @Html.TextBoxFor(m => m.Detail.FormApply005013Item1.Where(x => x.ItemNum == (i + 1).ToString()).ToList().FirstOrDefault().Commodities, new { @id = "Detail_" + i + "__Commodities", @name = "Detail.FormApply005013Item1[" + i + "].Commodities", @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for="">備註Memo</label>
+                                            <div class="col-sm-10">
+                                                @Html.TextBoxFor(m => m.FormBack.FormApply005013Item1[i].CommodMemo, new { @class = "form-control" })
+                                                @Html.TextBoxFor(m => m.Detail.FormApply005013Item1.Where(x => x.ItemNum == (i + 1).ToString()).ToList().FirstOrDefault().CommodMemo, new { @id = "Detail_" + i + "__CommodMemo", @name = "Detail.FormApply005013Item1[" + i + "].CommodMemo", @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型DrugForm</label>
+                                            <div class="col-sm-10">
+                                                @Html.DropDownListFor(m => m.FormBack.FormApply005013Item1[i].CommodType, new SelectList(dropdown.Getvw_DRUG_FORMList, "Value", "Text", Model.FormBack.FormApply005013Item1[i].CommodType), new { @class = "form-control", @onchange = "CommodTypeChange(this)" })
+                                                @Html.HiddenFor(m => m.FormBack.FormApply005013Item1[i].CommodType_TEXT)
+                                                @Html.TextBoxFor(m => m.Detail.FormApply005013Item1.Where(x => x.ItemNum == (i + 1).ToString()).ToList().FirstOrDefault().CommodType, new { @id = "Detail_" + i + "__CommodType", @name = "Detail.FormApply005013Item1[" + i + "].CommodType", @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量Q'ty</label>
+                                            <div class="col-sm-4">
+                                                @Html.TextBoxFor(m => m.FormBack.FormApply005013Item1[i].Qty, new { @class = "form-normal", @onkeyup = "ItemQtyChange(this)" })
+                                                @Html.TextBoxFor(m => m.Detail.FormApply005013Item1.Where(x => x.ItemNum == (i + 1).ToString()).ToList().FirstOrDefault().Qty, new { @id = "Detail_" + i + "__Qty", @name = "Detail.FormApply005013Item1[" + i + "].Qty", @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量單位Unit</label>
+                                            <div class="col-sm-4">
+                                                @Html.DropDownListFor(m => m.FormBack.FormApply005013Item1[i].Unit, new SelectList(dropdown.Getvw_PACKList, "Value", "Text", Model.FormBack.FormApply005013Item1[i].Unit), new { @class = "form-control", @onchange = "ApplyItemUnitChange(this)" })
+                                                @Html.HiddenFor(m => m.FormBack.FormApply005013Item1[i].Unit_TEXT)
+                                                @Html.TextBoxFor(m => m.Detail.FormApply005013Item1.Where(x => x.ItemNum == (i + 1).ToString()).ToList().FirstOrDefault().Unit, new { @id = "Detail_" + i + "__Unit", @name = "Detail.FormApply005013Item1[" + i + "].Unit", @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量Q'ty</label>
+                                            <div class="col-sm-4">
+                                                @Html.TextBoxFor(m => m.FormBack.FormApply005013Item1[i].SpecQty, new { @class = "form-normal", @onkeyup = "ItemSpecQtyChange(this)" })
+                                                @Html.TextBoxFor(m => m.Detail.FormApply005013Item1.Where(x => x.ItemNum == (i + 1).ToString()).ToList().FirstOrDefault().SpecQty, new { @id = "Detail_" + i + "__SpecQty", @name = "Detail.FormApply005013Item1[" + i + "].SpecQty", @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量單位Unit</label>
+                                            <div class="col-sm-4">
+                                                @Html.DropDownListFor(m => m.FormBack.FormApply005013Item1[i].SpecUnit, new SelectList(dropdown.Getvw_PACK_UNITList, "Value", "Text", Model.FormBack.FormApply005013Item1[i].SpecUnit), new { @class = "form-control", @onchange = "ApplyItemSpecUnitChange(this)" })
+                                                @Html.HiddenFor(m => m.FormBack.FormApply005013Item1[i].SpecUnit_TEXT)
+                                                @Html.TextBoxFor(m => m.Detail.FormApply005013Item1.Where(x => x.ItemNum == (i + 1).ToString()).ToList().FirstOrDefault().SpecUnit, new { @id = "Detail_" + i + "__SpecUnit", @name = "Detail.FormApply005013Item1[" + i + "].SpecUnit", @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        </div>
+                                        <h2 class="second-title">民眾輸入自用中藥切結書(使用方法)</h2>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥品名稱</label>
+                                            <div class="col-sm-10">
+                                                @Html.TextBoxFor(m => m.FormBack.FormApply005013Item2[i].ItemName, new { @class = "form-control", @readonly = "readonly" })
+                                                @Html.TextBoxFor(m => m.Detail.FormApply005013Item2.Where(x => x.ItemNum == (i + 1).ToString()).ToList().FirstOrDefault().ItemName, new { @id = "Detail2_" + i + "__ItemName", @name = "Detail.FormApply005013Item2[" + i + "].ItemName", @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>用法</label>
+                                            <div class="col-sm-10">
+                                                @Html.TextBoxFor(m => m.FormBack.FormApply005013Item2[i].Usage, new { @class = "form-control" })
+                                                @Html.TextBoxFor(m => m.Detail.FormApply005013Item2.Where(x => x.ItemNum == (i + 1).ToString()).ToList().FirstOrDefault().Usage, new { @id = "Detail2_" + i + "__Usage", @name = "Detail.FormApply005013Item2[" + i + "].Usage", @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>總數量</label>
+                                            <div class="col-sm-10">
+                                                <span>共</span>
+                                                @Html.TextBoxFor(m => m.FormBack.FormApply005013Item2[i].ItemQty, new { @class = "form-normal", @readonly = "readonly" })
+                                                @Html.TextBoxFor(m => m.FormBack.FormApply005013Item2[i].ItemQtyUnit, new { @class = "form-normal", @readonly = "readonly" })
+                                                <span>,每</span>
+                                                @Html.TextBoxFor(m => m.FormBack.FormApply005013Item2[i].ItemQtyUnit2, new { @class = "form-normal", @readonly = "readonly" })
+                                                @Html.TextBoxFor(m => m.FormBack.FormApply005013Item2[i].ItemSpecQty, new { @class = "form-normal", @readonly = "readonly" })
+                                                @Html.TextBoxFor(m => m.FormBack.FormApply005013Item2[i].ItemSpecQtyUnit, new { @class = "form-normal", @readonly = "readonly" })
+                                                @Html.TextBoxFor(m => m.Detail.FormApply005013Item2.Where(x => x.ItemNum == (i + 1).ToString()).ToList().FirstOrDefault().AllQty, new { @id = "Detail2_" + i + "__AllQty", @name = "Detail.FormApply005013Item2[" + i + "].AllQty", @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+                        </div>
+
+                        <h2 class="second-title">佐證文件檔案上傳</h2>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline "><input type="radio" id="FormBack_RADIOYN" name="optradio2" value="Y" onchange="radioChane2()" disabled>是</label>
+                                <label class="radio-inline "><input type="radio" id="FormBack_RADIOYN" name="optradio2" value="N" onchange="radioChane2()" checked disabled>否</label>
+                                @Html.HiddenFor(m => m.FormBack.RADIOYN)
+                            </div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">國際包裹招領單或海關補辦驗關通關手續通知書(事先提出申請無須檢附)之正面影本</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FormBack.File_1, Model.FormBack.File_1_TEXT, "N")
+                                <input type="file" class="form-control" name="FormBack.newFILE_1" id="newFile_1_Name" onchange="doGetFileNam(this)" />
+                                @Html.TextBoxFor(m => m.Detail.File_1_Name, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">國際包裹招領單或海關補辦驗關通關手續通知書(事先提出申請無須檢附)之反面影本</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FormBack.File_2, Model.FormBack.File_2_TEXT, "N")
+                                <input type="file" class="form-control" name="FormBack.newFILE_2" id="newFile_2_Name" onchange="doGetFileNam(this)" />
+                                @Html.TextBoxFor(m => m.Detail.File_2_Name, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">醫療用途、其他用途或藥品數量超過限量表規定時需檢附國內外醫療機構出具之醫療證明文件</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FormBack.File_3, Model.FormBack.File_3_TEXT, "N")
+                                <input type="file" class="form-control" name="FormBack.newFILE_3" id="newFile_3_Name" onchange="doGetFileNam(this)" />
+                                @Html.TextBoxFor(m => m.Detail.File_3_Name, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">產品外盒、仿單、說明書</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FormBack.File_4, Model.FormBack.File_4_TEXT, "N")
+                                <input type="file" class="form-control" name="FormBack.newFILE_4" id="newFile_4_Name" onchange="doGetFileNam(this)" />
+                                @Html.TextBoxFor(m => m.Detail.File_4_Name, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">身分證影本(正面)</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FormBack.File_5, Model.FormBack.File_5_TEXT, "N")
+                                <input type="file" class="form-control" name="FormBack.newFILE_5" id="newFile_5_Name" onchange="doGetFileNam(this)" />
+                                @Html.TextBoxFor(m => m.Detail.File_5_Name, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">身分證影本(反面)</label>
+                            <div class="col-sm-10">
+                                @Html.FileDLForTurbo(m => m.FormBack.File_6, Model.FormBack.File_6_TEXT, "N")
+                                <input type="file" class="form-control" name="FormBack.newFILE_6" id="newFile_6_Name" onchange="doGetFileNam(this)" />
+                                @Html.TextBoxFor(m => m.Detail.File_6_Name, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div id="Sample_ApplyFile" hidden>
+                            <div class="form-group">
+                                <label class="step-label col-sm-2" for=""><button type="button" class="btn btn-save">刪除</button>其他檔案或證明文件</label>
+                                <div class="col-sm-10">
+                                    <input type="file" class="form-control" name="FormFile[9999].newFile" id="File_9999" onchange="doGetFileNam(this)">
+                                    @*@Html.HiddenFor(m => m.FormBack.FormFile[9999].FileName)*@
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Model.FormFile != null)
+                        {
+                            for (var i = 0; i < Model.FormFile.Count; i++)
+                            {
+                                <div id="OItem_@(i+1)">
+                                    <div class="form-group">
+                                        <label class="step-label col-sm-2" for="">
+                                            @if (i == 0)
+                                            {
+                                                <button type="button" class="btn btn-save" onclick="addFile()">新增</button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-save">刪除</button>
+                                            }
+
+                                            其他檔案或證明文件<br />
+                                            (若檔案數量較多，可點選新增)
+                                        </label>
+                                        <div class="col-sm-10">
+                                            @Html.FileDLForTurbo(m => m.FormFile[@i].File, Model.FormFile[i].FileName_TEXT, "N")
+                                            <input type="file" class="form-control" name="FormFile[@i].newFile" id="File_@i" onchange="doGetFileNam(this)" />
+                                            @Html.TextBoxFor(m => m.Detail.FormFile.Where(x => x.ItemNum == (i + 1).ToString()).ToList().FirstOrDefault().FileName, new { @id = "FILE_File_" + @i, @name = "Detail.FormFile[" + i + "].FileName", @class = "form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div>
+                                <div class="form-group">
+                                    <label class="step-label col-sm-2" for="">
+                                        其他檔案或證明文件
+                                    </label>
+                                    <div class="col-sm-10">
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+
+                        <div class="btn-bar text-center">
+                            <button type="button" class="btn btn-save" onclick="send()">送出</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+
+    $(document).ready(function () {
+        if ($('input[name="FormBack.RADIOYN"]').val() == 'Y') {
+            $('input[name="optradio2"][value="Y"]').attr('checked',true)
+        }
+
+        $('#TAX_ORG_CITY_CODE').on('blur', doTAX_ORG_CITYNameGet);
+        doTAX_ORG_CITYNameGet();
+
+        //$('input[name="optradio2"]').attr('disabled');
+        ProductionCountryChange()
+        SellerCountryChange()
+        ShippingPortChange()
+        //隱藏Detail為空欄位
+        $('input[name^="Detail"]').each(function (item) {
+            var itemID = $(this).attr("id").replace("Detail_", "");
+
+            if ($(this).val() != "") {
+                $('#FormBack_' + itemID).css("background-color", "#FF9797");
+            } else {
+                $('#FormBack_' + itemID).attr("disabled", "disabled");
+                $(this).hide();
+            }
+
+            //檔案設定
+            if (itemID.substr(0, 4) == "File") {
+                if ($(this).val() != "") {
+                    $('#new' + itemID).css("background-color", "#FF9797");
+                } else {
+                    $("#new" + itemID).attr("disabled", "disabled");
+                }
+            }
+
+            //地址設定
+            if (itemID == "ADDR") {
+                if ($(this).val() != "") {
+                    $("#TAX_ORG_CITY_CODE").css("background-color", "#FF9797");
+                    $("#TAX_ORG_CITY_TEXT").css("background-color", "#FF9797");
+                    $("#TAX_ORG_CITY_DETAIL").css("background-color", "#FF9797");
+                } else {
+                    $("#TAX_ORG_CITY_CODE").attr("disabled", "disabled");
+                    $("#TAX_ORG_CITY_TEXT").attr("disabled", "disabled");
+                    $("#TAX_ORG_CITY_DETAIL").attr("disabled", "disabled");
+                    $("button.btn.btn-info").attr("disabled", "disabled");
+                }
+            }
+
+            //電話設定
+            if (itemID == "TEL") {
+                if ($(this).val() != "") {
+                    $("#FormBack_TEL_BEFORE").css("background-color", "#FF9797");
+                    $("#FormBack_TEL_AFTER").css("background-color", "#FF9797");
+                    $("#FormBack_TEL_Extension").css("background-color", "#FF9797");
+                } else {
+                    $("#FormBack_TEL_BEFORE").attr("disabled", "disabled");
+                    $("#FormBack_TEL_AFTER").attr("disabled", "disabled");
+                    $("#FormBack_TEL_Extension").attr("disabled", "disabled");
+                }
+            }
+        });
+
+        //案件類型狀態鎖定
+        if ($("#FormBack_CSEE_TYPE").val() == "Y") {
+            $("input[name='optradio'][value='Y']").attr("checked", "checked");
+        }
+        else {
+            $("input[name='optradio'][value='N']").attr("checked", "checked");
+        }
+        if ($("#Detail_CSEE_TYPE").val() == "") {
+            $("input[name='optradio']").attr("disabled", "disabled");
+        }
+
+        //個人用途狀態鎖定
+        if ($("#FormBack_RADIOUSAGE").val() == "1") {
+            $("input[name='optradio1'][value='1']").attr("checked", "checked");
+            $("#labRADIOUSAGE").hide();
+        } else if ($("#FormBack_RADIOUSAGE").val() == "2") {
+            $("input[name='optradio1'][value='2']").attr("checked", "checked");
+            $("#labRADIOUSAGE").show();
+        } else if ($("#FormBack_RADIOUSAGE").val() == "3") {
+            $("input[name='optradio1'][value='3']").attr("checked", "checked");
+            $("#labRADIOUSAGE").show();
+        }
+        if ($("#Detail_RADIOUSAGE").val() == "") {
+            $("input[name='optradio1']").attr("disabled", "disabled");
+            $("#FormBack_RADIOUSAGE_TEXT").attr("readonly", "readonly");
+        }
+
+        //ApplyItem設定(申請項目)
+        $('input[id^="Detail_"]').each(function() {
+            var itemID = $(this).attr("id").replace("Detail", "");
+
+            if ($(this).val() != "") {
+                $('#FormBack_FormApply005013Item1' + itemID).css("background-color", "#FF9797");
+            } else {
+                $('#FormBack_FormApply005013Item1' + itemID).attr("disabled", "disabled");
+                $(this).hide();
+            }
+        });
+        //ApplyItem2設定(民眾輸入自用中藥切結書申請項目)
+        $('input[id^="Detail2_"]').each(function () {
+            var itemID = $(this).attr("id").replace("Detail", "");
+
+            if ($(this).val() != "") {
+                $('#FormBack_FormApply005013Item' + itemID).css("background-color", "#FF9797");
+            } else {
+                $('#FormBack_FormApply005013Item' + itemID).attr("disabled", "disabled");
+                $(this).hide();
+            }
+        });
+        //ApplyFile設定
+        $('input[id^="FILE_"]').each(function() {
+            var itemID = $(this).attr("id").replace("FILE_", "");
+
+            if ($(this).val() != "") {
+                $("#" + itemID).css("background-color", "#FF9797");
+            } else {
+                $("#" + itemID).attr("disabled", "disabled");
+                $(this).hide();
+            }
+        });
+        //
+        if ($("#Detail_CSEE_TYPE").val() != "") {
+            $("#CASE_RADIO").css("background-color", "#FF9797");
+        }
+    });
+
+    // MAIL 選自訂
+    function doEmailChange() {
+        var MAIL = $('#MAIL_0').val();
+        if (MAIL == 0) $('#MAIL_1').removeAttr("readonly");
+        else {
+            if (MAIL == 1) $('#MAIL_1').val('gmail.com');
+            if (MAIL == 2) $('#MAIL_1').val('yahoo.com.tw');
+            if (MAIL == 3) $('#MAIL_1').val('outlook.com');
+            $('#MAIL_1').attr("readonly", "readonly");
+            $('#MAIL_1').val('');
+        }
+    }
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".DOC",
+            ".DOCX",
+            ".ODT",
+            ".ODF",
+            ".ODS",
+            ".XLS",
+            ".XLSX",
+            ".PDF",
+            ".PPT",
+            ".PPTX",
+            ".JPG",
+            ".JPEG",
+            ".BMP",
+            ".PNG",
+            ".GIF",
+            ".TIF",
+            ".ZIP");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        } else {
+            $("#" + file.name + "_TEXT").val(file.files.item(0).name);
+            return true;
+        }
+    }
+
+    // 送出
+    function send() {
+        var dataApply = getFormSubmitableFieldsWithCheckbox($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("DocSave")',
+            dataApply,
+            function (response) {
+                if (response.status) {
+                    blockUI()
+                    $("input").removeAttr("readonly");
+                    $("input").removeAttr("disabled");
+                    var form = $("form[id=main_form]");
+                    form.attr('action', '@Url.Action("DocFinish")').submit();
+                } else {
+                    blockAlert(response.message, "提示訊息");
+                }
+            });
+    }
+
+    // 地址
+    function loadDialogTAX_ORG_CITYCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doTAX_ORG_CITYSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#TAX_ORG_CITY_CODE').val(retData.Id);
+                    $('#TAX_ORG_CITY_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doTAX_ORG_CITYNameGet() {
+        var code = $('#TAX_ORG_CITY_CODE');
+        console.log('TAX_ORG_CITY_CODE');
+        var data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#TAX_ORG_CITY_TEXT'),
+            'add': $('#TAX_ORG_CITY_CODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogTAX_ORG_CITYCodeMapName(data);
+        }
+    }
+
+    function radioChane() {
+        $('#FormBack_CSEE_TYPE').val($('input[name="optradio"]:checked').val());
+    }
+
+    function radioChane1() {
+        $('#FormBack_RADIOUSAGE').val($('input[name="optradio1"]:checked').val());
+        if ($('#FormBack_RADIOUSAGE').val() == "3") {
+            $("#FormBack_RADIOUSAGE_TEXT").val("");
+            $("#labRADIOUSAGE").show();
+        } else {
+            $("#labRADIOUSAGE").hide();
+            $("#FormBack_RADIOUSAGE_TEXT").val("");
+        }
+    }
+
+    function radioChane2() {
+    $('#FormBack_RADIOYN').val($('input[name="optradio2"]:checked').val());
+    }
+
+    function ProductionCountryChange() {
+        $("#FormBack_ProductionCountry_TEXT").val($("#FormBack_ProductionCountry :selected").text());
+    }
+
+    function SellerCountryChange() {
+        $("#FormBack_SellerCountry_TEXT").val($("#FormBack_SellerCountry :selected").text());
+    }
+
+    function ShippingPortChange() {
+        $("#FormBack_ShippingPort_TEXT").val($("#FormBack_ShippingPort :selected").text());
+    }
+
+    function CommodTypeChange(select) {
+        var itemNum = select.name.split('[')[1].split(']')[0];
+        $("#FormBack_FormApply005013Item1_" + itemNum + "__CommodType_TEXT").val(select[select.selectedIndex].text);
+    }
+
+    function ApplyItemUnitChange(select) {
+        var itemNum = select.name.split('[')[1].split(']')[0];
+        $("#FormBack_FormApply005013Item1_" + itemNum + "__Unit_TEXT").val(select[select.selectedIndex].text);
+        $("#FormBack_FormApply005013Item2_" + itemNum + "__ItemQtyUnit").val(select[select.selectedIndex].text);
+        $("#FormBack_FormApply005013Item2_" + itemNum + "__ItemQtyUnit2").val(select[select.selectedIndex].text);
+    }
+    function ApplyItemSpecUnitChange(select) {
+        var itemNum = select.name.split('[')[1].split(']')[0];
+        $("#FormBack_FormApply005013Item1_" + itemNum + "__SpecUnit_TEXT").val(select[select.selectedIndex].text);
+        $("#FormBack_FormApply005013Item2_" + itemNum + "__ItemSpecQtyUnit").val(select[select.selectedIndex].text);
+    }
+
+    function CommoditiesChange(item) {
+        var itemNum = item.name.split('[')[1].split(']')[0];
+        var itemVal = $("#FormBack_FormApply005013Item1_" + itemNum + "__Commodities").val();
+        $("#FormBack_FormApply005013Item2_" + itemNum + "__ItemName").val(itemVal);
+    }
+
+    function ItemQtyChange(item) {
+        var msg = "";
+        var itemNum = item.name.split('[')[1].split(']')[0];
+        var itemVal = $("#FormBack_FormApply005013Item1_" + itemNum + "__Qty").val();
+        if (!(itemVal).match(/^\d{1,12}(\.\d{1,5})?$/)) {
+            msg += '申請數量輸入格式小數點至多五位數<br/>';
+        }
+        $("#FormBack_FormApply005013Item2_" + itemNum + "__ItemQty").val(itemVal);
+        if (msg != '') {
+            blockAlert(msg, '訊息');
+            return false;
+        }
+    }
+
+    function ItemSpecQtyChange(item) {
+        var msg = "";
+        var itemNum = item.name.split('[')[1].split(']')[0];
+        var itemVal = $("#FormBack_FormApply005013Item1_" + itemNum + "__SpecQty").val();
+        if (!(itemVal).match(/^\d{1,12}(\.\d{1,5})?$/)) {
+            msg += '申請數量輸入格式小數點至多五位數<br/>';
+        }
+        $("#FormBack_FormApply005013Item2_" + itemNum + "__ItemSpecQty").val(itemVal);
+        if (msg != '') {
+            blockAlert(msg, '訊息');
+            return false;
+        }
+    }
+    //動態新增檔案
+    function addFile() {
+        var addItem = $("#Sample_ApplyFile").clone();
+        var maxItem = $("[id^='OItem_']").length;
+        addItem.removeAttr("hidden");
+        addItem.attr("id", "OItem_" + (maxItem + 1));
+        $("#OItem_" + maxItem).after(addItem);
+        $("#OItem_" + (maxItem + 1) + " button").attr("onClick", "delFile('SItem_" + (maxItem + 1) + "')");
+        $("[name^='FormFile[9999]']").each(function () {
+            console.log($(this).parent().parent().parent().attr("id"));
+            if ($(this).parent().parent().parent().attr("id") == "OItem_" + (maxItem + 1)) {
+                var itemName = $(this).attr("name").split('.')[1];
+                console.log(maxItem);
+                $(this).attr("name", "FormFile[" + (maxItem) + "]." + itemName);
+                $(this).attr("id", "FormFile_" + (maxItem) + "__" + itemName);
+            }
+        });
+    }
+
+    //動態刪除檔案
+    function delFile(item) {
+        //刪除
+        $("#" + item).remove();
+        //重新編號 divItem重新編碼
+        var itemNum = 1;
+        $('div').each(function () {
+            if ($(this).attr("id") != undefined) {
+                if ($(this).attr("id").substr(0, 6) == "OItem_") {
+                    $(this).attr("id", "OItem_" + itemNum);
+                    itemNum++;
+                }
+            }
+        });
+        //內部欄位變更編碼
+        $("[id^='FormFile_']").each(function () {
+            if ($(this).parent().parent().parent().attr("id").split("_")[0] == "OItem") {
+                var itemNum = $(this).parent().parent().parent().attr("id").split("_")[1] - 1;
+                var itemName = $(this).attr("name").split('.')[1];
+                $(this).attr("name", "FormFile[" + itemNum + "]." + itemName);
+                $(this).attr("id", "FormFile_" + itemNum + "__" + itemName);
+            }
+        });
+        //button傳遞參數變動
+        $('button').each(function () {
+            if ($(this).text() == "刪除") {
+                var itemName = $(this).parent().parent().parent().attr("id").split("_")[0];
+                var itemNum = $(this).parent().parent().parent().attr("id").split("_")[1];
+                if (itemName == "OItem") {
+                    $(this).removeAttr("onClick");
+                    $(this).attr("onClick", "delFile('OItem_" + itemNum + "')");
+                }
+            }
+        });
+    }
+
+
+</script>

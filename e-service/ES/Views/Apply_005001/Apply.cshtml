@@ -1,0 +1,434 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_005001FormModel
+
+@{
+    Layout = null;
+    ShareCodeListModel dropdown = new ShareCodeListModel();
+}
+
+@Html.HiddenFor(m => m.IsMode)
+@Html.HiddenFor(m => m.IsUpLoadFile)
+<h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+<div class="form-set">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">申辦項目</label>
+            <div class="col-sm-4">
+                <p class="form-control-static">產銷證明書</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">申請日期</label>
+            <div class="col-sm-10">
+                @Html.BLATYPForTurbo(m => m.APP_TIME_TW, Model.APP_TIME_TW)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申辦份數</label>
+            <div class="col-sm-4">
+                @Html.HiddenFor(m => m.PAYCOUNT)
+                <select class="form-control" id="PAYCOUNTSELECT" onchange="CalculationVal()">
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
+            <label class="step-label col-sm-2" for="">繳費金額</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.PAYAMOUNT, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+        </div>
+        <h2 class="second-title">申請基本資料</h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>公司名稱</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.NAME, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.CNT_NAME, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話</label>
+            <div class="col-sm-10">
+                @Html.TelForTurbo(m => m.TEL)
+                @*@Html.TextBoxFor(m => m.TEL_BEFORE, new {@class = "form-10 form-normal"})
+                    <span>-</span>
+                    @Html.TextBoxFor(m => m.TEL_AFTER, new {@class = "form-normal"})
+                    <span>#</span>
+                    @Html.TextBoxFor(m => m.TEL_Extension, new {@class = "form-10 form-normal"})*@
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">傳真</label>
+            <div class="col-sm-10">
+                @Html.HiddenFor(m => m.FAX)
+                @Html.TextBoxFor(m => m.FAX_BEFORE, new { @class = "form-normal", size = "10", placeholder = "區碼,ex:02" })
+                <span>-</span>
+                @Html.TextBoxFor(m => m.FAX_AFTER, new { @class = "form-normal", size = "30", placeholder = "電話,ex:23125555" })
+                <span>#</span>
+                @Html.TextBoxFor(m => m.FAX_Extension, new { @class = "form-normal", size = "10", placeholder = "分機,ex:22" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>E-MAIL</label>
+            <div class="col-sm-10">
+                @Html.EmailForTurbo(m => m.EMAIL)
+                @*@Html.TextBoxFor(m => m.EMAIL_BEFORE, new { @class = "form-normal" })
+                    @@
+                    @Html.DropDownListFor(m => m.EMAIL_ADDR, dropdown.GetMailDomainList, new { @class = "form-normal", onchange = "EmailChange()" })
+                    @Html.TextBoxFor(m => m.EMAIL_CUSTOM, new { @class = "form-normal" })
+                    @Html.HiddenFor(m => m.EMAIL_ADDR_TEXT)*@
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">
+                <span style="color: red;">*</span>藥品許可執照字號(中文)
+                <button type="button" class="btn btn-save" onclick="search()">查詢</button>
+            </label>
+            <div class="col-sm-4">
+                @Html.HiddenFor(m => m.PL_CD_TEXT)
+                @Html.DropDownListFor(m => m.PL_CD, dropdown.PList, new { @class = "form-control", onchange = "PLChange()" })
+            </div>
+            <label class="step-label col-sm-1" for="" style="text-align: right">第</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.PL_Num, new { @class = "form-control", placeholder = "請輸入數字", maxlength = "10", @onchange = "PLNumFun(this)" })
+            </div>
+            <label class="step-label col-sm-1" for="">號</label>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                <span>
+                    1.可搜尋藥品許可證字號後自動帶入許可證資料，亦可直接於下方欄位直接輸入。<br>
+                    2.若為外銷專用許可證，請改為申請外銷證明書。
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥品許可執照字號(英文)</label>
+            <div class="col-sm-4">
+                @Html.HiddenFor(m => m.PL_CD_E_TEXT)
+                @Html.TextBoxFor(m => m.PL_CD_E, new { @class = "form-control", @readonly = "readonly" })
+                @*@Html.DropDownListFor(m => m.PL_CD_E, dropdown.PList_E, new { @class = "form-control", onchange = "PLENChange()" })*@
+            </div>
+            <label class="step-label col-sm-1" for="" style="text-align: right">第</label>
+            <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.PL_Num_E, new { @class = "form-control", placeholder = "請輸入數字", maxlength = "10", @readonly = "readonly" })
+            </div>
+            <label class="step-label col-sm-1" for="">號</label>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠名稱(中文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.MF_CNT_NAME, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠名稱(英文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.MF_CNT_NAME_E, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span> 製造廠地址(中文)</label>
+            <div class="col-sm-10 form-inline">
+                @Html.TextBoxFor(m => m.TAX_ORG_CITY_CODE, new { @id = "TAX_ORG_CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號" })
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.TAX_ORG_CITY_TEXT, new { @id = "TAX_ORG_CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-info" onclick="doTAX_ORG_CITYSelect()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </span>
+                </div>
+                @Html.TextBoxFor(m => m.TAX_ORG_CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">可手動修改自動帶入之資料，欲重新帶入請重複「自動帶入製造廠資料」之步驟。</div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>製造廠地址(英文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.MF_ADDR_E, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                1.請依製造業藥商許可執照所載製造廠地址，以及郵遞區號、國名，英譯後輸入。<br />
+                2.建議可至中華郵政官網使用中文地址英譯功能，翻譯製造廠地址。
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>藥品名稱(中文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.DRUG_NAME, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">藥品名稱(英文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.DRUG_NAME_E, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                1.請依藥品許可證所載中、英文品名填寫。<br />
+                2.可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">登載外銷品名</label>
+            <div class="col-sm-10">
+                @Html.CheckBoxFor(m => m.IS_DRUG_ABROAD_CHECK, new { @id = "addProduct", @onclick = "addProductFun()" })
+                <span>非必填欄位，可勾選是否登載外銷品名。</span>
+            </div>
+        </div>
+        <div class="form-group" id="choseProduct">
+            <label class="step-label col-sm-2" for="">勾選外銷品名</label>
+            <div class="col-sm-10">
+
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10" id="divDRUG">請點選欲申請之外銷品名。</div>
+        </div>
+        <div class="form-group" id="choseProduct1">
+            <label class="step-label col-sm-2" for="">外銷品名(中文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.DRUG_ABROAD_NAME, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group" id="choseProduct2">
+            <label class="step-label col-sm-2" for="">外銷品名(英文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.DRUG_ABROAD_NAME_E, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                1. 請依藥品許可證所載外銷品名填寫。<br />
+                2. 可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型(中文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.DOSAGE_FORM, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>劑型(英文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.DOSAGE_FORM_E, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2"><span style="color:red;">*</span>核准日期(中文)</label>
+            <div class="col-sm-4">
+                @Html.DatePickerTWFor(m => m.ISSUE_DATE, new { size = "10"})
+            </div>
+            <label class="step-label col-sm-2">核准日期(英文)</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="ISSUE_DATE_TW_AC" readonly>
+            </div>
+            <div class="col-sm-12">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">1.即藥品許可證所載發證日期。<br />2.可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">顯示有效日期</label>
+            <div class="col-sm-10">
+                @Html.CheckBoxFor(m => m.IS_EXPIR_DATE_CHECK, new { @id = "addDate", @onclick = "addDateFun()" })
+                <span>非必填欄位，倘有需要刊載藥品許可證有效日期才勾選。</span>
+            </div>
+        </div>
+        <div class="form-group" id="choseDate">
+            <label class="step-label col-sm-2" for="">有效日期(中文)</label>
+            <div class="col-sm-4">
+                @Html.DatePickerTWFor(m => m.EXPIR_DATE, new { size = "10"})
+            </div>
+            <label class="step-label col-sm-2" for="">有效日期(英文)</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="EXPIR_DATE_TW_AC" readonly>
+            </div>
+            <div class="col-sm-12">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。</div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>處方說明(中文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.MF_CONT, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                1.	處方含量之說明，最後請以「：」結尾，例如「每公克中含有：」。<br />
+                2.	可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>處方說明(英文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.MF_CONT_E, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">成分內容</label>
+            <div class="col-sm-10">
+                @Html.EditorFor(m => m.DI, "GoodsDynamicGrid005001")
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">是否為濃縮製劑</label>
+            <div class="col-sm-10">
+                @Html.CheckBoxFor(m => m.IS_Concentrate_CHECK, new { @id = "IsConcentrate", @onclick = "IsConcentrateFun()" })
+                <span>是</span>
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                選擇「是」，會顯示「生藥與浸膏比例」及「賦形劑」填寫欄位。
+            </div>
+        </div>
+        <div class="form-group" id="divConcentrate1" hidden>
+            <label class="step-label col-sm-2" for="">生藥與浸膏比例(中文)</label>
+            <div class="col-sm-10">
+                以上生藥製成浸膏
+                @Html.TextBoxFor(m => m.PC_SCALE_1, new { @class = "form-normal form-10", @placeholder = "輸入分量", @onchange = "PCSCALEFun(this)" })
+                @Html.TextBoxFor(m => m.PC_SCALE_1E, new { @class = "form-normal form-10", @placeholder = "輸入單位", @onchange = "PCSCALEFun(this)" })
+                (生藥與浸膏比例
+                @Html.TextBoxFor(m => m.PC_SCALE_21, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)" })
+                :
+                @Html.TextBoxFor(m => m.PC_SCALE_22, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)" })
+                =
+                @Html.TextBoxFor(m => m.PC_SCALE_23, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)" })
+                :
+                @Html.TextBoxFor(m => m.PC_SCALE_24, new { @class = "form-normal form-10", @placeholder = "輸入比例", @onchange = "PCSCALEFun(this)" })
+                )
+            </div>
+            <label class="step-label col-sm-2" for=""></label>
+            <div class="col-sm-10">
+                <span>例如：以上生藥製成浸膏3.8g(生藥與浸膏比例29:3.8=7.6:1)</span>
+            </div>
+        </div>
+        <div class="form-group" id="divConcentrate2" hidden>
+            <label class="step-label col-sm-2" for="">生藥與浸膏比例(英文)</label>
+            <div class="col-sm-10">
+                Above raw herbs equivalent to
+                @Html.TextBoxFor(m => m.PC_SCALE_1, new { @class = "form-normal form-10", @placeholder = "輸入分量", @readonly = "readonly" })
+                @Html.TextBoxFor(m => m.PC_SCALE_1E, new { @class = "form-normal form-10", @placeholder = "輸入單位", @readonly = "readonly" })
+                herbal extract. (Ratio of raw herbs and extract
+                @Html.TextBoxFor(m => m.PC_SCALE_21, new { @class = "form-normal form-10", @placeholder = "輸入比例", @readonly = "readonly" })
+                :
+                @Html.TextBoxFor(m => m.PC_SCALE_22, new { @class = "form-normal form-10", @placeholder = "輸入比例", @readonly = "readonly" })
+                =
+                @Html.TextBoxFor(m => m.PC_SCALE_23, new { @class = "form-normal form-10", @placeholder = "輸入比例", @readonly = "readonly" })
+                :
+                @Html.TextBoxFor(m => m.PC_SCALE_24, new { @class = "form-normal form-10", @placeholder = "輸入比例", @readonly = "readonly" })
+                )
+            </div>
+        </div>
+        <div class="form-group" id="chosePC" hidden="">
+            @Html.EditorFor(m => m.PC, "GoodsDynamicGrid005001Pc")
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">登載效能、適應症</label>
+            <div class="col-sm-10">
+                @Html.CheckBoxFor(m => m.IS_EFFICACY_CHECK, new { @id = "addA", @onclick = "addAFun()" })
+                <span>1.效能</span>
+                @Html.CheckBoxFor(m => m.IS_INDIOCATION_CHECK, new { @id = "addB", @onclick = "addBFun()" })
+                <span>2.適應症</span>
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">請依藥品許可證所載適應症、效能勾選。</div>
+        </div>
+        <div class="form-group" id="choseB1" hidden>
+            <label class="step-label col-sm-2" for="">適應症(中文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.INDIOCATION, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                1. 各病症之間以「、」隔開，最後請以「。」結尾。<br />
+                2. 可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。
+            </div>
+        </div>
+        <div class="form-group" id="choseB2" hidden>
+            <label class="step-label col-sm-2" for="">適應症(英文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.INDIOCATION_E, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">各病症之間以「,」隔開，最後請以「.」結尾。</div>
+        </div>
+
+        <div class="form-group" id="choseA1" hidden>
+            <label class="step-label col-sm-2" for="">效能(中文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.EFFICACY, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                1. 各效能之間以「、」隔開，最後請以「。」結尾。<br />
+                2. 可手動修改自動帶入之資料，欲重新帶入請重複輸入「藥品許可證字號」之步驟。
+            </div>
+        </div>
+        <div class="form-group" id="choseA2" hidden>
+            <label class="step-label col-sm-2" for="">效能(英文)</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.EFFICACY_E, new { @class = "form-control" })
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">各效能之間以「,」隔開，最後請以「.」結尾。</div>
+        </div>
+
+        <h2 class="second-title">佐證文件檔案上傳</h2>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+            <div class="col-sm-10">
+                <label class="radio-inline "><input type="radio" name="optradio" value="Y" onchange="RadioChange()">是</label>
+                <label class="radio-inline "><input type="radio" name="optradio" value="N" checked onchange="RadioChange()">否</label>
+                @Html.HiddenFor(m => m.RADIOYN)
+            </div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"</div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">藥品許可證影本(正面)</label>
+            <div class="col-sm-10">
+                <input type="file" class="form-control" name="File_1" id="File_1" onchange="fileChange(this)" />
+                @Html.HiddenFor(m => m.Name_File_1)
+                @*<input type="file" class="form-control" name="File_1" id="File_1" onchange="fileChange($(this).attr('name'))" />
+                    @Html.HiddenFor(x => x.File_1_FILENAME)
+                    @Html.HiddenFor(x => x.File_1_TEXT)*@
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">藥品許可證影本(反面)</label>
+            <div class="col-sm-10">
+                <input type="file" class="form-control" name="File_2" id="File_2" onchange="fileChange(this)" />
+                @Html.HiddenFor(m => m.Name_File_2)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="step-label col-sm-2" for="">處方之中藥材中英文對照表</label>
+            <div class="col-sm-10">
+                <input type="file" class="form-control" name="File_3" id="File_3" onchange="fileChange(this)" />
+                @Html.HiddenFor(m => m.Name_File_3)
+            </div>
+        </div>
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="send_apply()">存檔並預覽</button>
+            <button type="reset" class="btn btn-clear">清除資料</button>
+        </div>
+    </div>
+</div>

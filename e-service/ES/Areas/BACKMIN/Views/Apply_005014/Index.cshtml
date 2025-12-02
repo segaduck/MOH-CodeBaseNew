@@ -1,0 +1,277 @@
+﻿@model ES.Areas.BACKMIN.Models.Apply_005014ViewModel
+
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Index";
+}
+
+@Scripts.Render("~/Scripts/vue.js")
+@*@Scripts.Render("~/Scripts/vue.js")*@
+
+<style type="text/css">
+    input[type=file] {
+        padding-top: 2px;
+    }
+
+    .errata-input input, .errata-input select, input[type=file].errata-input {
+        background-color: pink;
+    }
+</style>
+
+@switch (Model.Apply.FLOW_CD)
+{
+    case "0":
+    case "1":
+    case "3":
+    case "10":
+        @RenderEdit()
+        break;
+    default:
+        @RenderReadonly()
+        break;
+}
+
+@helper RenderReadonly()
+{
+    @RenderEdit(true) @* true: 鎖定表單 *@
+}
+
+
+@helper RenderEdit(bool isdisabled = false)
+{
+    <div id="005014" class="main-content">
+        <div class="col-sm-12 content">
+            <!-- H1 title -->
+            <h1 class="main-title"><i class="fas fa-edit"></i>案件審理作業</h1>
+
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">基本資料檔</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td width="20%"><div align="center">申辦項目：</div></td>
+                            <td width="80%"><div align="left">貨品進口專案申請</div></td>
+                        </tr>
+                        <tr>
+                            <td><div align="center">申辦日期：</div></td>
+                            <td>@Model.Apply.APP_TIME.Value.ToString("yyyy/MM/dd")</td>
+                        </tr>
+                        <tr>
+                            <td><div align="center">預計完成日：</div></td>
+                            <td>
+                                @{
+                                    if (Model.Apply.APP_EXT_DATE.HasValue)
+                                    {
+                                        @Model.Apply.APP_EXT_DATE.Value.ToString("yyyy/MM/dd");
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><div align="center">案件承辦人姓名：</div></td>
+                            <td>@Model.Apply.PRO_ACC_NAME</td>
+                        </tr>
+                        <tr>
+                            <td><div align="center">案件編號：</div></td>
+                            <td>@Model.Apply.APP_ID</td>
+                        </tr>
+                        <tr>
+                            <td><div align="center">系統狀態：</div></td>
+                            <td>@CaseStatus()</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            @using (Html.BeginForm("ApplyPost", "Apply_005014", new { area = "BACKMIN" }, FormMethod.Post, new { id = "main_form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+            {
+                <!--1-->
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h2 class="panel-title" data-toggle="collapse" data-parent="#basicData" href="#basicData" aria-expanded="true">
+                            <a>基本資料檔(點擊展開)</a>
+                        </h2>
+                    </div>
+                    <div id="basicData" class="panel-collapse collapse in" aria-expanded="true" style="">
+                        <div class="panel-body">
+                            <div class="form-blue">
+                                @if (isdisabled)
+                                {
+                                    <fieldset disabled>
+                                        @Html.Partial("./_CaseBase")
+                                        @Html.Partial("./_ApplyItems")
+                                        @Html.Partial("./_ApplyItems2")
+                                    </fieldset>
+                                }
+                                else
+                                {
+                                    @Html.Partial("./_CaseBase")
+                                    @Html.Partial("./_ApplyItems")
+                                    @Html.Partial("./_ApplyItems2")
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-info" id="_filelist">
+                    <div class="panel-heading">
+                        <h2 class="panel-title" data-toggle="collapse" data-parent="#basicData" href="#filedl01" aria-expanded="true">
+                            <a>檔案上傳(點擊展開)</a>
+                        </h2>
+                    </div>
+                    <div id="filedl01" class="panel-collapse collapse in" aria-expanded="true" style="">
+                        <div class="panel-body">
+                            <div class="form-blue">
+                                @if (isdisabled)
+                                {
+                                    <fieldset disabled> @Html.Partial("./_ErrataFileUpload") </fieldset>
+                                }
+                                else
+                                {
+                                    @Html.Partial("./_ErrataFileUpload")
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--4-->
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h2 class="panel-title collapsed" data-toggle="collapse" data-parent="#ReviewData" href="#ReviewData" aria-expanded="false">
+                            <a>案件進度歷程(點擊展開)</a>
+                        </h2>
+                    </div>
+                    <div id="ReviewData" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                        <div class="panel-body">
+                            @if (isdisabled)
+                            {
+                                <fieldset disabled>@Html.Partial("./_History")</fieldset>
+                            }
+                            else
+                            {
+                                @Html.Partial("./_History")
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="btn-bar text-center">
+                @if (isdisabled)
+                {
+                    <button type="button" class="btn btn-save" disabled>存檔</button>
+                    <button type="button" class="btn btn-gray" onclick="back()">返回</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-save" onclick="save()">存檔</button>
+                    <button type="button" class="btn btn-gray" onclick="back()">返回</button>
+                }
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+        function preview() {
+            $.ajax({
+                url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "Preview" })',
+                type: 'POST',
+                cache: false,
+                data: new FormData($('#main_form')[0]),
+                processData: false,
+                contentType: false
+            }).done(function (res) {
+                if (res && res.status) {
+                    // 檢核通過
+                    $('#preview-block').html(res.data);
+                    $('#preview-block').css('display', 'block');
+                    $('#form-block').css('display', 'none');
+                } else {
+                    // 檢核不通過
+                    if (res && res.data) {
+                        $('#005014 div.err-msg').remove();
+                        var hasError = false;
+                        res.data.forEach(function (item) {
+                            if (item.msg) {
+                                var text = $('<div class="col-sm-12 err-msg" style="background-color:#ff99ab">' + item.msg + '</div>');
+                                $('#' + item.key).after(text);
+                                hasError = true;
+                            }
+                        });
+                        if (hasError) {
+                            blockAlert("欄位輸入檢核未通過，請按頁面上提示修正後再重新上傳!", null, function () { });
+                        }
+                    }
+                }
+            });
+        }
+
+        function save() {
+            blockUI();
+            $.ajax({
+                url: '@Url.Action("ApplyPost", "Apply_005014", new { id = "Save" })',
+                type: 'POST',
+                cache: false,
+                data: new FormData($('#main_form')[0]),
+                processData: false,
+                contentType: false
+            }).done(function (res) {
+                if (res) {
+                    if (res.status) {
+                        blockAlert('儲存成功!');
+                    } else {
+                        blockAlert('儲存失敗!');
+                    }
+                }
+                unblockUI();
+            }).fail(function () {
+                unblockUI();
+            });
+        }
+
+        function cancel() {
+            $('#preview-block').css('display', 'none');
+            $('#form-block').css('display', 'block');
+        }
+
+        function back() {
+            window.location = '@Url.Action("Index", "Case")';
+        }
+
+        $(function () {
+            $('.decimal-only').decimalOnly();
+        })
+
+    </script>
+}
+
+@helper CaseStatus()
+{
+    switch (Model.Apply.FLOW_CD)
+    {
+        case "1":
+            <span>收件</span>
+            break;
+        case "2":
+            <span>通知補件</span>
+            break;
+        case "3":
+            <span>補件收件</span>
+            break;
+        case "10":
+            <span>處理中</span>
+            break;
+        case "20":
+            <span>收件不收案</span>
+            break;
+    }
+}
+

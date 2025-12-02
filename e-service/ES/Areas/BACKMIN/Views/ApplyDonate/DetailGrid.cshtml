@@ -1,0 +1,70 @@
+﻿@using ES.Utils;
+@using ES.Commons;
+@model ES.Areas.Admin.Models.ApplyDonateViewModel
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index", "ApplyDonate")';
+    }
+</script>
+@{
+    ViewBag.Title = "線上捐款維護";
+    ViewBag.FunctionTitle = "線上捐款維護";
+}
+<div class="bread">
+    <i class="fas fa-home"></i><a href="#">首頁</a> / <a href="#">線上捐款管理</a> / <a href="#">線上捐款維護</a>
+</div>
+@using (Html.BeginForm("ApplyDetail", "ApplyDonate", FormMethod.Post, new { ID = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="btnbar">
+                <button type="button" id="btnReturn" class="btn btn-gray" onclick="doBack()">返回</button>
+            </div>
+        </div>
+        @if (Model != null)
+        {
+            <div class="table-responsive">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                    <thead>
+                        <tr>
+                            <th>項次</th>
+                            <th>案件編號</th>
+                            <th>捐贈者名稱或姓名</th>
+                            <th>金額(新臺幣/元)</th>
+                            <th>捐贈日期</th>
+                            <th>捐贈用途</th>
+                            <th>指定用途</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.GridDetail != null && Model.GridDetail.Count > 0)
+                        {
+                            for (var i = 0; i < Model.GridDetail.Count; i++)
+                            {
+                                var a = Model.GridDetail[i];
+                                <tr>
+                                    <td>@Html.Raw(a.SEQ)</td>
+                                    <td>@Html.Raw(a.APP_ID)</td>
+                                    <td>@Html.Raw(a.D_NAME)</td>
+                                    <td>@Html.Raw(a.PAY_MONEY)</td>
+                                    <td>@Html.Raw(a.ADD_TIME)</td>
+                                    <td>@Html.Raw(a.D_USE)</td>
+                                    <td>@Html.Raw(a.D_DUSE)</td>
+                                    <td>@Html.Raw(a.D_REMARK)</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}

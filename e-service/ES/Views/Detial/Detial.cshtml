@@ -1,0 +1,28 @@
+﻿@{
+    Layout = null;
+}
+
+．申辦資料
+<hr />
+<table class="formTable1">
+    @for (int i = 1; i < ViewBag.List.Count; i++)
+    {
+        if (!String.IsNullOrEmpty(@ViewBag.List[i].Title))
+        {
+            @Html.Raw("<tr>")
+            @Html.Raw("<th style=\"width: 100px;\">")
+            @ViewBag.List[i].Title
+            @Html.Raw("</th>")
+            @Html.Raw("<td>")
+        }
+        @Html.Raw(" ")
+        @ViewBag.List[i].DescriptionL@ViewBag.Dic[ViewBag.List[i].Name]@ViewBag.List[i].DescriptionR
+        @Html.Raw(" ")
+        if (i == ViewBag.List.Count - 1 || !String.IsNullOrEmpty(@ViewBag.List[i + 1].Title))
+        {
+            @Html.Raw("</td>")
+            @Html.Raw("</tr>")
+        }
+        
+    }
+</table>

@@ -1,0 +1,67 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_007001FormModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+    SessionModel sm = SessionModel.Get();
+}
+
+<div class="form-horizontal">
+    <div class="container-fluid">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="#">線上捐款</a></div>
+            <div class="clearfix"></div>
+            @using (Html.BeginForm("", "", FormMethod.Post, htmlAttributes: new { id = "main_form" }))
+            {
+                        <!--form-->
+                @Html.FrontControlForTurbo(Model)
+            }
+            <div class="btn-bar text-center">
+                <a href="javascript:void(0)" id="CheckOut" onclick="doCheckOut()" class="btn btn-info"><i class="fas fa-credit-card"></i>送出資料</a>
+            </div>
+            <div class="clearfix"></div>
+            <div id="Credit" style="display:none">
+                @Html.Partial("_Credit")
+            </div>
+            <div id="StoreBar" style="display:none">
+                @Html.Partial("_StoreBar")
+            </div>
+            <div id="LinePay" style="display:none">
+                @Html.Partial("_LinePay")
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+    })
+
+    function doCheckOut() {
+        var url = '@(Url.Action("Donate", "ApplyDonate", new { area = "" }))';
+        var FormData = getFormDataJson("#main_form");
+        var crdtype = $('input[name="PAY_METHOD"]').val();
+        ajaxLoadMore(url, FormData, function (resp) {
+            if (resp.status == false) { blockAlert(resp.message); }
+            else
+            {
+                var btnCheckOut = $("#CheckOut");
+                btnCheckOut.attr("disabled", "disabled");
+                if (crdtype == "C" || crdtype == "S") { $("#Credit").show(500); $("#Credit").html(resp); }
+                if (crdtype == "T") { $("#StoreBar").show(500); $("#StoreBar").html(resp); }
+                if (crdtype == "L") { $("#LinePay").show(500); $("#LinePay").html(resp); }
+            }
+        });
+    }
+
+    function doLinePay() {
+       
+        var data = getFormDataJson("#main_form");
+        data.orderId = $('#LinePayModel_orderId').val();
+
+        var url = '@(Url.Action("postLinePay", "ApplyDonate"))';
+
+        goBackPage(url, data, 2, 'POST')
+    }
+</script>

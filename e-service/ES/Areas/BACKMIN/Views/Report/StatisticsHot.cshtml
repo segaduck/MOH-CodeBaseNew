@@ -1,0 +1,124 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model ES.Areas.Admin.Models.StatisticsHotModel
+<link href="../../../../Content/Report/TableStyle.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Sdate').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#Fdate').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+    });
+</script>
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "熱門申辦統計";
+    ViewBag.FunctionTitle = "熱門申辦統計";
+}
+@using (Html.BeginForm("StatisticsHot", "Report", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 統計分析 / @ViewBag.Title
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">統計區間</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Sdate, new { @class = "form-normal" })&nbsp;&nbsp;至&nbsp;&nbsp;@Html.TextBoxFor(m => m.Fdate, new { @class = "form-normal" })
+                    @Html.ValidationMessageFor(m => m.Fdate)
+                </div>
+            </div>
+            <div class="btnbar">
+                <input type="submit" id="Button_1" value="熱門申辦統計" onclick="$('#Fdate').validate();$('#Fdate').valid()" class="btn btn-print" />
+            </div>
+        </div>
+
+
+        @{
+            if (ViewBag.List != null)
+            {
+                <div class="clearfix"></div>
+                <h2 class="second-title">
+                    統計區間：
+                    @Html.Raw(this.Model.Sdate)
+                    到
+                    @Html.Raw(this.Model.Fdate)
+                </h2>
+                <div class="table-responsive">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                        <thead>
+                            <tr>
+                                <th>項次</th>
+                                <th>分類</th>
+                                <th>案件名稱</th>
+                                <th>會員</th>
+                                <th>自然人憑證</th>
+                                <th>工商憑證</th>
+                                <th>醫事憑證(人)</th>
+                                <th>醫事憑證(機)</th>
+                                <th>數位身分證</th>
+                                <th>合計</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                List<Map> li = ViewBag.List;
+                                if (li.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="9">
+                                            此範圍無資料可統計
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    int i = 0;
+                                    foreach (Map m in li)
+                                    {
+                                        i++;
+                                        <tr>
+                                            <td align="center">
+                                                @i.
+                                            </td>
+                                            <td>
+                                                @m.GetString("SCNAME")
+                                            </td>
+                                            <td>
+                                                @m.GetString("NAME")
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("MEMBER")
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("MOICA")
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("MOEACA")
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("HCA0")
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("HCA1")
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("NEWEID")
+                                            </td>
+                                            <td align="right">
+                                                @m.GetString("TIMES")
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+    </div>
+}

@@ -1,0 +1,112 @@
+﻿@using ES.Utils;
+@using ES.Areas.Admin.Models;
+@model ES.Areas.Admin.Models.StatisticsLoginModel
+<link href="../../../../Content/Report/TableStyle.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Sdate').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+        $('#Fdate').datepicker({ dateFormat: 'yy/mm/dd', changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0' });
+    });
+</script>
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "登入統計";
+    ViewBag.FunctionTitle = "登入統計";
+}
+@using (Html.BeginForm("StatisticsLogin", "Report", FormMethod.Post, new { id = "ActionForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 統計分析 / @ViewBag.Title
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">統計區間</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Sdate, new { @class = "form-normal" })&nbsp;&nbsp;至&nbsp;&nbsp;@Html.TextBoxFor(m => m.Fdate, new { @class = "form-normal" })
+                    @Html.ValidationMessageFor(m => m.Fdate)
+                </div>
+            </div>
+            <div class="btnbar">
+                <input type="submit" id="Button_1" value="登入統計" onclick="$('#Fdate').validate();$('#Fdate').valid()" class="btn btn-print" />
+            </div>
+        </div>
+        @{
+            if (ViewBag.Map != null)
+            {
+                Map map = ViewBag.Map;
+                <div class="clearfix"></div>
+                <h2 class="second-title">
+                    統計區間：
+                    @Html.Raw(this.Model.Sdate)
+                    到
+                    @Html.Raw(this.Model.Fdate)
+                </h2>
+                <div class="table-responsive">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                        <thead>
+                            <tr>
+                                <th>登入方式</th>
+                                <th>次數</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    會員(帳號密碼)
+                                </td>
+                                <td align="center">
+                                    @Html.Raw(map.GetString("member"))
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    自然人憑證(MOICA)
+                                </td>
+                                <td align="center">
+                                    @Html.Raw(map.GetString("moica"))
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    工商憑證(MOEACA)
+                                </td>
+                                <td align="center">
+                                    @Html.Raw(map.GetString("moeaca"))
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    醫事憑證-人員(HCA1)
+                                </td>
+                                <td align="center">
+                                    @Html.Raw(map.GetString("hca0"))
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    醫事憑證-機購(HCA0)
+                                </td>
+                                <td align="center">
+                                    @Html.Raw(map.GetString("hca1"))
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    數位身分證(NEWEID)
+                                </td>
+                                <td align="center">
+                                    @Html.Raw(map.GetString("NEWEID"))
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+    </div>
+}

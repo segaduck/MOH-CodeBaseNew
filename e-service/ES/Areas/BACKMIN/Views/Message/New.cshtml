@@ -1,0 +1,122 @@
+﻿@model ES.Areas.Admin.Models.MessageEditModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout3.cshtml";
+
+    ViewBag.Title = "最新消息管理（新增）";
+    ViewBag.FunctionTitle = "最新消息管理 - 新增";
+
+    ViewBag.Script = @"
+
+$(function() {
+$('#StartTime').datetimepicker({dateFormat: 'yy/mm/dd', timeFormat: 'HH:mm', showSecond: false, changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0'});
+$('#EndTime').datetimepicker({dateFormat: 'yy/mm/dd', timeFormat: 'HH:mm', showSecond: false, changeYear: true, changeMonth: true, showButtonPanel: true, yearRange: '1900:+0'});
+});
+
+";
+}
+@using (Html.BeginForm("New", "Message", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="bread">
+        <i class="fas fa-home"></i>首頁 / 前台管理 / @ViewBag.FunctionTitle
+    </div>
+    <div class="col-sm-12 content">
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <h2 class="second-title">基本資料</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span class="formRequired">*</span> @Html.DisplayNameFor(m => m.Category)</label>
+                <div class="col-sm-10">
+                    @Html.Raw(@Html.CheckBoxList("Category", (List<ES.Extensions.CheckBoxListItem>)@ViewBag.CategoryList))
+                    @Html.ValidationMessageFor(m => m.Category)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span class="formRequired">*</span> @Html.DisplayNameFor(m => m.Title)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Title, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Title)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span class="formRequired">*</span> @Html.DisplayNameFor(m => m.Content)</label>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(m => m.Content, new { @class = "form-control", rows = "5" })
+                    @Html.ValidationMessageFor(m => m.Content)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span class="formRequired">*</span> @Html.DisplayNameFor(m => m.StartTime)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.StartTime, new { @class = "form-normal" })
+                    @Html.ValidationMessageFor(m => m.StartTime)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span class="formRequired">*</span> @Html.DisplayNameFor(m => m.EndTime)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.EndTime, new { @class = "form-normal" })
+                    @Html.ValidationMessageFor(m => m.EndTime)
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FileName1)</label>
+                <div class="col-sm-10">
+                    <input type="file" name="UpdateFile1" class="form-normal" /><br />
+                    （檔案大小3MB以下，限doc/pdf/xml檔案）
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FileName2)</label>
+                <div class="col-sm-10">
+                    <input type="file" name="UpdateFile2" class="form-normal" /><br />
+                    （檔案大小3MB以下，限doc/pdf/xml檔案）
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.FileName3)</label>
+                <div class="col-sm-10">
+                    <input type="file" name="UpdateFile3" class="form-normal" /><br />
+                    （檔案大小3MB以下，限doc/pdf/xml檔案）
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.SendMailMark)</label>
+                <div class="col-sm-10">
+                    @Html.CheckBoxFor(m => m.SendMailMark, new { @class = "form-normal" }) 寄送最新消息給系統之會員
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ClassSubCode)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ClassSubCode, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ClassAdmCode)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ClassAdmCode, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ClassSrvCode)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ClassSrvCode, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.KeyWord)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.KeyWord, new { @class = "form-control" })
+                </div>
+            </div>
+            @Html.ValidationSummary()
+        </div>
+        <div class="btnbar">
+            <input type="submit" class="btn btn-save" value="存檔" />
+            <input type="reset" class="btn btn-gray" value="重填" />
+            <input type="button" class="btn btn-gray" value="返回" onclick="document.location.href='@Url.Action("Index", "Message")';" />
+        </div>
+    </div>
+}

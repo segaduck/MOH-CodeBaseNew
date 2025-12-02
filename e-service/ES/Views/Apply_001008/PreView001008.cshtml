@@ -1,0 +1,286 @@
+﻿@using ES.Commons;
+@using ES.Models.ViewModels
+@model ES.Models.ViewModels.Apply_001008FormModel
+
+@{Layout = null; }
+
+<div class="col-sm-12">
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="form-title title-bg-y">申辦表件預覽</h1>
+            <div class="form-set">
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申辦項目</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">醫事人員或公共衛生師請領英文證明書</p>
+                    </div>
+                    <label class="step-label col-sm-2" for="">承辦單位</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">衛生福利部醫事司</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申辦日期</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">@Model.APPLY_DATE_TW</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申請人中文姓名</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">@Model.NAME</p>
+                    </div>
+                    <label class="step-label col-sm-2" for="">身分證編號/居留證號</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">@Model.IDN</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申請人英文姓名</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.ENAME</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">申請人英文別名</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.ENAME_ALIAS</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">備註</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            @Html.Raw(HelperUtil.ChgBreakLine(Model.REMARK))
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">計算金額</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                        @Model.TOTAL_MEM <a href="@Url.Content("~/Apply_001008/PayMemo")" target="_blank" title="瀏覽計算方式範例">瀏覽計算方式範例</a>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">通訊地址</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Html.Raw(Model.ADDR_FULLTEXT)</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">電話</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.TEL</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">行動電話</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.MOBILE</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">EMAIL</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.EMAIL</p>
+                    </div>
+                </div>
+                @*醫事人員證書*@
+                <div class="form-group">
+                    @Html.EditorFor(m => m.ME, "GoodsDynamicGrid001008Me")
+                </div>
+                @*專科證書*@
+                <div class="form-group">
+                    @Html.EditorFor(m => m.PR, "GoodsDynamicGrid001008Pr")
+                </div>
+                @*國內寄送地址*@
+                <div class="form-group">
+                    @Html.EditorFor(m => m.TRANS, "GoodsDynamicGrid001008Trans")
+                </div>
+                @*國外寄送地址*@
+                <div class="form-group">
+                    @Html.EditorFor(m => m.TRANSF, "GoodsDynamicGrid001008TransF")
+                </div>
+                <h2 class="second-title">佐證文件檔案上傳<span style="color:red">(總檔案大小5MB以下)</span></h2>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@Model.MERGEYN_TEXT</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">繳費紀錄照片或pdf檔案</label>
+                    <div class="col-sm-10">
+                        @if (Model.FILE_PAYRECORD != null)
+                        {
+                            @Html.FrontFileDLForTurbo(m => m.FILE_PAYRECORD_FILENAME)
+                            @Html.HiddenFor(m => m.FILE_PAYRECORD_FILENAME)
+                        }
+
+                        @*@if (IsImageFile(Model.FILE_PAYRECORD_MIME))
+                        {
+                            @Html.ImageHoverForTurbo(m => m.FILE_PAYRECORD, Model.FILE_PAYRECORD.FileName)
+                        }
+                        else if (Model.FILE_PAYRECORD != null)
+                        {
+                            @Model.FILE_PAYRECORD.FileName
+                        }*@
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">護照影本電子檔</label>
+                    <div class="col-sm-10">
+                        @if (Model.FILE_PASSPORT != null)
+                        {
+                            @Html.FrontFileDLForTurbo(m => m.FILE_PASSPORT_FILENAME)
+                            @Html.HiddenFor(m => m.FILE_PASSPORT_FILENAME)
+                        }
+
+                        @*@if (IsImageFile(Model.FILE_PASSPORT_MIME))
+                        {
+                            @Html.ImageHoverForTurbo(m => m.FILE_PASSPORT, Model.FILE_PASSPORT.FileName)
+                        }
+                        else if (Model.FILE_PASSPORT != null)
+                        {
+                            @Model.FILE_PASSPORT.FileName
+                        }*@
+                        
+                    </div>
+                </div>
+                <h2 class="second-title">
+                    <span style="color:red">*</span>醫事人員或公共衛生師/專科中文證書電子檔
+                </h2>
+                @*附件*@
+                <div class="form-group">
+                    @if (Model.ATHs != null)
+                    {
+                        int index = 0;
+                        foreach (Apply_001008_AthViewModel item in Model.ATHs)
+                        {
+                            <div class="form-group">
+                                <label class="col-sm-2 step-label">電子檔@(index+1)</label>
+                                <div class="col-sm-8">
+                                    @if (Model.ATHs[index].FILE_1 != null)
+                                    {
+                                        @Html.FrontFileDLForTurbo(m => m.ATHs[index].FILE_1_FILENAME)
+                                        @Html.HiddenFor(m => m.ATHs[index].FILE_1_FULLNAME)
+                                    }
+
+                                    @*@if (IsImageFile(item.FILE_1_MIME))
+                                    {
+                                        @Html.ImageHoverForTurbo(m => m.ATHs[index].FILE_1, item.FILE_1.FileName,index)
+                                    }
+                                    else if (item.FILE_1 != null)
+                                    {
+                                        @Html.Raw(item.FILE_1.FileName)
+                                    }*@
+                                </div>
+                            </div>
+
+                            index++;
+                        }
+                    }
+                    @*@Html.EditorFor(m => m.ATH, "GoodsDynamicGrid005001Ath")*@
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-set">
+        <div class="btn-bar text-center">
+            <button type="button" class="btn btn-save" onclick="doPay()">確認送出</button>
+            <button type="button" class="btn btn-clear" onclick="doApply()">返回修改</button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('[data-hover!=\"\"]').hover();
+    });
+
+    //確認送出
+    function doPay() {
+        $("#IsUpLoadFile").val("0");
+        var data = new FormData($('#main_form')[0]);
+
+        $.ajax({
+            url: '@Url.Action("Apply", "Apply_001008")',
+            type: 'POST',
+            cache: false,
+            data: data,
+            processData: false,
+            contentType: false
+        }).done(function (res) {
+            //debugger;
+            if (res.status) {
+                $("#IsUpLoadFile").val("0");
+                data = new FormData($('#main_form')[0]);
+
+                $.ajax({
+                    url: '@Url.Action("Pay", "Apply_001008")',
+                    type: 'POST',
+                    cache: false,
+                    data: data,
+                    processData: false,
+                    contentType: false
+                }).done(function (getHtml) {
+                    //debugger;
+                    $('#preview_tab').removeClass('active');
+                    $('#PreViewForm').attr('class', 'tab-pane fade');
+                    
+
+                    $('#pay_tab').attr('class', 'active');
+                    $('#PayForm').attr('class', 'tab-pane fade active in');
+
+                    $("#PayForm").html(getHtml);
+                });
+
+            }
+            else {
+                blockAlert(res.message, "提示訊息");
+            }
+
+            //$('#preview-block').html(res);
+            //$('#preview-block').css('display', 'block');
+            //$('#form-block').css('display', 'none');
+        });
+    }
+
+    //返回修改
+    function doApply() {
+        $('#preview_tab').removeClass('active');
+        $('#PreViewForm').attr('class', 'tab-pane fade');
+        $('#PreViewForm').html("");//要清空，來來回回操作才不會一直顯示舊的資料
+
+        $('#apply_tab').attr('class', 'active');
+        $('#ApplyForm').attr('class', 'tab-pane fade active in');
+
+        //resetHeightMe();
+        //resetHeightPr();
+
+        //取消反灰效果
+        $("#GoodsDynamicGird001008Me div.date input").each(function (i, obj) {
+            $("input[type='text'][id='" + obj.id + "']").removeAttr("style");
+        });
+
+        $("#GoodsDynamicGird001008Pr div.date input").each(function (i, obj) {
+            $("input[type='text'][id='" + obj.id + "']").removeAttr("style");
+        });
+    }
+</script>
+
+@functions {
+    bool IsImageFile(string mime)
+    {
+        bool result = false;
+
+        if (!string.IsNullOrEmpty(mime) && mime.Contains("image"))
+        {
+            result = true;
+        }
+
+        return result;
+    }
+}

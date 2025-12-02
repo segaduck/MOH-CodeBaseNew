@@ -1,0 +1,64 @@
+﻿@model ES.Models.ViewModels.Apply_005014ViewModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "Complete";
+
+    string flowCd = TempData["FLOW_CD"].ToString();
+}
+
+@helper ResendComplete()
+{
+    <div>
+        申請人您好：<br> 您申請貨品進口專案申請，已完成資料補件，將盡速辦理您的申辦案件，謝謝。
+        <br><br><div style="float:right">衛生福利部</div>
+    </div>
+}
+
+@helper ApplyComplete()
+{
+    <div>
+        申請人您好：<br>您申請貨品進口專案申請，已完成系統資料填答及上傳程序，將儘速辦理您的申請案件，謝謝。
+        <br><br><div style="float:right">衛生福利部</div>
+    </div>
+}
+
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink"><i class="fas fa-home"></i><a href="#">首頁</a> ／ <a href="#">申辦服務</a> ／ <a href="#">貨品進口專案申請</a></div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            @if (flowCd == "1")
+            {
+                <ul>
+                    <li>填寫申報表件並上傳檔案</li>
+                    <li>預覽申辦表件</li>
+                    <li class="active">完成申報</li>
+                </ul>
+            }
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h1 class="form-title title-bg-y">完成申報</h1>
+            </div>
+        </div>
+        <!--form-->
+        <div class="form-set">
+            <form class="form-horizontal" action="">
+                <div class="form-group">
+                    <div class="col-sm-12" style="margin-top:10px">
+                        @if (flowCd == "1")    // 收件
+                        {
+                            @ApplyComplete()
+                        }
+                        else if (flowCd == "3")    // 補件收件
+                        {
+                            @ResendComplete()
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

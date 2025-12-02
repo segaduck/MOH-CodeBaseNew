@@ -1,0 +1,850 @@
+﻿@using ES.Models.Entities
+@using ES.Models
+@using ES.Commons;
+@model ES.Models.ViewModels.Apply_001009ViewModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.Title = "醫事人員或公共衛生師資格英文求證";
+    ShareCodeListModel srcList = new ShareCodeListModel();
+}
+<script type="text/javascript" src="~/Scripts/utility.js"></script>
+@using (Html.BeginForm("AppDocSave", "Apply_001009", FormMethod.Post, new { id = "main_form", @class = "form-horizontal", enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink">
+                <i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@ViewBag.Title</a>
+            </div>
+            <div class="clearfix"></div>
+            @if (Model != null && Model.Apply != null && Model.Apply.FLOW_CD == "2")
+            {
+                <div class="tab-content" id="myTabContent2">
+                    <h1 class="form-title  title-bg-y">補件</h1>
+                    <div class="form-set">
+                        @Html.Raw(Model.Apply.MAILBODY)
+                    </div>
+                </div>
+            }
+            else if (Model != null && Model.Apply != null && Model.Apply.FLOW_CD == "9")
+            {
+                <div class="tab-content" id="myTabContent">
+                    <h1 class="form-title  title-bg-y">逾期未補件而予結案</h1>
+                    <div class="form-set">
+                        @Html.Raw(Model.Apply.MAILBODY)
+                    </div>
+                </div>
+            }
+            else if (Model != null && Model.Apply != null && Model.Apply.FLOW_CD == "12")
+            {
+                <div class="tab-content" id="myTabContent">
+                    <h1 class="form-title  title-bg-y">核可(發文歸檔)</h1>
+                    <div class="form-set">
+                        @Html.Raw(Model.Apply.MAILBODY)
+                    </div>
+                </div>
+            }
+            <div class="tab-content" id="myTabContent">
+                <!--ApplyForm-->
+                <div id="ApplyForm" class="tab-pane fade active in">
+                    <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                    <div class="form-set">
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申辦項目</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static">@ViewBag.Title</p>
+                            </div>
+                            <label class="step-label col-sm-2" for="">申辦日期</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static"> @Model.APPLY_DATE</p>
+                                @Html.HiddenFor(x => x.APPLY_DATE, new { @Value = @Model.APPLY_DATE })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人中文姓名(與護照相同)</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.Apply.NAME, new { @class = "form-control", @placeholder = "請輸入申請人姓名", @readonly = "readonly" })
+                            </div>
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>身分證編號/居留證號</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.Apply.IDN, new { @class = "form-control", @placeholder = "請輸入身分證編號/居留證號", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人英文姓名(與護照相同)</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.Apply.ENAME, new { @class = "form-control", @placeholder = "申請人英文姓名", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for="">申請人英文別名(與護照相同)</label>
+                            <div class="col-sm-4">
+                                @Html.TextBoxFor(x => x.Apply.E_ALIAS_NAME, new { @class = "form-control", @placeholder = "申請人英文別名", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請人出生年月日</label>
+                            <div class="col-sm-4">
+                                @Html.DatePickerTWFor(x => x.BIRTHDAY_AC, new { size = "10", @disabled = "disabled", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請事由</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.APPLY_CAUSE, new List<SelectListItem>(){
+                                                                                              new SelectListItem(){ Text="任職-機構",Value="1"},
+                                                                                              new SelectListItem(){ Text="其他",Value="2"}
+                                                                                            }, new { @class = "form-normal", @disabled = "disabled" })
+                                @Html.TextBoxFor(x => x.APPLY_CAUSE_TEXT, new { @class = "form-normal", @placeholder = "申請事由", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請證明類別</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.APPLY_CERT_CATE, srcList.GetCERTCATEList.Where(m => m.Value != "33"), new { @class = "form-control", @disabled = "disabled" })
+                                @Html.HiddenFor(x => x.APPLY_CERT_CATE_TEXT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>醫事人員或公共衛生師證書字號</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(x => x.LIC_TYPE, srcList.GetCERTCATEByPCDList, new { @class = "form-normal", @disabled = "disabled" })字
+                                @Html.TextBoxFor(x => x.LIC_NUM, new { @class = "form-normal", @placeholder = "", @readonly = "readonly", maxlength = "6" })號
+                                @Html.HiddenFor(x => x.LIC_CD_TEXT)
+                                @Html.HiddenFor(x => x.LIC_CD)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>醫事人員或公共衛生師證書日期</label>
+                            <div class="col-sm-4">
+                                @Html.DatePickerTWFor(x => x.CERT_APPROVED_DATE_AC, new { size = "10", @disabled = "disabled", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>畢業學校名稱及所在縣市中文</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.C_SCHOOL_NAME, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>畢業學校名稱及所在縣市英文</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.E_SCHOOL_NAME, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>修業年限</label>
+                            <div class="col-sm-10">
+                                西元
+                                <select id="yearList1" class="form-normal year" disabled></select>年
+                                <select id="monthList1" class="form-normal month" disabled></select>月
+                                @Html.HiddenFor(x => x.YEAR1)
+                                @Html.HiddenFor(x => x.MONTH1)
+                                至 西元
+                                <select id="yearList2" class="form-normal year" disabled></select>年
+                                <select id="monthList2" class="form-normal month" disabled></select>月
+                                @Html.HiddenFor(x => x.YEAR2)
+                                @Html.HiddenFor(x => x.MONTH2)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>通訊地址</label>
+                            <div class="col-sm-10 form-inline">
+                                @Html.TextBoxFor(x => x.CITY_CODE, new { @id = "CITY_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = "readonly" })
+                                <div class="input-group">
+                                    @Html.TextBoxFor(x => x.CITY_TEXT, new { @id = "CITY_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-info" onclick="doCITYSelect()" disabled><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(x => x.CITY_DETAIL, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = "readonly" })
+                                @Html.HiddenFor(x => x.FULL_ADDRESS)
+
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>本求證表郵寄機構地址(含國別及收件者)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.VERIFY_ADDRESS, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.DropDownListFor(x => x.MAIL_COUNTRY, srcList.CountryList, new { @class = "form-normal", @disabled = "disabled" })
+                                @Html.TextBoxFor(x => x.RECEIVER, new { @class = "form-normal", placeholder = "請輸入收件者", @readonly = "readonly" })
+                                @Html.HiddenFor(x => x.COUNTRY_TEXT)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>機構名稱</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.VERIFY_NAME, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <h2 class="second-title">申辦資料</h2>
+                        <div class='form-group'>
+                            <label class='step-label col-sm-2' for=''><span style="color:red;">*</span>聯絡人姓名</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.Apply.CNT_NAME, new { @class = "form-normal", @readonly = "readonly" })
+                                <button type='button' class="btn btn-info" onclick="getMemberData()" disabled>同登入會員資料</button>
+                            </div>
+                        </div>
+                        <div class='form-group'>
+                            <label class='step-label col-sm-2' for=''>聯絡人電話</label>
+                            <div class="col-sm-10">
+                                @Html.HiddenFor(x => x.TEL)
+                                <span></span>
+                                @Html.TextBoxFor(x => x.TEL_SEC, new { @class = "form-10 form-normal", @readonly = "readonly" })
+                                <span>-</span>
+                                @Html.TextBoxFor(x => x.TEL_NO, new { @class = "form-normal", @readonly = "readonly" })
+                                <span>#</span>
+                                @Html.TextBoxFor(x => x.TEL_EXT, new { @class = "form-10 form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人行動電話</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(x => x.Apply.MOBILE, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人E-MAIL</label>
+                            <div class="col-sm-10">
+                                @Html.HiddenFor(x => x.MAIL)
+                                @Html.TextBoxFor(x => x.MAIL_ACCOUNT, new { @class = "form-normal", @readonly = "readonly" })@@
+                                @Html.DropDownList("DOMAINList", srcList.GetMailDomainList, new { @class = "form-normal", @disabled = "disabled", @readonly = "readonly" })
+                                @Html.TextBoxFor(x => x.MAIL_DOMAIN, new { @class = "form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class='form-group'>
+                            <label class='step-label col-sm-2' for=''>聯絡人傳真</label>
+                            <div class="col-sm-10">
+                                @Html.HiddenFor(x => x.FAX)
+                                <span></span>
+                                @Html.TextBoxFor(x => x.FAX_SEC, new { @class = "form-10 form-normal", @readonly = "readonly" })
+                                <span>-</span>
+                                @Html.TextBoxFor(x => x.FAX_NO, new { @class = "form-normal", @readonly = "readonly" })
+                                <span>#</span>
+                                @Html.TextBoxFor(x => x.FAX_EXT, new { @class = "form-10 form-normal", @readonly = "readonly" })
+                            </div>
+                        </div>
+
+                        <h2 class="second-title">佐證文件檔案上傳<span style="color:red">(總檔案大小5MB以下，請附上圖檔，例如：JPG、BMP、PNG、GIF、TIF)</span></h2>
+                        <div class='form-group'>
+                            <label class="step-label col-sm-2" for="">佐證文件採合併檔案</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline "><input type="radio" id="isMergeY" name="optFile" value="Y" disabled>是</label>
+                                <label class="radio-inline "><input type="radio" id="isMergeN" name="optFile" value="N" disabled>否</label><br />
+                                若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"
+                                @Html.HiddenFor(x => x.IS_MERGE_FILE)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>護照影本</label>
+                            <div class="col-sm-10">
+                                @if (Model.FileList.Where(x => x.FILE_NO == 1).ToList().Count() > 0)
+                                {
+                                    <div id="FILE_NO_1_DIV" hidden="hidden">@Model.FileList.Where(x => x.FILE_NO == 1).ToList().Count()</div>
+                                    @Html.FileDLForTurbo(x => x.FileList.Where(m => m.FILE_NO == 1).FirstOrDefault().FILENAME,
+                                             Model.FileList.Where(m => m.FILE_NO == 1).FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 1).FirstOrDefault().APP_ID + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 1).FirstOrDefault().FILE_NO + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 1).FirstOrDefault().SRC_NO , "N")
+                                             }
+
+
+                                @Html.TextBoxFor(x => x.FILE1, new { @class = "form-control", @type = "file", onchange = "setFileName($(this).attr('name'))", @disabled = "disabled" })
+                                @Html.HiddenFor(x => x.FILE1_CHECK)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>醫事人員或公共衛生師中文證書影本</label>
+                            <div class="col-sm-10">
+                                @if (Model.FileList.Where(x => x.FILE_NO == 2).ToList().Count() > 0)
+                                {
+                                    <div id="FILE_NO_2_DIV" hidden="hidden">@Model.FileList.Where(x => x.FILE_NO == 2).ToList().Count()</div>
+                                    @Html.FileDLForTurbo(x => x.FileList.Where(m => m.FILE_NO == 2).FirstOrDefault().FILENAME,
+                                             Model.FileList.Where(m => m.FILE_NO == 2).FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 2).FirstOrDefault().APP_ID + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 2).FirstOrDefault().FILE_NO + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 2).FirstOrDefault().SRC_NO , "N")
+                                }
+
+                                        @Html.TextBoxFor(x => x.FILE2, new { @class = "form-control", @type = "file", onchange = "setFileName($(this).attr('name'))", @disabled = "disabled" })
+                                @Html.HiddenFor(x => x.FILE2_CHECK)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>考照時之畢業證書影本</label>
+                            <div class="col-sm-10">
+                                @if (Model.FileList.Where(x => x.FILE_NO == 3).ToList().Count() > 0)
+                                {
+                                    <div id="FILE_NO_3_DIV" hidden="hidden">@Model.FileList.Where(x => x.FILE_NO == 3).ToList().Count()</div>
+                                    @Html.FileDLForTurbo(x => x.FileList.Where(m => m.FILE_NO == 3).FirstOrDefault().FILENAME,
+                                             Model.FileList.Where(m => m.FILE_NO == 3).FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 3).FirstOrDefault().APP_ID + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 3).FirstOrDefault().FILE_NO + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 3).FirstOrDefault().SRC_NO , "N")
+                                }
+                                @Html.TextBoxFor(x => x.FILE3, new { @class = "form-control", @type = "file", onchange = "setFileName($(this).attr('name'))", @disabled = "disabled" })
+                                @Html.HiddenFor(x => x.FILE3_CHECK)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>考試及格證書影本</label>
+                            <div class="col-sm-10">
+                                @if (Model.FileList.Where(x => x.FILE_NO == 4).ToList().Count() > 0)
+                                {
+                                    <div id="FILE_NO_4_DIV" hidden="hidden">@Model.FileList.Where(x => x.FILE_NO == 4).ToList().Count()</div>
+                                    @Html.FileDLForTurbo(x => x.FileList.Where(m => m.FILE_NO == 4).FirstOrDefault().FILENAME,
+                                             Model.FileList.Where(m => m.FILE_NO == 4).FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 4).FirstOrDefault().APP_ID + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 4).FirstOrDefault().FILE_NO + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 4).FirstOrDefault().SRC_NO , "N")
+                                }
+                                @Html.TextBoxFor(x => x.FILE4, new { @class = "form-control", @type = "file", onchange = "setFileName($(this).attr('name'))", @disabled = "disabled" })
+                                @Html.HiddenFor(x => x.FILE4_CHECK)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>對方機構求證表格</label>
+                            <div class="col-sm-10">
+                                @if (Model.FileList.Where(x => x.FILE_NO == 5).ToList().Count() > 0)
+                                {
+                                    <div id="FILE_NO_5_DIV" hidden="hidden">@Model.FileList.Where(x => x.FILE_NO == 5).ToList().Count()</div>
+                                    @Html.FileDLForTurbo(x => x.FileList.Where(m => m.FILE_NO == 5).FirstOrDefault().FILENAME,
+                                             Model.FileList.Where(m => m.FILE_NO == 5).FirstOrDefault().FILENAME.Split('\\')[3].ToString() + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 5).FirstOrDefault().APP_ID + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 5).FirstOrDefault().FILE_NO + "," +
+                                             Model.FileList.Where(m => m.FILE_NO == 5).FirstOrDefault().SRC_NO , "N")
+                                }
+                                @Html.TextBoxFor(x => x.FILE5, new { @class = "form-control", @type = "file", onchange = "setFileName($(this).attr('name'))", @disabled = "disabled" })
+                                @Html.HiddenFor(x => x.FILE5_CHECK)
+                            </div>
+                        </div>
+                        <div class="btn-bar text-center">
+                            <button type="button" id="btnSave" class="btn btn-save" onclick="doSave()">存檔</button>
+                            <button type="button" id="btnReturn" class="btn btn-clear">返回</button>
+                        </div>
+                    </div>
+                </div>
+                <!--ApplyForm-->
+
+            </div>
+
+        </div>
+        <div class="clearfix"></div>
+        @Html.HiddenFor(x => x.APP_ID)
+    @Html.HiddenFor(x => x.Apply.APP_ID)
+    @Html.HiddenFor(x => x.Apply.ISMODIFY)
+    @Html.HiddenFor(x => x.Apply.FLOW_CD)
+    @Html.HiddenFor(x => x.IsNotice)
+    @Html.HiddenFor(x => x.NoticeList)
+    @Html.HiddenFor(x => x.FREQUENCY)
+
+</div>
+
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#DOMAINList').change(function () {
+                                            if ($('#DOMAINList option:selected').text() == '自訂' || $('#DOMAINList option:selected').text() == '請選擇') {
+                $('#MAIL_DOMAIN').val('');
+                                            }
+            else {
+                $('#MAIL_DOMAIN').val($('#DOMAINList option:selected').text());
+                                            }
+                                        });
+
+        $('#CITY_CODE').on('blur', doCITYNameGet);
+                                        doCITYNameGet();
+
+        $('#APPLY_CERT_CATE').change(function () {
+            $('#APPLY_CERT_CATE_TEXT').val($('option:selected', this).text());
+                                            GetLicNumList();
+                                        });
+
+                                        if ($('#IS_MERGE_FILE').val() == 'Y') {
+            $('#isMergeY').prop('checked', 'checked');
+                                        }
+        else {
+            $('#isMergeN').prop('checked', 'checked');
+                                        }
+
+        $('#MAIL_COUNTRY').change(function () {
+            $('#COUNTRY_TEXT').val($('option:selected', this).text());
+                                        });
+
+        $("#yearList1").change(function () {
+            $('#YEAR1').val($("option:selected", this).val());
+                                        });
+
+        $("#monthList1").change(function () {
+            $('#MONTH1').val($("option:selected", this).val());
+                                        });
+
+        $("#yearList2").change(function () {
+            $('#YEAR2').val($("option:selected", this).val());
+                                        });
+
+        $("#monthList2").change(function () {
+            $('#MONTH2').val($("option:selected", this).val());
+                                        });
+
+                                        genYM();
+
+        $('#yearList1').val($('#YEAR1').val());
+        $('#monthList1').val($('#MONTH1').val());
+        $('#yearList2').val($('#YEAR2').val());
+        $('#monthList2').val($('#MONTH2').val());
+                                        console.log($('#Apply_FLOW_CD').val());
+                                        console.log($('#IsNotice').val());
+                                        if ($('#Apply_FLOW_CD').val() == '2' && $('#IsNotice').val() == 'Y') {
+                                            console.log($('#Apply_ISMODIFY').val());
+                                            if ($('#Apply_ISMODIFY').val() == 'Y') {
+                $('div[tagid="BIRTHDAY_AC_TW"]').removeAttr('disabled');
+                $('div[tagid="CERT_APPROVED_DATE_AC_TW"]').removeAttr('disabled');
+                $('input[type="text"]').removeAttr('readonly');
+                $('input[type="text"]').removeAttr('disabled');
+                $('input[type="radio"]').removeAttr('disabled');
+                $('select').removeAttr('disabled');
+                $('input[type="file"]').removeAttr('disabled')
+                                                $('button').removeAttr('disabled')
+                                                $('input[type="radio"]').removeAttr('disabled')
+                                            }
+            else {
+                                                var fieldList = $('#NoticeList').val().split(',');
+                                                console.log($('#NoticeList').val());
+                                                for (var i = 0; i < fieldList.length; i++) {
+                                                    console.log(fieldList[i]);
+                                                    switch (fieldList[i]) {
+                                                        case "FILE1":
+                            $('#FILE1').removeAttr('disabled')
+                                                            break;
+                                                        case "FILE2":
+                            $('#FILE2').removeAttr('disabled')
+                                                            break;
+                                                        case "FILE3":
+                            $('#FILE3').removeAttr('disabled')
+                                                            break;
+                                                        case "FILE4":
+                            $('#FILE4').removeAttr('disabled')
+                                                            break;
+                                                        case "FILE5":
+                            $('#FILE5').removeAttr('disabled')
+                                                            break;
+                                                    }
+                                                }
+
+                                            }
+                                        }
+        else {
+            $('#btnSave').hide();
+                                        }
+
+        $('#btnReturn').click(function () {
+                                            location.href = '/history/';
+                                        });
+
+                                        GetLicNumList();
+
+                                    });
+
+    // 地址
+    function loadDialogCITYCodeMapName(data) {
+                                        ajaxLoadMore(data.url, data.arg, function (resp) {
+                                            if (resp === undefined) data.box.val('');
+                                            else {
+                                                if (resp.data != '') data.box.val(resp.data);
+                                                else { data.box.val(''); data.add.val(''); blockAlert(data.msg); }
+                                            }
+                                        });
+                                    };
+
+                                    function doCITYSelect() {
+                                        var url = '/ZIP_CO';
+                                        var title = '郵遞區號查詢'; popupWindow({ 'width': 900 }, url, title, null, function (retData, doc) {
+                                            if (retData != null) {
+                $('#CITY_CODE').val(retData.Id);
+                $('#CITY_TEXT').val(retData.Name);
+                                            }
+                                        });
+                                    }
+
+                                    function doCITYNameGet() {
+                                        var code = $('#CITY_CODE');
+                                        var data = { 'url': '/Ajax/GetCityTown', 'msg': '查無該郵遞區號!!', 'arg': { 'CODE': code.val().toUpperCase() }, 'box': $('#CITY_TEXT'), 'add': $('#CITY_CODE') };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogCITYCodeMapName(data);
+        }
+    };
+
+    function validation() {
+
+                                        var msg = '';
+
+                                        if ($('#Apply_NAME').val().trim() == '') {
+                                            msg += '請輸入申請人<br/>';
+                                        }
+
+                                        if ($('#Apply_IDN').val().trim() == '') {
+                                            msg += '請輸入身分證編號/居留證號<br/>';
+                                        }
+
+        @*20210120 fix 因身分證/居留證號已改唯讀不提供編輯，暫時先拿掉先前寫的身分證格式檢核*@
+        //if (!checkID($('#Apply_IDN').val())) {
+        //    msg += '請輸入"正確"身分證編號/居留證號<br/>';
+        //}
+
+        if ($('#Apply_ENAME').val().trim() == '') {
+            msg += '請輸入申請人英文姓名<br/>';
+        }
+
+        //if ($('#Apply_E_ALIAS_NAME').val().trim() == '') {
+        //    blockAlert('申請人英文別名', '訊息');
+        //    return false;
+        //}
+
+        if ($('#BIRTHDAY_AC').val().trim() == '') {
+            msg += '請輸入出生年月日<br/>';
+        }
+
+        if ($('#APPLY_CAUSE_TEXT').val().trim() == '') {
+            msg += '請輸入申請事由<br/>';
+        }
+
+        if ($('#APPLY_CERT_CATE').val().trim() == '') {
+            msg += '請輸入申請證明類別<br/>';
+        }
+
+        if ($('#LIC_TYPE option:selected').val().trim() == '') {
+            msg += '請選擇醫事人員或公共衛生師證書<br/>';
+        }
+
+        if ($('#LIC_NUM').val().trim() == '') {
+            msg += '請輸入醫事人員或公共衛生師證書字號<br/>';
+        }
+
+        if ($('#CERT_APPROVED_DATE_AC').val().trim() == '') {
+            msg += '請輸入醫事人員或公共衛生師證書日期<br/>';
+        }
+
+        if ($('#C_SCHOOL_NAME').val().trim() == '') {
+            msg += '請輸入畢業學校名稱及所在縣市中文<br/>';
+        }
+
+        if ($('#E_SCHOOL_NAME').val().trim() == '') {
+            msg += '請輸入畢業學校名稱及所在縣市英文<br/>';
+        }
+
+        if ($('#CITY_CODE').val().trim() == '') {
+            msg += '請輸入郵遞區號<br/>';
+        }
+
+        if ($('#CITY_DETAIL').val().trim() == '') {
+            msg += '請輸入地址<br/>';
+        }
+
+        if ($('#MAIL_COUNTRY').val().trim() == '') {
+            msg += '請選擇國別<br/>';
+        }
+
+        if ($('#RECEIVER').val().trim() == '') {
+            msg += '請輸入收件者<br/>';
+        }
+
+        if ($('#VERIFY_ADDRESS').val().trim() == '') {
+            msg += '請輸入本求證表郵寄機構地址(含國別及收件者)<br/>';
+        }
+
+        if ($('#VERIFY_NAME').val().trim() == '') {
+            msg += '請輸入機構名稱<br/>';
+        }
+
+        if ($('#Apply_CNT_NAME').val().trim() == '') {
+            msg += '請輸入聯絡人姓名<br/>';
+        }
+
+        if ($('#CITY_CODE').val().trim() + $('#CITY_TEXT').val().trim() + $('#CITY_DETAIL').val().trim() == '') {
+            msg += '請輸入通訊地址<br/>';
+        }
+
+        if ($('#TEL_SEC').val().trim() + $('#TEL_NO').val().trim() != '') {
+            //msg += '請輸入電話<br/>';
+            var telNo = $('#TEL_SEC').val().trim() + '-' + $('#TEL_NO').val().trim();
+            var telNum = '#' + $('#TEL_EXT').val().trim();
+            if (telNum != '#')
+            { telNo = telNo + telNum; }
+            if (!(telNo).match(/^(\d{2,4}-)(\d{6,8})?(#\d{1,6})?$/)) {
+                msg += '電話輸入格式不正確<br/>';
+            }
+        }
+
+        if ($('#Apply_MOBILE').val().trim() == '') {
+            msg += '請輸入聯絡人行動電話<br/>';
+        }
+
+        if ($('#MAIL_ACCOUNT').val().trim() == '' || $('#MAIL_DOMAIN').val().trim() == '') {
+            msg += '請輸入完整E-MAIL<br/>';
+        }
+
+        if ($('input[type="radio"]:checked').val() == 'Y') {
+            if ($('#FILE1').val().trim() == '' && $('#FILE2').val().trim() == '' && $('#FILE3').val().trim() == ''
+                && $('#FILE4').val().trim() == '' && $('#FILE5').val().trim() == ''
+                && $('#FILE_NO_1_DIV').text().trim() == '' && $('#FILE_NO_2_DIV').text().trim() == ''
+                && $('#FILE_NO_3_DIV').text().trim() == '' && $('#FILE_NO_4_DIV').text().trim() == ''
+                && $('#FILE_NO_5_DIV').text().trim() == '') {
+                msg += '請佐證文件採合併檔案為"是"時至少需上傳一個檔案<br/>';
+            }
+        }
+        else {
+            if ($('#FILE_NO_1_DIV').text().trim() == '' && $('#FILE1').val().trim() == '') {
+                msg += '請上傳護照影本<br/>';
+            }
+            if ($('#FILE_NO_2_DIV').text().trim() == '' && $('#FILE2').val().trim() == '') {
+                msg += '請上傳醫事人員或公共衛生師中文證書影本<br/>';
+            }
+            if ($('#FILE_NO_3_DIV').text().trim() == '' && $('#FILE3').val().trim() == '') {
+                msg += '請上傳考照時之畢業證書影本<br/>';
+            }
+            if ($('#FILE_NO_4_DIV').text().trim() == '' && $('#FILE4').val().trim() == '') {
+                msg += '請上傳考試及格證書影本<br/>';
+            }
+            if ($('#FILE_NO_5_DIV').text().trim() == '' && $('#FILE5').val().trim() == '') {
+                msg += '請上傳對方機構求證表格<br/>';
+            }
+        }
+
+        if (msg != '') {
+            blockAlert(msg, '訊息');
+            return false;
+        }
+
+        return true;
+    }
+
+    function setFileName(objName) {
+        var validExts = new Array(".PDF", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF", ".ZIP");
+
+        var fileExt = $('input[name="' + objName + '"]').val();
+        fileExt = fileExt.substring(fileExt.toLowerCase().lastIndexOf('.'));
+
+        if (fileExt == '') {
+            $('input[name="' + objName + '_NAME"]').val('');
+            return false;
+        }
+
+        if ($('input[name="' + objName + '"]')[0].files[0].size / 1024 / 1024 > 5) {
+            blockAlert("檔案大小不可超過5MB");
+            $('input[name="' + objName + '"]').val(null);
+            $('input[name="' + objName + '_NAME"]').val('');
+            return false;
+        }
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + objName + '"]').val(null);
+            $('input[name="' + objName + '_NAME"]').val('');
+            return false;
+        }
+        else {
+            $('#' + objName + '_NAME').val($('input[name="' + objName + '"]').val().replace(/C:\\fakepath\\/i, ''));
+            return true;
+        }
+    }
+
+    function getMemberData() {
+        var data = {
+            'url': '/Ajax/GetMemberData', 'msg': '查無該會員聯絡資料!!', 'arg': '', 'result': ''
+        };
+
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) {
+                data.result.val('');
+            }
+            else {
+                if (resp.data != '') {
+                    $.each(resp.data, function (i, item) {
+
+                        if (item.CODE == 'CNT_NAME') {
+                            $('#Apply_CNT_NAME').val(item.TEXT);
+                        }
+
+                        if (item.CODE == 'MOBILE') {
+                            $('#Apply_MOBILE').val(item.TEXT);
+                        }
+
+                        if (item.CODE == 'MAIL') {
+                            var mail = item.TEXT;
+
+                            if (mail != '') {
+
+                                $('#MAIL_ACCOUNT').val(mail.split('@@')[0]);
+
+                                $("#DOMAINList option").filter(function () {
+                                    return (this.text == (mail.split('@@')[1]).replace('@@', '') || this.text == '自訂');
+                                }).attr('selected', true);
+
+                                $('#MAIL_DOMAIN').val((mail.split('@@')[1]).replace('@@', ''));
+                            }
+                        }
+
+                        if (item.CODE == 'CNT_TEL') {
+
+                            if (item.TEXT != '') {
+                                $('#TEL_SEC').val(item.TEXT.split('-')[0])
+                                $('#TEL_NO').val(item.TEXT.split('-')[1])
+
+                                if (item.TEXT.indexOf('#') > 0) {
+                                    $('#TEL_EXT').val(item.TEXT.split('#')[1])
+                                    $('#TEL_NO').val($('#TEL_NO').val().substring(0, $('#TEL_NO').val().indexOf('#')));
+                                }
+                            }
+                        }
+
+                        if (item.CODE == 'FAX') {
+                            if (item.TEXT != '') {
+                                $('#FAX_SEC').val(item.TEXT.split('-')[0])
+                                $('#FAX_NO').val(item.TEXT.split('-')[1])
+
+                                if (item.TEXT.indexOf('#') > 0) {
+                                    $('#FAX_EXT').val(item.TEXT.split('#')[1])
+                                    $('#FAX_NO').val($('#FAX_NO').val().substring(0, $('#FAX_NO').val().indexOf('#')));
+                                }
+                            }
+                        }
+                    });
+                }
+                else {
+                    data.result.val('');
+                    blockAlert(data.msg);
+                }
+            }
+        });
+    }
+
+    function genYM() {
+        var minOffset = 0, maxOffset = 100;
+        var thisYear = (new Date()).getFullYear();
+        var m_names = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+        var month = 0;
+        for (var j = month; j <= 11; j++) {
+            var months = m_names[0 + j];
+            $('<option>', { value: months, text: months }).appendTo(".month");
+        }
+
+        for (var i = minOffset; i <= maxOffset; i++) {
+            var year = thisYear - i;
+            $('<option>', { value: year, text: year }).appendTo(".year");
+        }
+    }
+
+    function doSave() {
+        if (validation()) {
+
+            $('#LIC_CD_TEXT').val($('#LIC_TYPE option:selected').text());
+            $('#LIC_CD').val($('#LIC_TYPE option:selected').text());
+
+            $('#FULL_ADDRESS').val($('#CITY_CODE').val() + $('#CITY_TEXT').val() + $('#CITY_DETAIL').val())
+
+            if ($('#TEL_SEC').val() == '' || $('#TEL_NO').val() == '') {
+                $('#TEL').val('');
+            }
+            else {
+                $('#TEL').val($('#TEL_SEC').val() + '-' + $('#TEL_NO').val())
+            }
+
+            if ($('#TEL').val() != '' && $('#TEL_EXT') != '') {
+                $('#TEL').val($('#TEL_SEC').val() + '-' + $('#TEL_NO').val() + '#' + $('#TEL_EXT').val());
+            }
+
+            if ($('#FAX_SEC').val() == '' || $('#FAX_NO').val() == '') {
+                $('#FAX').val('');
+            }
+            else {
+                $('#FAX').val($('#FAX_SEC').val() + '-' + $('#FAX_NO').val())
+            }
+
+            if ($('#FAX').val() != '' && $('#FAX_EXT') != '') {
+                $('#FAX').val($('#FAX_SEC').val() + '-' + $('#FAX_NO').val() + '#' + $('#FAX_EXT').val());
+            }
+
+            $('#MAIL').val($('#MAIL_ACCOUNT').val() + '@@' + $('#MAIL_DOMAIN').val().replace('@@', ''));
+
+            $('#IS_MERGE_FILE').val($('input[type="radio"]:checked').val());
+
+            if ($('#APPLY_CERT_CATE').is(':disabled')) {
+                $('#APPLY_CERT_CATE').removeProp('disabled')
+            }
+
+            if ($('#LIC_TYPE').is(':disabled')) {
+                $('#LIC_TYPE').removeProp('disabled')
+            }
+
+            if ($('#DOMAINList').is(':disabled')) {
+                $('#DOMAINList').removeProp('disabled')
+            }
+
+            if ($('#yearList1').is(':disabled')) {
+                $('#yearList1').removeProp('disabled')
+            }
+
+            if ($('#monthList1').is(':disabled')) {
+                $('#monthList1').removeProp('disabled')
+            }
+
+            if ($('#yearList2').is(':disabled')) {
+                $('#yearList2').removeProp('disabled')
+            }
+
+            if ($('#monthList2').is(':disabled')) {
+                $('#monthList2').removeProp('disabled')
+            }
+
+            if ($('#MAIL_COUNTRY').is(':disabled')) {
+                $('#MAIL_COUNTRY').removeProp('disabled')
+            }
+
+            blockUI();
+            var form = $("form[id=main_form]");
+            form.attr('action', '@Url.Action("AppDocSave")').submit();
+        }
+    }
+
+    function GetLicNumList() {
+        var code_pcd = $('#APPLY_CERT_CATE');
+
+        var data = {
+            'url': '/Ajax/GetCERTCATEMDList', 'msg': '查無該證書字號!!', 'arg': { 'code_pcd': code_pcd.val() }, 'result': $('#APPLY_CERT_CATE')
+        };
+
+        if ($.trim(data.arg.code_pcd) == '')
+            data.result.val('');
+        else {
+            code_pcd.val(data.arg.code_pcd);
+            loadLicNumList(data, 'LIC_TYPE');
+        }
+    };
+
+    function loadLicNumList(data, objectId) {
+        ajaxLoadMore(data.url, data.arg, function (resp) {
+            if (resp === undefined) {
+                data.result.val('');
+            }
+            else {
+                if (resp.data != '') {
+                    $('#' + objectId).empty();
+                    $.each(resp.data, function (i, item) {
+                        $('#' + objectId).append('<option value=' + item.CODE + ' selected>' + item.TEXT + '</option>');
+                    });
+                }
+                else {
+                    data.result.val('');
+                    blockAlert(data.msg);
+                }
+            }
+        });
+    };
+
+</script>

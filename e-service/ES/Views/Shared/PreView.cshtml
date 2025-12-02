@@ -1,0 +1,30 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model PreViewModel
+
+@{
+    Layout = null;
+    ViewBag.Tag = "檔案預覽_";
+}
+
+<head>
+    <title>@ViewBag.Tag@Model.FILENAME</title>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+@if (Model.FILEPATHFULL == null)
+{
+    <iframe src="@Html.Raw(@"../Template/" + Model.APP_ID + "/" + Model.FILENAME)" style="width:100%;height:100%;"></iframe>
+}
+else
+{
+    <iframe src="@Html.Raw(Model.FILEPATHFULL)" style="width:100%;height:100%;"></iframe>
+}
+
+
+<script type="text/javascript">
+
+</script>

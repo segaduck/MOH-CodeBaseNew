@@ -1,0 +1,31 @@
+﻿@model ES.Models.LoginModel
+@{
+    Layout = null;
+}
+
+<div class="dLeftLogin">
+@using (Html.BeginForm("Login", "Member", new { ReturnUrl = Request.QueryString["ReturnUrl"] }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div style="height: 95px;">
+        <div style="float: left; padding: 2px; width: 55px; text-align: right;">
+            @Html.LabelFor(m => m.LoginAccount)
+        </div>
+        <div style="float: left; padding: 2px;">
+            @Html.TextBoxFor(m => m.LoginAccount, new { style = "width: 100px;" })
+        </div>
+        <div style="float: left; padding: 2px; width: 55px; text-align: right;">
+            @Html.LabelFor(m => m.LoginPassword)
+        </div>
+        <div style="float: left; padding: 2px;">
+            @Html.PasswordFor(m => m.LoginPassword, new { style = "width: 100px;" })
+        </div>
+        <div>@Html.ValidationMessageFor(m => m.LoginAccount)</div>
+        <div>@Html.ValidationMessageFor(m => m.LoginPassword)</div>
+        <div style="float: left; width: 60px; padding-left: 60px; ">@Html.ActionLink("加入會員", "Register", "Member")</div>
+        <div style="float: left; width: 60px;">@Html.ActionLink("忘記密碼", "Forget", "Member")</div>
+    </div>
+    <div style="float: right; padding-right: 10px;"><input type="submit" value="登入" /></div>
+}
+</div>

@@ -1,0 +1,42 @@
+﻿@using ES.Services;
+@using ES.Areas.Admin.Models;
+@model Apply_040001ViewModel
+
+@{
+    ViewBag.SRV_NAME = "衛生福利部訴願案件";
+}
+
+<!--2-->
+<div class='panel panel-info'>
+    <div class='panel-heading'>
+        <h2 class='panel-title' data-toggle='collapse' data-parent='#ApplyData' href='#ApplyData'>
+            <a>上傳應附檔案(點擊展開)</a>
+        </h2>
+    </div>
+    <div id='ApplyData' class='panel-collapse collapse'>
+        <div class='panel-body'>
+            <div class="form-blue">
+                @{
+                    if (Model.Form.FileList.SRVLIST != null && Model.Form.FileList.SRVLIST.Count > 0)
+                    {
+                        foreach (var item in Model.Form.FileList.SRVLIST)
+                        {
+                            <div class="form-group">
+                                <label class="main-label col-sm-2" for="">佐證文件</label>
+                                <div class="col-sm-10">
+                                    @Html.FileDLForTurbo(m => item.FILE_1_TEXT, item.FILENAME.Split('\\')[3].ToString() + "," + item.APP_ID + "," + item.FILE_NO + ",")
+                                </div>
+                            </div>
+                        }
+
+                    }
+                }
+
+            <div class="btnbar">
+                <button type="button" onclick="GetZip('@Model.Form.FileList.APP_ID')" class="btn btn-blue">檔案打包下載</button>
+                <button type="button" class="btn btn-blue" onclick="document.location.href = '@Url.Action("PreviewApplyForm")/?APP_ID=@Model.Form.APP_ID'; doSave();">套印申請書</button>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>

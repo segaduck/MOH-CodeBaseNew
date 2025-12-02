@@ -1,0 +1,53 @@
+﻿@using EECOnline.Areas.SHARE.Models;
+@model UNITFormModel
+@{
+    Layout = "~/Views/Shared/_MainLayout_NoHeader_NoBg.cshtml";
+}
+
+@using (Html.BeginForm("Index", "GRP", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal row" }))
+{
+    var button = new Dictionary<string, string>();
+    button.Add("Search", "doSearch()");
+
+    <div class="col-sm-12">
+        <div class="theme-news">
+            <div class="form-border">
+                @Html.ControlForTurbo(Model)
+                @Html.ButtonForTurbo(button)
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        @Html.Partial("_PagingLink", Model)
+        <div class="table-responsive form-table">
+            <table border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th width="80" align="center"></th>
+                        <th width="120" align="center">單位代碼</th>
+                        <th width="" align="center">單位名稱</th>
+                    </tr>
+                </thead>
+                <tbody id="rows">
+                    @Html.Partial("_GridRows")
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    /// 查詢
+    function doSearch() {
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Index")').submit();
+    }
+    /// 選
+    function doSelect(id, name) {
+        var data = {
+            "Id": id,
+            "Name": name,
+        }
+        parent.closeWindow(data);
+    }
+</script>

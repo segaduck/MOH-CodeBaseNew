@@ -1,0 +1,190 @@
+﻿@model ES.Areas.Admin.Models.AccountEditModel
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "管理帳號（修改）";
+    ViewBag.FunctionTitle = "管理帳號 - 修改";
+
+    ViewBag.Script = @"
+        var levelMenu = {
+            check: {
+                enable: true
+            },
+            async: {
+                enable: true,
+                url: """ + @Url.Action("LevelList", "Account") + "/" + Html.DisplayFor(m => m.Account) + @"""
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onAsyncSuccess: zTreeOnAsyncSuccess2
+            }
+        };
+
+        var firstAsyncSuccessFlag2 = true;
+
+        function zTreeOnAsyncSuccess2(event, treeId, treeNode) {
+            if(firstAsyncSuccessFlag2) {
+                try {
+                    var zTree = $.fn.zTree.getZTreeObj(treeId);
+                    var nodes = zTree.getNodes();
+
+                    if (!nodes) return null;
+
+                    for(var i=0; i<nodes.length; i++) {
+                        //zTree.expandNode(nodes[i], true);
+                    }
+                } catch (ex) {}
+            }
+
+        }
+
+        $(function () {
+            $.fn.zTree.init($(""#treeLevelMenu""), levelMenu);
+        });
+
+        function setLevel() {
+            var nodes =  $.fn.zTree.getZTreeObj(""treeLevelMenu"").getCheckedNodes(true);
+            var level = """";
+
+            for(var i=0; i<nodes.length; i++) {
+                level += nodes[i].id;
+                if(i < nodes.length-1 ) {
+                    level += "","";
+                }
+            }
+
+            $(""#Level"").val(level);
+        }
+
+        function ajaxADSreach(val, rootUrl) {
+            $.ajax({
+                cache: false,
+                type: 'post',
+                url: rootUrl + 'Account/NewADSreach',
+                dataType: 'json',
+                data: {
+                    account: val
+                },
+                success: function (result) {
+                    if (result.result == 'true') {
+                        $('#Tel').val(result.Tel);
+                        $('#Mail').val(result.Mail);
+                        $('#Name').val(result.Name);
+                    } else {
+                        alert(result.message);
+                    }
+                },
+                error: function () {
+                    alert('目前伺服器無法連結！');
+                }
+            });
+        }
+    ";
+}
+<div class="col-sm-12 content">
+
+    @using (Html.BeginForm("Edit", "Account", FormMethod.Post, new { id = "ActionForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <div class="bread">
+            <i class="fas fa-home"></i>首頁 / 帳號管理 / @ViewBag.FunctionTitle
+        </div>
+        <h1 class="main-title"><i class="fas fa-edit"></i>@ViewBag.FunctionTitle</h1>
+        <h2 class="second-title">基本資料</h2>
+        <div class="form-blue form-horizontal">
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.LabelFor(m => m.Account)</label>
+                <div class="col-sm-10">
+                    @Html.DisplayFor(m => m.Account)
+                    <input class="btn btn-reset" type="button" value="更新" onclick="ajaxADSreach($('#Account').val(),'@Url.Action("Index", "Home", new {Area="" })')" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.LabelFor(m => m.Name)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for=""><span class="formRequired">*</span> @Html.LabelFor(m => m.UnitCode)</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(m => m.UnitCode, (List<SelectListItem>)@ViewBag.UnitList, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.LabelFor(m => m.Tel)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Tel, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.LabelFor(m => m.Mail)</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Mail, new { @class = "form-normal" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="main-label col-sm-2" for="">@Html.LabelFor(m => m.Scope)</label>
+                <div class="col-sm-10">
+                    @if (ViewBag.Scope == 1)
+                    {
+                        @Html.RadioButtonFor(m => m.Scope, "1", new { @id = "Scope1", @class = "form-normal" }) <span>所有單位</span>
+                    }
+                    else
+                    {
+                        @Html.RadioButtonFor(m => m.Scope, "1", new { @id = "Scope1d", disabled = "true", @class = "form-normal" }) <span>所有單位</span>
+                        if (Model.Scope == 1)
+                        {@Html.Hidden("Scope", "1", new { @id = "Scope1" })}
+                }
+                    @if (ViewBag.Scope == 2)
+                    {
+                        @Html.RadioButtonFor(m => m.Scope, "2", new { @id = "Scope2d", disabled = "true", @class = "form-normal" }) <span>所有單位</span>
+                        if (Model.Scope == 2)
+                        {@Html.Hidden("Scope", "2", new { @id = "Scope2" })}
+                }
+                else
+                {
+                    @Html.RadioButtonFor(m => m.Scope, "0", new { @id = "Scope2", @class = "form-normal" }) <span>所屬單位</span>
+                }
+
+                    @Html.RadioButtonFor(m => m.Scope, "2", new { @id = "Scope3", @class = "form-normal" }) <span>隸屬單位</span>
+                </div>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">@Html.LabelFor(m => m.Level)</label>
+                    <div class="col-sm-10">
+                        <ul id="treeLevelMenu" class="ztree"></ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">@Html.LabelFor(m => m.LevelUpdateTime)</label>
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(m => m.LevelUpdateTime)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">@Html.LabelFor(m => m.UpdateTime)</label>
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(m => m.UpdateTime)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">@Html.LabelFor(m => m.UpdateAccount)</label>
+                    <div class="col-sm-10">
+                        @Html.DisplayFor(m => m.UpdateAccount)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btnbar">
+            @Html.HiddenFor(m => m.Account)
+            @Html.HiddenFor(m => m.Level)
+            <input class="btn btn-save" type="submit" value="存檔" onclick="setLevel();" />
+            <input class="btn btn-gray" type="button" value="返回" onclick="document.location.href='@Url.Action("Index", "Account")';" />
+        </div>
+    }
+</div>

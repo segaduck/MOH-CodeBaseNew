@@ -1,0 +1,331 @@
+﻿@using ES.Services;
+@using ES.Areas.Admin.Models;
+@model Apply_006001ViewModel
+
+@{
+    Layout = "~/Areas/BACKMIN/Views/Shared/_Layout.cshtml";
+    ES.Models.ShareCodeListModel sc = new ES.Models.ShareCodeListModel();
+    ViewBag.SRV_NAME = "國民年金爭議審議線上申辦";
+}
+
+@using (Html.BeginForm("Index", "Apply_006001", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.Form.APP_ID)
+    @Html.HiddenFor(m => m.Form.NAME)
+    @Html.HiddenFor(m => m.Form.EMAIL)
+    @Html.HiddenFor(m => m.Form.APPLY_DATE)
+<div class="col-sm-12 content">
+    <!-- H1 title -->
+    <h1 class="main-title">
+        <i class="fas fa-edit"></i>案件審理作業
+    </h1>
+
+    <div class="table-responsive">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+            <thead><tr><th colspan="2">基本資料檔</th></tr></thead>
+            <tbody>
+                <tr><td width="20%"><div align="center">申辦項目：</div></td><td width="80%"><div align="left">@Html.Raw(ViewBag.SRV_NAME)</div></td></tr>
+                <tr><td><div align="center">申辦日期：</div></td><td>@Model.Form.APPLY_DATE_TW</td></tr>
+                <tr><td><div align="center">預計完成日：</div></td><td>@Model.Form.APP_EXT_DATE_TW</td></tr>
+                <tr><td><div align="center">本部案件承辦人姓名：</div></td><td>@Model.Form.PRO_NAM</td></tr>
+                <tr><td><div align="center">案件編號：</div></td><td>@Model.Form.APP_ID</td></tr>
+                <tr><td><div align="center">系統狀態：</div></td><td>@Model.Form.APP_STATUS</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <!--1-->
+    @*(1)	基本資料檔(點擊展開)*@
+    <div class='panel panel-info'>
+        <div class='panel-heading'>
+            <h2 class='panel-title' data-toggle='collapse' data-parent='#basicData' href='#basicData'>
+                <a>基本資料檔(點擊展開)</a>
+            </h2>
+        </div>
+        <div id='basicData' class='panel-collapse collapse'>
+            <div class='panel-body'>
+                <div class="form-blue">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.NAME)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.NAME, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.BIRTHDAY_STR)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.BIRTHDAY_STR, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.IDN)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.IDN, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.EMAIL_0)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.EMAIL_0, new { @class = "form-normal", @readonly = true })
+                                @@
+                                @Html.DropDownListFor(m => m.Form.EMAIL_1, sc.GetMailDomainList, new { @class = "form-normal", disabled = "disabled" })
+                                @Html.HiddenFor(m => m.Form.EMAIL_1)
+                                @Html.TextBoxFor(m => m.Form.EMAIL_2, new { @class = "form-normal", @readonly = true })
+                                @Html.HiddenFor(m => m.Form.EMAIL_3)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.H_TEL)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.H_TEL, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.MOBILE)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.MOBILE, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.C_ZIPCODE)</label>
+                            <div class="col-sm-10 form-inline">
+                                @Html.TextBoxFor(m => m.Form.C_ZIPCODE, new { @id = "C_ZIPCODE", @class = "form-normal", size = 10, placeholder = "郵遞區號", @readonly = true })
+                                <div class="input-group">
+                                    @Html.TextBoxFor(m => m.Form.C_ZIPCODE_TEXT, new { @id = "C_ZIPCODE_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-info" onclick="doACC_ADDRSelect()" disabled><i class="fa fa-search" aria-hidden="true" disabled></i></button>
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.Form.C_ADDR, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.R_NAME)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.R_NAME, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.R_BIRTH_STR)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.R_BIRTH_STR, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.R_IDN)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.R_IDN, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.R_TEL)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.R_TEL, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.R_MOBILE)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.R_MOBILE, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.R_ZIPCODE)</label>
+                            <div class="col-sm-10 form-inline">
+                                @Html.TextBoxFor(m => m.Form.R_ZIPCODE, new { @id = "R_ZIPCODE", @class = "form-normal", size = 10, placeholder = "郵遞區號", @readonly = true })
+                                <div class="input-group">
+                                    @Html.TextBoxFor(m => m.Form.R_ZIPCODE_TEXT, new { @id = "R_ZIPCODE_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-info" onclick="doACC_ADDRSelect()" disabled><i class="fa fa-search" aria-hidden="true" disabled></i></button>
+                                    </span>
+                                </div>
+                                @Html.TextBoxFor(m => m.Form.R_ADDR, new { @class = "form-normal", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <!--申請說明-->
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2" for="">@Html.DisplayNameFor(m => m.Form.KINDTYPE)</label>
+                            <div class="col-sm-10 form-inline">
+                                <label class="radio-inline">
+                                    @Html.CheckBoxFor(m => m.Form.KIND1_CHK, new { @disabled = true }) &nbsp;&nbsp;
+                                    @*@Html.RadioButtonFor(m => m.Form.KINDTYPE, "1", new { @class = "form-normal", @readonly = "readonly" })*@
+                                    @Html.TextBoxFor(m => m.Form.LIC_DATE_STR, new { @class = "form-control", @readonly = true }) &nbsp;&nbsp;保國
+                                    @Html.TextBoxFor(m => m.Form.LIC_CD, new { @class = "form-normal", @readonly = "readonly" }) &nbsp;&nbsp; 字第
+                                    @Html.TextBoxFor(m => m.Form.LIC_NUM, new { @class = "form-normal", @readonly = "readonly" }) &nbsp;&nbsp; 號
+                                </label>
+                                <br />
+                                <label class="radio-inline">
+                                    @Html.CheckBoxFor(m => m.Form.KIND2_CHK, new { @disabled = true }) &nbsp;&nbsp;繳款單&nbsp;&nbsp;(
+                                    @*@Html.RadioButtonFor(m => m.Form.KINDTYPE, "2", new { @class = "form-normal", @readonly = "readonly" }) &nbsp;&nbsp;*@
+                                    @Html.TextBoxFor(m => m.Form.PAY_YEAR, new { @class = "form-normal", @maxlength = "3", @readonly = "readonly" })&nbsp;&nbsp;年
+                                    @Html.TextBoxFor(m => m.Form.PAY_MONTH, new { @class = "form-normal", @maxlength = "2", @readonly = "readonly" })&nbsp;&nbsp;月
+                                    &nbsp;&nbsp;第&nbsp;&nbsp;
+                                    @Html.TextBoxFor(m => m.Form.PAY_NUM, new { @class = "form-normal", @maxlength = "30", @readonly = "readonly" })
+                                    &nbsp;&nbsp;號&nbsp;&nbsp;)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.KNOW_DATE_STR)</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Form.KNOW_DATE_STR, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.KNOW_MEMO)</label>
+                            <div class="col-sm-10">
+                                @Html.TextAreaFor(m => m.Form.KNOW_MEMO, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label class="main-label col-sm-2">@Html.DisplayNameFor(m => m.Form.KNOW_FACT)</label>
+                            <div class="col-sm-10">
+                                @Html.TextAreaFor(m => m.Form.KNOW_FACT, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--2-->
+    @*(2)	上傳應附檔案(點擊展開)*@
+    @Html.Partial("File")
+
+    <!--4-->
+    @*(4)	案件進度歷程(點擊展開)*@
+    <div class='panel panel-info'>
+        <div class='panel-heading'>
+            <h2 class='panel-title' data-toggle='collapse' data-parent='#ReviewData' href='#ReviewData'>
+                <a>案件進度歷程(點擊展開)</a>
+            </h2>
+        </div>
+        <div id='ReviewData' class='panel-collapse collapse'>
+            <div class='panel-body'>
+                <div class="form-blue">
+                    <div class="form-group">
+                        <label class="main-label col-sm-2" for="">案件進度</label>
+                        <div class="col-sm-4">
+                            <input type="text" id="StatusDesc" class="form-control" readonly value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="main-label col-sm-2" for="">案件狀態修改</label>
+                        <div class="col-sm-4">
+                            @Html.DropDownListFor(x => x.Form.FLOW_CD, sc.GetStatuListForUnitCD15, new { @class = "form-control", onchange = "changeAddDocCheck()" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="main-label col-sm-2" for="">備註</label>
+                        <div class="col-sm-4">
+                            @Html.TextAreaFor(m => m.Form.NOTE, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="main-label col-sm-2" for="">案件歷程記錄</label>
+                        <div class="col-sm-10">
+                            @*案件進度歷程*@
+                            @Html.LogForTurbo(Model.Form.APP_ID, "APPLY_006001")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="btn-bar text-center">
+        <button id="btnSave" type="button" class="btn btn-save" onclick="doSave()">存檔</button>
+        <button type="button" onclick="GetZip('@Model.Form.FileList.APP_ID')" class="btn btn-blue">檔案打包下載</button>
+        <button type="button" class="btn btn-blue" onclick="document.location.href='@Url.Action("PreviewApplyForm")/?APP_ID=@Model.Form.APP_ID';">套印申請書</button>
+        <button type="button" class="btn btn-gray" onclick="doback()">返回</button>
+    </div>
+</div>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //debugger;
+        $("#StatusDesc").val($('#Form_FLOW_CD option:selected').text());
+
+        if ($('#Form_FLOW_CD option:selected').val() == "0" || $('#Form_FLOW_CD option:selected').val() == "3") {
+            $("#Form_FLOW_CD").attr('disabled', 'disabled');
+            $('#btnSave').hide();
+            $('#Form_NOTE').attr('disabled', 'disabled');
+        }
+    });
+
+    // 送出
+    function doSave() {
+        var ValStr = "";
+        if ($('#Form_FLOW_CD option:selected').val() == "") {
+            ValStr += "\n 請選擇案件狀態 !";
+        }
+        if (ValStr != "") {
+            blockAlert(ValStr, "提示訊息");
+            return;
+        }
+
+        var data = getFormDataToObject($("form[id=main_form]"));
+        ajaxLoadMore('@Url.Action("Save")', data, function (retData) {
+            $("#Form_IS_PAY_STATUS").prop("disabled", true);
+            if (retData.status) {
+                blockMessage(retData.message, "提示訊息", function () {
+                    location.href = '@Url.Action("Index", "Apply_006001")?appid=' + $('#Form_APP_ID').val();
+                });
+            }
+            else {
+                blockAlert(retData.message, "提示訊息");
+            }
+        });
+    }
+
+    // 返回
+    function doback() {
+        location.href = '@Url.Action("Index", "Case")'
+    }
+
+    // 取得ZIP
+    function GetZip(APP_ID) {
+        var data = { "APP_ID": APP_ID }
+        var url = '/GetZIP/GetZIP?' + $.param(data);
+        location.href = url;
+    }
+
+    function changeAddDocCheck() {
+        var flowOption = $('#Form_FLOW_CD option:selected').val();
+        $("#StatusDesc").val($('#Form_FLOW_CD option:selected').text());
+    }
+</script>

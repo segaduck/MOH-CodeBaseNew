@@ -1,0 +1,91 @@
+﻿@using EECOnline.Areas.A3.Models;
+@using EECOnline.Models;
+@using EECOnline.Services;
+@model C104MForm2Model
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+}
+
+<div class="col-sm-12 content">
+    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@sm.LastActionFunc.prgname</h1>
+    <div class="title-bar title-green" role="tablist">
+        <a data-bs-toggle="tab" href="@Url.Action("Index")?Idx=1"><h1>衛福部帳務查詢</h1></a>
+        <a data-bs-toggle="tab" href="@Url.Action("Index")?Idx=2" class="active"><h1>拆帳作業管理</h1></a>
+    </div>
+    <div class="clearfix"></div>
+    <div class="tab-content">
+        <div class="tab-pane fade" id="tab_1">
+        </div>
+        <div class="tab-pane active" id="tab_2">
+            <div class="form-blue">
+                @using (Html.BeginForm("Index", "C104M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+                {
+                    @Html.ControlForTurbo(Model)
+                    <div class="btnBar">
+                        <button type="button" style="margin-right: 0.5rem;" class="btn btn-apply" onclick="OnSearch()">送出查詢</button>
+                        <button type="button" style="margin-right: 0.5rem;" class="btn btn-cancel" onclick="OnClear()">清除重填</button>
+                        <button type="button" style="margin-right: 0.5rem;" class="btn btn-primary" onclick="OnExport()">匯出資料</button>
+                    </div>
+                }
+            </div>
+            <div class="clearfix"></div>
+            <h2 class="second-title">帳務細項列表</h2>
+            <div class="table-pager">@Html.Partial("_PagingLink", Model)</div>
+            <div class="table-responsive">
+                @if (Model.Form2Grid != null)
+                {
+                    var commonTypes = new EECOnline.DataLayers.FrontDAO().Get_EEC_CommonTypeAll();
+
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                        <thead>
+                            <tr>
+                                <th width="30%">醫院別</th>
+                                @foreach (var row in commonTypes)
+                                {
+                                    if (row["type_price"].TONotNullString() == "0") { continue; }
+                                    <th>@row["type_name"].ToString()</th>
+                                }
+                                @*<th width="13%">刷卡手續費</th>*@
+                                @*<th width="13%">平台手續費</th>*@
+                                <th width="15%">病歷產製費</th>
+                                <th width="16%">小計</th>
+                                <th width="13%">申請案件總量</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rows">
+                            @Html.Partial("_GridRows2")
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+    });
+
+    function OnSearch() {
+        blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Index2")').submit();
+    }
+
+    function OnClear() {
+        $("#HospitalText").val("");
+        $("#ApplyDateS_AD").val("");
+        $("#ApplyDateE_AD").val("");
+        $("#ApplyDateS_AD_TW").val("");
+        $("#ApplyDateE_AD_TW").val("");
+    }
+
+    function OnExport() {
+        //blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Export2")').submit();
+    }
+
+</script>

@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = "表單申請暫存管理";
+    ViewBag.FunctionTitle = "表單申請暫存管理";
+}
+
+<table class="formTable1">
+    @foreach (KeyValuePair<string, string> item in ViewBag.Item)
+    {
+        <tr>
+            <th>@item.Key</th>
+            <td>@item.Value</td>
+        </tr>
+    }
+</table>

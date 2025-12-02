@@ -1,0 +1,96 @@
+﻿@using Turbo.RESTTK
+@model RESTApi
+@{
+    ViewBag.Title = "REST-" + Model.Name;
+    Layout = "~/Views/Shared/_MainLayout_NoHeader.cshtml";
+    /*
+     * 這支 View 是用來測試 REST API 的查詢條件輸入畫面,
+     * REST API 運作過程並不需要這個 View,
+     * 通常由外部 Client 端(Browser, APP 等)直接發送 HTTP POST Request
+     */
+}
+<form name="restQuery" method="post" novalidate="novalidate" class="form-horizontal">
+
+    <div class="col-sm-12">
+        <div>
+            <p>REST API 測試: @Model.Id @Model.Name</p>
+        </div>
+        <div class="btn-group btn-group-right btn-group-sm clearfix">
+            <button type="button" class="btn btn-info" data-role="QUERY"><i class="fa fa-search" aria-hidden="true"></i>執行</button>
+        </div>
+    </div>
+
+    <div class="col-sm-12">
+        <div class="theme-news">
+            <div class="form-border">
+
+                @* === 依 query/conditions 輸出所有查詢條件TEXT欄位 === *@
+                @for (int i = 0; Model.Query.Conditions != null && i < Model.Query.Conditions.Count; i++)
+                {
+                    RESTCondition condition = Model.Query.Conditions[i];
+
+                    <div class="form-group">
+
+                        @ReportQueryHelper.Label(condition.Name, condition.Required, new { @class = "col-sm-2 control-label label-set" })
+
+                        @* === (根據 condition.Type 而輸出不同input內容) === *@
+
+                        <div class="col-sm-10">
+                            @ReportQueryHelper.TextBox(condition.Id, (string)condition.Value, new { size = condition.Size, @class = "form-normal" })
+                            <span>@condition.Hint</span>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    @if ("select".Equals(Model.Type, StringComparison.OrdinalIgnoreCase))
+    {
+        <div class="col-sm-12">
+            <div class="theme-news">
+                <div class="form-border">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label label-set">每頁筆數(psize)</label>
+                        <div class="col-sm-10">
+                            @Html.TextBox("psize", "", new { size = 3, @class = "form-normal" })
+                            <span>未指定表示不分頁</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label label-set">頁次(p)</label>
+                        <div class="col-sm-10">
+                            @Html.TextBox("p", "1", new { size = 3, @class = "form-normal" })
+                            <span>未指定預設為第1頁</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label label-set">rid</label>
+                        <div class="col-sm-10">
+                            @Html.TextBox("rid", "", new { size = 50, @class = "form-normal" })
+                            <span>分頁查詢指定結果集id</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    
+
+    @if (!string.IsNullOrWhiteSpace(Model.ResultMessage))
+    {
+        <div class="search-note"><i class="fa fa-info-circle" aria-hidden="true"></i>@(Model.ResultMessage)</div>
+    }
+
+</form>
+<script>
+    var actQuery = "@Url.Content("~/REST/Json")/@Model.Id";
+    $(document).ready(function () {
+        $("button[data-role=QUERY]").click(function () {
+            $("form[name=restQuery]")
+                .attr("action", actQuery)
+                .attr("target", "_blank")
+                .submit();
+        });
+    });
+</script>

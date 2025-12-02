@@ -1,0 +1,11 @@
+﻿@{
+    Layout = null;
+}
+
+<div class="dLeftTitle">案件瀏覽</div>
+<div class="dLeftBody">
+@foreach (ES.Models.LeftMenuItemModel item in ViewBag.List)
+{
+    <div class="dLeftBodyItem"><a href="@Url.Action("Index", "Service")#@item.UnitName"><span style="color: #068CD2">@item.UnitName</span></a></div>
+}
+</div>

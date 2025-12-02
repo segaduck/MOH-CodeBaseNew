@@ -1,0 +1,269 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_011004AppDocModel
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ShareCodeListModel sc = new ShareCodeListModel();
+    var Readonly = !Model.NG_ITEM.Contains("ALL_1") ? true : false;
+    ViewBag.Title = "社工師證書核發（英文）";
+}
+@using (Html.BeginForm("Apply", "Apply_011004", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.NG_ITEM)
+    @Html.HiddenFor(m => m.APP_ID)
+    @Html.HiddenFor(m => m.IS_MERGE)
+<div class="container">
+    <div class="col-sm-12">
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">@ViewBag.Title</a></div>
+        <div class="clearfix"></div>
+        @if (Model.FLOW_CD == "2")
+        {
+        <div class="tab-content" id="myTabContentB">
+            <h1 class="form-title  title-bg-y">補件</h1>
+            <div class="form-set">
+                <table width="100%">
+                    @Html.Raw(Model.MAILBODY)
+                </table>
+            </div>
+        </div>
+        }
+        <div class="tab-content" id="myTabContent">
+            <div id="form" class="tab-pane fade active in">
+                <h1 class="form-title  title-bg-y">申辦表件填寫</h1>
+                <div class="form-set">
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">申辦項目</label>
+                        <div class="col-sm-4">
+                            <p class="form-control-static">@ViewBag.Title</p>
+                        </div>
+                        <label class="step-label col-sm-2" for="">申辦日期</label>
+                        <div class="col-sm-4">
+                            <p class="form-control-static"> @Model.APP_DATE</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>聯絡人E-MAIL</label>
+                        <div class="col-sm-10">
+                            @Html.EmailForTurbo(m => m.EMAIL, Readonly)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>中文姓名</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.NAME, new { @class = "form-control", placeholder = "", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>英文姓名</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.ENAME, new { @class = "form-control", placeholder = "", @readonly = "readonly" })&nbsp;<span style="color:red"><strong>例如：王大明，需填寫WANG, DA-MING</strong></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>性別</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline "><input type="radio" id="SEX_CD" name="RGENDER" value="M" onchange="RadioChange()" disabled>男</label>
+                            <label class="radio-inline "><input type="radio" id="SEX_CD" name="RGENDER" value="F" onchange="RadioChange()" disabled>女</label>
+                            <label class="radio-inline "><input type="radio" id="SEX_CD" name="RGENDER" value="O" onchange="RadioChange()" disabled>其他</label>
+                            @Html.HiddenFor(m => m.SEX_CD)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出生年月日</label>
+                        <div class="col-sm-4">
+                            @Html.DatePickerTWFor(x => x.BIRTHDAY_STR, new { size = "10", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>國民身分證統一編號</label>
+                        <div class="col-sm-10 ">
+                            @Html.TextBoxFor(m => m.IDN, new { @class = "form-control", placeholder = "", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class='form-group'>
+                        <label class='step-label col-sm-2' for=''>電話(公)</label>
+                        <div class="col-sm-10">
+                            @Html.TelForTurbo(m => m.C_TEL, Readonly)
+                        </div>
+                    </div>
+                    <div class='form-group'>
+                        <label class='step-label col-sm-2' for=''>電話(宅)</label>
+                        <div class="col-sm-10">
+                            @Html.TelForTurbo(m => m.H_TEL, Readonly)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">行動電話</label>
+                        <div class="col-sm-10">
+                            @Html.TextBoxFor(m => m.MOBILE, new { @class = "form-control", placeholder = "", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>通訊地址(含郵遞區號)</label>
+                        <div class="col-sm-10 form-inline">
+                            @Html.TextBoxFor(m => m.C_ZIPCODE, new { @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號", @readonly = "readonly" })
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.C_ZIPCODE_TEXT, new { @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-info" onclick="doACC_ADDRSelect()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </span>
+                            </div>
+                            @Html.TextBoxFor(m => m.C_ADDR, new { @class = "form-normal form-50", placeholder = "請輸入地址 ", size = 59, maxlength = "64", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請用途</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.APPLY_FOR, new { @class = "form-normal", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>@Html.DisplayNameFor(m => m.APPLY_NUM)</label>
+                        <div class="col-sm-4">
+                            @Html.DropDownListFor(m => m.APPLY_NUM, sc.GetAPPLY_NUM, new { @class = "form-normal", disabled = "disabled" })
+                            @Html.HiddenFor(m => m.APPLY_NUM)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>考試年度</label>
+                        <div class="col-sm-4">
+                            @Html.DropDownListFor(m => m.YEAR, sc.GetAPPLY_YEAR, new { @class = "form-normal", disabled = "disabled" })
+                            @Html.HiddenFor(m => m.YEAR)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>考試名稱類科</label>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.TYPE, new { @class = "form-normal", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <h2 class="second-title">佐證文件檔案上傳<span style="color:red;">檔案大小5MB以下，請附上圖檔，例如：JPG、BMP、PNG、GIF、TIF</span></h2>
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>社會工作師證書影本</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.FILE_0, Model.FILE_0_TEXT,"N")
+                            @Html.TextBoxFor(m => m.FILE_0, new { @class = "form-control", placeholder = "", type = "file", onchange = "doGetFileNam(this)", disabled = "disabled" })
+                            @Html.HiddenFor(m => m.FILE_0_TEXT)
+                        </div>
+                    </div>
+                    <div class="btn-bar text-center">
+                        @if (Model.FLOW_CD == "2")
+                        {
+                        <button type="button" class="btn btn-save" onclick="doSave()">存檔</button>
+                        }
+                        <button type="button" class="btn btn-clear" onclick="doBack()">返回</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+<script>
+    $(document).ready(function () {
+
+        $('#C_ZIPCODE').on('blur', doACC_ADDRNameGet); doACC_ADDRNameGet();
+        var sex = $("#SEX_CD").val();
+        $("input[name=RGENDER][value='" + sex + "']").attr('checked', true);
+
+        // 判斷補件項目
+        var ng_item = $('#NG_ITEM').val();
+        var ng_item_list = ng_item.split(',');
+        ng_item_list.forEach(function (i) {
+            if ($('input[id="' + i + '"][type="file"]').length > 0) {
+                $('#' + i).removeAttr("disabled");
+            }
+            //若補件項目為其他 開放所有欄位供修改
+            if (i == "ALL_1") {
+                $('#myTabContent :input').each(function (item) {
+                    $(this).css({ "display": "" })
+                    $(this).removeAttr("disabled")
+                    $(this).removeAttr("readonly")
+                });
+            }
+        });
+    });
+
+    // 地址
+    function loadDialogACC_ADDRCodeMapName(data) {
+        ajaxLoadMore(data.url,
+            data.arg,
+            function (resp) {
+                if (resp === undefined) data.box.val('');
+                else {
+                    if (resp.data != '') data.box.val(resp.data);
+                    else {
+                        data.box.val('');
+                        data.add.val('');
+                        blockAlert(data.msg);
+                    }
+                }
+            });
+    };
+
+    function doACC_ADDRSelect() {
+        var url = '/ZIP_CO';
+        var title = '郵遞區號查詢';
+        popupWindow({ 'width': 900 },
+            url,
+            title,
+            null,
+            function (retData, doc) {
+                if (retData != null) {
+                    $('#C_ZIPCODE').val(retData.Id);
+                    $('#C_ZIPCODE_TEXT').val(retData.Name);
+                }
+            });
+    }
+
+    function doACC_ADDRNameGet() {
+        var code = $('#C_ZIPCODE');
+        console.log('C_ZIPCODE');
+        var data = {
+            'url': '/Ajax/GetCityTown',
+            'msg': '查無該郵遞區號!!',
+            'arg': { 'CODE': code.val().toUpperCase() },
+            'box': $('#C_ZIPCODE_TEXT'),
+            'add': $('#C_ZIPCODE')
+        };
+        if ($.trim(data.arg.CODE) == '') data.box.val('');
+        else {
+            code.val(data.arg.CODE);
+            loadDialogACC_ADDRCodeMapName(data);
+        }
+    }
+
+    // 取檔名
+    function doGetFileNam(file) {
+        var validExts = new Array(".PDF", ".JPG", ".JPEG", ".BMP", ".PNG", ".GIF", ".TIF");
+        var filename = file.files.item(0).name;
+        var fileExt = filename.substring(filename.lastIndexOf('.'));
+
+        if (validExts.indexOf(fileExt.toUpperCase()) < 0) {
+            blockAlert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+            $('input[name="' + file.name + '"]').val(null);
+            return false;
+        }
+        else {
+            $("#" + file.name + "_TEXT").val(file.files.item(0).name);
+            return true;
+        }
+    }
+    // 存檔
+    function doSave() {
+        if ($('#ENAME').val().search(/^([A-Z]+)(,)(\s+)([A-Z]+)(-)([A-Z]+)$/) == -1) {
+            $("#ENAME").focus();
+            blockAlert("英文姓名必須全大寫英文，有「, 」及「-」")
+        }
+        else {
+             blockUI();
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("SaveAppDoc")').submit();
+        }       
+    }
+    // 返回
+    function doBack() {
+        location.href = '@Url.Action("Index","History")';
+    }
+</script>

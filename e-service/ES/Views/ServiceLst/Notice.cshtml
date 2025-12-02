@@ -1,0 +1,367 @@
+﻿@model ES.Models.ServiceNoticeModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    if (Model == null) { return; }
+    ViewBag.Title = Model.Name;
+    //ViewBag.Script = @" ";
+    string s_ServiceUrl = string.Format("?serviceId={0}", Model.ServiceId);
+    Model.PayUnit = (Model.PayUnit ?? "");
+    Model.ServiceId = (Model.ServiceId ?? "");
+    string s_ApplyFee = string.Format("{0} 元", Model.ApplyFee);
+}
+
+<script>
+    //$('#lihead_Service').addClass("navMark-orange");
+    $('#lihead_ServiceLst').addClass("navMark-orange");
+</script>
+
+<div class="container-fluid">
+    <!--bread -->
+    <div class="col-sm-12">
+        <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> > <a href="@(Url.Action("Index", "ServiceLst"))">申辦服務</a> > <a href="#">@Model.Name</a></div>
+    </div>
+    <div class="clearfix"></div>
+    <!--form-->
+    <h3 class="note-title note-titlebar-blue">@Model.Name</h3>
+    <div class="up-pager">
+        &nbsp;
+        @if (Model.FileMark)
+        {
+            <button type="button" class="btn btn-save" onclick="doFile('@Url.Action("File", "Service", new { id = Model.ServiceId })');">書表下載</button>
+            @Html.Raw("")
+        }
+        @if (Model.HelpMark)
+        {
+            <button type="button" class="btn btn-save" onclick="doFile('@Url.Action("Help", "Service", new { id = Model.ServiceId })');">操作輔助說明</button>
+        }
+        @if (Model.NormMark)
+        {
+            <button type="button" class="btn btn-save" onclick="doFile('@Url.Action("Norm", "Service", new { id = Model.ServiceId })');">相關規範</button>
+        }
+        @if (Model.OnlineNMark)
+        {
+
+            if (Model.ServiceId.StartsWith("007"))
+            {
+                <button type="button" class="btn btn-save" onclick="document.location.href='@Url.Action("Apply", "Form", new { id = Model.ServiceId })';">線上信用卡捐款</button>
+            }
+            else if (Model.ServiceId == "005001" || Model.ServiceId == "005002" || Model.ServiceId == "005003" || Model.ServiceId == "005004" || Model.ServiceId == "005005")
+            {
+                @*<button type="button" class="btn btn-save" onclick="document.location.href='@Url.Action("Lead", "Form", new { id = Model.ServiceId })';">線上申辦</button>*@
+                @*<button type="button" class="btn btn-save" onclick="doFile('@Url.Action("APPLY","APPLY_" + Model.ServiceId)');">線上申辦</button>*@
+                <button type="button" class="btn btn-save" onclick="doFile('@Url.Action("ApplyLoginCheck", "AJAX")@s_ServiceUrl');">線上申辦</button>
+                //href = '" + @Url.Action("ApplyLoginCheck", "AJAX") + "?serviceId=" + @ViewBag.List[i].ServiceId + "'
+            }
+            else
+            {
+                @*<button type="button" class="btn btn-save" onclick="document.location.href='@Url.Action("Apply", "Form", new { id = Model.ServiceId })';">線上申辦</button>*@
+                @*<button type="button" class="btn btn-save" onclick="doFile('@Url.Action("APPLY","APPLY_" + Model.ServiceId)');">線上申辦</button>*@
+                <button type="button" class="btn btn-save" onclick="doFile('@Url.Action("ApplyLoginCheck", "AJAX")@s_ServiceUrl');">線上申辦</button>
+            }
+        }
+    </div>
+    <div class="form-set form-gray">
+        @using (Html.BeginForm("Index", "Service", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", @id = "main_form" }))
+        {
+            if (!String.IsNullOrEmpty(Model.CAType) && Model.OnlineNMark)
+            {
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.CAType)</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            本案件可利用下列之一的方式登入申辦：<br />
+                            <span style="color: #DC143C;">
+                                @if (Model.CAType.IndexOf("MEMBER") >= 0)
+                                {
+                                    //<a href="#">會員登入</a>
+                                    @Html.Raw("會員登入")
+                                }
+                                @if (Model.CAType.IndexOf("MOICA") > 0)
+                                {
+                                    @Html.Raw("、")
+                                }
+                                @if (Model.CAType.IndexOf("MOICA") >= 0)
+                                {
+                                    @Html.Raw("自然人憑證（請先加入會員，並進行憑證帳號綁定）")
+                                }
+                                @if (Model.CAType.IndexOf("MOEACA") > 0)
+                                {
+                                    @Html.Raw("、")
+                                }
+                                @if (Model.CAType.IndexOf("MOEACA") >= 0)
+                                {
+                                    @Html.Raw("工商憑證")
+                                }
+                                @if (Model.CAType.IndexOf("HCA0") > 0)
+                                {
+                                    @Html.Raw("、")
+                                }
+                                @if (Model.CAType.IndexOf("HCA0") >= 0)
+                                {
+                                    @Html.Raw("醫事憑證（機構）")
+                                }
+                                @if (Model.CAType.IndexOf("HCA1") > 0)
+                                {
+                                    @Html.Raw("、")
+                                }
+                                @if (Model.CAType.IndexOf("HCA1") >= 0)
+                                {
+                                    @Html.Raw("醫事憑證（人員）")
+                                }
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            }
+            if (Model.PayUnit.Equals("A") && Model.ApplyFee > 0)
+            {
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ApplyFee)</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@s_ApplyFee</p>
+                    </div>
+                </div>
+            }
+            <div class="form-group">
+                <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.UnitName)</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">
+                        @Html.Raw("衛生福利部")
+                        @if (Model.ServiceId.Equals("001038"))
+                        {
+                            @Html.Raw("國民健康署")
+                        }
+                        else if (Model.ServiceId.Equals("006001"))
+                        {
+                            @Html.Raw("國民年金監理會")
+                        }
+                        else if (Model.ServiceId.Equals("040001"))
+                        {
+                            @Html.Raw("法規會")}
+                        else if (Model.ServiceId.Equals("041001"))
+                        {
+                            @Html.Raw("全民健康保險爭議審議會(爭審會)")}
+                        else
+                        {
+                            @Model.UnitName
+                        }
+                        @if (!String.IsNullOrEmpty(Model.UnitAddress))
+                        {
+                            if (Model.ServiceId.Equals("006001"))
+                            {
+                                <br />
+                                <span>服務地址：</span>@Model.UnitAddress <br /><span>服務電話：（02）3343-7136</span>
+                            }
+                            else
+                            {
+                                <span>(@Model.UnitAddress)</span>
+                            }
+                        }
+                    </p>
+                </div>
+            </div>
+            if (Model.ProDeadline > 0)
+            {
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">@Html.DisplayNameFor(m => m.ProDeadline)</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            @Model.ProDeadline 日曆天(不含補件時間)
+                            @if (Model.ServiceId.StartsWith("001") && !Model.ServiceId.Equals("001034") && !Model.ServiceId.Equals("001035"))
+                            {
+                                <br /><span>如遇連續假日3日以上，得以延長3日</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+            }
+            if (Model.ServiceId.Equals("006001"))
+            {
+                if (!String.IsNullOrEmpty(Model.Title2) && !String.IsNullOrEmpty(Model.Content2))
+                {
+                    <!--法定期間-->
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Model.Title2</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">
+                                @Html.Raw(Model.Content2.Replace("\n", "<br/>").Replace(Environment.NewLine, "<br/>"))
+                            </p>
+                        </div>
+                    </div>
+                }
+                if (!String.IsNullOrEmpty(Model.Title5) && !String.IsNullOrEmpty(Model.Content5))
+                {
+                    <!--申辦費用-->
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Model.Title5</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">
+                                @Html.Raw(Model.Content5.Replace("\n", "<br/>").Replace(Environment.NewLine, "<br/>"))
+                            </p>
+                        </div>
+                    </div>
+                }
+                if (!String.IsNullOrEmpty(Model.Title6) && !String.IsNullOrEmpty(Model.Content6))
+                {
+                    <!--處理期限-->
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Model.Title6</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">
+                                @Html.Raw(Model.Content6.Replace("\n", "<br/>").Replace(Environment.NewLine, "<br/>"))
+                            </p>
+                        </div>
+                    </div>
+                }
+                if (!String.IsNullOrEmpty(Model.Title1) && !String.IsNullOrEmpty(Model.Content1))
+                {
+                    <!--申辦程序-->
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Model.Title1</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">
+                                @Html.Raw(Model.Content1.Replace("\n", "<br/>").Replace(Environment.NewLine, "<br/>"))
+                            </p>
+                        </div>
+                    </div>
+                }
+                <!--相關資訊-->
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">相關資訊</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            <a href="https://dep.mohw.gov.tw/NPSC/np-4857-118.html" title="另開分頁國民年金爭議審議智慧服務專區" target="_blank">國民年金爭議審議智慧服務專區</a>
+                        </p>
+                    </div>
+                </div>
+                <!--其他管道-->
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">其他管道</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            為方便民眾並提供多元申請管道，您可以透過其他方式申請國民年金爭議事項審議：<br />
+                            1.線上聲明：請參閱<a href="https://service.mohw.gov.tw/NPSC/NPAPApply.aspx" title="另開分頁國民年金爭議審議線上聲明" target="_blank">「國民年金爭議審議線上聲明」服務</a>（填妥線上聲明資料後，仍須套印紙本申請書，親自簽章及檢附相關文件，並依申請書下方「填表須知及說明」辦理及送件，以完成申請程序）。<br />
+                            2.書面申請：請完整填寫<a href="https://dep.mohw.gov.tw/NPSC/cp-4862-53356-118.html" title="另開分頁國民年金爭議事項審議申請書" target="_blank">「國民年金爭議事項審議申請書」</a>，檢附相關文件，並依申請書下方「填表須知及說明」辦理及送件，以完成申請程序。
+                        </p>
+                    </div>
+                </div>
+                <!--if (!String.IsNullOrEmpty(Model.Title3) && !String.IsNullOrEmpty(Model.Content3))
+            {-->
+                <!--相關資訊-->
+                <!--<div class="form-group">
+                    <label class="step-label col-sm-2" for="">@Model.Title3</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            @Html.Raw(Model.Content3.Replace("\n", "<br/>").Replace(Environment.NewLine, "<br/>"))
+                        </p>
+                    </div>
+                </div>
+            }
+            if (!String.IsNullOrEmpty(Model.Title4) && !String.IsNullOrEmpty(Model.Content4))
+            {-->
+                <!--聯絡窗口-->
+                <!--<div class="form-group">
+                    <label class="step-label col-sm-2" for="">@Model.Title4</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            @Html.Raw(Model.Content4.Replace("\n", "<br/>").Replace(Environment.NewLine, "<br/>"))
+                        </p>
+                    </div>
+                </div>
+            }-->
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(Model.Title1) && !String.IsNullOrEmpty(Model.Content1))
+                {
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Model.Title1</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">
+                                @Html.Raw(Model.Content1.Replace("\n", "<br/>").Replace(Environment.NewLine, "<br/>"))
+                            </p>
+                        </div>
+                    </div>
+                }
+                if (!String.IsNullOrEmpty(Model.Title2) && !String.IsNullOrEmpty(Model.Content2))
+                {
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Model.Title2</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">
+                                @Html.Raw(Model.Content2.Replace("\n", "<br/>").Replace(Environment.NewLine, "<br/>"))
+                            </p>
+                        </div>
+                    </div>
+                }
+                if (!String.IsNullOrEmpty(Model.Title3) && !String.IsNullOrEmpty(Model.Content3))
+                {
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Model.Title3</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">
+                                @Html.Raw(Model.Content3.Replace("\n", "<br/>").Replace(Environment.NewLine, "<br/>"))
+                            </p>
+                        </div>
+                    </div>
+                }
+                if (!String.IsNullOrEmpty(Model.Title4) && !String.IsNullOrEmpty(Model.Content4))
+                {
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Model.Title4</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">
+                                @Html.Raw(Model.Content4.Replace("\n", "<br/>").Replace(Environment.NewLine, "<br/>"))
+                            </p>
+                        </div>
+                    </div>
+                }
+                if (!String.IsNullOrEmpty(Model.Title5) && !String.IsNullOrEmpty(Model.Content5))
+                {
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Model.Title5</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">
+                                @Html.Raw(Model.Content5.Replace("\n", "<br/>").Replace(Environment.NewLine, "<br/>"))
+                            </p>
+                        </div>
+                    </div>
+                }
+                if (!String.IsNullOrEmpty(Model.Title6) && !String.IsNullOrEmpty(Model.Content6))
+                {
+                    <div class="form-group">
+                        <label class="step-label col-sm-2" for="">@Model.Title6</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static">
+                                @Html.Raw(Model.Content6.Replace("\n", "<br/>").Replace(Environment.NewLine, "<br/>"))
+                            </p>
+                        </div>
+                    </div>
+                }
+            }
+
+
+            <div class="btn-bar text-center">
+                @*<button type="button" class="btn btn-save" onclick="window.history.go(-1);">返回</button>*@
+                <button type="button" class="btn btn-save" onclick="location.href = '@Url.Action("Index", "ServiceLst")?ACT_TYPE=@Model.ACT_TYPE&LST_ID=@Model.LST_ID'">返回</button>
+            </div>
+        }
+    </div>
+
+    <div class="clearfix"></div>
+
+</div>
+
+<script type="text/javascript">
+    // 補件
+    function doFile(url) {
+        //var data = { "id": id }
+        //location.href = '/Apply_' + SRV_ID + '/AppDoc?' + $.param(data);
+        location.href = url;
+        @*var url = '@(Url.Action("File", "Service"))';
+                    goBackPage(url, data, 2, 'GET')*@
+    }
+    @*<a class='btn btn-download' title='書表下載' href='" + @Url.Action("File", "Service", new { id = @ViewBag.List[i].ServiceId }) + "'>*@
+
+</script>

@@ -1,0 +1,89 @@
+﻿@using EECOnline.Areas.A5.Models;
+@model C101MFuncmModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout_NoHeader_NoBg.cshtml";
+}
+@using (Html.BeginForm("Set", "C101M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+{
+    var button = new Dictionary<string, string>();
+    button.Add("search", "doSearch()");
+    button.Add("save", "doSave()");
+    button.Add("close", "doClose()");
+
+    <div class="col-sm-12 content">
+        @Html.ControlForTurbo(Model)
+        @Html.ButtonForTurbo(button)
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="table-responsive">
+        @if (Model.Grid != null)
+        {
+            <button type="button" class="btn btn-info" onclick="selectAll('main_form', 'Q')">查詢全選</button>
+            <button type="button" class="btn btn-info" onclick="selectAll('main_form', 'I')">新增全選</button>
+            <button type="button" class="btn btn-info" onclick="selectAll('main_form', 'U')">修改全選</button>
+            <button type="button" class="btn btn-info" onclick="selectAll('main_form', 'D')">刪除全選</button>
+            <button type="button" class="btn btn-info" onclick="selectAll('main_form', 'P')">列印全選</button>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+                <thead>
+                    <tr>
+                        <th width="10%">程式代號</th>
+                        <th width="40%">程式名稱</th>
+                        <th width="10%">查詢</th>
+                        <th width="10%">新增</th>
+                        <th width="10%">修改</th>
+                        <th width="10%">刪除</th>
+                        <th width="10%">列印</th>
+                    </tr>
+                </thead>
+                <tbody id="rows">
+                    @Html.Partial("_SetGridRows")
+                </tbody>
+            </table>
+        }
+    </div>
+}
+
+<script type="text/javascript">
+
+    //查詢
+    function doSearch() {
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Set")').submit();
+    }
+
+    //儲存
+    function doSave() {
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("SetSave")').submit();
+    }
+
+    //關閉
+    function doClose() {
+        parent.closeWindow();
+    }
+
+     //全選
+    function selectAll(formId, checkid) {
+        $('#' + formId + ' input[checkid=' + checkid + ']').prop('checked', true);
+    }
+
+    $(document).ready(function () {
+        //系統下拉選單選取項目事件處理。
+        $("#sysid").on("change", doModuleListGet);
+        doModuleListGet();
+    })
+
+    //取得系統對應的模組清單
+    function doModuleListGet() {
+        var data = {
+            "url": "@Url.Action("GetModuleList","Ajax",new { area=""})",
+            "msg": "查無該系統模組資訊!!",
+            "arg": { "sysid": $("#sysid").val()},
+            "box": $("#modules"),
+            "emptyOption": "<option value=\"\">請選擇</option>"
+        }
+
+        ajaxBindOption(data);
+    }
+</script>

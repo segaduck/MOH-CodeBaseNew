@@ -1,0 +1,172 @@
+﻿@using ES.Commons
+@using ES.Services
+@using ES.Models
+@using ES.Models.ViewModels
+@using ES.Models.Entities
+@model ES.Models.GoodsDynamicGrid<Apply_001038_GoodsViewModel>
+@{
+    ShareCodeListModel dao = new ShareCodeListModel();
+    var IsDisabled = Model.IsReadOnly ? "pointer-events:none;background:#DDDDDD" : "";
+}
+<div id="GoodsDynamicGird001038">
+    <h2 class="second-title">
+        @Html.HiddenFor(m => m.IsNewOpen)
+        @Html.HiddenFor(m => m.IsReadOnly)
+        @Html.HiddenFor(m => m.IsDeleteOpen)
+        @Html.HiddenFor(m => m.SourceModelName)
+        貨品資料
+        @*@if (Model.IsNewOpen && !Model.IsReadOnly)
+        {
+            <button type="button" style="margin-bottom:5px;" class="btn btn-save" id="btnAdd" onclick="addGoodRow()">新增</button>
+        }*@
+
+        <br />
+        <font style="color: red;">
+            --請依規定每件申請單僅申報一樣貨品名稱，例如：冷凍精子、冷凍卵子、冷凍胚胎擇一。</br>
+            --貨品類別「請選擇取自委託人之生殖細胞或胚胎」，以利系統對應值為0300；單位「常用單位值為TBE」，前述相關資訊請對應寫入「貨品輔助描述」欄位內。
+        </font>
+    </h2>
+
+    <div id="goodsTable" class="table-responsive">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
+            <thead>
+                @*@if (Model.IsDeleteOpen && !Model.IsReadOnly)
+                {
+                <th>序</th>
+                }*@
+
+                <th width="25%"><span style="color:red" sr-only="必填">＊</span>貨品類別(規格)</th>
+                <th width="25%"><span style="color:red" sr-only="必填">＊</span>貨品名稱</th>
+                <th width="25%"><span style="color:red" sr-only="必填">＊</span>申請數量</th>
+                <th width="25%">貨品輔助描述</th>
+                </thead>
+                <tbody>
+
+
+                    @if (Model.GoodsList.ToCount() != 0)
+                    {
+                        for (int i = 0; i < Model.GoodsList.Count; i++)
+                        {
+                            var item = Model.GoodsList[i];
+                            <tr style="border: none;">
+                                @*@if (Model.IsDeleteOpen && !Model.IsReadOnly)
+                                {
+                                    <td style="border: none;">
+                                        <button type="button" id="btnDelte_1" class="btn btn-clear" onclick="deleteGoodRow(@(i))">
+                                            刪除
+                                        </button>
+                                    </td>
+                                }*@
+                                <td style="border: none;">
+
+                                    @Html.HiddenFor(m => Model.GoodsList[i].SRL_NO)
+                                    @Html.DropDownListFor(m => Model.GoodsList[i].GOODS_TYPE_ID, new SelectList(dao.GetGOODS_TYPE3List, "Value", "Text", Model.GoodsList[i].GOODS_TYPE_ID), new { @class = "form-control formbar-bg", style = "width:200px;" + IsDisabled, onchange = "doGOODS_SPEC_Change(this)" })
+
+                                </td>
+                                <td style="border: none;">
+                                    @Html.TextAreaFor(m => Model.GoodsList[i].GOODS_NAME, new { @class = "form-control", style = IsDisabled })
+                                </td>
+                                <td style="border: none;">
+                                    <label class="step-label"><span style="color:red" sr-only="必填">＊</span>申請數量</label>
+                                    @Html.TextBoxFor(m => Model.GoodsList[i].APPLY_CNT, new { @class = "form-control", style = IsDisabled })
+                                    <br />
+                                    <label class="step-label"><span style="color:red" sr-only="必填">＊</span> 貨品單位</label>
+                                    @Html.DropDownListFor(m => Model.GoodsList[i].GOODS_SPEC_1, new SelectList(dao.GetGOODS_UNIT_IDList, "Value", "Text", Model.GoodsList[i].GOODS_SPEC_1), new { @class = "form-control formbar-bg", style = "width:150px;" + IsDisabled })
+                                    <br />
+                                    <label class="step-label"><span style="color:red" sr-only="必填">＊</span> 規格</label>
+                                    @Html.TextBoxFor(m => Model.GoodsList[i].GOODS_SPEC_2, new { @class = "form-control", style = IsDisabled })
+                                </td>
+                                <td style="border: none;">
+                                    <label class="step-label"><span style="color:red" sr-only="必填">＊</span> 貨品輔助描述</label>
+                                    @Html.TextAreaFor(m => Model.GoodsList[i].GOODS_DESC, new { @class = "form-control", style = IsDisabled })
+                                    <br />
+                                    <label class="step-label">型號</label>
+                                    @Html.TextBoxFor(m => Model.GoodsList[i].GOODS_MODEL, new { @class = "form-control", style = IsDisabled })
+                                    <br />
+                                    <label class="step-label"> 牌名</label>
+                                    @Html.TextBoxFor(m => Model.GoodsList[i].GOODS_BRAND, new { @class = "form-control", style = IsDisabled })
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        $(document).ready(function () {
+        });
+
+        function doGOODS_SPEC_Change(obj) {
+            var objId = $(obj).attr("id");
+            var typeObj = $(obj);
+            var specObj = $('#' + objId.replaceAll("TYPE_ID", "SPEC_1"));
+            if (typeObj.val() == "300") {
+                specObj.val("TBE");
+            }
+        }
+
+        // 新增一列
+        function addGoodRow() {
+            var url = "@Url.Action("addGoodRow001038", "AJAX",new { area = "" })";
+            var parms = getDivDataJson("#GoodsDynamicGird001038");
+
+            ajaxLoadMore(url, parms
+            , function (data) {
+                $("#GoodsDynamicGird001038").html(data);
+                $("#GoodsDynamicGird001038 input").each(function (i, obj) {
+                    $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                    $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                })
+                $("#GoodsDynamicGird001038 select").each(function (i, obj) {
+                    $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                    $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                })
+                $("#GoodsDynamicGird001038 textarea").each(function (i, obj) {
+                    $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                    $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                })
+                $("#GoodsDynamicGird001038 div.date").each(function () {
+                    initDatePicker(this);
+                });
+                $("#GoodsDynamicGird001038 input:radio").each(function (i, obj) {
+                    $("input:radio[name='" + obj.name + "']").attr("name", '@(Model.SourceModelNameFull)' + obj.name.replaceAll('@(Model.SourceModelNameFull)', ''));
+                    $("input:radio[id='" + obj.id + "']").attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                });
+            });
+        }
+
+        // 刪除此列
+        function deleteGoodRow(idx) {
+            var url = "@Url.Action("deleteGoodRow001038", "AJAX",new { area = "" })";
+            var parms = getDivDataJson("#GoodsDynamicGird001038");
+            parms["idx"] = idx;
+
+            ajaxLoadMore(url, parms
+             , function (data) {
+                 $("#GoodsDynamicGird001038").html(data);
+                 $("#GoodsDynamicGird001038").html(data);
+                 $("#GoodsDynamicGird001038 input").each(function (i, obj) {
+                     $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                     $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                 })
+                 $("#GoodsDynamicGird001038 select").each(function (i, obj) {
+                     $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                     $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                 })
+                 $("#GoodsDynamicGird001038 textarea").each(function (i, obj) {
+                     $("#" + obj.id).attr("name", '@(Model.SourceModelNameFull)' + obj.name);
+                     $("#" + obj.id).attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                 })
+                 $("#GoodsDynamicGird001038 div.date").each(function () {
+                     initDatePicker(this);
+                 });
+                 $("#GoodsDynamicGird001038 input:radio").each(function (i, obj) {
+                     $("input:radio[name='" + obj.name + "']").attr("name", '@(Model.SourceModelNameFull)' + obj.name.replaceAll('@(Model.SourceModelNameFull)', ''));
+                     $("input:radio[id='" + obj.id + "']").attr("id", '@(Model.SourceModelIdFull)' + obj.id);
+                 });
+             });
+        }
+    </script>

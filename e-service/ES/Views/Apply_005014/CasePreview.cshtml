@@ -1,0 +1,518 @@
+﻿@model ES.Models.ViewModels.Apply_005014ViewModel
+@using ES.Models
+@using System.Linq
+
+@{
+    Layout = null;
+    ViewBag.Title = "Preview";
+    ShareCodeListModel options = new ShareCodeListModel();
+}
+
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink"><i class="fas fa-home"></i><a href="#">首頁</a> ／ <a href="#">申辦服務</a> ／ <a href="#">貨品進口專案申請</a></div>
+        <div class="clearfix"></div>
+        <div class="step_map">
+            <ul>
+                <li>填寫申報表件並上傳檔案</li>
+                <li class="active">預覽申辦表件</li>
+                <li>完成申報</li>
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h1 class="form-title title-bg-y">申辦表件預覽</h1>
+                <div class="form-set">
+                    <form class="form-horizontal" action="/action_page.php">
+                        @RenderBaseInfo()           @* 基本資料 *@
+                        <div>
+                            @RenderApplyItems()     @* 一般申請項目 *@
+                            @RenderApplyItems2()    @* 萃取物(提取物)申請項目 *@
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @RenderUploadFile() @* 上傳附件 *@
+        </div>
+        <!--form-->
+        <div class="form-set">
+            <div class="btn-bar text-center">
+                <a type="button" href="javascript:void(0)" class="btn btn-save" onclick="save()">確認送出</a>
+                <a type="button" href="javascript:void(0)" class="btn btn-clear" onclick="cancel()">返回修改</a>
+            </div>
+        </div>
+
+    </div>
+    <div class="clearfix"></div>
+</div>
+
+@helper RenderBaseInfo()
+{
+
+    ShareCodeListModel options = new ShareCodeListModel();
+    IList<SelectListItem> countryOptions = options.Port2List;
+
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申辦項目</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">貨品進口專案申請</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申辦日期</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">
+                @(Model.Apply.APP_TIME.HasValue ? Model.Apply.APP_TIME.Value.ToString("yyyy/MM/dd") : DateTime.Now.ToString("yyyy/MM/dd"))
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">申請人Applicant</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.Apply.CNT_NAME </p>
+        </div>
+        <label class="step-label col-sm-2" for="">統一編號Unified code(個人申請案，則請填寫身分證字號)</label>
+        <div class="col-sm-4">
+            <p class="form-control-static"> @Model.Apply.IDN </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">地址Address</label>
+        <div class="col-sm-10">
+            <p class="form-control-static"> (@Model.Apply.ADDR_CODE) @(Model.Apply.ADDR_ZIP_ADDR)@(Model.Apply.ADDR) </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">電話Tel. No.</label>
+        <div class="col-sm-10">
+            <p class="form-control-static"> @Model.Apply.TEL </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">行動電話</label>
+        <div class="col-sm-10">
+            <p class="form-control-static"> @Model.Apply.MOBILE </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">生產國別Country of origin</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">
+                @(countryOptions.Where(x => x.Value == Model.Detail.PRODUCTION_COUNTRY).FirstOrDefault().Text) @Model.Detail.PRODUCTION_COUNTRY
+            </p>
+        </div>
+        <label class="step-label col-sm-2" for="">賣方國家Country of seller</label>
+        <div class="col-sm-4">
+            <p class="form-control-static">
+                @(countryOptions.Where(x => x.Value == Model.Detail.SELL_COUNTRY).FirstOrDefault().Text) @Model.Detail.SELL_COUNTRY
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">起運國家Shipping port</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">
+                @(countryOptions.Where(x => x.Value == Model.Detail.TRANSFER_COUNTRY).FirstOrDefault().Text) @Model.Detail.TRANSFER_COUNTRY
+            </p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">備註1 Remarks</label>
+        <div class="col-sm-10">
+            @if (Model.Detail.Remark.checkboxR1)
+            {
+                <input type="checkbox" class="form-normal" disabled="disabled" checked>
+                <span>1.申請H01免查驗(報單影本，報單號碼：</span><span>@Model.Detail.Remark.REMARK1_ITEM1_COMMENT )</span>
+                <br>
+                if (Model.Detail.Remark.REMARK1_ITEM2 == "1")
+                {
+                    <input type="radio" class="form-normal" name="remark1" disabled="disabled" checked /><span>中藥用</span>
+                }
+                else
+                {
+                    <input type="radio" class="form-normal" name="remark1" disabled="disabled" /><span>中藥用</span>
+                }
+                if (Model.Detail.Remark.REMARK1_ITEM2 == "2")
+                {
+                    <input type="radio" class="form-normal" name="remark1" disabled="disabled" checked /><span>非中藥材用途:</span>
+                    <span>@Model.Detail.Remark.REMARK1_ITEM2_COMMENT</span>
+                }
+                else
+                {
+                    <input type="radio" class="form-normal" name="remark1" disabled="disabled" /><span>非中藥材用途:</span>
+                    <input type="text" class="form-normal" readonly="readonly">
+                }
+            }
+            else
+            {
+                <input type="checkbox" class="form-normal" disabled="disabled" /><span>1.申請H01免查驗(報單影本，報單號碼：</span><span>)</span><br>
+                <input type="radio" class="form-normal" name="remark1" disabled="disabled"><span>中藥用</span>
+                <input type="radio" class="form-normal" name="remark1" disabled="disabled"><span>非中藥材用途:</span>
+                <input type="text" class="form-normal" readonly="readonly">
+            }
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">備註2 Remarks</label>
+        <div class="col-sm-10">
+            @if (Model.Detail.Remark.checkboxR2)
+            {
+                <input type="checkbox" class="form-normal" disabled="disabled" checked />
+                <span>2 自用原料藥：(1)藥品許可證影本(2)原料之檢驗規格、方法、檢驗成績書(載明批號、檢驗日期及認定人員之簽名)</span>
+            }
+            else
+            {
+                <input type="checkbox" class="form-normal" disabled="disabled" />
+                <span>2 自用原料藥：(1)藥品許可證影本(2)原料之檢驗規格、方法、檢驗成績書(載明批號、檢驗日期及認定人員之簽名)</span>
+            }
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="step-label col-sm-2" for="">備註3 Remarks</label>
+        <div class="col-sm-10">
+            @if (Model.Detail.Remark.checkboxR3)
+            {
+                <span>3.非中藥用途貨品進口： </span>
+                if (Model.Detail.Remark.REMARK3_2 == "1")
+                {
+                    <input type="radio" name="remark3" class="form-normal" disabled="disabled" checked />
+                    <div>食品: @Model.Detail.Remark.REMARK3_2_COMMENT </div><br />
+                }
+                else
+                {
+                    <input type="radio" name="remark3" class="form-normal" disabled="disabled" />
+                    <div>食品: </div>
+                    <input type="text" class="form-normal" readonly="readonly" /><br />
+                }
+                if (Model.Detail.Remark.REMARK3_2 == "2")
+                {
+                    <input type="radio" name="remark3" class="form-normal" disabled="disabled" checked />
+                    <div>研發: @Model.Detail.Remark.REMARK3_3_COMMENT</div><br />
+                }
+                else
+                {
+                    <input type="radio" name="remark3" class="form-normal" disabled="disabled" />
+                    <div>研發: </div>
+                    <input type="text" class="form-normal" readonly="readonly" /><br />
+                }
+                if (Model.Detail.Remark.REMARK3_2 == "3")
+                {
+                    <input type="radio" name="remark3" class="form-normal" disabled="disabled" checked />
+                    <div>試劑: @Model.Detail.Remark.REMARK3_4_COMMENT</div><br />
+                }
+                else
+                {
+                    <input type="radio" name="remark3" class="form-normal" disabled="disabled" />
+                    <div>試劑: </div>
+                    <input type="text" class="form-normal" readonly="readonly" /><br />
+                }
+                if (Model.Detail.Remark.REMARK3_2 == "4")
+                {
+                    <input type="radio" name="remark3" class="form-normal" disabld="disabled" checked />
+                    <div>其他: @Model.Detail.Remark.REMARK3_5_COMMENT</div>
+                }
+                else
+                {
+                    <input type="radio" name="remark3" class="form-normal" disabled="disabled" />
+                    <div>其他: </div>
+                    <input type="text" class="form-normal" readonly="readonly" />
+                }
+            }
+            else
+            {
+                <span>3.非中藥用途貨品進口： </span>
+                <input type="radio" name="remark3" class="form-normal" disabled="disabled" />
+                <div>食品: </div>
+                <input type="text" class="form-normal" readonly="readonly" /><br />
+                <input type="radio" name="remark3" class="form-normal" disabled="disabled" />
+                <div>研發: </div>
+                <input type="text" class="form-normal" readonly="readonly" /><br />
+                <input type="radio" name="remark3" class="form-normal" disabled="disabled" />
+                <div>試製: </div>
+                <input type="text" class="form-normal" readonly="readonly" /><br />
+                <input type="radio" name="remark3" class="form-normal" disabled="disabled" />
+                <div>其他: </div>
+                <input type="text" class="form-normal" readonly="readonly" />
+            }
+        </div>
+    </div>
+}
+
+@helper RenderApplyItems()
+{
+    ShareCodeListModel options = new ShareCodeListModel();
+    IList<SelectListItem> packunitOptions = options.Getvw_PACK_UNITList;
+    IList<SelectListItem> drugformOptions = options.Getvw_DRUG_FORMList;
+    IList<SelectListItem> packOptions = options.Getvw_PACKList;
+    IList<SelectListItem> countryOptions = options.CountryList;
+    IList<SelectListItem> importOptions = options.ImportList;
+
+
+    <h2 class="second-title">一般申請項目</h2>
+    if (Model.ApplyItems != null && Model.ApplyItems.Count > 0)
+    {
+        for (int i = 0; i < Model.ApplyItems.Count; i++)
+        {
+            var item = Model.ApplyItems[i];
+            if (item.COMMODITIES != "" && item.COMMODITIES != null)
+            {
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">項目Item</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">@(i + 1)</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">類型Type</label>
+                    <div class="col-sm-4">
+                        @if (item.ITEM_TYPE == 3)
+                        {
+                            <p class="form-control-static">
+                                <span>中藥材作為食品使用者(例如:靈芝)</span>
+                            </p>
+                        }
+                        else if (item.ITEM_TYPE == 2)
+                        {
+                            <p class="form-control-static"> 其它 </p>
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">產品類別ProductType</label>
+                    <div class="col-sm-4">
+                        @if (item.PORCTYPE == "0")
+                        {
+                            <p class="form-control-static">
+                                <span>中藥材</span>
+                            </p>
+                        }
+                        else if (item.PORCTYPE == "1")
+                        {
+                            <p class="form-control-static"><span>中藥製劑</span></p>
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">貨名Commodities</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@item.COMMODITIES</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">劑型</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            @(drugformOptions.Where(x => x.Value == item.COMMODTYPE).FirstOrDefault().Text)
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量Q'ty</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static"> @item.QTY</p>
+                    </div>
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量單位Unit</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">
+                            @(packOptions.Where(x => x.Value == item.UNIT).FirstOrDefault().Text)
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量Q'ty</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static"> @item.SPECQTY</p>
+                    </div>
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量單位Unit</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">
+                            @(packunitOptions.Where(x => x.Value == item.SPECUNIT).FirstOrDefault().Text)
+                        </p>
+                    </div>
+                </div>
+                <h2 class="second-title">
+                    一般切結書
+                </h2>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出口國</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            @(countryOptions.Where(x => x.Value == item.AFF1_EXPORT_COUNTRY).FirstOrDefault().Text)
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">報單號碼</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            @item.AFF1_SHEET_NO
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>進口關</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            @(importOptions.Where(x => x.Value == item.AFF1_IMPORT_COUNTRY).FirstOrDefault().Text)
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <p style="height:10px;background-color:burlywood;"></p>
+                </div>
+            }
+        }
+    }
+}
+@helper RenderApplyItems2()
+{
+    ShareCodeListModel options = new ShareCodeListModel();
+    IList<SelectListItem> packunitOptions = options.Getvw_PACK_UNITList;
+    IList<SelectListItem> drugformOptions = options.Getvw_DRUG_FORMList;
+    IList<SelectListItem> packOptions = options.Getvw_PACKList;
+    IList<SelectListItem> countryOptions = options.CountryList;
+    IList<SelectListItem> importOptions = options.ImportList;
+
+    <h2 class="second-title">萃取物申請項目</h2>
+    if (Model.ApplyItems2 != null && Model.ApplyItems2.Count > 0)
+    {
+        for (int i = 0; i < Model.ApplyItems2.Count; i++)
+        {
+            var item = Model.ApplyItems2[i];
+            if (item.COMMODITIES != "" && item.COMMODITIES != null)
+            {
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">項目Item</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">@(i + 1)</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">類型Type</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">
+                            <span>中藥材萃取物作為食品原料者</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">產品類別ProductType</label>
+                    <div class="col-sm-4">
+                        @if (item.PORCTYPE == "0")
+                        {
+                            <p class="form-control-static">
+                                <span>中藥材</span>
+                            </p>
+                        }
+                        else if (item.PORCTYPE == "1")
+                        {
+                            <p class="form-control-static"><span>中藥製劑</span></p>
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">貨名Commodities</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">@item.COMMODITIES</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">劑型</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            @(drugformOptions.Where(x => x.Value == item.COMMODTYPE).FirstOrDefault().Text)
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量Q'ty</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static"> @item.QTY</p>
+                    </div>
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>申請數量單位Unit</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">
+                            @(packOptions.Where(x => x.Value == item.UNIT).FirstOrDefault().Text)
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量Q'ty</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static"> @item.SPECQTY</p>
+                    </div>
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>規格數量單位Unit</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-static">
+                            @(packunitOptions.Where(x => x.Value == item.SPECUNIT).FirstOrDefault().Text)
+                        </p>
+                    </div>
+                </div>
+                <h2 class="second-title">
+                    萃取物(提取物)切結書
+                </h2>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>出口國</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            @(countryOptions.Where(x => x.Value == item.AFF2_EXPORT_COUNTRY).FirstOrDefault().Text)
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>原中藥材含量</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            產品每公克含原中藥材 @item.AFF2_AMOUNT_NAME 共 @item.AFF2_AMOUNT 公克
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for="">報單號碼</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            @item.AFF2_SHEET_NO
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>進口關</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static">
+                            @(importOptions.Where(x => x.Value == item.AFF2_IMPORT_COUNTRY).FirstOrDefault().Text)
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <p style="height:10px;background-color:burlywood;"></p>
+                </div>
+            }
+        }
+    }
+}
+
+@helper RenderUploadFile()
+{
+    <div class="col-sm-12 form-set">
+        <h1 class="form-title title-bg-gray">上傳附件預覽</h1>
+        <div class="form-group">
+            <div class="col-sm-12" for="">
+                請點選<button type="button" class="btn btn-save">新增</button>增加上傳欄位，並上傳以下6項佐證文件，<span style="color:red;">*</span>號為必上傳文件。<br />
+                <span style="color:red;">*</span>1.申請書(需蓋公司大小章)<br />
+                <span style="color:red;">*</span>2.商業登記證明文件影本或其他證明文件<br />
+                <span style="color:red;">*</span>3.切結書(須註明產品用途及蓋公司大小章)<br />
+                4.產品資訊說明(含產品使用方式及最後處理方式)<br />
+                5.進口報單影本<br />
+                6.其他證明文件
+            </div>
+        </div>
+        <div>
+            @Html.Partial("_FilePreview", Model)
+            @*<iframe width="100%" height="400px;" style="border:0px" src="../網站/中醫藥司-貨品進口專案申請-附件.pdf"></iframe>
+                <iframe width="100%" height="400px;" style="border:0px" src="../網站/中醫藥司-貨品進口專案申請-切結書.pdf"></iframe>
+                <iframe width="100%" height="400px;" style="border:0px" src="../網站/中醫藥司-貨品進口專案申請-專案申請切結.pdf"></iframe>*@
+        </div>
+    </div>
+}
+

@@ -1,0 +1,129 @@
+﻿@using ES.Models;
+@using ES.Services;
+@using ES.Models.ViewModels;
+@model Apply_001005ViewModel
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+}
+
+<div class="container">
+    <div class="col-sm-12">
+        <!-- bread  -->
+        <div class="breadlink">
+            <i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">醫事人員或公共衛生師證書補(換)發</a>
+        </div>
+        <div class="clearfix"></div>
+        @if (Model == null || Model.ErrorMessage == null)
+        {
+            <div class="step_map">
+                <ul>
+                    <li id="Apply_Tab">填寫申報表件並上傳檔案</li>
+                    <li id="PreView_Tab">預覽申辦表件</li>
+                    <li id="Pay_Tab">繳費</li>
+                    <li class="active">完成申報</li>
+                </ul>
+            </div>
+        }
+        else if (Model.ErrorCode != "0000" && Model.ErrorCode != "00")
+        {
+            <div class="step_map">
+                <ul>
+                    <li id="Apply_Tab">填寫申報表件並上傳檔案</li>
+                    <li id="PreView_Tab">預覽申辦表件</li>
+                    <li id="Pay_Tab">繳費</li>
+                    <li class="active">繳費狀態</li>
+                </ul>
+            </div>
+        }
+
+        <!--form-->
+        <h1 class="form-title  title-bg-y">訊息</h1>
+        <div class="form-set">
+            <div class="form-group">
+                <div class="col-sm-12" style="margin-top:10px">
+                    @*@sm.UserInfo.Member.NAME，*@您好:<br />
+
+                    @if (Model == null)
+                    {
+                        @Html.Raw("您醫事人員或公共衛生師證書補(換)發，已完成系統資料填答及上傳流程，繳納規費後，將盡速辦理您的申辦案件，謝謝。</br>");
+                        if (Model.PAY_METHOD.Equals("S"))
+                        {
+                            <div class="btn-bar text-center">
+                                <input type="button" class="btn btn-save" value="列印繳費單" onclick="document.location.href='@Url.Action("PayPDF")/@Model.APP_ID';" />
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        if (Model.ErrorCode != "0000" && Model.ErrorCode != "00")
+                        {
+                            @Html.Raw("您醫事人員或公共衛生師證書補(換)發，繳費失敗。</br>錯誤訊息:" + Model.ErrorMessage + "、" + Model.TempMessage);
+                        }
+                        else
+                        {
+                            switch (Model.STATUS.TONotNullString())
+                            {
+                                case "A":
+                                    @Html.Raw("您醫事人員或公共衛生師證書補(換)發，已完成資料補件共" + Model.AppDocCount.TONotNullString() + "件，將盡速辦理您的申辦案件，謝謝。");
+                                    break;
+                                default:
+                                    @Html.Raw("您醫事人員或公共衛生師證書補(換)發，已完成系統資料填答及上傳流程，繳納規費後，將盡速辦理您的申辦案件，謝謝。</br>");
+                                    if (Model.PAY_METHOD.Equals("S"))
+                                    {
+                                        <div class="btn-bar text-center">
+                                            <input type="button" class="btn btn-save" value="列印繳費單" onclick="document.location.href='@Url.Action("PayPDF")/@Model.APP_ID';" />
+                                        </div>
+                                    }
+                                    break;
+
+                            }
+                            if (Model.PAY_METHOD == "C")
+                            {
+                                if (Model.ISEC.ToUpper() == "Y" && DateTime.Now>=Convert.ToDateTime("2023/03/01"))
+                                {
+                                    <form name="HPP" id="HPP" method="post" target="HPPFrame" ACTION="https://nccnet-ec.nccc.com.tw/merchant/HPPRequest">
+                                        <input type="hidden" id="KEY" name="KEY" value="@Model.SessionTransactionKey">
+                                        系統轉送中，如未自動轉至付費頁面，請 <input type="submit" value="點此" /> 前往信用卡付費頁面。
+                                    </form>
+                                    <script>
+                                        $(function () {
+                                            if ($("#KEY").val() != "") {
+                                                $('#HPP').submit();
+                                            }
+                                        });
+                                    </script>
+
+                                }
+                                else
+                                {
+                                    <form name="TransRedirect" id="TransRedirect" action="https://ep.cp.gov.tw/payment/eGovPaymentService.aspx" method="post">
+                                        <input type="hidden" name="Others" value="" />
+                                        <input type="hidden" name="SessionTransactionKey" id="SessionTransactionKey" value="@Model.SessionTransactionKey" />
+                                        系統轉送中，如未自動轉至付費頁面，請 <input type="submit" value="點此" /> 前往信用卡付費頁面。
+                                    </form>
+                                    <script>
+                                        $(function () {
+                                            if ($("#SessionTransactionKey").val() != "") {
+                                                $('#TransRedirect').submit();
+                                            }
+                                        });
+                                    </script>
+                                }
+                            }
+
+                        }
+
+                    }
+
+                    <div style="float:right">衛生福利部</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="clearfix"></div>
+
+</div>   

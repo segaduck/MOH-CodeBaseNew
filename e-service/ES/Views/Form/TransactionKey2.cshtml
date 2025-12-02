@@ -1,0 +1,35 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    ViewBag.Title = "信用卡繳費";
+    ViewBag.Script = @"
+        $(function () {
+            if($(""#SessionTransactionKey"").val() != """") {
+                //$('#TransRedirect').submit();
+            }
+        });
+    ";
+}
+<br />
+@if (@ViewBag.ErrorCode.Equals("0000"))
+{
+    <form name="TransRedirect" id="TransRedirect" action="@Url.Action("PaySuccess")" method="post">
+        <input type="hidden" name="Others" value="@ViewBag.Other" />
+        <input type="hidden" name="SessionTransactionKey" id="SessionTransactionKey" value="@ViewBag.SessionTransactionKey" />
+        系統轉送中，如未自動轉至付費頁面，請 <input type="submit" value="點此" /> 前往信用卡付費頁面。
+    </form>
+}
+else
+{
+    <table class="formTable1">
+        <caption>預約交易結果</caption>
+        <tr>
+            <th>訊息代碼</th>
+            <td>@ViewBag.ErrorCode</td>
+        </tr>
+        <tr>
+            <th>代碼說明</th>
+            <td>@ViewBag.ErrorMessage</td>
+        </tr>
+    </table>
+    <input type="hidden" name="SessionTransactionKey" id="SessionTransactionKey" value="@ViewBag.SessionTransactionKey" />
+}

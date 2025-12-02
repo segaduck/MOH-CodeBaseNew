@@ -1,0 +1,37 @@
+﻿@using EECOnline.Areas.A6.Models;
+@model C101MDetailModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout_NoHeader_NoBg.cshtml";
+}
+
+<div class="col-sm-12 content">
+    @using (Html.BeginForm("Index", "C101M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+    {
+        var button = new Dictionary<string, string>();
+        button.Add("save", "doSave()");
+        if (!Model.IsNew) { button.Add("delete", "doDelete()"); };
+        button.Add("close", "doClose()");
+
+        @Html.ControlForTurbo(Model);
+        @Html.ButtonForTurbo(button)
+    }
+</div>
+
+<script type="text/javascript">
+    //儲存
+    function doSave() {
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+
+     //刪除
+    function doDelete() {
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Delete")').submit();
+    }
+
+    //關閉
+    function doClose() {
+        parent.closeWindow();
+    }
+</script>

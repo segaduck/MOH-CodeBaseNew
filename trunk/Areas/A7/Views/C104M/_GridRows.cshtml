@@ -1,0 +1,31 @@
+﻿@using EECOnline.Areas.A7.Models;
+@model C104MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        @Html.HiddenFor(m =>m.Grid[i].efaq_id);
+        var item = Model.Grid[i];
+        <tr>
+            <td>
+                <div align="center">@item.row_id</div>
+            </td>
+            <td>
+                <div align="center">@item.code_name</div>
+            </td>
+            <td>
+                <div align="center">@item.question</div>
+            </td>
+            <td>
+                <div align="center">@Html.Raw(item.answer)</div>
+            </td>
+            <td>
+                <div align="center">@item.status</div>
+            </td>
+            <td align="center">
+                <button type="button" class="btn btn-blue" onclick="doModify('@item.efaq_id')">編輯</button>
+            </td>
+        </tr>
+    }
+}

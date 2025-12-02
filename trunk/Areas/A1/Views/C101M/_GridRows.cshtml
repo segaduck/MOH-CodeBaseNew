@@ -1,0 +1,35 @@
+﻿@using EECOnline.Services;
+@using EECOnline.Areas.A1.Models;
+@model C101MFormModel
+
+@if (Model.Grid != null)
+{
+    for (int i = 0; i < Model.Grid.Count; i++)
+    {
+        var item = Model.Grid[i];
+        <tr>
+            <td align="center">
+                <button type="button" class="btn btn-login" onclick="doModify('@item.code')">編輯</button>
+            </td>
+            <td align="center">
+                <div align="center">@item.code</div>
+            </td>
+            <td align="center">
+                <div align="center">@item.text</div>
+            </td>
+            <td align="center">
+                <div align="center">@item.cityName</div>
+            </td>
+            <td align="center">
+                @if (item.AuthCode.TONotNullString() == "")
+                {
+                    <button type="button" class="btn btn-blue" onclick="fetchValidateCode('@item.code')">取得醫院授權碼</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-gray">已有醫院授權碼</button>
+                }
+            </td>
+        </tr>
+    }
+}

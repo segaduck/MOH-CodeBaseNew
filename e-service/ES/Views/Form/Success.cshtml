@@ -1,0 +1,99 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    ViewBag.Title = "完成申辦手續";
+    ViewBag.Script = @"
+        function doXML(id) {
+            window.open('" + Url.Action("Index", "Home") + @"File/019001_' + id + '.xml', '', 'width=800,height=600,menubar=yes,scrollbars=yes,resizable=yes');
+        }
+
+        $(function() {
+            if(window.opener.location.pathname == getRootPath() + ""/Form/Apply/" + ViewBag.Dict["SRV_ID"] + @""") {
+                window.opener.location = getRootPath() + ""/Service""
+            }
+        });
+    ";
+}
+
+<br />
+    <div>．@ViewBag.Dict["NAME"]</div>
+    <hr />
+    <div style="float: right; color: #AAAAAA;">
+        <span>填表 → 預覽填表資料 → </span>
+        @if (!@ViewBag.Dict["PAY_POINT"].Equals("A"))
+        {
+            <span>選擇繳費方式 → </span> 
+        }
+        <span style="color: #B22222;">完成申辦手續</span>
+    </div>
+    <br /><br />
+    @ViewBag.Data["NAME"]，您好！<br />
+    您已完成線上申辦手續，謝謝！
+    <table class="formTable1">
+        <caption>完成申辦手續</caption>
+        <tr>
+            <th style="width: 120px;">申請編號</th>
+            <td>@ViewBag.Data["APP_ID"]</td>
+        </tr>
+        <tr>
+            <th>申請日期</th>
+            <td>@ViewBag.Data["APPLY_DATE"]</td>
+        </tr>
+        <tr>
+            <th>申請時費用</th>
+            <td>@ViewBag.Data["APP_FEE"] 元</td>
+        </tr>
+        
+        @if (((Dictionary<string, string>)ViewBag.Data).ContainsKey("PAY_TRANS_RET"))
+        {
+            <tr>
+                <th>交易結果代碼</th>
+                <td>@ViewBag.Data["PAY_TRANS_RET"]</td>
+            </tr>
+            <tr>
+                <th>交易結果說明</th>
+                <td>@ViewBag.Data["PAY_TRANS_MSG"]</td>
+            </tr>
+        }
+        
+        @if (!ViewBag.Data["COMP_DESC"].Equals(""))
+        {
+            <tr>
+                <th>注意事項</th>
+                <td>@Html.Raw(ViewBag.Data["COMP_DESC"].Replace(" ", "&nbsp;").Replace("\n", "<br />")))</td>
+            </tr>
+        }
+        @if ((string)@ViewBag.Dict["SRV_ID"] == "005001" || (string)@ViewBag.Dict["SRV_ID"] == "005002" || (string)@ViewBag.Dict["SRV_ID"] == "005003" || (string)@ViewBag.Dict["SRV_ID"] == "005004" || (string)@ViewBag.Dict["SRV_ID"] == "005005")
+        {
+              <tr>
+                <td colspan="2" style="text-align: center">
+                    @*請您按下下方「列印申請書」按鈕列印申請書表，<br />*@
+                    將於收到您檢附的支票及申請書後進行辦理，謝謝您的使用。
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td colspan="2" style="text-align: center">
+                    @*請您按下下方「列印申請書」按鈕列印申請書表，<br />*@
+                    若此此申辦案件須檢附證件，將於收到您檢附的證件和申請書後<font color="red">@(ViewBag.Dict["SRV_ID"].StartsWith("005")?7:3)</font>天內進行處理，謝謝您的使用。
+                </td>
+            </tr>
+        }
+       
+    </table>
+    <br />
+    <div class="formButtomBar">
+        @Html.Hidden("SRV_ID", (string)@ViewBag.Dict["SRV_ID"])
+        <input type="button" value="關閉" onclick="jConfirm('確定要關閉嗎？', function() {window.close();});" />
+        
+        @if (!String.IsNullOrEmpty(ViewBag.Dict["RPT_NAME"]) && (@ViewBag.Dict["SRV_ID"].StartsWith("00500")))
+        {
+            <input type="button" value="列印申請書"  onclick="document.location.href='@Url.Action("Apply" + @ViewBag.Data["SRV_ID"], "Form")/@ViewBag.Data["APP_ID"]';" />
+        }
+        
+        @if (ViewBag.Data["PAY_METHOD"].Equals("S"))
+        {
+            <input type="button" value="列印繳費單" onclick="document.location.href='@Url.Action("PayPDF")/@ViewBag.Data["APP_ID"]';" />
+        }
+    </div>

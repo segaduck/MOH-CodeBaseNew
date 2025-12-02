@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="BackApply"
+xmlns="http://ibatis.apache.org/mapping"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <resultMaps>
+  </resultMaps>
+  <statements>
+
+    <select id="queryLog" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        select cd.code_name as statusname ,al.modtime,
+		           case al.apy_status when '01' then null
+						                      else al.modusername
+		           end as modusername
+        from   apply_log al
+        /*join   eservice_status es on es.srv_id = al.srv_id and al.apy_status = es.status*/
+        join   code cd on cd.code_cd = al.apy_status and cd.code_type = 'APPLYSTATUS'
+        where  1 = 1
+        and    MODTYPE = 'U'
+       ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="apy_id">
+            <![CDATA[
+	            and al.apy_id = #apy_id#
+             ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[
+        order by al.modtime desc
+       ]]>
+    </select>
+
+    <!-- 取得案件進度 -->
+    <select id="queryLogNow" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+        select cd.code_name as statusname ,al.modtime,
+               case al.apy_status when '01' then null
+						                      else al.modusername
+		           end as modusername
+        from   apply al
+        /*join   eservice_status es on es.srv_id = al.srv_id and al.apy_status = es.status*/
+        join   code cd on cd.code_cd = al.apy_status and cd.code_type = 'APPLYSTATUS'
+        where  1 = 1
+       ]]>
+      <dynamic>
+        <isParameterPresent>
+          <isNotEmpty prepend="" property="apy_id">
+            <![CDATA[
+	            and al.apy_id = #apy_id#
+             ]]>
+          </isNotEmpty>
+        </isParameterPresent>
+      </dynamic>
+      <![CDATA[
+        order by al.modtime desc
+       ]]>
+    </select>
+
+    <!-- ApyInfo -->
+    <select id="queryApyInfo" resultClass="Hashtable" parameterClass="Hashtable" cacheModel="WDASE-cache">
+      <![CDATA[
+       select apy_id ,apy_main_key ,apy_src_key
+       from   apply_file
+       where  apy_id = #apy_id#
+       order by apy_main_key,apy_src_key
+      ]]>
+    </select>
+  
+    <!-- 結束行(這行放在最下面, 不要刪) -->
+  </statements>
+</sqlMap>

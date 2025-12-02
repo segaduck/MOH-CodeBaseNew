@@ -1,0 +1,114 @@
+﻿@using ES.Areas.Admin.Models;
+@model Apply_001039ViewModel
+
+
+<!--2-->
+<div class='panel panel-info'>
+    <div class='panel-heading'>
+        <h2 class='panel-title' data-toggle='collapse' data-parent='#ApplyData' href='#ApplyData'>
+            <a>上傳應附檔案(點擊展開)</a>
+        </h2>
+    </div>
+
+    <div id='ApplyData' class='panel-collapse collapse'>
+        <div class='panel-body'>
+            <div class="form-blue">
+
+                <div class="form-group">
+                    <label class="main-label col-sm-2" for="">佐證文件採合併檔案</label>
+                    <div class="col-sm-10">
+                        <label class="radio-inline "><input type="radio" id="chkFileY" name="optFile" value="Y" disabled>是</label>
+                        <label class="radio-inline "><input type="radio" id="chkFileN" name="optFile" value="N" disabled>否</label>
+                        @Html.HiddenFor(x => x.Form.IS_MERGE_FILE)
+
+                        <br />
+                        若您是將檔案掃描後，於同一份文件內上傳，請選擇佐證文件採合併檔案"是"，檔案分開上傳請選擇"否"
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2" for="">我國評鑑合格醫院保證函</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE0, Model.Form.FileList.FILE0_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2" for="">申請人自行提出書面保證函</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE1, Model.Form.FileList.FILE1_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2" for="">醫師證書影本</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE2, Model.Form.FileList.FILE2_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2" for="">國外契約或接受文件</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE3, Model.Form.FileList.FILE3_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2" for="">E.C.F.M.G.及格證書影本</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE4, Model.Form.FileList.FILE4_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2" for="">國民身分證正面影本</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE5, Model.Form.FileList.FILE5_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2" for="">國民身分證反面影本</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE6, Model.Form.FileList.FILE6_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2" for="">護照影本或有關部會許可出國文件影本</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE7, Model.Form.FileList.FILE7_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2" for="">個人執業發展規劃書</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE8, Model.Form.FileList.FILE8_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label class="main-label col-sm-2" for="">醫師赴國外訓練英文保證函申請表</label>
+                        <div class="col-sm-10">
+                            @Html.FileDLForTurbo(m => m.Form.FileList.FILE9, Model.Form.FileList.FILE9_TEXT)
+                        </div>
+                    </div>
+                </div>
+                <div class="btnbar">
+                    <button type="button" onclick="GetZip('@Model.Form.FileList.APP_ID')" class="btn btn-blue">檔案打包下載</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

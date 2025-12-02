@@ -1,0 +1,27 @@
+﻿@model ES.Models.FlyPayModel
+@{
+    ViewBag.Title = "信用卡繳費";
+    //Layout = null;
+    string s_env = Model.IsWebTestEnvir1 ?? "";
+    string epost1 = "https://epos.ctbcbank.com/mauth/SSLAuthUI.jsp";
+    if (s_env.Equals("Y")) { epost1 = "https://testepos.ctbcbank.com/mauth/SSLAuthUI.jsp"; }
+}
+
+<form id="fm" method="post" action="@Html.Raw(epost1)">
+    <input type="hidden" name="merID" value="@Model.UrlmerId">
+    <input type="hidden" name="URLEnc" value="@Model.enc.EncodeData">
+    <input type="hidden" name="merchantID" value="@Model.enc.MerchantID" />
+    <div class="payment">
+        The amount payable is NT @(Model.amountall)<br />
+        應繳費金額為新台幣@(Model.amountall)元
+    </div>
+    <div class="btnbar">
+        <button type="submit" class="btn btn-info"><i class="fas fa-credit-card"></i> Pay Now<br />確認付款</button>
+    </div>
+    <div>
+        @if (Model.payBasic != null && Model.payBasic.isUsing == "Y")
+        {
+            <p style="color:red;">提醒：經刷卡繳費完成後，如無法入住將不予退費。</p><br />
+        }
+    </div>
+</form>

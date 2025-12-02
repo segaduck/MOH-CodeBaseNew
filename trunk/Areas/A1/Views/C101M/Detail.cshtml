@@ -1,0 +1,67 @@
+﻿@using EECOnline.Areas.A1.Models;
+@model C101MDetailModel
+@{
+    Layout = "~/Views/Shared/_Back_MainLayout_NoHeader_NoBg.cshtml";
+}
+
+<div class="col-sm-12 content">
+    @using (Html.BeginForm("Detail", "C101M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
+    {
+        var button = new Dictionary<string, string>();
+        button.Add("save", "doSave()");
+        if (!Model.IsNew)
+        {
+            button.Add("SENDPWDEMAIL", "doSendPwdEmail()");
+            button.Add("delete", "doDelete()");
+        };
+        button.Add("close", "doClose()");
+
+        @Html.ControlForTurbo(Model, Model.IsNew);
+        @Html.ButtonForTurbo(button)
+    }
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+		var suthstatus = $('#authstatus').val();
+        if (suthstatus == "2") {
+		    $('#authstatus').attr("disabled", true);
+	    }
+        else {
+            $('#authstatus').attr("disabled", false);
+            $('#authstatus option:last').remove();
+	    }
+    })
+
+    // 儲存
+    function doSave() {
+        blockUI()
+        $('#authstatus').removeAttr('disabled');
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Save")').submit();
+    }
+
+    // 儲存
+    function doBind() {
+        blockMessage('綁定成功!');
+    }
+
+    // 刪除
+    function doDelete() {
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("Delete")').submit();
+    }
+
+    // 忘記密碼
+    function doSendPwdEmail() {
+        var form = $("form[id=main_form]");
+        form.attr('action', '@Url.Action("SendSetPwdMail")').submit();
+    }
+
+    // 關閉
+    function doClose() {
+        parent.closeWindow();
+    }
+
+</script>

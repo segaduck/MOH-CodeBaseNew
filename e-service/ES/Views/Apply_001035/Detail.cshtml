@@ -1,0 +1,105 @@
+﻿@using ES.Models;
+@using ES.Models.ViewModels;
+@model Apply_001035FormModel
+
+
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+@using (Html.BeginForm("Apply", "Apply_001035", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "main_form", @enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        <div class="col-sm-12">
+            <!-- bread  -->
+            <div class="breadlink"><i class="fas fa-home"></i><a href="@(Url.Action("Index", "Login"))">首頁</a> ／ <a href="@(Url.Action("Index", "Service"))">申辦服務</a> ／ <a href="#">非感染性人體器官、組織及細胞進出口申請作業</a></div>
+            <div class="clearfix"></div>
+            <div class="tab-content" id="myTabContent">
+                <!--form-->
+                <div id="form" class="tab-pane fade active in">
+                    @Html.FrontControlForTurbo(Model, Model.IsNew)
+
+                    <div class="btn-bar text-center">
+                        <button type="button" class="btn btn-clear" onclick="doBack()">返回</button>
+                    </div>
+
+
+                    <script>
+
+                        // 返回
+                        function doBack() {
+                            location.href = '@Url.Action("Index","History")';
+                        }
+
+
+                        $(document).ready(function () {
+                            $('input:radio[name="IM_EXPORT"]').click(function () { doImExportChange(); });
+                            doImExportChange();
+
+                            doDocCheck($("#DOC_TYP_01_SHOW"));
+                            doDocCheck($("#DOC_TYP_02_SHOW"));
+                            doDocCheck($("#DOC_TYP_03_SHOW"));
+                            doDocCheck($("#DOC_TYP_04_SHOW"));
+                            doDocCheck($("#DOC_TYP_05_SHOW"));
+                            doDocCheck($("#DOC_TYP_06_SHOW"));
+                            doDocCheck($("#DOC_TYP_07_SHOW"));
+                            doDocCheck($("#DOC_TYP_08_SHOW"));
+                            doDocCheck($("#DOC_TYP_09_SHOW"));
+                            doDocCheck($("#DOC_TYP_10_SHOW"));
+                            doDocCheck($("#DOC_TYP_11_SHOW"));
+                            doDocCheck($("#DOC_TYP_12_SHOW"));
+                            doDocCheck($("#DOC_TYP_13_SHOW"));
+                            doDocCheck($("#DOC_TYP_14_SHOW"));
+                            doDocCheck($("#DOC_TYP_15_SHOW"));
+                            doDocCheck($("#DOC_TYP_16_SHOW"));
+                            doDocCheck($("#DOC_TYP_17_SHOW"));
+                            doDocCheck($("#DOC_TYP_18_SHOW"));
+                            doDocCheck($("#DOC_TYP_19_SHOW"));
+                            doDocCheck($("#DOC_TYP_20_SHOW"));
+                            doDocCheck($("#DOC_TYP_21_SHOW"));
+                            doDocCheck($("#DOC_TYP_22_SHOW"));
+                            doDocCheck($("#DOC_TYP_23_SHOW"));
+                        })
+
+                        function doImExportChange() {
+                            var IM_EXPORT = $('input:radio:checked[name="IM_EXPORT"]').val();
+                            var IMPORT = $("#IMPORT");
+                            var EXPORT = $("#EXPORT");
+
+                            IMPORT.attr("style", "display:none");
+                            EXPORT.attr("style", "display:none");
+                            if (IM_EXPORT == "0") {
+                                IMPORT.removeAttr("style");
+                            }
+                            if (IM_EXPORT == "1") {
+                                EXPORT.removeAttr("style");
+                            }
+                        }
+
+                        function doDocCheck(typ) {
+                            var Codc = $("#" + typ.attr('id').replace('TYP', 'COD').replace('_SHOW', ''));
+                            var Txtc = $("#" + typ.attr('id').replace('TYP', 'TXT').replace('_SHOW', ''));
+                            var Filec = $("#" + typ.attr('id').replace('TYP', 'FILE').replace('_SHOW', ''));
+                            if (typ.prop("checked")) {
+                                Codc.removeAttr("disabled");
+                                Txtc.removeAttr("disabled");
+                                Filec.removeAttr("disabled");
+                            }
+                            else {
+                                Codc.attr("disabled", "disabled");
+                                Txtc.attr("disabled", "disabled");
+                                Filec.attr("disabled", "disabled");
+                            }
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+
+    </div>
+}
+<script>
+
+</script>
