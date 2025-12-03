@@ -6,6 +6,7 @@ e-service/packages/*
 !e-service/packages/package.txt
 
 # Database files
+SQL-BAK\*
 *.mdf
 *.ldf
 *.bak
