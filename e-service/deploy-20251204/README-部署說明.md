@@ -2,11 +2,11 @@
 
 ## 版本資訊
 
-| 項目     | 說明                                                                          |
-| -------- | ----------------------------------------------------------------------------- |
-| 版本     | 1.2                                                                           |
-| 日期     | 2025-12-04                                                                    |
-| 修改項目 | 個人會員電話號碼非必填、郵遞區號改為 6 碼、頁尾及聯絡窗口改為柏通股份有限公司 |
+| 項目     | 說明                                                                                                  |
+| -------- | ----------------------------------------------------------------------------------------------------- |
+| 版本     | 1.3                                                                                                   |
+| 日期     | 2025-12-04                                                                                            |
+| 修改項目 | 個人會員電話號碼非必填、郵遞區號改為 6 碼、頁尾及聯絡窗口改為柏通股份有限公司、更新資料庫服務諮詢電話 |
 
 ---
 
@@ -33,6 +33,14 @@
 - **修改內容**: 聯絡窗口從「衛生福利部」改為「柏通股份有限公司」
 - **影響範圍**: 服務項目說明頁面 (`/Servicelst/notice`)
 
+### 5. 更新資料庫系統操作服務諮詢電話
+
+- **修改內容**: 資料庫 `SETUP` 表中 `SERVICETEL` 設定值從 `(02)8590-6349` 改為 `(02)7730-7378`
+- **影響範圍**:
+  - 登入失敗錯誤訊息：「帳號或密碼錯誤! 帳號登入失敗若達五次將被鎖定，請諮詢系統操作服務諮詢電話：(02)7730-7378」
+  - 帳號鎖定錯誤訊息：「鎖定 15 分鐘，請諮詢系統操作服務諮詢電話：(02)7730-7378。」
+- **部署方式**: 執行 SQL 腳本 `update-database-servicetel.sql`
+
 ---
 
 ## 部署檔案清單
@@ -41,37 +49,39 @@
 
 ```
 e-service/deploy-20251204/
-├── README-部署說明.md               ← 本說明文件
-├── backup_app_offline.htm.template  ← 維護頁面模板
-├── build-release.ps1                ← 編譯腳本
-├── deploy-user-registration-fix.ps1 ← 部署腳本
-├── rollback-deployment.ps1          ← 還原腳本
-├── test-app-offline.ps1             ← 測試腳本
+├── README-部署說明.md                  ← 本說明文件
+├── backup_app_offline.htm.template     ← 維護頁面模板
+├── build-release.ps1                   ← 編譯腳本
+├── deploy-user-registration-fix.ps1    ← 部署腳本
+├── rollback-deployment.ps1             ← 還原腳本
+├── test-app-offline.ps1                ← 測試腳本
+├── update-database-servicetel.sql      ← 資料庫更新腳本 (新增)
 └── source/
     ├── bin/
-    │   ├── ES.dll                   ← 主要應用程式組件 (需編譯)
-    │   └── ES.pdb                   ← 除錯符號檔 (選用)
+    │   ├── ES.dll                      ← 主要應用程式組件 (需編譯)
+    │   └── ES.pdb                      ← 除錯符號檔 (選用)
     └── Views/
         ├── Login/
-        │   ├── New.cshtml           ← 新使用者註冊頁面 (已修改)
-        │   └── Edit1.cshtml         ← 會員資料編輯頁面 (已修改)
+        │   ├── New.cshtml              ← 新使用者註冊頁面 (已修改)
+        │   └── Edit1.cshtml            ← 會員資料編輯頁面 (已修改)
         ├── ServiceLst/
-        │   └── Notice.cshtml        ← 服務項目說明頁面 (已修改)
+        │   └── Notice.cshtml           ← 服務項目說明頁面 (已修改)
         └── Shared/
-            └── _Footer.cshtml       ← 頁尾 (已修改)
+            └── _Footer.cshtml          ← 頁尾 (已修改)
 ```
 
 ### 需要部署的檔案
 
-| 檔案路徑                                | 說明              |
-| --------------------------------------- | ----------------- |
-| `source/bin/ES.dll`                     | 主要應用程式組件  |
-| `source/bin/ES.pdb`                     | 除錯符號檔 (選用) |
-| `source/Views/Login/New.cshtml`         | 新使用者註冊頁面  |
-| `source/Views/Login/Edit1.cshtml`       | 會員資料編輯頁面  |
-| `source/Views/ServiceLst/Notice.cshtml` | 服務項目說明頁面  |
-| `source/Views/Shared/_Footer.cshtml`    | 頁尾共用元件      |
-| `backup_app_offline.htm.template`       | 維護頁面模板      |
+| 檔案路徑                                | 說明                      |
+| --------------------------------------- | ------------------------- |
+| `source/bin/ES.dll`                     | 主要應用程式組件          |
+| `source/bin/ES.pdb`                     | 除錯符號檔 (選用)         |
+| `source/Views/Login/New.cshtml`         | 新使用者註冊頁面          |
+| `source/Views/Login/Edit1.cshtml`       | 會員資料編輯頁面          |
+| `source/Views/ServiceLst/Notice.cshtml` | 服務項目說明頁面          |
+| `source/Views/Shared/_Footer.cshtml`    | 頁尾共用元件              |
+| `update-database-servicetel.sql`        | 資料庫更新腳本 **(新增)** |
+| `backup_app_offline.htm.template`       | 維護頁面模板              |
 
 > **注意**: 本次修改涉及 C# 程式碼 (Model 驗證屬性、DAO 驗證邏輯)，需要編譯 DLL。
 > 請先執行 `build-release.ps1` 編譯專案，將產生的 `bin/ES.dll` 複製到 `source/bin/` 目錄。
@@ -172,13 +182,28 @@ Copy-Item "$sourcePath\bin\ES.dll" "$targetPath\bin\" -Force
 Copy-Item "$sourcePath\bin\ES.pdb" "$targetPath\bin\" -Force
 ```
 
-#### Step 4: 移除 app_offline.htm (恢復網站)
+#### Step 4: 更新資料庫設定值
+
+```powershell
+# 使用 SQL Server Management Studio 或 sqlcmd 執行 SQL 腳本
+sqlcmd -S <ServerName> -d eservice_new -i update-database-servicetel.sql
+
+# 或手動執行以下 SQL:
+# UPDATE SETUP
+# SET SETUP_VAL = '(02)7730-7378',
+#     UPD_TIME = GETDATE(),
+#     UPD_FUN_CD = 'DEPLOY-20251204',
+#     UPD_ACC = 'SYSTEM'
+# WHERE SETUP_CD = 'SERVICETEL';
+```
+
+#### Step 5: 移除 app_offline.htm (恢復網站)
 
 ```powershell
 Remove-Item "D:\WebSite\e-service\app_offline.htm" -Force
 ```
 
-#### Step 5: 回收應用程式集區
+#### Step 6: 回收應用程式集區
 
 ```powershell
 # 方法 1: 使用 PowerShell WebAdministration 模組
@@ -243,7 +268,33 @@ Restart-WebAppPool -Name "eServicePool"
   - 郵遞區號欄位顯示「郵遞區號 6 碼」
 
 - [ ] `/Login/Edit1` - 會員資料編輯頁面
+
   - 依會員類型顯示正確的必填標記
+
+- [ ] `/Servicelst/notice` - 服務項目說明頁面
+
+  - 聯絡窗口顯示「柏通股份有限公司」
+
+- [ ] 任何頁面的頁尾
+  - 顯示「維護廠商: 柏通股份有限公司 服務專線: 02-7730-7378」
+
+### 3. 資料庫設定驗證
+
+```sql
+-- 驗證 SERVICETEL 設定值
+SELECT SETUP_CD, SETUP_DESC, SETUP_VAL
+FROM SETUP
+WHERE SETUP_CD = 'SERVICETEL';
+
+-- 預期結果: SETUP_VAL = '(02)7730-7378'
+```
+
+### 4. 登入錯誤訊息測試
+
+- [ ] 輸入錯誤的帳號密碼
+  - 應顯示：「帳號或密碼錯誤! 帳號登入失敗若達五次將被鎖定，請諮詢系統操作服務諮詢電話：(02)7730-7378」
+- [ ] 連續錯誤 5 次後
+  - 應顯示：「鎖定 15 分鐘，請諮詢系統操作服務諮詢電話：(02)7730-7378。」
 
 ---
 
