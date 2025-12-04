@@ -130,7 +130,7 @@
                 <div class="form-group">
                     <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>公司（商號）地址</label>
                     <div class="col-sm-10 form-inline">
-                        @Html.TextBoxFor(m => m.ADDR_CODE, new { @id = "ADDR_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號5碼", maxlength = "5" })
+                        @Html.TextBoxFor(m => m.ADDR_CODE, new { @id = "ADDR_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號6碼", maxlength = "6" })
                         <div class="input-group">
                             @Html.TextBoxFor(m => m.ADDR_TEXT, new { @id = "ADDR_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
                             <span class="input-group-btn">
@@ -217,7 +217,7 @@
                     <div class="col-sm-6"></div>
                 </div>
                 <div class="form-group">
-                    <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>電話號碼</label>
+                    <label class="step-label col-sm-2" for="">電話號碼</label>
                     <div class="col-sm-4">
                         @Html.TextBoxFor(m => m.TEL, new { @class = "form-control", maxlength = "20", placeholder = "請輸入您的電話號碼" })
                     </div>
@@ -233,7 +233,7 @@
                 <div class="form-group">
                     <label class="step-label col-sm-2" for=""><span style="color:red;">*</span>通訊地址</label>
                     <div class="col-sm-10 form-inline">
-                        @Html.TextBoxFor(m => m.ADDR_CODE, new { @id = "ADDR_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號5碼", maxlength = "5" })
+                        @Html.TextBoxFor(m => m.ADDR_CODE, new { @id = "ADDR_CODE", @class = "form-10 form-normal", size = 10, placeholder = "郵遞區號6碼", maxlength = "6" })
                         <div class="input-group">
                             @Html.TextBoxFor(m => m.ADDR_TEXT, new { @id = "ADDR_TEXT", @class = "form-normal", size = 20, placeholder = "郵遞區號名稱", @readonly = "readonly" })
                             <span class="input-group-btn">
@@ -349,9 +349,9 @@
             if ($('#NAME').val().trim() == '') {
                 msg += '請填入姓名<br/>';
             }
-            if ($('#TEL').val().trim() == '') {
-                msg += '請填入電話號碼<br/>';
-            }
+            //if ($('#TEL').val().trim() == '') {
+            //    msg += '請填入電話號碼<br/>';
+            //}
             if ($('#ADDR_CODE').val().trim() == '') {
                 msg += '請填入郵遞區號<br/>';
             }
