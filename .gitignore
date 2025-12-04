@@ -1,12 +1,14 @@
 # Docker data files (runtime generated)
 docker-data/
+sqlserver-data/
 
 # NuGet packages (backed up separately)
+packages/
 e-service/packages/*
 !e-service/packages/package.txt
 
 # Database files
-SQL-BAK\*
+SQL-BAK/
 sqldata/*
 *.mdf
 *.ldf
@@ -21,7 +23,30 @@ sqldata/*
 # Large binary files
 *.nupkg
 nul
-e-service/ES/obj/*
-e-service/.vs/ES/CopilotIndices/
-e-service/.vs/ES/FileContentIndex/
-e-service/ES/obj/Debug/ES.csproj.ResolveComReference.cache
+
+# ============================================
+# 編譯產物 / 除錯符號 (Build Output / Debug Symbols)
+# ============================================
+*.dll
+*.pdb
+*.exe
+
+# ============================================
+# Visual Studio 暫存檔 (VS Temp Files)
+# ============================================
+.vs/
+trunk/.vs/
+e-service/.vs/
+*.user
+*.suo
+
+# ============================================
+# 編譯目錄 (Build Directories)
+# ============================================
+trunk/obj/
+e-service/ES/obj/
+
+# ============================================
+# 日誌檔案 (Log Files)
+# ============================================
+trunk/logs/
