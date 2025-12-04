@@ -7,6 +7,7 @@ e-service/packages/*
 
 # Database files
 SQL-BAK\*
+sqldata/*
 *.mdf
 *.ldf
 *.bak
@@ -19,3 +20,8 @@ SQL-BAK\*
 
 # Large binary files
 *.nupkg
+nul
+e-service/ES/obj/*
+e-service/.vs/ES/CopilotIndices/
+e-service/.vs/ES/FileContentIndex/
+e-service/ES/obj/Debug/ES.csproj.ResolveComReference.cache
