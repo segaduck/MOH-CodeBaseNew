@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -202,7 +202,16 @@ namespace EECOnline.Areas.A2.Models
             get
             {
                 if (this.createdatetime.TONotNullString() == "") return "";
-                var tmpDT = DateTime.ParseExact(this.createdatetime.TONotNullString(), "yyyy/MM/dd HH:mm:ss", null);
+                DateTime tmpDT;
+                // Try parsing with multiple formats to handle different database date formats
+                if (!DateTime.TryParse(this.createdatetime.TONotNullString(), out tmpDT))
+                {
+                    // Fallback: try ParseExact with original format
+                    if (!DateTime.TryParseExact(this.createdatetime.TONotNullString(), "yyyy/MM/dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out tmpDT))
+                    {
+                        return this.createdatetime.TONotNullString(); // Return as-is if parsing fails
+                    }
+                }
                 tmpDT = tmpDT.AddYears(-1911);
                 return tmpDT.ToString("yyy/MM/dd HH:mm:ss");
             }
@@ -217,7 +226,16 @@ namespace EECOnline.Areas.A2.Models
             get
             {
                 if (this.provide_datetime.TONotNullString() == "") return "";
-                var tmpDT = DateTime.ParseExact(this.provide_datetime.TONotNullString(), "yyyy/MM/dd HH:mm:ss", null);
+                DateTime tmpDT;
+                // Try parsing with multiple formats to handle different database date formats
+                if (!DateTime.TryParse(this.provide_datetime.TONotNullString(), out tmpDT))
+                {
+                    // Fallback: try ParseExact with original format
+                    if (!DateTime.TryParseExact(this.provide_datetime.TONotNullString(), "yyyy/MM/dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out tmpDT))
+                    {
+                        return this.provide_datetime.TONotNullString(); // Return as-is if parsing fails
+                    }
+                }
                 tmpDT = tmpDT.AddYears(-1911);
                 return tmpDT.ToString("yyy/MM/dd HH:mm:ss");
             }

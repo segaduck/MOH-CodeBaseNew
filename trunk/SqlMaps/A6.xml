@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <sqlMap namespace="A6"
 xmlns="http://ibatis.apache.org/mapping"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -23,16 +23,16 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	        
 	     CREATE TABLE ##RESULT
 	     (
-	       grp_id VARCHAR(MAX),
-	       grpname VARCHAR(MAX),
-           grp_status_nm VARCHAR(MAX),
-	       unit_nm VARCHAR(MAX),
+	       grp_id NVARCHAR(MAX),
+	       grpname NVARCHAR(MAX),
+           grp_status_nm NVARCHAR(MAX),
+	       unit_nm NVARCHAR(MAX),
 	     )
           
-	     DECLARE @grp_id VARCHAR(MAX) 
-	     DECLARE @grpname VARCHAR(MAX)
-         DECLARE @grp_status_nm VARCHAR(MAX)
-	     DECLARE @unit_nm VARCHAR(MAX)
+	     DECLARE @grp_id NVARCHAR(MAX) 
+	     DECLARE @grpname NVARCHAR(MAX)
+         DECLARE @grp_status_nm NVARCHAR(MAX)
+	     DECLARE @unit_nm NVARCHAR(MAX)
 
 		 /* 查詢條件 */
 		 DECLARE @WHERE_grpname VARCHAR(MAX) = #grpname#
@@ -158,31 +158,31 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	        
 	     CREATE TABLE ##RESULT
 	     (
-	       userno VARCHAR(MAX),
-	       username VARCHAR(MAX),
-         unit_cd VARCHAR(MAX),
-	       unit_nm VARCHAR(MAX),
-	       /*grp_id VARCHAR(MAX),
-	       grp_nm VARCHAR(MAX),*/
-	       logintype VARCHAR(MAX),
-	       authstatus_nm VARCHAR(MAX),
+	       userno NVARCHAR(MAX),
+	       username NVARCHAR(MAX),
+         unit_cd NVARCHAR(MAX),
+	       unit_nm NVARCHAR(MAX),
+	       /*grp_id NVARCHAR(MAX),
+	       grp_nm NVARCHAR(MAX),*/
+	       logintype NVARCHAR(MAX),
+	       authstatus_nm NVARCHAR(MAX),
 	     )
           
-	     DECLARE @userno VARCHAR(MAX) 
-	     DECLARE @username VARCHAR(MAX)
-       DECLARE @unit_cd VARCHAR(MAX)
-	     DECLARE @unit_nm VARCHAR(MAX)
-	     /*DECLARE @grp_id VARCHAR(MAX)
-	     DECLARE @grp_nm VARCHAR(MAX)*/
-	     DECLARE @LoginStatus VARCHAR(MAX) = ''   
-	     DECLARE @logintype VARCHAR(MAX) = ''   
-	     DECLARE @authstatus_nm VARCHAR(MAX) = ''   
+	     DECLARE @userno NVARCHAR(MAX) 
+	     DECLARE @username NVARCHAR(MAX)
+       DECLARE @unit_cd NVARCHAR(MAX)
+	     DECLARE @unit_nm NVARCHAR(MAX)
+	     /*DECLARE @grp_id NVARCHAR(MAX)
+	     DECLARE @grp_nm NVARCHAR(MAX)*/
+	     DECLARE @LoginStatus NVARCHAR(MAX) = ''   
+	     DECLARE @logintype NVARCHAR(MAX) = ''   
+	     DECLARE @authstatus_nm NVARCHAR(MAX) = ''   
        
-	     DECLARE @ssokey VARCHAR(MAX)
-	     DECLARE @sso_yn VARCHAR(MAX)
-	     DECLARE @dockey VARCHAR(MAX)
-	     DECLARE @doc_yn VARCHAR(MAX)
-	     DECLARE @login_yn VARCHAR(MAX)
+	     DECLARE @ssokey NVARCHAR(MAX)
+	     DECLARE @sso_yn NVARCHAR(MAX)
+	     DECLARE @dockey NVARCHAR(MAX)
+	     DECLARE @doc_yn NVARCHAR(MAX)
+	     DECLARE @login_yn NVARCHAR(MAX)
 
 		   /* 查詢條件 */
 		   DECLARE @WHERE_USERNO VARCHAR(MAX) = #userno#
@@ -305,33 +305,33 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	        
 	     CREATE TABLE ##RESULT
 	     (
-	       userno VARCHAR(MAX),
-	       username VARCHAR(MAX),
-         unit_cd VARCHAR(MAX),
-	       unit_nm VARCHAR(MAX),
-	       /*grp_id VARCHAR(MAX),*/
-	       logintype VARCHAR(MAX),
-	       authstatus_nm VARCHAR(MAX),
-         insert_unit_nm VARCHAR(MAX),
-         grp_nm VARCHAR(MAX),
+	       userno NVARCHAR(MAX),
+	       username NVARCHAR(MAX),
+         unit_cd NVARCHAR(MAX),
+	       unit_nm NVARCHAR(MAX),
+	       /*grp_id NVARCHAR(MAX),*/
+	       logintype NVARCHAR(MAX),
+	       authstatus_nm NVARCHAR(MAX),
+         insert_unit_nm NVARCHAR(MAX),
+         grp_nm NVARCHAR(MAX),
 	     )
           
-	     DECLARE @userno VARCHAR(MAX) 
-	     DECLARE @username VARCHAR(MAX)
-       DECLARE @unit_cd VARCHAR(MAX)
-	     DECLARE @unit_nm VARCHAR(MAX)
-	     /*DECLARE @grp_id VARCHAR(MAX)*/
-	     DECLARE @LoginStatus VARCHAR(MAX) = ''   
-	     DECLARE @logintype VARCHAR(MAX) = ''   
-	     DECLARE @authstatus_nm VARCHAR(MAX) = ''   
-       DECLARE @insert_unit_nm VARCHAR(MAX) 
-       DECLARE @grp_nm VARCHAR(MAX)
+	     DECLARE @userno NVARCHAR(MAX) 
+	     DECLARE @username NVARCHAR(MAX)
+       DECLARE @unit_cd NVARCHAR(MAX)
+	     DECLARE @unit_nm NVARCHAR(MAX)
+	     /*DECLARE @grp_id NVARCHAR(MAX)*/
+	     DECLARE @LoginStatus NVARCHAR(MAX) = ''   
+	     DECLARE @logintype NVARCHAR(MAX) = ''   
+	     DECLARE @authstatus_nm NVARCHAR(MAX) = ''   
+       DECLARE @insert_unit_nm NVARCHAR(MAX) 
+       DECLARE @grp_nm NVARCHAR(MAX)
        
-	     DECLARE @ssokey VARCHAR(MAX)
-	     DECLARE @sso_yn VARCHAR(MAX)
-	     DECLARE @dockey VARCHAR(MAX)
-	     DECLARE @doc_yn VARCHAR(MAX)
-	     DECLARE @login_yn VARCHAR(MAX)
+	     DECLARE @ssokey NVARCHAR(MAX)
+	     DECLARE @sso_yn NVARCHAR(MAX)
+	     DECLARE @dockey NVARCHAR(MAX)
+	     DECLARE @doc_yn NVARCHAR(MAX)
+	     DECLARE @login_yn NVARCHAR(MAX)
 
 		   /* 查詢條件 */
 		   DECLARE @WHERE_USERNO VARCHAR(MAX) = #userno#
@@ -488,28 +488,28 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	      
 	      CREATE TABLE ##RESULT
 	      (
-	        userno VARCHAR(MAX),
-	        username VARCHAR(MAX),
-	        unit_cd VARCHAR(MAX),
-          idno  VARCHAR(MAX),
-	        email VARCHAR(MAX),
-	        modtime VARCHAR(MAX),
-	        authdates VARCHAR(MAX),
-	        authdatee VARCHAR(MAX),
-	        authstatus VARCHAR(MAX),
-	        /*loginstatus VARCHAR(MAX),*/
+	        userno NVARCHAR(MAX),
+	        username NVARCHAR(MAX),
+	        unit_cd NVARCHAR(MAX),
+          idno  NVARCHAR(MAX),
+	        email NVARCHAR(MAX),
+	        modtime NVARCHAR(MAX),
+	        authdates NVARCHAR(MAX),
+	        authdatee NVARCHAR(MAX),
+	        authstatus NVARCHAR(MAX),
+	        /*loginstatus NVARCHAR(MAX),*/
 	      )
         
-	      DECLARE @userno VARCHAR(MAX)
-	      DECLARE @username VARCHAR(MAX)
-	      DECLARE @unit_cd VARCHAR(MAX)
-        DECLARE @idno VARCHAR(MAX)
-	      DECLARE @email VARCHAR(MAX)
-	      DECLARE @modtime VARCHAR(MAX)
-	      DECLARE @authdates VARCHAR(MAX)
-	      DECLARE @authdatee VARCHAR(MAX)
-	      DECLARE @authstatus VARCHAR(MAX)
-	      /*DECLARE @loginstatus VARCHAR(MAX) = ''*/
+	      DECLARE @userno NVARCHAR(MAX)
+	      DECLARE @username NVARCHAR(MAX)
+	      DECLARE @unit_cd NVARCHAR(MAX)
+        DECLARE @idno NVARCHAR(MAX)
+	      DECLARE @email NVARCHAR(MAX)
+	      DECLARE @modtime NVARCHAR(MAX)
+	      DECLARE @authdates NVARCHAR(MAX)
+	      DECLARE @authdatee NVARCHAR(MAX)
+	      DECLARE @authstatus NVARCHAR(MAX)
+	      /*DECLARE @loginstatus NVARCHAR(MAX) = ''*/
         
 	      /*DECLARE @ssokey VARCHAR(MAX)
 	      DECLARE @sso_yn VARCHAR(MAX)
