@@ -1,4 +1,4 @@
-﻿using EECOnline.Controllers;
+using EECOnline.Controllers;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -59,7 +59,9 @@ namespace EECOnline
             // Code that runs when an unhandled error occurs
             Exception lastError = Server.GetLastError();
             Server.ClearError();
-            LOG.Info("ERROR：" + lastError.Message);
+            
+            // Log the full exception details for debugging
+            LOG.Error("Application_Error: " + lastError.Message, lastError);
 
             //// 紀錄異常
             //LoginDAO dao = new LoginDAO();
@@ -75,10 +77,20 @@ namespace EECOnline
             //}
 
             // handled the exception and route to error page   
-           // ExceptionHandler handler = new ExceptionHandler(new ErrorPageController());
+            // ExceptionHandler handler = new ExceptionHandler(new ErrorPageController());
             //handler.RouteErrorPage(this.Context, lastError);
 
-            Response.StatusCode = 404;
+            // Return appropriate HTTP status code based on exception type
+            var httpException = lastError as HttpException;
+            if (httpException != null)
+            {
+                Response.StatusCode = httpException.GetHttpCode();
+            }
+            else
+            {
+                // Default to 500 Internal Server Error for non-HTTP exceptions
+                Response.StatusCode = 500;
+            }
         }
     }
 }

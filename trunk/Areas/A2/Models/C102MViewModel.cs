@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -25,6 +25,56 @@ namespace EECOnline.Areas.A2.Models
 
     public class C102MFormModel //: PagingResultsViewModel
     {
+        /// <summary>訂單編號</summary>
+        [Display(Name = "訂單編號")]
+        [Control(Mode = Control.TextBox, maxlength = "50", size = "92", placeholder = "請輸入訂單編號")]
+        public string apply_no_sub { get; set; }
+
+        /// <summary>申請人姓名</summary>
+        [Display(Name = "申請人姓名")]
+        [Control(Mode = Control.TextBox, maxlength = "20", size = "92", placeholder = "請輸入申請人姓名")]
+        public string user_name { get; set; }
+
+        /// <summary>申請區間起</summary>
+        public string his_range1 { get; set; }
+
+        [Display(Name = "申請區間起")]
+        [Control(Mode = Control.DatePicker, group = 1, col = "2")]
+        public string his_range1_AD
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(his_range1))
+                    return null;
+                else
+                    return HelperUtil.DateTimeToString(HelperUtil.TransToDateTime(his_range1, ""));  // YYYYMMDD 回傳給系統
+            }
+            set
+            {
+                his_range1 = HelperUtil.DateTimeToString(HelperUtil.TransToDateTime(value), "");  // YYYMMDD 民國年 使用者看到
+            }
+        }
+
+        /// <summary>申請區間迄</summary>
+        public string his_range2 { get; set; }
+
+        [Display(Name = "申請區間迄")]
+        [Control(Mode = Control.DatePicker, group = 1, col = "2")]
+        public string his_range2_AD
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(his_range2))
+                    return null;
+                else
+                    return HelperUtil.DateTimeToString(HelperUtil.TransToDateTime(his_range2, ""));  // YYYYMMDD 回傳給系統
+            }
+            set
+            {
+                his_range2 = HelperUtil.DateTimeToString(HelperUtil.TransToDateTime(value), "");  // YYYMMDD 民國年 使用者看到
+            }
+        }
+
         /// <summary>醫院登入時，只能看得到自己的資料</summary>
         public string HospCode { get; set; }
 

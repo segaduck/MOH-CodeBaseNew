@@ -4,13 +4,14 @@
 @{
     Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
     SessionModel sm = SessionModel.Get();
+    var funcName = sm.LastActionFunc != null ? sm.LastActionFunc.prgname : "醫院請款查詢統計";
 }
 
 <div class="col-sm-12 content">
-    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@sm.LastActionFunc.prgname</h1>
+    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@funcName</h1>
     <div class="title-bar title-green" role="tablist">
-        <a data-bs-toggle="tab" href="@Url.Action("Index")?Idx=1" class="active"><h1>衛福部帳務查詢</h1></a>
-        <a data-bs-toggle="tab" href="@Url.Action("Index")?Idx=2"><h1>拆帳作業管理</h1></a>
+        <a data-bs-toggle="tab" href="@Url.Action("Index")?Idx=1" class="active"><h1>依申請案件明細</h1></a>
+        <a data-bs-toggle="tab" href="@Url.Action("Index")?Idx=2"><h1>依醫院彙總統計</h1></a>
     </div>
     <div class="clearfix"></div>
     <div class="tab-content">
@@ -22,12 +23,12 @@
                     <div class="btnBar">
                         <button type="button" style="margin-right: 0.5rem;" class="btn btn-apply" onclick="OnSearch()">送出查詢</button>
                         <button type="button" style="margin-right: 0.5rem;" class="btn btn-cancel" onclick="OnClear()">清除重填</button>
-                        <button type="button" style="margin-right: 0.5rem;" class="btn btn-primary" onclick="OnExport()">匯出資料</button>
+                        <button type="button" style="margin-right: 0.5rem;" class="btn btn-primary" onclick="OnExport()">匯出報表</button>
                     </div>
                 }
             </div>
             <div class="clearfix"></div>
-            <h2 class="second-title">申請帳務明細列表</h2>
+            <h2 class="second-title">申請醫院請款明細</h2>
             <div class="table-pager">@Html.Partial("_PagingLink", Model)</div>
             <div class="table-responsive">
                 @if (Model.Form1Grid != null)
@@ -35,13 +36,13 @@
                     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
                         <thead>
                             <tr>
-                                <th width="30%">醫院別</th>
+                                <th width="30%">醫院名稱</th>
                                 <th width="10%">申請人</th>
                                 <th width="26%">申請類型</th>
-                                <th width="10%">系統受理時間</th>
-                                <th width="08%">是否完成繳費</th>
-                                <th width="08%">繳費金額</th>
-                                <th width="08%">是否需補上傳</th>
+                                <th width="10%">系統通報日期</th>
+                                <th width="08%">匯出需上傳</th>
+                                <th width="08%">繳費狀態</th>
+                                <th width="08%">匯出病歷資料</th>
                             </tr>
                         </thead>
                         <tbody id="rows">

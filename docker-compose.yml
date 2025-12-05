@@ -11,6 +11,30 @@ services:
       - MSSQL_DATA_DIR=/var/opt/mssql/data
       - MSSQL_LOG_DIR=/var/opt/mssql/log
       - MSSQL_BACKUP_DIR=/var/opt/mssql/backup
+      # ============================================================================
+      # IMPORTANT: Language and Collation Settings for DateTime Format
+      # ============================================================================
+      # The application stores datetime values in NVARCHAR columns with format 'yyyy/MM/dd HH:mm:ss'.
+      # 
+      # Setting MSSQL_LCID=1028 (Traditional Chinese - Taiwan) configures the server locale.
+      # Setting MSSQL_COLLATION=Chinese_Taiwan_Stroke_CI_AS ensures proper Chinese text sorting.
+      #
+      # CRITICAL: Even with these settings, SQL Server's implicit DATETIME-to-string conversion
+      # may NOT produce the exact 'yyyy/MM/dd HH:mm:ss' format required by the application.
+      # 
+      # *** ALWAYS use explicit FORMAT(datetime, 'yyyy/MM/dd HH:mm:ss') in SQL scripts ***
+      # 
+      # Example of CORRECT insert:
+      #   INSERT INTO EEC_Apply (createdatetime) VALUES (FORMAT(GETDATE(), 'yyyy/MM/dd HH:mm:ss'))
+      #
+      # Example of INCORRECT insert (will cause DateTime.ParseExact errors in C# code):
+      #   INSERT INTO EEC_Apply (createdatetime) VALUES (GETDATE())  -- BAD: produces 'Dec 5 2025 2:45PM'
+      #
+      # After container startup, run this to set Traditional Chinese as default language:
+      #   EXEC sp_configure 'default language', 28; RECONFIGURE;
+      # ============================================================================
+      - MSSQL_LCID=1028
+      - MSSQL_COLLATION=Chinese_Taiwan_Stroke_CI_AS
     ports:
       - "1433:1433"
     volumes:

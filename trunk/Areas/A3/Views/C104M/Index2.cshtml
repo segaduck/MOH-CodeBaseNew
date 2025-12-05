@@ -5,13 +5,14 @@
 @{
     Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
     SessionModel sm = SessionModel.Get();
+    var funcName = sm.LastActionFunc != null ? sm.LastActionFunc.prgname : "醫院請款查詢統計";
 }
 
 <div class="col-sm-12 content">
-    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@sm.LastActionFunc.prgname</h1>
+    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@funcName</h1>
     <div class="title-bar title-green" role="tablist">
-        <a data-bs-toggle="tab" href="@Url.Action("Index")?Idx=1"><h1>衛福部帳務查詢</h1></a>
-        <a data-bs-toggle="tab" href="@Url.Action("Index")?Idx=2" class="active"><h1>拆帳作業管理</h1></a>
+        <a data-bs-toggle="tab" href="@Url.Action("Index")?Idx=1"><h1>依申請案件明細</h1></a>
+        <a data-bs-toggle="tab" href="@Url.Action("Index")?Idx=2" class="active"><h1>依醫院彙總統計</h1></a>
     </div>
     <div class="clearfix"></div>
     <div class="tab-content">
@@ -25,12 +26,12 @@
                     <div class="btnBar">
                         <button type="button" style="margin-right: 0.5rem;" class="btn btn-apply" onclick="OnSearch()">送出查詢</button>
                         <button type="button" style="margin-right: 0.5rem;" class="btn btn-cancel" onclick="OnClear()">清除重填</button>
-                        <button type="button" style="margin-right: 0.5rem;" class="btn btn-primary" onclick="OnExport()">匯出資料</button>
+                        <button type="button" style="margin-right: 0.5rem;" class="btn btn-primary" onclick="OnExport()">匯出報表</button>
                     </div>
                 }
             </div>
             <div class="clearfix"></div>
-            <h2 class="second-title">帳務細項列表</h2>
+            <h2 class="second-title">醫院彙總統計</h2>
             <div class="table-pager">@Html.Partial("_PagingLink", Model)</div>
             <div class="table-responsive">
                 @if (Model.Form2Grid != null)
@@ -40,17 +41,17 @@
                     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-typeA table">
                         <thead>
                             <tr>
-                                <th width="30%">醫院別</th>
+                                <th width="30%">醫院名稱</th>
                                 @foreach (var row in commonTypes)
                                 {
                                     if (row["type_price"].TONotNullString() == "0") { continue; }
                                     <th>@row["type_name"].ToString()</th>
                                 }
-                                @*<th width="13%">刷卡手續費</th>*@
-                                @*<th width="13%">平台手續費</th>*@
-                                <th width="15%">病歷產製費</th>
+                                @*<th width="13%">其他病歷</th>*@
+                                @*<th width="13%">特約病歷</th>*@
+                                <th width="15%">申請金額小計</th>
                                 <th width="16%">小計</th>
-                                <th width="13%">申請案件總量</th>
+                                <th width="13%">申請案件數量</th>
                             </tr>
                         </thead>
                         <tbody id="rows">

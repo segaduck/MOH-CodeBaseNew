@@ -25,3 +25,22 @@
 - Wrap DAO calls in try-catch with `BeginTransaction()`/`CommitTransaction()`/`RollBackTransaction()`
 - Log errors via `LogUtils.Error(message, exception)`
 - Return `Json(new { success = false, message = "..." })` for AJAX errors
+
+## File Encoding Requirements (CRITICAL)
+- **All `.cshtml` and `.cs` files MUST be saved as UTF-8 with BOM** (Byte Order Mark: `EF BB BF`)
+- Without BOM, Chinese characters will display as garbled text (e.g., `??亥岷` instead of `送出查詢`)
+- **Verify BOM exists**: `Get-Content -Path "file.cshtml" -Encoding Byte -TotalCount 3` should show `EF BB BF`
+- **Add BOM via PowerShell**:
+  ```powershell
+  $content = Get-Content -Path "file.cshtml" -Raw -Encoding UTF8
+  $Utf8Bom = New-Object System.Text.UTF8Encoding $True
+  [System.IO.File]::WriteAllText("file.cshtml", $content, $Utf8Bom)
+  ```
+- See `documents/bug-fix/Razor視圖檔案中文編碼問題修復說明.md` for detailed explanation
+
+## SQL DateTime Format Requirements
+- **DateTime columns stored as NVARCHAR** must use format `yyyy/MM/dd HH:mm:ss`
+- **Always use explicit FORMAT()** in SQL scripts: `FORMAT(GETDATE(), 'yyyy/MM/dd HH:mm:ss')`
+- **Never insert DATETIME directly** into NVARCHAR columns (causes implicit conversion with wrong format)
+- Example: `INSERT INTO EEC_Apply (createdatetime) VALUES (FORMAT(@now, 'yyyy/MM/dd HH:mm:ss'))` ✓
+- Bad: `INSERT INTO EEC_Apply (createdatetime) VALUES (@now)` ✗ (produces `Nov 27 2025 10:04AM`)

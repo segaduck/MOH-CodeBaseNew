@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <sqlMap namespace="A2"
 xmlns="http://ibatis.apache.org/mapping"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -94,6 +94,10 @@ WHERE 1=1
 			]]>
 			<dynamic>
 				<isParameterPresent>
+					<isNotEmpty prepend="" property="apply_no_sub"><![CDATA[ AND a.apply_no_sub LIKE '%' + #apply_no_sub# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="user_name"><![CDATA[ AND c.user_name LIKE '%' + #user_name# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="his_range1"><![CDATA[ AND b.his_range1 >= #his_range1# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="his_range2"><![CDATA[ AND b.his_range2 <= #his_range2# ]]></isNotEmpty>
 					<isNotEmpty prepend="" property="HospCode"><![CDATA[ AND a.hospital_code = #HospCode# ]]></isNotEmpty>
 				</isParameterPresent>
 			</dynamic>
@@ -117,6 +121,10 @@ WHERE 1=1
 			]]>
 			<dynamic>
 				<isParameterPresent>
+					<isNotEmpty prepend="" property="apply_no_sub"><![CDATA[ AND a.apply_no_sub LIKE '%' + #apply_no_sub# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="user_name"><![CDATA[ AND a.user_name LIKE '%' + #user_name# + '%' ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="his_range1"><![CDATA[ AND a.his_range1 >= #his_range1# ]]></isNotEmpty>
+					<isNotEmpty prepend="" property="his_range2"><![CDATA[ AND a.his_range2 <= #his_range2# ]]></isNotEmpty>
 					<isNotEmpty prepend="" property="HospCode"><![CDATA[ AND a.hospital_code = #HospCode# ]]></isNotEmpty>
 				</isParameterPresent>
 			</dynamic>

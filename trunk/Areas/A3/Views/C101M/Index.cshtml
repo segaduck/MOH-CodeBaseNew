@@ -4,10 +4,11 @@
 @{
     Layout = "~/Views/Shared/_Back_MainLayout.cshtml";
     SessionModel sm = SessionModel.Get();
+    var funcName = sm.LastActionFunc != null ? sm.LastActionFunc.prgname : "申請案件費用查詢";
 }
 
 <div class="col-sm-12 content">
-    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@sm.LastActionFunc.prgname</h1>
+    <h1 class="main-title" style="margin-top: unset;"><i class="fa fa-edit"></i>@funcName</h1>
     <div class="form-blue">
         @using (Html.BeginForm("Index", "C101M", FormMethod.Post, htmlAttributes: new { id = "main_form", @class = "form-horizontal" }))
         {
@@ -15,9 +16,9 @@
             <div class="btnBar">
                 <button type="button" style="margin-right: 0.5rem;" class="btn btn-apply" onclick="OnSearch()">送出查詢</button>
                 <button type="button" style="margin-right: 0.5rem;" class="btn btn-cancel" onclick="OnClear()">清除重填</button>
-                <button type="button" style="margin-right: 0.5rem;" class="btn btn-primary" onclick="OnExport()">匯出資料</button>
+                <button type="button" style="margin-right: 0.5rem;" class="btn btn-primary" onclick="OnExport()">匯出報表</button>
                 <button type="button" style="margin-right: 0.5rem;" class="btn btn-blue" onclick="OnExportDat()">匯出請款檔</button>
-                <button type="button" style="margin-right: 0.5rem;" class="btn btn-blue" onclick="OnImportDat()">上傳請款檔</button>
+                <button type="button" style="margin-right: 0.5rem;" class="btn btn-blue" onclick="OnImportDat()">匯入請款檔</button>
             </div>
         }
     </div>
@@ -33,9 +34,9 @@
                         <th width="10%">訂單編號</th>
                         <th>申請人</th>
                         <th>申請醫院</th>
-                        <th>申請日</th>
-                        <th>病歷期間</th>
-                        <th>病歷產製費</th>
+                        <th>申請日期</th>
+                        <th>申請期間</th>
+                        <th>申請金額小計</th>
                         <th>繳費狀態</th>
                     </tr>
                 </thead>
@@ -84,7 +85,7 @@
 
     function OnImportDat() {
         var url = '@Url.Action("ImportDat", "C101M")';
-        var title = '上傳請款檔';
+        var title = '匯入請款檔';
         popupWindow({ 'width': -1, 'height': 340 }, url, title, null, function (retData, doc) {
             if (retData != null) { if (retData.redirectUrl != "") { RedirectAfterPopup(retData.redirectUrl) } }
         });

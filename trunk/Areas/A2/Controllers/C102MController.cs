@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,24 +19,34 @@ namespace EECOnline.Areas.A2.Controllers
 {
     public class C102MController : BaseController
     {
+        private static new readonly ILog LOG = LogManager.GetLogger(typeof(C102MController));
+
         public ActionResult Index(C102MFormModel Form)
         {
-            SessionModel sm = SessionModel.Get();
-            A2DAO dao = new A2DAO();
-            ActionResult rtn = View(Form);
-            if (ModelState.IsValid)
+            try
             {
-                ModelState.Clear();
-                // 醫院登入時，只能看得到自己的資料
-                Form.HospCode = null;
-                if (sm.UserInfo.LoginTab == "2" && sm.UserInfo.HospitalCode.TONotNullString() != "")
+                SessionModel sm = SessionModel.Get();
+                A2DAO dao = new A2DAO();
+                ActionResult rtn = View(Form);
+                if (ModelState.IsValid)
                 {
-                    Form.HospCode = sm.UserInfo.HospitalCode;
+                    ModelState.Clear();
+                    // 醫院登入時，只能看得到自己的資料
+                    Form.HospCode = null;
+                    if (sm.UserInfo.LoginTab == "2" && sm.UserInfo.HospitalCode.TONotNullString() != "")
+                    {
+                        Form.HospCode = sm.UserInfo.HospitalCode;
+                    }
+                    Form.Grid = dao.QueryC102M_Grid(Form);
+                    Form.LogGrid = dao.QueryC102M_LogGrid(Form);
                 }
-                Form.Grid = dao.QueryC102M_Grid(Form);
-                Form.LogGrid = dao.QueryC102M_LogGrid(Form);
+                return rtn;
             }
-            return rtn;
+            catch (Exception ex)
+            {
+                LOG.Error("A2/C102M Index Error: " + ex.Message, ex);
+                throw;
+            }
         }
 
         public ActionResult Upload(string apply_no_sub, string his_type)

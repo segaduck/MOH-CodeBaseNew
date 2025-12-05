@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,7 +21,7 @@ namespace EECOnline.Areas.A4.Controllers
     public class C102MController : BaseController
     {
         [HttpGet]
-        public ActionResult Index(string Idx)
+        public ActionResult Index(string Idx = "1")
         {
             return (Idx == "2") ?
                 Index2(new C102MForm2Model()) :
