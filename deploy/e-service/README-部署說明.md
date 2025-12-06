@@ -58,18 +58,19 @@
 ### 本部署套件結構
 
 ```
-e-service/deploy-20251204/
+deploy/e-service/
 ├── README-部署說明.md                  ← 本說明文件
 ├── backup_app_offline.htm.template     ← 維護頁面模板
-├── build-release.ps1                   ← 編譯腳本
-├── deploy-user-registration-fix.ps1    ← 部署腳本
-├── rollback-deployment.ps1             ← 還原腳本
-├── test-app-offline.ps1                ← 測試腳本
-├── update-database-servicetel.sql      ← 資料庫更新腳本
-├── insert_zipcode6_full.sql            ← 6碼郵遞區號資料匯入腳本 (79,861筆)
-├── 3+3郵遞區號簿_2504A.xls             ← 郵遞區號來源資料 (A區)
-├── 3+3郵遞區號簿_2504B.xls             ← 郵遞區號來源資料 (B區)
-└── source/
+├── docs/                               ← 文件資料
+│   ├── 6碼郵遞區號資料庫實施計畫.md
+│   ├── CHANGELOG-資料庫更新.md
+│   └── 郵遞區號6碼驗證修復計畫.md
+├── sql/                                ← SQL 腳本與來源資料
+│   ├── insert_zipcode6_full.sql        ← 6碼郵遞區號匯入 (79,861筆)
+│   ├── update-database-servicetel.sql  ← 資料庫更新腳本
+│   ├── 3+3郵遞區號簿_2504A.xls         ← 郵遞區號來源資料 (A區)
+│   └── 3+3郵遞區號簿_2504B.xls         ← 郵遞區號來源資料 (B區)
+└── source/                             ← 程式碼檔案
     ├── bin/
     │   ├── ES.dll                      ← 主要應用程式組件 (已編譯)
     │   └── ES.pdb                      ← 除錯符號檔 (選用)
@@ -77,15 +78,15 @@ e-service/deploy-20251204/
     │   └── SHAREDAO.cs                 ← 6碼郵遞區號查詢修復
     └── Views/
         ├── Login/
-        │   ├── New.cshtml              ← 新使用者註冊頁面 (已修改)
-        │   └── Edit1.cshtml            ← 會員資料編輯頁面 (已修改)
+        │   ├── New.cshtml              ← 新使用者註冊頁面
+        │   └── Edit1.cshtml            ← 會員資料編輯頁面
         ├── ServiceLst/
-        │   └── Notice.cshtml           ← 服務項目說明頁面 (已修改)
+        │   └── Notice.cshtml           ← 服務項目說明頁面
         ├── Shared/
-        │   └── _Footer.cshtml          ← 頁尾 (已修改)
+        │   └── _Footer.cshtml          ← 頁尾
         └── ZIP_CO/
-            ├── Index.cshtml            ← 郵遞區號查詢頁面 (已修改)
-            └── _GridRows.cshtml        ← 郵遞區號查詢結果列 (已修改)
+            ├── Index.cshtml            ← 郵遞區號查詢頁面
+            └── _GridRows.cshtml        ← 郵遞區號查詢結果列
 ```
 
 ### 需要部署的檔案
@@ -100,8 +101,8 @@ e-service/deploy-20251204/
 | `source/Views/Shared/_Footer.cshtml`    | 頁尾共用元件                  |
 | `source/Views/ZIP_CO/Index.cshtml`      | 郵遞區號查詢頁面 **(v1.4)**   |
 | `source/Views/ZIP_CO/_GridRows.cshtml`  | 郵遞區號查詢結果列 **(v1.4)** |
-| `update-database-servicetel.sql`        | 資料庫更新腳本                |
-| `insert_zipcode6_full.sql`              | 6碼郵遞區號匯入 **(v1.4)**    |
+| `sql/update-database-servicetel.sql`    | 資料庫更新腳本                |
+| `sql/insert_zipcode6_full.sql`          | 6碼郵遞區號匯入 **(v1.4)**    |
 | `backup_app_offline.htm.template`       | 維護頁面模板                  |
 
 > **注意**: `source/bin/ES.dll` 已包含最新編譯版本，可直接部署。

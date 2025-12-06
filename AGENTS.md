@@ -56,4 +56,21 @@
   - Password: `Test@1234`
 - **Database**: `EEC_PD_DB` on Docker container `moh-sqlserver`
   - SA Password: `YourStrong!Passw0rd`
-- **IIS Express**: Port 8080, path `F:\AITest\MOH-CodeBaseNew\trunk` 
+- **IIS Express**: Port 8080, path `F:\AITest\MOH-CodeBaseNew\trunk`
+
+## Deployment Files Location (CRITICAL)
+- **ALL deployment files/resources/documents MUST be saved under `deploy/`** at project root
+- **NEVER create deployment folders inside `e-service/` or `trunk/`** (e.g., `e-service/deploy-xxx/` is WRONG)
+- **Folder structure**:
+  ```
+  deploy/
+  ├── e-service/              ← e-service (民眾端) deployment
+  │   ├── README-部署說明.md  ← Deployment instructions
+  │   ├── docs/               ← Documentation
+  │   ├── sql/                ← SQL scripts and source data
+  │   └── source/             ← Code files (bin/, Views/, etc.)
+  ├── trunk/                  ← trunk (管理後台) deployment (if needed)
+  ├── build-release.ps1       ← Build scripts
+  └── deploy-*.ps1            ← Deployment scripts
+  ```
+- **Scripts location**: Common scripts (`build-release.ps1`, `deploy-*.ps1`) stay at `deploy/` root level 

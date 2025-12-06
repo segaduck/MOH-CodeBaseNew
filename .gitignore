@@ -33,6 +33,10 @@ e-service/ES/bin/
 *.pdb
 *.exe
 
+# Allow deployment binaries in deploy/ folder
+!deploy/**/bin/*.dll
+!deploy/**/bin/*.pdb
+
 # ============================================
 # Visual Studio 暫存檔 (VS Temp Files)
 # ============================================
