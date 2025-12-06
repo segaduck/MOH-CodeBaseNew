@@ -1,4 +1,4 @@
-﻿// 後台 //
+// 後台 //
 /*全域的設定值*/
 var globalSetting = {
     DEBUG: 1,
@@ -683,6 +683,13 @@ function ajaxUploadFile(url, fileElement, jsonParms, successCallback, errorCallb
 
         if (!fieldName || $.trim(fieldName).length == 0) { fieldName = "file"; }
         formdata.append(fieldName, fileElm[0].files[0]);
+        
+        // Add CSRF token for security
+        var token = $('input[name="__RequestVerificationToken"]').val();
+        if (token) {
+            formdata.append("__RequestVerificationToken", token);
+        }
+        
         if (jsonParms) {
             Object.keys(jsonParms).map(function (key) {
                 console.log(key + ":" + jsonParms[key]);

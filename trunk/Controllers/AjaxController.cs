@@ -1,8 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Turbo.Commons;
+using Turbo.DataLayer;
+using EECOnline.Models;
+using EECOnline.DataLayers;
+using EECOnline.Models.Entities;
+using EECOnline.Services;
+using EECOnline.Commons;
+using EECOnline.Utils;
 using log4net;
 using EECOnline.DataLayers;
 using EECOnline.Commons;
@@ -107,6 +118,7 @@ namespace EECOnline.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]  // 新增 CSRF 保護
         public ActionResult UploadFile(DynamicEFileGrid Upload)
         {
             SessionModel sm = SessionModel.Get();
@@ -115,57 +127,47 @@ namespace EECOnline.Controllers
             {
                 // 讀取指定的上傳檔案ID
                 var httpPostedFile = Request.Files[0];
-                // 副檔名
-                var Extension = httpPostedFile.FileName.ToSplit('.').LastOrDefault();
-                // 允許附檔名
-                bool accepted = false;
+                
+                // 使用集中式安全驗證工具
                 IList<AcceptFileType> acceptTypes = Upload.GetAcceptFileTypes();
-                if (acceptTypes != null)
-                {
-                    string ext = Extension;
-                    foreach (AcceptFileType type in acceptTypes)
-                    {
-                        if (type.Equals(ext)) accepted = true;
-                    }
-                }
-                if (!accepted)
-                {
-                    Upload.ErrorMsg = "副檔名不允許，請檢查檔案後再重新上傳";
-                }
-                if (httpPostedFile.ContentLength > 10485760)
-                {
-                    Upload.ErrorMsg = "檔案大於10M，請檢查檔案後再重新上傳";
-                }
-                if (Upload.limitRow != null)
-                {
-                    if (Upload.fileGrid.ToCount() >= Upload.limitRow)
-                    {
-                        Upload.ErrorMsg = "僅能上傳" + Upload.limitRow + "筆檔案，若超過" + Upload.limitRow + "筆，請先刪除至少一筆在進行上傳 !";
-                    }
-                }
+                var allowedExtensions = acceptTypes?.Select(t => "." + t.ToString().ToLower()).ToList() ?? new List<string>();
+                
+                var validationResult = FileSecurityHelper.ValidateUploadedFile(
+                    httpPostedFile,
+                    allowedExtensions,
+                    10485760  // 10MB
+                );
 
-                if (Upload.ErrorMsg.TONotNullString() == "")
+                if (!validationResult.IsValid)
+                {
+                    Upload.ErrorMsg = validationResult.ErrorMessage;
+                }
+                else if (Upload.limitRow != null && Upload.fileGrid.ToCount() >= Upload.limitRow)
+                {
+                    Upload.ErrorMsg = "僅能上傳" + Upload.limitRow + "筆檔案，若超過" + Upload.limitRow + "筆，請先刪除至少一筆在進行上傳 !";
+                }
+                else
                 {
                     // 真實有檔案，進行上傳
                     if (httpPostedFile != null && httpPostedFile.ContentLength != 0)
                     {
                         string Path = "~" + ConfigModel.UploadTempPath + "/" + Upload.peky1;
                         string PathDir = Server.MapPath(Path);
-                        //string Path = ConfigModel.UploadTempPath + "/" + Upload.peky1;
-                        //string PathDir = @"C:/euservice/"+ Upload.peky1+ Path;
-                        string _filename = httpPostedFile.FileName.ToSplit('\\').Last();
-                        string srcfilename = DateTime.Now.ToTwNowTime() + httpPostedFile.FileName.ToSplit('\\').Last().Replace("." + Extension, "").Replace("+", " ");
-                        string extion = Extension;
+                        
+                        // 使用安全的檔名
+                        string safeFileName = validationResult.SafeFileName;
+                        string extion = validationResult.DetectedExtension;
                         string filename = Upload.pfilename;
+                        
                         if (!Directory.Exists(PathDir)) Directory.CreateDirectory(PathDir);
 
-                        string FullPathDir = PathDir + "/" + srcfilename + "." + extion;
+                        string FullPathDir = PathDir + "/" + safeFileName;
                         httpPostedFile.SaveAs(FullPathDir);
 
                         TblEFILE fileItem = new TblEFILE();
-                        fileItem.srcfilename = srcfilename;
-                        fileItem.filename = filename.TONotNullString() == "" ? srcfilename : filename;
-                        fileItem.extion = extion;
+                        fileItem.srcfilename = safeFileName.Replace(extion, "");
+                        fileItem.filename = filename.TONotNullString() == "" ? safeFileName.Replace(extion, "") : filename;
+                        fileItem.extion = extion.Replace(".", "");
                         fileItem.filesize = httpPostedFile.ContentLength;
                         fileItem.filepath = Path;
                         fileItem.peky1 = Upload.peky1;

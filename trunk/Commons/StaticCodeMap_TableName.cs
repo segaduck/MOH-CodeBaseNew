@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -38,6 +38,7 @@ namespace EECOnline.Commons
             public static DBRowTableName UNIT = DBRowTableName.Instance("UNIT");
             public static DBRowTableName VISIT_RECORD = DBRowTableName.Instance("VISIT_RECORD");
             public static DBRowTableName ZIPCODE = DBRowTableName.Instance("ZIPCODE");
+            public static DBRowTableName ZIPCODE6 = DBRowTableName.Instance("ZIPCODE6");
 
             public static DBRowTableName EFAQ = DBRowTableName.Instance("EFAQ");
             public static DBRowTableName ELINKS = DBRowTableName.Instance("ELINKS");

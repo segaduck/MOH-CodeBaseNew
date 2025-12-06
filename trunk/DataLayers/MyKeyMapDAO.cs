@@ -1,4 +1,4 @@
-﻿using EECOnline.Models.Entities;
+using EECOnline.Models.Entities;
 using EECOnline.Services;
 using log4net;
 using System;
@@ -149,18 +149,43 @@ namespace EECOnline.DataLayers
 
         /// <summary>
         /// 傳回郵遞區號中文名稱
+        /// 支援 5 碼 (查 ZIPCODE 表) 及 6 碼 (查 ZIPCODE6 表)
         /// </summary>
-        /// <param name="ZIP_CO"></param>
-        /// <returns></returns>
+        /// <param name="zip_co">郵遞區號 (5碼或6碼)</param>
+        /// <returns>縣市鄉鎮路名</returns>
         public string GetZIP_COName(string zip_co)
         {
-            TblZIPCODE where = new TblZIPCODE();
-            where.ZIP_CO = zip_co;
-            BaseDAO dao = new BaseDAO();
-            var ZIP_CO_list = dao.GetRowList(where);
-            if (ZIP_CO_list.ToCount() > 0)
+            if (string.IsNullOrEmpty(zip_co))
             {
-                return ZIP_CO_list.FirstOrDefault().CITYNM+ ZIP_CO_list.FirstOrDefault().TOWNNM+ ZIP_CO_list.FirstOrDefault().ROADNM;
+                return "";
+            }
+
+            // 根據輸入長度選擇查詢來源
+            if (zip_co.Length == 6)
+            {
+                // 6碼：查詢 ZIPCODE6 表
+                TblZIPCODE6 where6 = new TblZIPCODE6();
+                where6.ZIP_CO = zip_co;
+                BaseDAO dao = new BaseDAO();
+                var ZIP_CO6_list = dao.GetRowList(where6);
+                if (ZIP_CO6_list.ToCount() > 0)
+                {
+                    var first = ZIP_CO6_list.FirstOrDefault();
+                    return first.CITYNM + first.TOWNNM + (first.ROADNM ?? "");
+                }
+            }
+            else
+            {
+                // 5碼或其他：查詢原 ZIPCODE 表
+                TblZIPCODE where = new TblZIPCODE();
+                where.ZIP_CO = zip_co;
+                BaseDAO dao = new BaseDAO();
+                var ZIP_CO_list = dao.GetRowList(where);
+                if (ZIP_CO_list.ToCount() > 0)
+                {
+                    var first = ZIP_CO_list.FirstOrDefault();
+                    return first.CITYNM + first.TOWNNM + first.ROADNM;
+                }
             }
             return "";
         }
