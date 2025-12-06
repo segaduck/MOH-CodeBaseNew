@@ -1,0 +1,359 @@
+﻿@using ES.Models;
+@using ES.Utils;
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+    bool isLoggedIn = sm != null && sm.UserInfo != null && sm.UserInfo.Member != null;
+}
+
+<style>
+    .mock-login-container {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 20px;
+    }
+    .mock-login-header {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        color: white;
+        padding: 20px;
+        border-radius: 8px 8px 0 0;
+        text-align: center;
+    }
+    .mock-login-header h2 {
+        margin: 0;
+        font-size: 24px;
+    }
+    .mock-login-header .warning {
+        margin-top: 10px;
+        font-size: 14px;
+        opacity: 0.9;
+    }
+    .mock-login-body {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        padding: 30px;
+    }
+    .search-section {
+        margin-bottom: 30px;
+    }
+    .search-section h4 {
+        color: #333;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+    }
+    .member-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    .member-table th, .member-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    .member-table th {
+        background-color: #f5f5f5;
+        font-weight: bold;
+    }
+    .member-table tr:hover {
+        background-color: #f9f9f9;
+    }
+    .member-table .btn-select {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 5px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .member-table .btn-select:hover {
+        background-color: #2980b9;
+    }
+    .login-form {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+    .login-form .form-group {
+        margin-bottom: 15px;
+    }
+    .login-form label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+    }
+    .login-form input[type="text"],
+    .login-form input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    .login-form .hint {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+    }
+    .btn-login {
+        background-color: #27ae60;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+    }
+    .btn-login:hover {
+        background-color: #219a52;
+    }
+    .btn-search {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .btn-search:hover {
+        background-color: #2980b9;
+    }
+    .btn-top-members {
+        background-color: #9b59b6;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+    .btn-top-members:hover {
+        background-color: #8e44ad;
+    }
+
+    .current-user-info {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    .current-user-info h5 {
+        color: #155724;
+        margin: 0 0 10px 0;
+    }
+    .logout-btn {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .logout-btn:hover {
+        background-color: #c82333;
+    }
+</style>
+
+<div class="mock-login-container">
+    <div class="mock-login-header">
+        <h2>E-Service Mock Login (測試用)</h2>
+        <div class="warning">
+            此功能僅供開發測試使用，需在 Web.config 中設定 DevMode=1 及 DevMode_AllowMockLogin=1
+        </div>
+    </div>
+    
+    <div class="mock-login-body">
+        @if (isLoggedIn)
+        {
+            <div class="current-user-info">
+                <h5>目前登入身份</h5>
+                <p><strong>帳號:</strong> @sm.UserInfo.Member.ACC_NO</p>
+                <p><strong>姓名:</strong> @sm.UserInfo.Member.NAME</p>
+                <p><strong>身分證:</strong> @sm.UserInfo.Member.IDN</p>
+                <p><strong>登入方式:</strong> @sm.UserInfo.LoginAuth</p>
+                <a href="@Url.Action("Index", "History")" class="btn btn-primary" style="margin-right: 10px;">進入會員中心</a>
+                <a href="@Url.Action("Logout", "Login")" class="logout-btn">登出</a>
+            </div>
+        }
+        
+        <!-- Search Section -->
+        <div class="search-section">
+            <h4>搜尋會員</h4>
+            <div class="form-inline">
+                <input type="text" id="searchKeyword" class="form-control" placeholder="輸入帳號、身分證、姓名或Email" style="width: 300px;">
+                <button type="button" class="btn-search" onclick="searchMembers()">搜尋</button>
+                <button type="button" class="btn-top-members" onclick="getTopMembers()">顯示案件數最多的會員</button>
+            </div>
+            
+            <div id="searchResults" style="margin-top: 20px; display: none;">
+                <table class="member-table">
+                    <thead>
+                        <tr>
+                            <th>帳號</th>
+                            <th>身分證/統編</th>
+                            <th>姓名</th>
+                            <th>Email</th>
+                            <th>案件數</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="memberTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Login Form -->
+        <div class="login-form">
+            <h4 style="margin-bottom: 20px; color: #333;">Mock 登入</h4>
+            <div class="form-group">
+                <label for="userNo">帳號 (ACC_NO)</label>
+                <input type="text" id="userNo" placeholder="輸入會員帳號">
+            </div>
+            <div class="form-group">
+                <label for="userPwd">密碼 或 密碼雜湊值 (PSWD)</label>
+                <input type="text" id="userPwd" placeholder="輸入原始密碼 或 資料庫中的 PSWD 雜湊值">
+                <div class="hint">
+                    可輸入原始密碼 (系統會自動加密比對)，或直接貼上資料庫中的 PSWD 欄位值
+                </div>
+            </div>
+            <button type="button" class="btn-login" onclick="doMockLogin()">Mock 登入</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // Search members
+    function searchMembers() {
+        var keyword = $('#searchKeyword').val();
+        if (!keyword || keyword.length < 2) {
+            blockAlert('請輸入至少2個字元進行搜尋');
+            return;
+        }
+        
+        blockUI();
+        $.ajax({
+            url: '@Url.Action("SearchMembers", "MockLogin")',
+            type: 'POST',
+            data: { keyword: keyword },
+            success: function(response) {
+                unblockUI();
+                if (response.status) {
+                    displayMembers(response.data);
+                } else {
+                    blockAlert(response.message);
+                }
+            },
+            error: function() {
+                unblockUI();
+                blockAlert('搜尋失敗，請稍後再試');
+            }
+        });
+    }
+    
+    // Get top members
+    function getTopMembers() {
+        blockUI();
+        $.ajax({
+            url: '@Url.Action("GetTopMembers", "MockLogin")',
+            type: 'POST',
+            success: function(response) {
+                unblockUI();
+                if (response.status) {
+                    displayMembers(response.data);
+                } else {
+                    blockAlert(response.message);
+                }
+            },
+            error: function() {
+                unblockUI();
+                blockAlert('查詢失敗，請稍後再試');
+            }
+        });
+    }
+    
+    // Display members in table
+    function displayMembers(members) {
+        var tbody = $('#memberTableBody');
+        tbody.empty();
+        
+        if (!members || members.length === 0) {
+            tbody.append('<tr><td colspan="6" style="text-align: center;">無資料</td></tr>');
+        } else {
+            for (var i = 0; i < members.length; i++) {
+                var m = members[i];
+                var row = '<tr>' +
+                    '<td>' + (m.ACC_NO || '') + '</td>' +
+                    '<td>' + (m.IDN || '') + '</td>' +
+                    '<td>' + (m.NAME || '') + '</td>' +
+                    '<td>' + (m.MAIL || '') + '</td>' +
+                    '<td>' + (m.CaseCount || 0) + '</td>' +
+                    '<td><button class="btn-select" onclick="selectMember(\'' + m.ACC_NO + '\')">選擇</button></td>' +
+                    '</tr>';
+                tbody.append(row);
+            }
+        }
+        
+        $('#searchResults').show();
+    }
+    
+    // Select member and fill form (only fills account, admin must manually enter password hash)
+    function selectMember(accNo) {
+        $('#userNo').val(accNo);
+        $('#userPwd').val('');
+        $('html, body').animate({
+            scrollTop: $('.login-form').offset().top - 100
+        }, 500);
+    }
+    
+    
+    // Do Mock Login
+    function doMockLogin() {
+        var userNo = $('#userNo').val();
+        var userPwd = $('#userPwd').val();
+        
+        if (!userNo) {
+            blockAlert('請輸入帳號');
+            return;
+        }
+        if (!userPwd) {
+            blockAlert('請輸入密碼或密碼雜湊值');
+            return;
+        }
+        
+        blockUI();
+        $.ajax({
+            url: '@Url.Action("MockLogin", "MockLogin")',
+            type: 'POST',
+            data: { userNo: userNo, userPwd: userPwd },
+            success: function(response) {
+                unblockUI();
+                if (response.status) {
+                    blockMessage(response.message, '登入成功', function() {
+                        location.href = '@Url.Action("Index", "History")';
+                    });
+                } else {
+                    blockAlert(response.message);
+                }
+            },
+            error: function() {
+                unblockUI();
+                blockAlert('登入失敗，請稍後再試');
+            }
+        });
+    }
+    
+    // Enter key to search
+    $('#searchKeyword').keypress(function(e) {
+        if (e.which === 13) {
+            searchMembers();
+        }
+    });
+</script>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -612,6 +612,7 @@
     <Compile Include="Controllers\Apply_011001Controller.cs" />
     <Compile Include="Controllers\Apply_011002Controller.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\MockLoginController.cs" />
     <Compile Include="Controllers\ServiceLstController.cs" />
     <Compile Include="Controllers\Share\ZIP_COController.cs" />
     <Compile Include="Commons\CheckBoxListItem.cs" />
@@ -4338,6 +4339,7 @@
     <Content Include="Views\Shared\_MainHeader.cshtml" />
     <Content Include="Views\Shared\_MainLayout.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
+    <Content Include="Views\MockLogin\Index.cshtml" />
     <Content Include="Views\ServiceLst\Index.cshtml" />
     <Content Include="Views\Login\New.cshtml" />
     <Content Include="Views\ServiceLst\_GridRows.cshtml" />
