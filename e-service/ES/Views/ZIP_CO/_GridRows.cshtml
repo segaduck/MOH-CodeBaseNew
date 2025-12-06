@@ -16,15 +16,12 @@
             <td data-th="郵遞區號名稱">
                 <div class="td-long-txt">@item.TEXT</div>
             </td>
-            @if (Model.ZIP_FORMAT == "5")
-            {
-                <td data-th="街道名稱">
-                    <div class="td-long-txt">@item.ROADNM</div>
-                </td>
-                <td data-th="說明">
-                    <div class="td-long-txt js-clear-trim">@item.ROUND</div>
-                </td>
-            }
+            <td data-th="街道名稱">
+                <div class="td-long-txt">@item.ROADNM</div>
+            </td>
+            <td data-th="說明">
+                <div class="td-long-txt js-clear-trim">@item.ROUND</div>
+            </td>
         </tr>
     }
 }

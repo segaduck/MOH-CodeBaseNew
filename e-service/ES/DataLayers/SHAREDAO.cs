@@ -51,21 +51,21 @@ namespace ES.DataLayers
                     // 預設使用6碼表 ZIPCODE6
                     string tableName = (parms.ZIP_FORMAT == "5") ? "ZIPCODE" : "ZIPCODE6";
                     
-                    // 6碼表沒有 ROADNM 和 ROUND 欄位，需要處理
+                    // 根據格式選擇不同的 SQL 查詢
                     string _sql;
                     if (parms.ZIP_FORMAT == "5")
                     {
-                        // 5碼表有完整欄位
+                        // 5碼表：ZIPCODE 有 ROADNM 和 ROUND 欄位
                         _sql = @" SELECT DISTINCT ZIP_CO AS CODE,(CITYNM + TOWNNM) AS TEXT,
-                                        ROADNM,ROUND
+                                        ROADNM, ROUND
                                     FROM ZIPCODE 
                                     WHERE 1 = 1";
                     }
                     else
                     {
-                        // 6碼表沒有 ROADNM 和 ROUND，使用空值代替
+                        // 6碼表：ZIPCODE6 有 ROADNM 和 SCOOP 欄位 (SCOOP 對應 ROUND)
                         _sql = @" SELECT DISTINCT ZIP_CO AS CODE,(CITYNM + TOWNNM) AS TEXT,
-                                        '' AS ROADNM, '' AS ROUND
+                                        ROADNM, SCOOP AS ROUND
                                     FROM ZIPCODE6 
                                     WHERE 1 = 1";
                     }
@@ -82,8 +82,8 @@ namespace ES.DataLayers
                     {
                         _sql += " and TOWNNM like '%" + parms.TOWNNM.ToTrim() + "%'";
                     }
-                    // ROADNM 只在5碼表有效
-                    if (parms.ZIP_FORMAT == "5" && !string.IsNullOrWhiteSpace(parms.ROADNM))
+                    // ROADNM 查詢條件 (5碼和6碼都支援)
+                    if (!string.IsNullOrWhiteSpace(parms.ROADNM))
                     {
                         _sql += " and ROADNM like '%" + parms.ROADNM.ToTrim() + "%'";
                     }

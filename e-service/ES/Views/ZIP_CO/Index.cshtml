@@ -46,10 +46,10 @@
                         <label for="title"> 鄉鎮市區名稱</label>
                         @Html.TextBoxFor(m => m.TOWNNM, new { @class = "form-control", placeholder = "請輸入鄉鎮市區名稱", size = "20", maxlength = "32" })
                     </div>
-                    <!-- 街道名稱 - 僅5碼格式可用 -->
+                    <!-- 街道名稱 -->
                     <div class="col-sm-12 form-group form-group-n" id="roadnm_field">
                         <label for="title"> 街道名稱</label>
-                        @Html.TextBoxFor(m => m.ROADNM, new { @class="form-control", placeholder="請輸入街道名稱 (僅5碼格式可查詢)", size="60", maxlength="32"})
+                        @Html.TextBoxFor(m => m.ROADNM, new { @class="form-control", placeholder="請輸入街道名稱", size="60", maxlength="32"})
                     </div>
                     <div class="col-sm-12 up-pager" style="text-align:center; background-color:transparent;">
                         <button type="submit" class="btn btn-search modal-btn-search">搜尋</button>
@@ -66,11 +66,8 @@
                                 <th class="choose"></th>
                                 <th align="center">郵遞區號</th>
                                 <th align="center">郵遞區號名稱</th>
-                                @if (Model.ZIP_FORMAT == "5")
-                                {
-                                    <th align="center">街道名稱</th>
-                                    <th align="center">說明</th>
-                                }
+                                <th align="center">街道名稱</th>
+                                <th align="center">說明</th>
                             </tr>
                         </thead>
                         <tbody id="rows">
@@ -92,30 +89,13 @@
         initRoadField();
     });
 
-    // 初始化街道名稱欄位（不清空表格）
+    // 初始化（不清空表格）
     function initRoadField() {
-        var format = $('input[name="ZIP_FORMAT"]:checked').val();
-        if (format === '5') {
-            $('#roadnm_field').show();
-            $('#ROADNM').prop('disabled', false);
-        } else {
-            $('#roadnm_field').hide();
-            $('#ROADNM').val('').prop('disabled', true);
-        }
+        // 街道名稱欄位在兩種格式下都可用，無需隱藏
     }
 
-    // 切換街道名稱欄位的顯示狀態（點擊radio時呼叫，會清空表格）
+    // 切換郵遞區號格式時清空查詢結果
     function toggleRoadField() {
-        var format = $('input[name="ZIP_FORMAT"]:checked').val();
-        if (format === '5') {
-            // 5碼格式：顯示街道名稱欄位
-            $('#roadnm_field').show();
-            $('#ROADNM').prop('disabled', false);
-        } else {
-            // 6碼格式：隱藏街道名稱欄位並清空值
-            $('#roadnm_field').hide();
-            $('#ROADNM').val('').prop('disabled', true);
-        }
         // 清空查詢結果表格
         clearTable();
     }

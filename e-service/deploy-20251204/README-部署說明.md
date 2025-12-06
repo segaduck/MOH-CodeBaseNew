@@ -2,11 +2,11 @@
 
 ## 版本資訊
 
-| 項目     | 說明                                                                                                  |
-| -------- | ----------------------------------------------------------------------------------------------------- |
-| 版本     | 1.3                                                                                                   |
-| 日期     | 2025-12-04                                                                                            |
-| 修改項目 | 個人會員電話號碼非必填、郵遞區號改為 6 碼、頁尾及聯絡窗口改為柏通股份有限公司、更新資料庫服務諮詢電話 |
+| 項目     | 說明                                                                                                                  |
+| -------- | --------------------------------------------------------------------------------------------------------------------- |
+| 版本     | 1.4                                                                                                                   |
+| 日期     | 2025-12-06                                                                                                            |
+| 修改項目 | 個人會員電話號碼非必填、郵遞區號改為 6 碼、頁尾及聯絡窗口改為柏通股份有限公司、更新資料庫服務諮詢電話、郵遞區號查詢修復 |
 
 ---
 
@@ -41,6 +41,16 @@
   - 帳號鎖定錯誤訊息：「鎖定 15 分鐘，請諮詢系統操作服務諮詢電話：(02)7730-7378。」
 - **部署方式**: 執行 SQL 腳本 `update-database-servicetel.sql`
 
+### 6. 郵遞區號 6 碼查詢修復
+
+- **問題**: 6 碼郵遞區號查詢視窗無法正確顯示街道名稱和說明欄位
+- **原因**: `SHAREDAO.cs` 的 6 碼查詢 SQL 返回空字串而非實際欄位值
+- **修復內容**:
+  - `DataLayers/SHAREDAO.cs`: 修正 6 碼查詢使用 `ROADNM, SCOOP AS ROUND`
+  - `Views/ZIP_CO/Index.cshtml`: 顯示街道名稱和說明欄位
+  - `Views/ZIP_CO/_GridRows.cshtml`: 資料列顯示修復
+- **資料庫**: 匯入 79,861 筆 6 碼郵遞區號資料 (使用 `insert_zipcode6_full.sql`)
+
 ---
 
 ## 部署檔案清單
@@ -55,44 +65,98 @@ e-service/deploy-20251204/
 ├── deploy-user-registration-fix.ps1    ← 部署腳本
 ├── rollback-deployment.ps1             ← 還原腳本
 ├── test-app-offline.ps1                ← 測試腳本
-├── update-database-servicetel.sql      ← 資料庫更新腳本 (新增)
+├── update-database-servicetel.sql      ← 資料庫更新腳本
+├── insert_zipcode6_full.sql            ← 6碼郵遞區號資料匯入腳本 (79,861筆)
+├── 3+3郵遞區號簿_2504A.xls             ← 郵遞區號來源資料 (A區)
+├── 3+3郵遞區號簿_2504B.xls             ← 郵遞區號來源資料 (B區)
 └── source/
     ├── bin/
-    │   ├── ES.dll                      ← 主要應用程式組件 (需編譯)
+    │   ├── ES.dll                      ← 主要應用程式組件 (已編譯)
     │   └── ES.pdb                      ← 除錯符號檔 (選用)
+    ├── DataLayers/
+    │   └── SHAREDAO.cs                 ← 6碼郵遞區號查詢修復
     └── Views/
         ├── Login/
         │   ├── New.cshtml              ← 新使用者註冊頁面 (已修改)
         │   └── Edit1.cshtml            ← 會員資料編輯頁面 (已修改)
         ├── ServiceLst/
         │   └── Notice.cshtml           ← 服務項目說明頁面 (已修改)
-        └── Shared/
-            └── _Footer.cshtml          ← 頁尾 (已修改)
+        ├── Shared/
+        │   └── _Footer.cshtml          ← 頁尾 (已修改)
+        └── ZIP_CO/
+            ├── Index.cshtml            ← 郵遞區號查詢頁面 (已修改)
+            └── _GridRows.cshtml        ← 郵遞區號查詢結果列 (已修改)
 ```
 
 ### 需要部署的檔案
 
-| 檔案路徑                                | 說明                      |
-| --------------------------------------- | ------------------------- |
-| `source/bin/ES.dll`                     | 主要應用程式組件          |
-| `source/bin/ES.pdb`                     | 除錯符號檔 (選用)         |
-| `source/Views/Login/New.cshtml`         | 新使用者註冊頁面          |
-| `source/Views/Login/Edit1.cshtml`       | 會員資料編輯頁面          |
-| `source/Views/ServiceLst/Notice.cshtml` | 服務項目說明頁面          |
-| `source/Views/Shared/_Footer.cshtml`    | 頁尾共用元件              |
-| `update-database-servicetel.sql`        | 資料庫更新腳本 **(新增)** |
-| `backup_app_offline.htm.template`       | 維護頁面模板              |
+| 檔案路徑                                | 說明                          |
+| --------------------------------------- | ----------------------------- |
+| `source/bin/ES.dll`                     | 主要應用程式組件 (已編譯)     |
+| `source/bin/ES.pdb`                     | 除錯符號檔 (選用)             |
+| `source/Views/Login/New.cshtml`         | 新使用者註冊頁面              |
+| `source/Views/Login/Edit1.cshtml`       | 會員資料編輯頁面              |
+| `source/Views/ServiceLst/Notice.cshtml` | 服務項目說明頁面              |
+| `source/Views/Shared/_Footer.cshtml`    | 頁尾共用元件                  |
+| `source/Views/ZIP_CO/Index.cshtml`      | 郵遞區號查詢頁面 **(v1.4)**   |
+| `source/Views/ZIP_CO/_GridRows.cshtml`  | 郵遞區號查詢結果列 **(v1.4)** |
+| `update-database-servicetel.sql`        | 資料庫更新腳本                |
+| `insert_zipcode6_full.sql`              | 6碼郵遞區號匯入 **(v1.4)**    |
+| `backup_app_offline.htm.template`       | 維護頁面模板                  |
 
-> **注意**: 本次修改涉及 C# 程式碼 (Model 驗證屬性、DAO 驗證邏輯)，需要編譯 DLL。
-> 請先執行 `build-release.ps1` 編譯專案，將產生的 `bin/ES.dll` 複製到 `source/bin/` 目錄。
+> **注意**: `source/bin/ES.dll` 已包含最新編譯版本，可直接部署。
+> 如需重新編譯，請執行 `build-release.ps1`。
 
-### 已修改的 C# 檔案 (需編譯)
+### 已修改的 C# 檔案 (已編譯至 ES.dll)
 
 | 檔案路徑                      | 修改內容                                                           |
 | ----------------------------- | ------------------------------------------------------------------ |
 | `ES/DataLayers/LoginDAO.cs`   | 個人會員電話驗證邏輯改為非必填                                     |
+| `ES/DataLayers/SHAREDAO.cs`   | 6碼郵遞區號查詢修復：使用 `ROADNM, SCOOP AS ROUND` **(v1.4)**      |
 | `ES/Models/LoginViewModel.cs` | `LoginDetailModel.TEL` 移除 `[Required]`                           |
 | `ES/Models/MemberModels.cs`   | `PersonalMember.Tel`、`PersonalMemberForApp.Tel` 移除 `[Required]` |
+
+---
+
+## 部署前準備：確認 IIS 網站資訊
+
+> ⚠️ **重要**: IIS 網站名稱區分大小寫！例如 `eService` 與 `e-service` 是不同的網站名稱。
+
+在部署之前，請先確認正式環境的 IIS 網站設定：
+
+### 使用 appcmd.exe (推薦，任何 PowerShell 版本皆可)
+
+```powershell
+# 列出所有網站
+C:\Windows\System32\inetsrv\appcmd.exe list site
+
+# 列出網站的虛擬目錄 (包含實體路徑)
+C:\Windows\System32\inetsrv\appcmd.exe list vdir
+
+# 列出所有應用程式集區
+C:\Windows\System32\inetsrv\appcmd.exe list apppool
+```
+
+### 使用 PowerShell WebAdministration 模組
+
+> ⚠️ **注意**: WebAdministration 模組僅在 **Windows PowerShell 5.1** 中可用，PowerShell 7 不支援。
+
+```powershell
+# 確認使用 Windows PowerShell 5.1
+powershell.exe -Command "Import-Module WebAdministration; Get-Website | Select-Object Name, PhysicalPath, State"
+
+# 取得應用程式集區
+powershell.exe -Command "Import-Module WebAdministration; Get-IISAppPool | Select-Object Name, State"
+```
+
+### 確認項目清單
+
+在執行部署腳本前，請確認以下資訊：
+
+- [ ] IIS 網站名稱 (例如: `eService` - 注意大小寫)
+- [ ] 網站實體路徑 (例如: `D:\WebSite\e-service`)
+- [ ] 應用程式集區名稱 (例如: `eServicePool`)
+- [ ] 資料庫伺服器名稱和資料庫名稱
 
 ---
 
@@ -197,6 +261,27 @@ sqlcmd -S <ServerName> -d eservice_new -i update-database-servicetel.sql
 # WHERE SETUP_CD = 'SERVICETEL';
 ```
 
+#### Step 4.1: 匯入 6 碼郵遞區號資料
+
+> ⚠️ **重要**: 此步驟會清空 `ZIPCODE6` 表並匯入 79,861 筆新資料，建議先備份。
+
+```powershell
+# 使用 sqlcmd 執行匯入腳本
+sqlcmd -S <ServerName> -d eservice_new -i insert_zipcode6_full.sql
+
+# 預計執行時間: 約 1-2 分鐘
+```
+
+驗證匯入結果：
+
+```sql
+-- 檢查總筆數 (預期: 79861)
+SELECT COUNT(*) AS TotalRecords FROM ZIPCODE6;
+
+-- 抽查幾筆資料
+SELECT TOP 5 ZIP_CO, CITYNM, TOWNNM, ROADNM, SCOOP FROM ZIPCODE6 ORDER BY ZIP_CO;
+```
+
 #### Step 5: 移除 app_offline.htm (恢復網站)
 
 ```powershell
@@ -288,6 +373,24 @@ WHERE SETUP_CD = 'SERVICETEL';
 
 -- 預期結果: SETUP_VAL = '(02)7730-7378'
 ```
+
+### 4. 郵遞區號查詢驗證 (v1.4)
+
+```sql
+-- 驗證 ZIPCODE6 資料筆數
+SELECT COUNT(*) AS TotalRecords FROM ZIPCODE6;
+-- 預期結果: 79861
+
+-- 抽查街道名稱是否正確 (不應為空或包含「郵局」)
+SELECT TOP 5 ZIP_CO, CITYNM, TOWNNM, ROADNM, SCOOP
+FROM ZIPCODE6
+WHERE ZIP_CO = '338116';
+-- 預期 ROADNM = '吉林路' (不是 '蘆竹郵局-專六')
+```
+
+- [ ] 在註冊頁面點擊郵遞區號查詢 icon
+  - 輸入「6」查詢 6 碼郵遞區號
+  - 確認「街道名稱」和「說明」欄位正確顯示（不是空白）
 
 ### 4. 登入錯誤訊息測試
 
