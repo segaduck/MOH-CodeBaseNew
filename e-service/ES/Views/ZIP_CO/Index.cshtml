@@ -16,6 +16,24 @@
                     <div class="mask-search">
                         <i class="fas fa-search"></i>
                     </div>
+                    <!-- 郵遞區號格式選擇 -->
+                    <div class="col-sm-12 form-group form-group-n" style="margin-bottom: 15px; padding: 10px; background-color: #f5f5f5; border-radius: 5px; display: flex; align-items: center; justify-content: flex-start;">
+                        <div style="flex: 0 0 20%; white-space: nowrap;">
+                            <label style="font-weight: bold;"><i class="fas fa-list-ol"></i> 郵遞區號格式：</label>
+                        </div>
+                        <div style="flex: 0 0 40%; white-space: nowrap;">
+                            <label class="radio-inline">
+                                @Html.RadioButtonFor(m => m.ZIP_FORMAT, "6", new { id = "zip_format_6", onclick = "toggleRoadField()" })
+                                6碼郵遞區號(新制)
+                            </label>
+                        </div>
+                        <div style="flex: 0 0 40%; white-space: nowrap;">
+                            <label class="radio-inline">
+                                @Html.RadioButtonFor(m => m.ZIP_FORMAT, "5", new { id = "zip_format_5", onclick = "toggleRoadField()" })
+                                5碼郵遞區號(舊制)
+                            </label>
+                        </div>
+                    </div>
                     <div class="col-sm-4 form-group form-group-n">
                         <label for="title"><i class="fas fa-search"></i> 郵遞區號</label>
                         @Html.TextBoxFor(m => m.ZIP_CO, new { @class = "form-control", placeholder = "請輸入郵遞區號", size = "20", maxlength = "32" })
@@ -28,19 +46,17 @@
                         <label for="title"> 鄉鎮市區名稱</label>
                         @Html.TextBoxFor(m => m.TOWNNM, new { @class = "form-control", placeholder = "請輸入鄉鎮市區名稱", size = "20", maxlength = "32" })
                     </div>
-                    <div class="col-sm-12 form-group form-group-n">
+                    <!-- 街道名稱 - 僅5碼格式可用 -->
+                    <div class="col-sm-12 form-group form-group-n" id="roadnm_field">
                         <label for="title"> 街道名稱</label>
-                        @Html.TextBoxFor(m => m.ROADNM, new { @class="form-control", placeholder="請輸入街道名稱", size="60", maxlength="32"})
+                        @Html.TextBoxFor(m => m.ROADNM, new { @class="form-control", placeholder="請輸入街道名稱 (僅5碼格式可查詢)", size="60", maxlength="32"})
                     </div>
-                    @* <div class="col-sm-12 form-group">
-                      &nbsp;
-                    </div> *@
                     <div class="col-sm-12 up-pager" style="text-align:center; background-color:transparent;">
                         <button type="submit" class="btn btn-search modal-btn-search">搜尋</button>
                     </div>
                 </div>
              
-                <div class="up-pager">
+                <div class="up-pager pager-info">
                     @Html.ShowGridPage(Model.NowPage, Model.TotalPage, Model.TotalCount)
                 </div>
                 <div class="table-responsive n-table-rwd">
@@ -50,8 +66,11 @@
                                 <th class="choose"></th>
                                 <th align="center">郵遞區號</th>
                                 <th align="center">郵遞區號名稱</th>
-                                <th align="center">街道名稱</th>
-                                <th align="center">說明</th>
+                                @if (Model.ZIP_FORMAT == "5")
+                                {
+                                    <th align="center">街道名稱</th>
+                                    <th align="center">說明</th>
+                                }
                             </tr>
                         </thead>
                         <tbody id="rows">
@@ -59,7 +78,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="up-pager">
+                <div class="up-pager pager-info">
                     @Html.ShowGridPage(Model.NowPage, Model.TotalPage, Model.TotalCount)
                 </div>
             </div>
@@ -68,6 +87,47 @@
 }
 
 <script type="text/javascript">
+    // 頁面載入時初始化
+    $(document).ready(function() {
+        initRoadField();
+    });
+
+    // 初始化街道名稱欄位（不清空表格）
+    function initRoadField() {
+        var format = $('input[name="ZIP_FORMAT"]:checked').val();
+        if (format === '5') {
+            $('#roadnm_field').show();
+            $('#ROADNM').prop('disabled', false);
+        } else {
+            $('#roadnm_field').hide();
+            $('#ROADNM').val('').prop('disabled', true);
+        }
+    }
+
+    // 切換街道名稱欄位的顯示狀態（點擊radio時呼叫，會清空表格）
+    function toggleRoadField() {
+        var format = $('input[name="ZIP_FORMAT"]:checked').val();
+        if (format === '5') {
+            // 5碼格式：顯示街道名稱欄位
+            $('#roadnm_field').show();
+            $('#ROADNM').prop('disabled', false);
+        } else {
+            // 6碼格式：隱藏街道名稱欄位並清空值
+            $('#roadnm_field').hide();
+            $('#ROADNM').val('').prop('disabled', true);
+        }
+        // 清空查詢結果表格
+        clearTable();
+    }
+
+    // 清空查詢結果表格
+    function clearTable() {
+        $('#rows').empty();
+        $('.pager-info').each(function() {
+            $(this).html('');
+        });
+    }
+
     // 分頁
     function doQuery(page) {
         $('#NowPage').val(page);

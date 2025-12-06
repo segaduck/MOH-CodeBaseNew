@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -55,6 +55,13 @@ namespace ES.Models.Share
         /// </summary>
         [Display(Name ="街道名稱")]
         public string ROADNM { get; set; }
+
+        /// <summary>
+        /// 郵遞區號格式 (5=5碼, 6=6碼)
+        /// 預設為6碼
+        /// </summary>
+        [Display(Name = "郵遞區號格式")]
+        public string ZIP_FORMAT { get; set; } = "6";
 
         /// <summary>
         /// 查詢結果 GridModel

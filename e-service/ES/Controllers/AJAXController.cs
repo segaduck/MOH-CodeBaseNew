@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -35,6 +35,7 @@ namespace ES.Controllers
         #region GetCityTown 傳回郵遞區號中文名稱
         /// <summary>
         /// Ajax 傳回郵遞區號中文名稱
+        /// 修改：查無資料時返回 "-"，避免前端清空欄位並顯示警告
         /// </summary>
         /// <param name="CODE">郵遞區號</param>
         /// <returns></returns>
@@ -44,7 +45,9 @@ namespace ES.Controllers
             var result = new AjaxResultStruct();
             var dao = new MyKeyMapDAO();
             KeyMapModel kmm = dao.GetCityTownName(CODE);
-            result.data = (kmm != null ? kmm.TEXT : "");
+            // 查無資料時返回 "-" 而非空字串，避免前端判斷為空值而清空欄位並顯示警告
+            // 這樣可以讓使用者保留輸入的郵遞區號，即使格式不正確也不會被清除
+            result.data = (kmm != null ? kmm.TEXT : "-");
 
             return Content(result.Serialize(), "application/json");
         }

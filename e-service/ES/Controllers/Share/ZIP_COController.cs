@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -19,8 +19,11 @@ namespace ES.Controllers.Share
         {
             ZIP_COFormModel form = new ZIP_COFormModel();
             form.NowPage = 0;
+            form.TotalCount = 0;
+            form.TotalPage = 0;
+            form.Grid = new List<ZIP_COGridModel>();
 
-            return Index(form);
+            return View(form);
         }
 
         /// <summary>

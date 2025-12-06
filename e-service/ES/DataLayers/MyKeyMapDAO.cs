@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -973,27 +973,45 @@ namespace ES.DataLayers
         }
 
         #region Helper 控件
+        /// <summary>
+        /// 根據郵遞區號取得縣市鄉鎮名稱
+        /// 支援 5 碼 (查 ZIPCODE 表) 及 6 碼 (查 ZIPCODE6 表)
+        /// </summary>
+        /// <param name="CODE">郵遞區號 (5碼或6碼)</param>
+        /// <returns>縣市鄉鎮名稱</returns>
         public KeyMapModel GetCityTownName(string CODE)
         {
             KeyMapModel result = null;
-            //var dictionary = new Dictionary<string, object> { { "@ZIP_CO", CODE } };
-            var parameters = new DynamicParameters(); //動態參數
-            string _sql = @"SELECT ZIP_CO AS CODE,(CITYNM + TOWNNM) AS TEXT
-                            FROM ZIPCODE 
-                            WHERE 1 = 1 ";
+            var parameters = new DynamicParameters();
+            string _sql;
+
             if (!string.IsNullOrEmpty(CODE))
             {
-                parameters.Add("ZIP_CO", CODE);
-                _sql += " and ZIP_CO = @ZIP_CO";
-            }
-            _sql += " order by ZIP_CO";
+                // 根據輸入長度選擇查詢來源
+                if (CODE.Length == 6)
+                {
+                    // 6碼：優先查詢 ZIPCODE6 表
+                    _sql = @"SELECT ZIP_CO AS CODE, (CITYNM + TOWNNM) AS TEXT
+                             FROM ZIPCODE6 
+                             WHERE ZIP_CO = @ZIP_CO";
+                }
+                else
+                {
+                    // 5碼或其他：查詢原 ZIPCODE 表
+                    _sql = @"SELECT ZIP_CO AS CODE, (CITYNM + TOWNNM) AS TEXT
+                             FROM ZIPCODE 
+                             WHERE ZIP_CO = @ZIP_CO";
+                }
 
-            using (SqlConnection conn = DataUtils.GetConnection())
-            {
-                conn.Open();
-                result = conn.Query<KeyMapModel>(_sql, parameters).ToList().FirstOrDefault();
-                conn.Close();
-                conn.Dispose();
+                parameters.Add("ZIP_CO", CODE);
+
+                using (SqlConnection conn = DataUtils.GetConnection())
+                {
+                    conn.Open();
+                    result = conn.Query<KeyMapModel>(_sql, parameters).FirstOrDefault();
+                    conn.Close();
+                    conn.Dispose();
+                }
             }
 
             return result;

@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Spreadsheet;
@@ -32,8 +32,9 @@ namespace ES.DataLayers
         #region ZIP_CO
         /// <summary>
         /// 查詢 ZIP_CO
+        /// 支援 5碼 (ZIPCODE表) 和 6碼 (ZIPCODE6表) 格式
         /// </summary>
-        /// <param name="detail"></param>
+        /// <param name="parms">查詢參數，包含 ZIP_FORMAT (5=5碼, 6=6碼)</param>
         public IList<ZIP_COGridModel> QueryZIP_CO(ZIP_COFormModel parms)
         {
             ZIP_COGridModel model = new ZIP_COGridModel();
@@ -45,10 +46,29 @@ namespace ES.DataLayers
                 {
                     var _da = new SqlDataAdapter();
                     DataTable _dt = new DataTable();
-                    string _sql = @" SELECT DISTINCT ZIP_CO AS CODE,(CITYNM + TOWNNM) AS TEXT,
+                    
+                    // 根據 ZIP_FORMAT 選擇查詢來源表
+                    // 預設使用6碼表 ZIPCODE6
+                    string tableName = (parms.ZIP_FORMAT == "5") ? "ZIPCODE" : "ZIPCODE6";
+                    
+                    // 6碼表沒有 ROADNM 和 ROUND 欄位，需要處理
+                    string _sql;
+                    if (parms.ZIP_FORMAT == "5")
+                    {
+                        // 5碼表有完整欄位
+                        _sql = @" SELECT DISTINCT ZIP_CO AS CODE,(CITYNM + TOWNNM) AS TEXT,
                                         ROADNM,ROUND
                                     FROM ZIPCODE 
                                     WHERE 1 = 1";
+                    }
+                    else
+                    {
+                        // 6碼表沒有 ROADNM 和 ROUND，使用空值代替
+                        _sql = @" SELECT DISTINCT ZIP_CO AS CODE,(CITYNM + TOWNNM) AS TEXT,
+                                        '' AS ROADNM, '' AS ROUND
+                                    FROM ZIPCODE6 
+                                    WHERE 1 = 1";
+                    }
 
                     if (!string.IsNullOrEmpty(parms.ZIP_CO))
                     {
@@ -62,7 +82,8 @@ namespace ES.DataLayers
                     {
                         _sql += " and TOWNNM like '%" + parms.TOWNNM.ToTrim() + "%'";
                     }
-                    if (!string.IsNullOrWhiteSpace(parms.ROADNM))
+                    // ROADNM 只在5碼表有效
+                    if (parms.ZIP_FORMAT == "5" && !string.IsNullOrWhiteSpace(parms.ROADNM))
                     {
                         _sql += " and ROADNM like '%" + parms.ROADNM.ToTrim() + "%'";
                     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -87,19 +87,15 @@ namespace ES.Helpers
             sb_script.Append("do" + EXPname + "NameGet();");
             sb_script.Append("});");
 
-            //組裝Tel
+            //組裝Tel - 修改：移除 blockAlert 和欄位清空，讓驗證更寬鬆
             sb_script.Append("  function loadDialog"+ EXPname + "CodeMapName(data) {");
             sb_script.Append("ajaxLoadMore(data.url,");
             sb_script.Append("data.arg,");
             sb_script.Append("function (resp) {");
-            sb_script.Append("if (resp === undefined) data.box.val('');");
+            sb_script.Append("if (resp === undefined) { /* 不清空欄位 */ }");
             sb_script.Append("else {");
-            sb_script.Append("if (resp.data != '') data.box.val(resp.data);");
-            sb_script.Append("else {");
-            sb_script.Append("data.box.val('');");
-            sb_script.Append("data.add.val('');");
-            sb_script.Append(" blockAlert(data.msg);");
-            sb_script.Append(" }");
+            sb_script.Append("if (resp.data != '' && resp.data != '-') data.box.val(resp.data);");
+            sb_script.Append("/* 查無資料時不顯示警告、不清空欄位，允許使用者保留輸入值 */");
             sb_script.Append(" }");
             sb_script.Append(" });");
             sb_script.Append("  };");
@@ -225,14 +221,10 @@ namespace ES.Helpers
             sb_script.Append("ajaxLoadMore(data.url,");
             sb_script.Append("data.arg,");
             sb_script.Append("function (resp) {");
-            sb_script.Append("if (resp === undefined) data.box.val('');");
+            sb_script.Append("if (resp === undefined) { /* 不清空欄位 */ }");
             sb_script.Append("else {");
-            sb_script.Append("if (resp.data != '') data.box.val(resp.data);");
-            sb_script.Append("else {");
-            sb_script.Append("data.box.val('');");
-            sb_script.Append("data.add.val('');");
-            sb_script.Append(" blockAlert(data.msg);");
-            sb_script.Append(" }");
+            sb_script.Append("if (resp.data != '' && resp.data != '-') data.box.val(resp.data);");
+            sb_script.Append("/* 查無資料時不顯示警告、不清空欄位，允許使用者保留輸入值 */");
             sb_script.Append(" }");
             sb_script.Append(" });");
             sb_script.Append("  };");
