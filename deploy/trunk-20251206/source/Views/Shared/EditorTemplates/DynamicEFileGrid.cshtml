@@ -1,0 +1,147 @@
+﻿@using EECOnline.Commons
+@using EECOnline.Services
+@model EECOnline.Models.DynamicEFileGrid
+
+
+<div id="DivResult">
+    @* CSRF Token for AJAX upload *@
+    @Html.AntiForgeryToken()
+
+    @if (Model.ShowFileUpload)
+    {
+        <div class='form-group'>
+            <label class="main-label col-sm-2">顯示檔案名稱</label>
+            <div class="col-sm-2 form-inline">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.pfilename, new { @class = "form-control formbar-bg", id = "pfilename" })
+                </div>
+            </div>
+            <label class="main-label col-sm-2">選取檔案來源</label>
+            <div class="col-sm-6 form-inline">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.POSTED_FILE, new { type = "file", @class = "form-control formbar-bg", id = "FileUpload" })
+                    <div class="input-group-btn">
+                        <button class="btn btn-info" type="button" data-toggle="tooltip" id="Upload_File" data-role="Upload_File" title="上傳">上傳<i class="fa fa-upload" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div id="FileRows">
+        <div style="display:block;text-align: center;color:red;" class="col-sm-12">@(Model.ErrorMsg)</div>
+        <table class="table-typeA table">
+            <thead>
+                <tr>
+                    <th>檔案名稱</th>
+                    <th width="10%">檔案容量</th>
+                    <th width="10%">下載</th>
+                    @if (Model.ShowFileUpload && Model.ShowDelete)
+                    {
+                        <th width="10%">刪除</th>
+                    }
+                </tr>
+            </thead>
+            <tbody style="height:auto !important">
+                @Html.HiddenFor(m => m.ShowFileUpload)
+                @Html.HiddenFor(m => m.ShowDelete)
+                @Html.HiddenFor(m => m.limitRow)
+                @Html.HiddenFor(m => m.peky1)
+                @Html.HiddenFor(m => m.peky2)
+                @Html.HiddenFor(m => m.peky3)
+                @Html.HiddenFor(m => m.peky4)
+
+                @if (Model.fileGrid.ToCount() > 0)
+                {
+                    for (int i = 0; i < Model.fileGrid.Count; i++)
+                    {
+                        var item = Model.fileGrid[i];
+                        var file_name = item.filename != null ? item.filename : item.srcfilename;
+
+                        <tr>
+                            <td>@file_name</td>
+                            <td>@((item.filesize.ToDouble() / (1024.00/* * 1024.00*/)).ToString("#0.00")) MB</td>
+                            <td align="center">
+                                <a href="@(Url.Content(Model.fileGrid[i].filepath+"/"+Model.fileGrid[i].srcfilename+"."+Model.fileGrid[i].extion))" download>下載</a>
+                                @*
+                                    <button type="button" class="btn btn-info"
+                                            onclick="window.open('@(Url.Content(Model.fileGrid[i].filepath+"/"+Model.fileGrid[i].srcfilename+"."+Model.fileGrid[i].extion))')">
+                                        下載
+                                    </button>
+                                *@
+                                @Html.HiddenFor(m => m.fileGrid[i].efile_id)
+                                @Html.HiddenFor(m => m.fileGrid[i].srcfilename)
+                                @Html.HiddenFor(m => m.fileGrid[i].filename)
+                                @Html.HiddenFor(m => m.fileGrid[i].extion)
+                                @Html.HiddenFor(m => m.fileGrid[i].filesize)
+                                @Html.HiddenFor(m => m.fileGrid[i].filepath)
+                                @Html.HiddenFor(m => m.fileGrid[i].peky1)
+                                @Html.HiddenFor(m => m.fileGrid[i].peky2)
+                                @Html.HiddenFor(m => m.fileGrid[i].peky3)
+                                @Html.HiddenFor(m => m.fileGrid[i].peky4)
+                                @Html.HiddenFor(m => m.fileGrid[i].moduser)
+                                @Html.HiddenFor(m => m.fileGrid[i].modusername)
+                                @Html.HiddenFor(m => m.fileGrid[i].modtime)
+                                @Html.HiddenFor(m => m.fileGrid[i].modip)
+                            </td>
+                            @if (Model.ShowFileUpload && Model.ShowDelete)
+                            {
+                                <td align="center">
+                                    <button type="button" class="btn btn-danger"
+                                            onclick="DeleteFile('@(i)')">
+                                        刪除
+                                    </button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+    });
+
+    // 按下上傳按鈕觸發
+    $('#Upload_File').on('click', function () {
+        var url = "@Url.Action("UploadFile", "Ajax",new { area = ""})";
+        var files = "#FileUpload";
+        var parms = getFormDataJsonReplce("#FileRows :input");
+        parms["Upload.pfilename"] = $("#pfilename").val();
+
+        ajaxUploadFile(url, files, parms
+         , function (data) {
+             $("#DivResult").html(data);
+             $("#FileRows :input").each(function (i, obj) {
+                 if (obj.id != "ErrorMsg") {
+                     $("#" + obj.id).attr("name", 'Upload.' + obj.name);
+                     $("#" + obj.id).attr("id", 'Upload_' + obj.id);
+                 }
+             })
+         }, function () {
+             blockAlert("上傳失敗");
+         });
+    });
+
+    // 移除目前畫面檔案
+    function DeleteFile(idx) {
+        var url = "@Url.Action("DeleteFile", "Ajax",new { area = "" })";
+        var files = "#FileUpload";
+        var parms = getFormDataJsonReplce("#FileRows :input");
+        parms["idx"] = idx;
+
+        ajaxUploadFile(url, files, parms
+         , function (data) {
+             $("#DivResult").html(data);
+             $("#FileRows :input").each(function (i, obj) {
+                 $("#" + obj.id).attr("name", 'Upload.' + obj.name);
+                 $("#" + obj.id).attr("id", 'Upload_' + obj.id);
+             })
+         }, function () {
+             blockAlert("刪除檔案失敗");
+         });
+    }
+</script>

@@ -61,15 +61,16 @@
 ## Deployment Files Location (CRITICAL)
 - **ALL deployment files/resources/documents MUST be saved under `deploy/`** at project root
 - **NEVER create deployment folders inside `e-service/` or `trunk/`** (e.g., `e-service/deploy-xxx/` is WRONG)
+- **Folder naming**: Use date suffix format `YYYYMMDD` (e.g., `e-service-20251206`, `trunk-20251206`)
 - **Folder structure**:
   ```
   deploy/
-  ├── e-service/              ← e-service (民眾端) deployment
+  ├── e-service-YYYYMMDD/     ← e-service (民眾端) deployment
   │   ├── README-部署說明.md  ← Deployment instructions
   │   ├── docs/               ← Documentation
   │   ├── sql/                ← SQL scripts and source data
   │   └── source/             ← Code files (bin/, Views/, etc.)
-  ├── trunk/                  ← trunk (管理後台) deployment (if needed)
+  ├── trunk-YYYYMMDD/         ← trunk (管理後台) deployment (if needed)
   ├── build-release.ps1       ← Build scripts
   └── deploy-*.ps1            ← Deployment scripts
   ```

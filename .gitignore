@@ -60,8 +60,8 @@ trunk/logs/
 # ============================================
 # 部署產物 (Deployment Artifacts)
 # ============================================
-deploy/e-service-*/
-deploy/trunk-*/
+# Note: deploy/ folder should be tracked in git
+# Deployment packages use date suffix: deploy/e-service-YYYYMMDD/
 
 # ============================================
 # 暫存檔案 (Temporary Files)

@@ -1,0 +1,153 @@
+﻿@using EECOnline.Models;
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+    var errorMessage = sm.LastErrorMessage;
+}
+
+<style>
+    .mock-login-container {
+        max-width: 500px;
+        margin: 3rem auto;
+        padding: 2rem;
+    }
+    .mock-warning {
+        background-color: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .mock-warning strong {
+        color: #856404;
+    }
+    .admin-login-box {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 2rem;
+    }
+    .admin-login-box h2 {
+        color: #495057;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .form-group label {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 4px;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 1rem;
+    }
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        text-decoration: none;
+        color: white;
+    }
+    .alert-danger {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+    .security-note {
+        background-color: #e7f3ff;
+        border: 1px solid #b3d7ff;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+        color: #004085;
+    }
+</style>
+
+<div class="mock-login-container">
+    <div class="mock-warning">
+        <strong>⚠️ 開發模式 - Mock 登入</strong><br />
+        此功能僅供開發測試使用，需先驗證後台管理員身份。
+    </div>
+
+    <div class="admin-login-box">
+        <h2>🔐 管理員身份驗證</h2>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert-danger">
+                @Html.Raw(errorMessage)
+            </div>
+        }
+
+        <form action="@Url.Action("MockLogin_AdminVerify", "Home")" method="POST">
+            <div class="form-group">
+                <label for="admin_userno">管理員帳號</label>
+                <input type="text" id="admin_userno" name="admin_userno" class="form-control"
+                       placeholder="請輸入後台管理員帳號" required autocomplete="username" />
+            </div>
+
+            <div class="form-group">
+                <label for="admin_password">密碼</label>
+                <input type="password" id="admin_password" name="admin_password" class="form-control"
+                       placeholder="請輸入密碼" required autocomplete="current-password" />
+            </div>
+
+            <button type="submit" class="btn-primary">
+                驗證身份
+            </button>
+        </form>
+
+        <div style="text-align: center;">
+            <a href="@Url.Action("Login", "Home")" class="btn-secondary">
+                返回登入頁
+            </a>
+        </div>
+
+        <div class="security-note">
+            <strong>📌 說明：</strong><br />
+            Mock 登入功能允許開發人員繞過外部身份驗證服務（自然人憑證、TW FidO、健保卡），
+            直接使用資料庫中的使用者資料進行測試。<br /><br />
+            為確保安全，使用此功能前需先以後台管理員帳號進行驗證。
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // 自動聚焦到帳號欄位
+    $(document).ready(function () {
+        $('#admin_userno').focus();
+    });
+</script>
