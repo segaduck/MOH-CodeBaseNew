@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using EECOnline.Commons.Filter;
@@ -289,6 +289,40 @@ namespace EECOnline.Controllers
             }
             else
             {
+                // 檢查是否為 Mock 登入使用者，自動重新登入
+                SessionModel sm = SessionModel.Get();
+                if (sm.IsMockLoginUser)
+                {
+                    FrontDAO dao = new FrontDAO();
+                    var user = dao.GetRow(new TblEEC_User() { user_idno = sm.MockLoginUserIdno });
+                    if (user != null)
+                    {
+                        HomeViewModel mockModel = new HomeViewModel();
+                        mockModel.Login = new LoginModel();
+                        mockModel.Login.user_name = user.user_name;
+                        mockModel.Login.user_idno = user.user_idno;
+                        mockModel.Login.user_birthday = user.user_birthday;
+
+                        int loginType = sm.MockLoginLoginType ?? 1;
+                        switch (loginType)
+                        {
+                            case 1:
+                                mockModel.Login.user_email1 = user.user_email;
+                                return LoginForm1return(mockModel);
+                            case 2:
+                                mockModel.Login.user_idno1 = user.user_idno;
+                                mockModel.Login.user_birthday1 = user.user_birthday;
+                                mockModel.Login.user_email2 = user.user_email;
+                                return LoginForm2return(mockModel);
+                            case 3:
+                                mockModel.Login.user_idno2 = user.user_idno;
+                                mockModel.Login.user_birthday2 = user.user_birthday;
+                                mockModel.Login.user_email3 = user.user_email;
+                                return LoginForm3return(mockModel);
+                        }
+                    }
+                }
+
                 HomeViewModel model = new HomeViewModel();
                 model.Login = new LoginModel();
                 model.ProcessStep = "1";
@@ -455,6 +489,38 @@ namespace EECOnline.Controllers
             return View("Login", NewModel);
         }
 
+        /// <summary>
+        /// 自然人憑證登入後返回處理 (Mock Login 使用)
+        /// </summary>
+        [HttpPost]
+        public ActionResult LoginForm1return(HomeViewModel model)
+        {
+            SessionModel sm = SessionModel.Get();
+            model.ProcessStep = "1";
+            model.UserLoginTab = "1";
+            ModelState.Clear();
+            // OK
+
+            FrontDAO dao = new FrontDAO();
+            TblEEC_User euserWhere = new TblEEC_User();
+            euserWhere.user_idno = model.Login.user_idno;
+            TblEEC_User euser = new TblEEC_User();
+            euser.user_name = model.Login.user_name;
+            euser.user_idno = model.Login.user_idno;
+            euser.user_birthday = model.Login.user_birthday;
+            euser.user_email = model.Login.user_email1;
+            dao.InsertOrUpdate(euser, euserWhere);
+
+
+            var findUser = dao.GetRowList(new TblEEC_User() { user_idno = model.Login.user_idno.TONotNullString() });
+
+            HomeViewModel NewModel = new HomeViewModel() { UserLoginTab = "1" };
+            NewModel.LoginApply = new LoginApplyModel();
+            NewModel.LoginApply.login_type = "1";
+            this.ProcessStepNew(findUser.FirstOrDefault(), ref NewModel);  // 現在這邊一律都當 新申請
+            return View("Login", NewModel);
+        }
+
         [HttpPost]
         public ActionResult LoginForm2return(HomeViewModel model)
         {
@@ -482,6 +548,37 @@ namespace EECOnline.Controllers
             NewModel.LoginApply.login_type = "2";
             this.ProcessStepNew(findUser.FirstOrDefault(), ref NewModel);  // 現在這邊一律都當 新申請
             return View("Login", NewModel);
+        }
+
+        /// <summary>
+        /// 自然人憑證查詢登入後返回處理 (Mock Login 使用)
+        /// </summary>
+        [HttpPost]
+        public ActionResult SearchLoginForm1return(HomeViewModel model)
+        {
+            SessionModel sm = SessionModel.Get();
+            model.ProcessStep = "1";
+            model.UserLoginTab = "1";
+            ModelState.Clear();
+            // OK
+
+            FrontDAO dao = new FrontDAO();
+            TblEEC_User euserWhere = new TblEEC_User();
+            euserWhere.user_idno = model.Search.user_idno1;  // 使用完整身分證字號查詢
+            var euserList = dao.GetRowList(euserWhere);
+            if (euserList.ToCount() == 0)
+            {
+                TblEEC_User euser = new TblEEC_User();
+                euser.user_name = model.Search.user_name;
+                euser.user_idno = model.Search.user_idno1;
+                dao.InsertOrUpdate(euser, euserWhere);
+            }
+
+            var findUser = dao.GetRowList(new TblEEC_User() { user_idno = model.Search.user_idno1.TONotNullString() });
+
+            HomeViewModel NewModel = new HomeViewModel() { UserLoginTab = "1" };
+            this.ProcessStepSearch(findUser.FirstOrDefault(), ref NewModel);
+            return View("Search", NewModel);
         }
 
         [HttpPost]
@@ -1249,6 +1346,37 @@ namespace EECOnline.Controllers
 
         public ActionResult Search()
         {
+            // 檢查是否為 Mock 登入使用者，自動重新登入
+            SessionModel sm = SessionModel.Get();
+            if (sm.IsMockLoginUser)
+            {
+                FrontDAO dao = new FrontDAO();
+                var user = dao.GetRow(new TblEEC_User() { user_idno = sm.MockLoginUserIdno });
+                if (user != null)
+                {
+                    HomeViewModel mockModel = new HomeViewModel();
+                    mockModel.Search = new SearchModel();
+                    mockModel.Search.user_name = user.user_name;
+
+                    int loginType = sm.MockLoginLoginType ?? 1;
+                    switch (loginType)
+                    {
+                        case 1:
+                            mockModel.Search.user_idno4Last = user.user_idno.Length >= 4
+                                ? user.user_idno.Substring(user.user_idno.Length - 4)
+                                : user.user_idno;
+                            mockModel.Search.user_idno1 = user.user_idno;
+                            return SearchLoginForm1return(mockModel);
+                        case 2:
+                            mockModel.Search.user_idno1 = user.user_idno;
+                            return SearchLoginForm2return(mockModel);
+                        case 3:
+                            mockModel.Search.user_idno2 = user.user_idno;
+                            return SearchLoginForm3return(mockModel);
+                    }
+                }
+            }
+
             HomeViewModel model = new HomeViewModel();
             model.Search = new SearchModel();
             model.ProcessStep = "1";
@@ -2951,5 +3079,234 @@ namespace EECOnline.Controllers
                 return File(stream.ToArray(), "audio/wav");
             }
         }
+
+        #region Mock 登入 (開發模式專用)
+
+        /// <summary>
+        /// 開發模式專用：Mock 登入頁面
+        /// </summary>
+        [HttpGet]
+        public ActionResult MockLogin()
+        {
+            // 非開發模式 → 重導向到正常登入頁
+            if (!ConfigModel.DevMode || !ConfigModel.DevMode_AllowMockLogin)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            SessionModel sm = SessionModel.Get();
+            // 檢查是否已通過管理員驗證
+            if (sm.MockLoginAdminVerified != true)
+            {
+                // 尚未驗證，顯示管理員登入表單
+                return View("MockLoginAdmin");
+            }
+
+            return View("MockLogin");
+        }
+
+        /// <summary>
+        /// 開發模式專用：管理員身份驗證
+        /// </summary>
+        [HttpPost]
+        public ActionResult MockLogin_AdminVerify(string admin_userno, string admin_password)
+        {
+            // 非開發模式 → 重導向到正常登入頁
+            if (!ConfigModel.DevMode || !ConfigModel.DevMode_AllowMockLogin)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            SessionModel sm = SessionModel.Get();
+
+            if (string.IsNullOrEmpty(admin_userno) || string.IsNullOrEmpty(admin_password))
+            {
+                sm.LastErrorMessage = "請輸入帳號和密碼";
+                return View("MockLoginAdmin");
+            }
+
+            // 使用現有的 ClamService 進行後台管理員帳號密碼驗證
+            ClamService clamService = new ClamService();
+            LoginUserInfo userInfo = clamService.LoginValidate(admin_userno, admin_password, HttpContext.Request.UserHostAddress);
+
+            if (userInfo.LoginSuccess)
+            {
+                // 驗證成功，設定 Session 標記
+                sm.MockLoginAdminVerified = true;
+                sm.MockLoginAdminUserNo = admin_userno;
+                return RedirectToAction("MockLogin");
+            }
+            else
+            {
+                // 驗證失敗
+                sm.LastErrorMessage = userInfo.LoginErrMessage ?? "帳號或密碼錯誤";
+                return View("MockLoginAdmin");
+            }
+        }
+
+        /// <summary>
+        /// 開發模式專用：AJAX 查詢使用者資訊
+        /// </summary>
+        [HttpPost]
+        public JsonResult MockLogin_QueryUser(string user_idno)
+        {
+            // 非開發模式或未驗證 → 回傳失敗
+            if (!ConfigModel.DevMode || !ConfigModel.DevMode_AllowMockLogin)
+            {
+                return Json(new { success = false, message = "功能未啟用" });
+            }
+
+            SessionModel sm = SessionModel.Get();
+            if (sm.MockLoginAdminVerified != true)
+            {
+                return Json(new { success = false, message = "請先完成管理員驗證" });
+            }
+
+            if (string.IsNullOrEmpty(user_idno))
+            {
+                return Json(new { success = false, message = "請輸入身分證字號" });
+            }
+
+            FrontDAO dao = new FrontDAO();
+            var user = dao.GetRow(new TblEEC_User() { user_idno = user_idno.ToUpper() });
+
+            if (user == null)
+            {
+                return Json(new { success = false, message = "查無此使用者，請確認身分證字號是否正確" });
+            }
+
+            // 查詢此使用者的案件數量
+            var applyList = dao.GetRowList(new TblEEC_Apply() { user_idno = user_idno.ToUpper() });
+            int caseCount = applyList != null ? applyList.ToCount() : 0;
+
+            if (caseCount == 0)
+            {
+                return Json(new { success = false, message = "此使用者無申請案件記錄，Mock 登入僅供測試既有案件" });
+            }
+
+            return Json(new
+            {
+                success = true,
+                user_idno = user.user_idno,
+                user_name = user.user_name,
+                user_birthday = user.user_birthday,
+                user_email = user.user_email,
+                case_count = caseCount
+            });
+        }
+
+        /// <summary>
+        /// 開發模式專用：執行 Mock 登入
+        /// </summary>
+        [HttpPost]
+        public ActionResult MockLogin(int login_type, string user_idno, string target_action)
+        {
+            // 非開發模式 → 重導向到正常登入頁
+            if (!ConfigModel.DevMode || !ConfigModel.DevMode_AllowMockLogin)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            SessionModel sm = SessionModel.Get();
+
+            // 檢查管理員驗證
+            if (sm.MockLoginAdminVerified != true)
+            {
+                return RedirectToAction("MockLogin");
+            }
+
+            FrontDAO dao = new FrontDAO();
+
+            // 驗證 login_type
+            if (login_type < 1 || login_type > 3)
+            {
+                sm.LastErrorMessage = "無效的登入方式";
+                return View("MockLogin");
+            }
+
+            // 查詢使用者
+            var user = dao.GetRow(new TblEEC_User() { user_idno = user_idno.ToUpper() });
+            if (user == null)
+            {
+                sm.LastErrorMessage = "查無此使用者";
+                return View("MockLogin");
+            }
+
+            // 儲存 Mock 使用者資訊到 Session（讓使用者可以在不同頁面間切換）
+            sm.MockLoginUserIdno = user.user_idno;
+            sm.MockLoginUserName = user.user_name;
+            sm.MockLoginUserBirthday = user.user_birthday;
+            sm.MockLoginUserEmail = user.user_email;
+            sm.MockLoginLoginType = login_type;
+
+            // 根據 target_action 決定導向
+            if (target_action == "apply")
+            {
+                // 模擬申請流程登入
+                HomeViewModel model = new HomeViewModel();
+                model.Login = new LoginModel();
+                model.Login.user_name = user.user_name;
+                model.Login.user_idno = user.user_idno;
+                model.Login.user_birthday = user.user_birthday;
+
+                // 根據 login_type 設定對應的欄位
+                switch (login_type)
+                {
+                    case 1:
+                        model.Login.user_email1 = user.user_email;
+                        return LoginForm1return(model);
+                    case 2:
+                        model.Login.user_idno1 = user.user_idno;
+                        model.Login.user_birthday1 = user.user_birthday;
+                        model.Login.user_email2 = user.user_email;
+                        return LoginForm2return(model);
+                    case 3:
+                        model.Login.user_idno2 = user.user_idno;
+                        model.Login.user_birthday2 = user.user_birthday;
+                        model.Login.user_email3 = user.user_email;
+                        return LoginForm3return(model);
+                }
+            }
+            else if (target_action == "search")
+            {
+                // 模擬查詢流程登入
+                HomeViewModel model = new HomeViewModel();
+                model.Search = new SearchModel();
+                model.Search.user_name = user.user_name;
+
+                switch (login_type)
+                {
+                    case 1:
+                        model.Search.user_idno4Last = user.user_idno.Length >= 4 
+                            ? user.user_idno.Substring(user.user_idno.Length - 4) 
+                            : user.user_idno;
+                        model.Search.user_idno1 = user.user_idno;  // Mock 模式需要完整身分證字號
+                        return SearchLoginForm1return(model);
+                    case 2:
+                        model.Search.user_idno1 = user.user_idno;
+                        return SearchLoginForm2return(model);
+                    case 3:
+                        model.Search.user_idno2 = user.user_idno;
+                        return SearchLoginForm3return(model);
+                }
+            }
+
+            sm.LastErrorMessage = "無效的目標動作";
+            return View("MockLogin");
+        }
+
+        /// <summary>
+        /// 開發模式專用：登出 Mock 登入管理員驗證
+        /// </summary>
+        [HttpGet]
+        public ActionResult MockLogin_Logout()
+        {
+            SessionModel sm = SessionModel.Get();
+            sm.MockLoginAdminVerified = false;
+            sm.MockLoginAdminUserNo = null;
+            return RedirectToAction("Login", "Home");
+        }
+
+        #endregion
     }
 }

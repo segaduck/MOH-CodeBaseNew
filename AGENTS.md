@@ -44,3 +44,16 @@
 - **Never insert DATETIME directly** into NVARCHAR columns (causes implicit conversion with wrong format)
 - Example: `INSERT INTO EEC_Apply (createdatetime) VALUES (FORMAT(@now, 'yyyy/MM/dd HH:mm:ss'))` ✓
 - Bad: `INSERT INTO EEC_Apply (createdatetime) VALUES (@now)` ✗ (produces `Nov 27 2025 10:04AM`)
+## MSBuild Configuration
+- **MSBuild Path**: `"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe"`
+- **Always use Visual Studio 2019** MSBuild (VS 2022 BuildTools lacks WebApplication targets)
+- **Build command**: `"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" trunk/EECOnline.csproj /p:Configuration=Debug /v:minimal`
+- **Use Debug configuration** to avoid sgen.exe errors in Release builds
+
+## Test Credentials
+- **Backend Admin (for Mock Login verification)**:
+  - Username: `testadmin`
+  - Password: `Test@1234`
+- **Database**: `EEC_PD_DB` on Docker container `moh-sqlserver`
+  - SA Password: `YourStrong!Passw0rd`
+- **IIS Express**: Port 8080, path `F:\AITest\MOH-CodeBaseNew\trunk` 

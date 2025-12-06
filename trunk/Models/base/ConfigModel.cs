@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
@@ -493,6 +493,45 @@ namespace EECOnline.Models
                 catch
                 {
                     return "";
+                }
+            }
+        }
+
+        /// <summary>
+        /// 是否為開發模式
+        /// </summary>
+        public static bool DevMode
+        {
+            get
+            {
+                try
+                {
+                    string value = ConfigurationManager.AppSettings["DevMode"];
+                    return !string.IsNullOrEmpty(value) && value == "1";
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 是否允許 Mock 登入（僅在 DevMode=true 時生效）
+        /// </summary>
+        public static bool DevMode_AllowMockLogin
+        {
+            get
+            {
+                try
+                {
+                    if (!DevMode) return false;
+                    string value = ConfigurationManager.AppSettings["DevMode_AllowMockLogin"];
+                    return !string.IsNullOrEmpty(value) && value == "1";
+                }
+                catch
+                {
+                    return false;
                 }
             }
         }

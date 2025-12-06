@@ -1,0 +1,359 @@
+﻿@using EECOnline.Models;
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    SessionModel sm = SessionModel.Get();
+    var errorMessage = sm.LastErrorMessage;
+    var adminUserNo = sm.MockLoginAdminUserNo ?? "Unknown";
+}
+
+<style>
+    .mock-login-container {
+        max-width: 650px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+    .mock-header {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .mock-header-info {
+        color: #155724;
+    }
+    .mock-header-info strong {
+        font-size: 1.1rem;
+    }
+    .btn-logout {
+        background-color: #dc3545;
+        border: none;
+        color: white;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+    .btn-logout:hover {
+        background-color: #c82333;
+        color: white;
+        text-decoration: none;
+    }
+    .mock-box {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+    .mock-box h2 {
+        color: #495057;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 0.5rem;
+    }
+    .step-label {
+        background-color: #007bff;
+        color: white;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+    }
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+    .form-group > label {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .input-group {
+        display: flex;
+    }
+    .input-group .form-control {
+        flex: 1;
+        padding: 0.6rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px 0 0 4px;
+        font-size: 1rem;
+    }
+    .input-group .btn {
+        border-radius: 0 4px 4px 0;
+    }
+    .btn-info {
+        background-color: #17a2b8;
+        border: 1px solid #17a2b8;
+        color: white;
+        padding: 0.6rem 1rem;
+        cursor: pointer;
+    }
+    .btn-info:hover {
+        background-color: #138496;
+    }
+    .user-info-panel {
+        background-color: #e7f3ff;
+        border: 1px solid #b3d7ff;
+        border-radius: 4px;
+        padding: 1rem;
+        margin: 1rem 0;
+        display: none;
+    }
+    .user-info-panel.show {
+        display: block;
+    }
+    .user-info-panel h4 {
+        margin-top: 0;
+        color: #004085;
+    }
+    .user-info-item {
+        margin: 0.4rem 0;
+    }
+    .user-info-label {
+        font-weight: bold;
+        display: inline-block;
+        width: 100px;
+        color: #495057;
+    }
+    .radio-group {
+        margin: 0.5rem 0;
+    }
+    .radio-group label {
+        display: block;
+        padding: 0.5rem;
+        margin: 0.3rem 0;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .radio-group label:hover {
+        background-color: #e9ecef;
+    }
+    .radio-group input[type="radio"] {
+        margin-right: 0.5rem;
+    }
+    .radio-group input[type="radio"]:checked + span {
+        font-weight: bold;
+    }
+    .btn-primary-lg {
+        background-color: #28a745;
+        border: none;
+        color: white;
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 0.5rem;
+    }
+    .btn-primary-lg:hover {
+        background-color: #218838;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        color: white;
+        text-decoration: none;
+    }
+    .alert-danger {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+    .btnBar {
+        margin-top: 1.5rem;
+        text-align: center;
+    }
+</style>
+
+<div class="mock-login-container">
+    <div class="mock-header">
+        <div class="mock-header-info">
+            <strong>✅ 開發模式 - Mock 登入</strong><br />
+            <small>驗證管理員: @adminUserNo</small>
+        </div>
+        <a href="@Url.Action("MockLogin_Logout", "Home")" class="btn-logout">
+            登出驗證
+        </a>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert-danger">
+            @Html.Raw(errorMessage)
+        </div>
+    }
+
+    <div class="mock-box">
+        <h2>🧪 Mock 登入測試</h2>
+
+        <!-- Step 1: 查詢使用者 -->
+        <div class="form-group">
+            <label>
+                <span class="step-label">Step 1</span>
+                輸入身分證字號
+            </label>
+            <div class="input-group">
+                <input type="text" id="query_idno" class="form-control"
+                       placeholder="請輸入身分證字號 (例: A123456789)" maxlength="10" />
+                <button type="button" class="btn btn-info" onclick="queryUser()">
+                    查詢使用者
+                </button>
+            </div>
+        </div>
+
+        <!-- 使用者資訊顯示區 -->
+        <div id="userInfoPanel" class="user-info-panel">
+            <h4>📋 使用者資訊</h4>
+            <div class="user-info-item">
+                <span class="user-info-label">身分證字號:</span>
+                <span id="info_idno"></span>
+            </div>
+            <div class="user-info-item">
+                <span class="user-info-label">姓名:</span>
+                <span id="info_name"></span>
+            </div>
+            <div class="user-info-item">
+                <span class="user-info-label">出生日期:</span>
+                <span id="info_birthday"></span>
+            </div>
+            <div class="user-info-item">
+                <span class="user-info-label">Email:</span>
+                <span id="info_email"></span>
+            </div>
+            <div class="user-info-item">
+                <span class="user-info-label">案件數量:</span>
+                <span id="info_case_count" style="color: #28a745; font-weight: bold;"></span>
+            </div>
+        </div>
+
+        <!-- Step 2 & 3: 登入表單 -->
+        <form id="mockLoginForm" action="@Url.Action("MockLogin", "Home")" method="POST" style="display: none;">
+            <input type="hidden" id="user_idno" name="user_idno" />
+
+            <div class="form-group">
+                <label>
+                    <span class="step-label">Step 2</span>
+                    選擇模擬的登入方式
+                </label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="login_type" value="1" checked />
+                        <span>🟢 自然人憑證登入 (login_type = 1)</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="login_type" value="2" />
+                        <span>🟣 行動自然人憑證 TW FidO (login_type = 2)</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="login_type" value="3" />
+                        <span>🟡 身分證字號 + 健保卡 (login_type = 3)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <span class="step-label">Step 3</span>
+                    目標功能
+                </label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="target_action" value="search" checked />
+                        <span>🔍 查詢申請進度（Mock 登入僅支援此功能）</span>
+                    </label>
+                </div>
+                <p style="color: #666; font-size: 0.9em; margin-top: 0.5rem;">
+                    ⚠️ 注意：Mock 登入僅供測試既有案件查詢，不支援新申請流程
+                </p>
+            </div>
+
+            <div class="btnBar">
+                <button type="submit" class="btn-primary-lg">
+                    🚀 模擬登入
+                </button>
+                <a href="@Url.Action("Login", "Home")" class="btn-secondary">
+                    返回登入頁
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function queryUser() {
+        var idno = $('#query_idno').val().trim().toUpperCase();
+        if (idno.length !== 10) {
+            alert('請輸入正確的身分證字號 (10碼)');
+            return;
+        }
+
+        // 顯示載入中
+        blockUI();
+
+        $.ajax({
+            url: '@Url.Action("MockLogin_QueryUser", "Home")',
+            type: 'POST',
+            data: { user_idno: idno },
+            success: function (result) {
+                unblockUI();
+                if (result.success) {
+                    // 顯示使用者資訊
+                    $('#info_idno').text(result.user_idno);
+                    $('#info_name').text(result.user_name || '(未填寫)');
+                    $('#info_birthday').text(formatBirthday(result.user_birthday));
+                    $('#info_email').text(result.user_email || '(未填寫)');
+                    $('#info_case_count').text(result.case_count + ' 筆案件');
+                    $('#userInfoPanel').addClass('show');
+
+                    // 設定 hidden field 並顯示表單
+                    $('#user_idno').val(result.user_idno);
+                    $('#mockLoginForm').slideDown();
+                } else {
+                    alert(result.message);
+                    $('#userInfoPanel').removeClass('show');
+                    $('#mockLoginForm').slideUp();
+                }
+            },
+            error: function () {
+                unblockUI();
+                alert('查詢失敗，請稍後再試');
+            }
+        });
+    }
+
+    function formatBirthday(birthday) {
+        if (!birthday || birthday.length !== 8) return birthday || '(未填寫)';
+        var y = parseInt(birthday.substring(0, 4)) - 1911;
+        var m = birthday.substring(4, 6);
+        var d = birthday.substring(6, 8);
+        return '民國 ' + y + ' 年 ' + m + ' 月 ' + d + ' 日 (' + birthday + ')';
+    }
+
+    // Enter 鍵觸發查詢
+    $('#query_idno').keypress(function (e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            queryUser();
+        }
+    });
+
+    // 自動聚焦到身分證欄位
+    $(document).ready(function () {
+        $('#query_idno').focus();
+    });
+</script>

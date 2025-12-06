@@ -1,4 +1,4 @@
-﻿using EECOnline.DataLayers;
+using EECOnline.DataLayers;
 using EECOnline.Services;
 using log4net;
 using System;
@@ -76,6 +76,15 @@ namespace EECOnline.Models
         private static readonly string LAST_ACTION_NAME = "SYS.MENU.LAST_ACTION_NAME";
         private static readonly string BREADCRUMB_PATH = "SYS.MENU.BREADCRUMB_PATH";
         private static readonly string BREADCRUMB_PATH_STORE = "SYS.MENU.BREADCRUMB_PATH_STORE";
+
+        // Mock 登入相關 Session Key
+        private static readonly string MOCK_LOGIN_ADMIN_VERIFIED = "DEV.MOCK_LOGIN.ADMIN_VERIFIED";
+        private static readonly string MOCK_LOGIN_ADMIN_USERNO = "DEV.MOCK_LOGIN.ADMIN_USERNO";
+        private static readonly string MOCK_LOGIN_USER_IDNO = "DEV.MOCK_LOGIN.USER_IDNO";
+        private static readonly string MOCK_LOGIN_USER_NAME = "DEV.MOCK_LOGIN.USER_NAME";
+        private static readonly string MOCK_LOGIN_USER_BIRTHDAY = "DEV.MOCK_LOGIN.USER_BIRTHDAY";
+        private static readonly string MOCK_LOGIN_USER_EMAIL = "DEV.MOCK_LOGIN.USER_EMAIL";
+        private static readonly string MOCK_LOGIN_LOGIN_TYPE = "DEV.MOCK_LOGIN.LOGIN_TYPE";
 
         private static readonly string LAST_ERROR_MESSAGE = "USER.LAST_ERROR_MESSAGE";
         private static readonly string LAST_SYS_ERROR_MESSAGE = "LastException";
@@ -324,6 +333,104 @@ namespace EECOnline.Models
             {
                 this.session[LAST_ACTION_FUNC] = JsonConvert.SerializeObject(value);
             }
+        }
+
+        #endregion
+
+        #region Mock 登入 (開發模式專用)
+
+        /// <summary>
+        /// Mock 登入 - 管理員是否已驗證通過
+        /// </summary>
+        public bool? MockLoginAdminVerified
+        {
+            get
+            {
+                var value = this.session[MOCK_LOGIN_ADMIN_VERIFIED];
+                return value as bool?;
+            }
+            set { this.session[MOCK_LOGIN_ADMIN_VERIFIED] = value; }
+        }
+
+        /// <summary>
+        /// Mock 登入 - 已驗證的管理員帳號
+        /// </summary>
+        public string MockLoginAdminUserNo
+        {
+            get { return (string)this.session[MOCK_LOGIN_ADMIN_USERNO]; }
+            set { this.session[MOCK_LOGIN_ADMIN_USERNO] = value; }
+        }
+
+        /// <summary>
+        /// Mock 登入 - 模擬登入的使用者身分證字號
+        /// </summary>
+        public string MockLoginUserIdno
+        {
+            get { return (string)this.session[MOCK_LOGIN_USER_IDNO]; }
+            set { this.session[MOCK_LOGIN_USER_IDNO] = value; }
+        }
+
+        /// <summary>
+        /// Mock 登入 - 模擬登入的使用者姓名
+        /// </summary>
+        public string MockLoginUserName
+        {
+            get { return (string)this.session[MOCK_LOGIN_USER_NAME]; }
+            set { this.session[MOCK_LOGIN_USER_NAME] = value; }
+        }
+
+        /// <summary>
+        /// Mock 登入 - 模擬登入的使用者生日
+        /// </summary>
+        public string MockLoginUserBirthday
+        {
+            get { return (string)this.session[MOCK_LOGIN_USER_BIRTHDAY]; }
+            set { this.session[MOCK_LOGIN_USER_BIRTHDAY] = value; }
+        }
+
+        /// <summary>
+        /// Mock 登入 - 模擬登入的使用者Email
+        /// </summary>
+        public string MockLoginUserEmail
+        {
+            get { return (string)this.session[MOCK_LOGIN_USER_EMAIL]; }
+            set { this.session[MOCK_LOGIN_USER_EMAIL] = value; }
+        }
+
+        /// <summary>
+        /// Mock 登入 - 模擬的登入類型 (1=自然人憑證, 2=TW FidO, 3=健保卡)
+        /// </summary>
+        public int? MockLoginLoginType
+        {
+            get
+            {
+                var value = this.session[MOCK_LOGIN_LOGIN_TYPE];
+                return value as int?;
+            }
+            set { this.session[MOCK_LOGIN_LOGIN_TYPE] = value; }
+        }
+
+        /// <summary>
+        /// Mock 登入 - 檢查是否為有效的 Mock 登入使用者
+        /// </summary>
+        public bool IsMockLoginUser
+        {
+            get
+            {
+                return MockLoginAdminVerified == true && !string.IsNullOrEmpty(MockLoginUserIdno);
+            }
+        }
+
+        /// <summary>
+        /// Mock 登入 - 清除 Mock 使用者登入狀態
+        /// </summary>
+        public void ClearMockLoginUser()
+        {
+            MockLoginUserIdno = null;
+            MockLoginUserName = null;
+            MockLoginUserBirthday = null;
+            MockLoginUserEmail = null;
+            MockLoginLoginType = null;
         }
 
         #endregion
