@@ -1,16 +1,18 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using EECOnline.Areas.A3.Models;
-using EECOnline.Commons;
-using EECOnline.Controllers;
-using EECOnline.DataLayers;
+using Omu.ValueInjecter;
+using Turbo.Commons;
+using Turbo.DataLayer;
 using EECOnline.Models;
+using EECOnline.DataLayers;
 using EECOnline.Models.Entities;
+using EECOnline.Areas.A3.Models;
 using EECOnline.Services;
+using EECOnline.Commons;
+using System.IO;
 using log4net;
 using Omu.ValueInjecter;
 using Turbo.Commons;
@@ -20,7 +22,7 @@ using HppApi;
 
 namespace EECOnline.Areas.A3.Controllers
 {
-    public class C101MController : BaseController
+    public class C101MController : EECOnline.Controllers.BaseController
     {
         [HttpGet]
         public ActionResult Index()
@@ -255,12 +257,22 @@ namespace EECOnline.Areas.A3.Controllers
 
         private string isFileCheckOK(HttpPostedFileBase YourFile)
         {
-            string Result = "";
-            const string acceptType = ".rsp";
-            if (YourFile == null || YourFile.ContentLength.TOInt32() <= 0) return "請選擇上傳檔案！<br/ >";
-            if (!acceptType.Contains(Path.GetExtension(YourFile.FileName).ToLower())) Result = Result + "請選擇正確的檔案格式！ (" + acceptType + ")<br/ >";
-            if (YourFile.ContentLength.TOInt32() > (20 * 1024 * 1024)) Result = Result + "檔案大小以 20MB 為限！<br/ >";
-            return Result;
+            // 使用集中式安全驗證工具
+            var allowedExtensions = new List<string> { ".rsp" };
+            var maxSize = 20 * 1024 * 1024; // 20MB
+
+            var validationResult = FileSecurityHelper.ValidateUploadedFile(
+                YourFile,
+                allowedExtensions,
+                maxSize
+            );
+
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ErrorMessage + "<br/>";
+            }
+
+            return "";
         }
 
         [HttpPost]

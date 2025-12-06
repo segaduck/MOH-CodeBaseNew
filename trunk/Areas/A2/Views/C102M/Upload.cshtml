@@ -42,6 +42,25 @@
 
     // 儲存
     function doSave() {
+        // 檢查是否有選擇檔案
+        let inputElement = document.getElementById("UploadFILE");
+        if (!inputElement.files || inputElement.files.length === 0) {
+            blockAlert("請先選擇病歷檔案！");
+            return;
+        }
+
+        // 再次驗證檔案類型（防止繞過）
+        let file = inputElement.files[0];
+        let fileName = file.name;
+        let fileExtension = "." + fileName.split('.').pop().toLowerCase();
+        let acceptType = inputElement.accept.toLowerCase();
+        let allowedExtensions = acceptType.split(',').map(ext => ext.trim());
+        
+        if (!allowedExtensions.includes(fileExtension)) {
+            blockAlert("無效的檔案類型！\n\n僅接受：" + acceptType.toUpperCase() + "\n您選擇的檔案：" + fileName);
+            return;
+        }
+
         blockUI();
         var form = $("form[id=main_form]");
         form.attr('action', '@Url.Action("SaveUpload")').submit();
@@ -53,21 +72,36 @@
     }
 
     $("#UploadFILE").on("change", function () { CheckFileTypeByComp("UploadFILE"); });
+    
+    // 嚴格檔案類型驗證（防止使用者選擇 *.* 所有檔案）
     function CheckFileTypeByComp(ID_Name) {
-        let fileType = "." + document.getElementById(ID_Name).value.replace(/^.*[\\\/]/, '').split('.').pop().toLowerCase();
-        let acceptType = document.getElementById(ID_Name).accept.toLowerCase();
-        //console.log(fileType);
-        //console.log(acceptType);
-        //console.log(acceptType.indexOf(fileType));
-        //console.log(document.getElementById(ID_Name).files[0].size);
-        if (acceptType.indexOf(fileType) === -1) {
-            blockAlert("請選擇正確的檔案格式！ (" + acceptType + ")");
-            document.getElementById(ID_Name).value = null;
+        let inputElement = document.getElementById(ID_Name);
+        if (!inputElement.files || inputElement.files.length === 0) {
+            return;
         }
-        if (document.getElementById(ID_Name).files[0].size > (20 * 1024 * 1024)) {
-            blockAlert("檔案大小以 20MB 為限！");
-            document.getElementById(ID_Name).value = null;
+
+        let file = inputElement.files[0];
+        let fileName = file.name;
+        let fileExtension = "." + fileName.split('.').pop().toLowerCase();
+        let acceptType = inputElement.accept.toLowerCase();
+        let allowedExtensions = acceptType.split(',').map(ext => ext.trim());
+        
+        // 嚴格檢查：副檔名必須完全匹配允許清單
+        if (!allowedExtensions.includes(fileExtension)) {
+            blockAlert("❌ 不允許的檔案類型！\n\n✓ 僅接受以下格式：\n" + acceptType.toUpperCase() + "\n\n✗ 您選擇的檔案：" + fileName + "\n✗ 副檔名：" + fileExtension.toUpperCase() + "\n\n⚠️ 即使在檔案對話框中選擇了「所有檔案(*.*)」，\n我們仍會嚴格驗證檔案類型以確保安全性。");
+            inputElement.value = null;
+            return;
         }
+
+        // 檔案大小檢查
+        if (file.size > (20 * 1024 * 1024)) {
+            blockAlert("檔案大小超過限制！\n\n最大允許：20MB\n您的檔案：" + (file.size / (1024 * 1024)).toFixed(2) + "MB");
+            inputElement.value = null;
+            return;
+        }
+
+        // 顯示成功訊息（可選）
+        console.log("檔案驗證通過：" + fileName + " (" + (file.size / 1024).toFixed(2) + "KB)");
     }
 
 </script>

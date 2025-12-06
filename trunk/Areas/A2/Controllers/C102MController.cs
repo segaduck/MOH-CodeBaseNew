@@ -1,5 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Omu.ValueInjecter;
+using Turbo.Commons;
+using Turbo.DataLayer;
+using EECOnline.Models;
+using EECOnline.DataLayers;
+using EECOnline.Models.Entities;
+using EECOnline.Areas.A2.Models;
+using EECOnline.Services;
+using EECOnline.Commons;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -60,12 +72,22 @@ namespace EECOnline.Areas.A2.Controllers
 
         private string isFileCheckOK(HttpPostedFileBase YourFile)
         {
-            string Result = "";
-            const string acceptType = ".PDF,.JPG,.BMP,.PNG,.GIF,.TIF";
-            if (YourFile == null || YourFile.ContentLength.TOInt32() <= 0) return "請選擇上傳檔案！<br/ >";
-            if (!acceptType.Contains(Path.GetExtension(YourFile.FileName).ToUpper())) Result = Result + "請選擇正確的檔案格式！ (" + acceptType + ")<br/ >";
-            if (YourFile.ContentLength.TOInt32() > (20 * 1024 * 1024)) Result = Result + "檔案大小以 20MB 為限！<br/ >";
-            return Result;
+            // 使用集中式安全驗證工具
+            var allowedExtensions = new List<string> { ".PDF", ".JPG", ".BMP", ".PNG", ".GIF", ".TIF" };
+            var maxSize = 20 * 1024 * 1024; // 20MB
+
+            var validationResult = FileSecurityHelper.ValidateUploadedFile(
+                YourFile,
+                allowedExtensions,
+                maxSize
+            );
+
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ErrorMessage + "<br/>";
+            }
+
+            return "";
         }
 
         [HttpPost]

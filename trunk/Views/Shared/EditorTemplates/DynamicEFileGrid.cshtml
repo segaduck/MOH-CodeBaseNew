@@ -4,6 +4,8 @@
 
 
 <div id="DivResult">
+    @* CSRF Token for AJAX upload *@
+    @Html.AntiForgeryToken()
 
     @if (Model.ShowFileUpload)
     {
